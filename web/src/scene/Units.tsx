@@ -7,6 +7,7 @@ import { UF } from '../sim/snapshot.ts';
 import { BattleResult } from '../gen/chill/v1/battle_pb.ts';
 import { alpha, lerp } from './interp.ts';
 import { lookFor, makeCharacter, type Character } from './models.ts';
+import { FOGGED_FIGHT } from './Fog.tsx';
 
 const TEAM = ['#3a8cff', '#ff4040'];
 const FOGGED = ['starting', 'deploying', 'locking'];
@@ -28,7 +29,14 @@ function Unit({ index }: { index: number }) {
   const g = useRef<Group>(null), bar = useRef<Group>(null), sink = useRef<Group>(null);
   const info = useBattle((s) => s.curr?.units[index]);
   const nth = useBattle((s) => s.curr?.units.slice(0, index).filter((u) => u.team === s.curr!.units[index].team && u.cls === s.curr!.units[index].cls).length ?? 0);
-  const hidden = useBattle((s) => info?.team === 1 && FOGGED.includes(s.phase)); // fog while deploying
+  // Red is hidden while deploying, and during the fight unless Blue's vision sees it
+  const hidden = useBattle((s) => {
+    const u = s.curr?.units[index];
+    if (!u || u.team !== 1) return false;
+    if (FOGGED.includes(s.phase)) return true;
+    return s.fogOn && FOGGED_FIGHT.includes(s.phase) && !(u.flags & UF.seen);
+  });
+  const selected = useBattle((s) => s.selected === index);
   const draggable = useBattle((s) => info?.team === 0 && s.phase === 'deploying');
   const [ch, setCh] = useState<Character>();
   const anim = useRef({ name: 'Sword_Idle', flags: 0, deadAt: 0 });
@@ -86,15 +94,21 @@ function Unit({ index }: { index: number }) {
     ch.mixer.update(delta * speed);
   });
 
-  if (!info || hidden) return null;
+  if (!info) return null;
   const dead = !!(info.flags & UF.dead);
   const grab = (e: ThreeEvent<PointerEvent>) => {
     if (!draggable) return;
     e.stopPropagation();
     useBattle.getState().beginDrag(index, { x: e.point.x, z: e.point.z });
   };
+  const pick = (e: ThreeEvent<MouseEvent>) => {
+    if (draggable || hidden) return;
+    e.stopPropagation();
+    useBattle.getState().select(index);
+  };
+  // hidden units stay mounted (their animation keeps its state), just invisible
   return (
-    <group ref={g} onPointerDown={grab}
+    <group ref={g} visible={!hidden} onPointerDown={grab} onClick={pick}
       onPointerOver={() => { if (draggable) document.body.style.cursor = 'grab'; }}
       onPointerOut={() => { document.body.style.cursor = ''; }}>
       <group ref={sink}>
@@ -105,7 +119,10 @@ function Unit({ index }: { index: number }) {
           </mesh>
         )}
       </group>
-      {!dead && <>
+      {selected && !hidden && (
+        <mesh position-y={0.04} rotation-x={-Math.PI / 2}><ringGeometry args={[0.55, 0.66, 32]} /><meshBasicMaterial color="#ffd23f" /></mesh>
+      )}
+      {!dead && !hidden && <>
         <mesh position-y={0.03} rotation-x={-Math.PI / 2}>
           <ringGeometry args={[0.4, 0.5, 28]} />
           <meshBasicMaterial color={TEAM[info.team]} transparent opacity={0.85} depthWrite={false} />

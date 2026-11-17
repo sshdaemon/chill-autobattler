@@ -30,7 +30,19 @@ A **run** is a chain of matches. You keep playing while you keep winning, and th
 
 1. **Choose your army.** Pick 5 units from the warrior, archer and mage cards. Each card shows its stats and how much damage it takes from each class. Your last pick is remembered. Veterans from earlier matches are already in, shown in gold with their ★, and can't be dismissed.
 2. **Deploy (15 s).** The server issues a battle and you see its map. Red is hidden under fog. Pick a formation from the bottom bar (the diagrams show your actual mix), or drag your units anywhere inside the blue zone. **Ready** starts early.
-3. **Fight.** Your deployment is locked with the server, which only then reveals the combat seed. After a "Fight!" banner, the armies fight on their own. The dev panel (top right) sets 1×/2×/4× speed.
+3. **Fight.** Your deployment is locked with the server, which only then reveals the combat seed. After a "Fight!" banner, the armies fight on their own.
+   - **Fog of war:** you only see what your units see. The sight rules come from the sim, so rocks and trees block your view.
+   - **Portraits** run along the bottom: yours on the left, Red's on the right, with "?" for enemies out of sight. Click one (or a unit) for its info panel, which shows status, kills, damage and skills.
+   - The dev panel (top right) sets 1×/2×/4× speed.
+
+   | Key | Does |
+   |---|---|
+   | WASD / arrows / screen edge | Pan the camera |
+   | Mouse wheel | Zoom |
+   | F | Follow the selected unit |
+   | Space | Jump to the selected unit |
+   | Double-click a portrait | Jump to that unit |
+   | V | Toggle fog of war (debug) |
 4. **Result.** Victory, Defeat or Draw, with survivors. The battle is verified with the server automatically.
    - **After a win:** +100 points, plus 10 per survivor. Every survivor becomes a veteran and learns one new skill of its class, up to 5. Then **Next match**. Red gets as many skills in total as your veterans have.
    - **After a loss or draw:** **Run over**, with the top-10 scoreboard (your runs highlighted) and **New run**.

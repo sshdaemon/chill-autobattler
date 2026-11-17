@@ -4,12 +4,12 @@ package sim
 // The browser reads it as an Int32Array; keep web/src/sim/snapshot.ts in sync.
 //
 //	header: tick, result, nUnits, nShots, nEvents
-//	unit:   team, class, x, z, faceX, faceZ, hp, maxHp, flags, target, skills
+//	unit:   team, class, x, z, faceX, faceZ, hp, maxHp, flags, target, skills, kills, dealt
 //	shot:   flags, startX, startZ, aimX, aimZ, t, dur, victim
 //	event:  kind, unit, other, amount, flags
 const (
 	SnapHeader = 5
-	SnapUnit   = 11
+	SnapUnit   = 13
 	SnapShot   = 8
 	SnapEvent  = 5
 )
@@ -24,6 +24,7 @@ const (
 	UFKiting
 	UFDashing
 	UFStaggered
+	UFSeen // Blue's team vision sees this unit (Blue's own units always)
 )
 
 // Shot flags in a snapshot.
@@ -45,13 +46,14 @@ func (b *Battle) Snapshot() []int32 {
 		}{
 			{u.Dead, UFDead}, {u.Moving(), UFMoving}, {u.swing != nil, UFSwinging}, {u.Wet, UFWet},
 			{u.slow > 0, UFSlowed}, {u.Kiting, UFKiting}, {u.dash != nil, UFDashing}, {u.busy > 0, UFStaggered},
+			{b.SeenBy(0, u), UFSeen},
 		} {
 			if bit.on {
 				f |= bit.flag
 			}
 		}
 		out = append(out, int32(u.Team), int32(u.Class), int32(u.Pos.X), int32(u.Pos.Z), int32(u.Face.X), int32(u.Face.Z),
-			int32(u.HP), int32(u.MaxHP), f, int32(u.Target), int32(len(u.Skills)))
+			int32(u.HP), int32(u.MaxHP), f, int32(u.Target), int32(len(u.Skills)), int32(u.Kills), int32(u.Dealt))
 	}
 	for _, s := range b.Shots {
 		var f int32

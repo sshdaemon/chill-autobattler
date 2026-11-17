@@ -8,6 +8,7 @@
 //	chillSim.map(): Uint8Array             obstacles (Int32 LE: kind, x, z, r)
 //	chillSim.step(n): Uint8Array           advance n ticks, return a snapshot (see sim/snapshot.go)
 //	chillSim.outcome(): Uint8Array         protobuf chill.v1.BattleOutcome
+//	chillSim.fog(): Uint8Array            Blue's visible grid cells (56×56, row = z cell), for fog of war
 //	chillSim.data(): string                balance data as JSON (stats, matchups, skills), for the UI
 //	chillSim.formationSlots(f, classes)    Blue's preset positions (Int32 LE x, z per unit, raw fixed-point);
 //	                                       f is a sim.Formation (1..7), classes are sim.Class values (0..2)
@@ -160,6 +161,19 @@ func register() {
 	api.Set("step", js.FuncOf(step))
 	api.Set("outcome", js.FuncOf(outcome))
 	api.Set("data", js.FuncOf(func(js.Value, []js.Value) any { return dataJSON() }))
+	api.Set("fog", js.FuncOf(func(js.Value, []js.Value) any {
+		if battle == nil {
+			return js.Null()
+		}
+		seen := battle.SeenCells(0)
+		b := make([]byte, len(seen))
+		for i, s := range seen {
+			if s {
+				b[i] = 1
+			}
+		}
+		return bytesToJS(b)
+	}))
 	api.Set("formationSlots", js.FuncOf(formationSlots))
 	api.Set("map", js.FuncOf(func(js.Value, []js.Value) any {
 		if battle == nil {

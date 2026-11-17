@@ -46,7 +46,16 @@ type State = {
   picks: Record<number, Skill>; // veteran index → chosen skill
   error?: string;
   floats: Float[];
+  fog?: Uint8Array; // Blue's visible cells (from the sim)
+  fogOn: boolean;
+  selected?: number; // unit index
+  follow: boolean; // camera follows the selected unit
+  centerOn?: { index: number; n: number }; // a request for the camera to jump to a unit
   init(): Promise<void>;
+  select(i?: number): void;
+  center(i: number): void;
+  toggleFog(): void;
+  toggleFollow(): void;
   newRun(): Promise<void>;
   setCount(cls: number, delta: number): void;
   toDeploy(): Promise<void>;
@@ -160,7 +169,7 @@ export const useBattle = create<State>((set, get) => {
     if (!b) return toPicker(run);
     const battle: Battle = { id: b.battleId, seed: b.seed, redSkillCount: b.redSkillCount };
     if (b.locked) { // replay the locked battle from tick 0, then verify it
-      set({ run, battle: { ...battle, combatSeed: b.combatSeed, lockedBlue: b.blue } });
+      set({ run, battle: { ...battle, combatSeed: b.combatSeed, lockedBlue: b.blue }, fog: undefined, selected: undefined });
       return fight(b.combatSeed);
     }
     set({ run, battle, counts: pickerCounts(run), formation: 2, positions: undefined, phase: 'deploying' });
@@ -171,7 +180,12 @@ export const useBattle = create<State>((set, get) => {
 
   return {
     phase: 'loading', counts: savedCounts(), formation: 2 /* 3-2 */, slots: {}, deployLeft: DEPLOY_SECONDS,
-    obstacles: [], currAt: 0, speed: 1, floats: [], picks: {},
+    obstacles: [], currAt: 0, speed: 1, floats: [], picks: {}, fogOn: true, follow: false,
+
+    select(selected) { set({ selected, follow: selected === undefined ? false : get().follow }); },
+    center(index) { set({ selected: index, centerOn: { index, n: (get().centerOn?.n ?? 0) + 1 } }); },
+    toggleFog() { set({ fogOn: !get().fogOn }); },
+    toggleFollow() { if (get().selected !== undefined) set({ follow: !get().follow }); },
 
     async init() {
       try {
@@ -207,7 +221,7 @@ export const useBattle = create<State>((set, get) => {
       if (!version || !run) return;
       try { localStorage.setItem('army', JSON.stringify(counts)); } catch { /* storage blocked */ }
       send({ type: 'slots', classes: armyClasses(get()) });
-      set({ phase: 'starting', error: undefined, outcome: undefined, verdict: undefined, floats: [], positions: undefined,
+      set({ phase: 'starting', error: undefined, outcome: undefined, verdict: undefined, floats: [], positions: undefined, fog: undefined, selected: undefined, follow: false,
         formation: get().formation === CUSTOM ? 2 : get().formation, curr: undefined, prev: undefined });
       try {
         const st = await authed(() => battleApi.startBattle({ simVersion: version, runId: run.id }));
@@ -326,6 +340,7 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
       void useBattle.getState().init();
       break;
     case 'slots': useBattle.setState({ slots: m.slots }); break;
+    case 'fog': useBattle.setState({ fog: new Uint8Array(m.seen) }); break;
     case 'error': useBattle.setState({ error: m.message }); break;
     case 'started': {
       const s = decodeSnapshot(m.snapshot);
