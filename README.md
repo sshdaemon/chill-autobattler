@@ -22,6 +22,7 @@ pnpm gen        # protobuf → pb/ (Go) and web/src/gen/ (TypeScript)
 pnpm server     # only the Go fairness server on :8080
 pnpm dev        # only the web app (rebuilds sim.wasm first)
 pnpm test       # Go tests natively and under WASM, TS typecheck
+pnpm balance    # batch-simulate ~160k seeded battles → docs/balance-report.md (about 2.5 min)
 ```
 
 ### How to play
@@ -215,6 +216,7 @@ The renderer drives each character's animation purely from the sim's snapshot fl
 - **Spec first.** Larger changes start as an OpenSpec change: a proposal, delta specs, a design and tasks in `openspec/changes/<name>/`. They are implemented task by task, then archived into `openspec/specs/`. Project-wide constraints for agents are in `openspec/config.yaml`.
 - **One PR per change.** Every change lands as a pull request.
 - **Changing a rule** means changing `sim/data.go` or the logic, bumping `sim.Version`, then running `go test ./sim -run TestGoldenReplays -update` and reviewing the outcome changes in the diff.
+- **Balance changes** come with numbers: run `pnpm balance` before and after, and show the difference in the PR. [`docs/balance-findings.md`](docs/balance-findings.md) explains the current numbers.
 - **Changing the wire format** means editing `proto/chill/v1/battle.proto`, then running `pnpm gen && pnpm lint:proto`.
 - **Changing the database** means adding a new numbered file in `server/store/migrations/` (never editing an applied one) and/or editing `queries.sql`, then running `go generate ./server/store`. `store.Open` applies the migrations above `PRAGMA user_version` at startup.
 - **Snapshot layout** is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync.

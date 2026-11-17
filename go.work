@@ -4,5 +4,6 @@ use (
 	./pb
 	./server
 	./sim
+	./tools/balance
 	./wasm
 )
