@@ -8,7 +8,7 @@ import "hash/fnv"
 
 // Version must change whenever the rules change, so old replays are checked
 // with the logic that produced them.
-const Version = "0.2.0"
+const Version = "0.3.0"
 
 type Result int8
 
@@ -37,7 +37,7 @@ func New(in Input) (*Battle, error) {
 	if err := in.Validate(); err != nil {
 		return nil, err
 	}
-	b := &Battle{Input: in, Map: NewMap(GenerateObstacles(in.Seed)), rng: Sub(in.Seed, StreamCombat)}
+	b := &Battle{Input: in, Map: NewMap(GenerateObstacles(in.Seed)), rng: Sub(in.CombatSeed, StreamCombat)}
 	red := in.Red
 	if len(red.Units) == 0 {
 		red = RedArmy(in.Seed, in.RedSkills)

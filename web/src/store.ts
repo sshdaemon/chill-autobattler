@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { create as createMsg, toBinary, fromBinary } from '@bufbuild/protobuf';
 import {
-  BattleInputSchema, BattleOutcomeSchema, Formation, UnitClass, type BattleInput, type BattleOutcome,
+  ArmySchema, BattleInputSchema, BattleOutcomeSchema, Formation, UnitClass,
+  type Army, type BattleOutcome, type StartBattleResponse,
 } from './gen/chill/v1/battle_pb.ts';
 import { decodeMap, decodeSnapshot, type Obstacle, type SimEvent, type Snapshot } from './sim/snapshot.ts';
 import type { FromWorker, ToWorker } from './sim/sim.worker.ts';
@@ -11,9 +12,17 @@ export const TICK_MS = 50;
 
 export type Float = { id: number; x: number; z: number; text: string; color: string; born: number };
 
+// idle → (New map) deploying → (Fight) fighting → done → (Verify)
+export type Phase = 'idle' | 'starting' | 'deploying' | 'locking' | 'fighting' | 'done';
+
 type State = {
   version?: string;
-  input?: BattleInput;
+  phase: Phase;
+  battle?: StartBattleResponse; // issued by the server
+  combatSeed?: bigint; // revealed by LockDeployment
+  formation: Formation;
+  classes: UnitClass[];
+  redSkills: number;
   obstacles: Obstacle[];
   prev?: Snapshot; curr?: Snapshot; currAt: number; // two latest snapshots, for interpolation
   speed: number;
@@ -21,7 +30,10 @@ type State = {
   verdict?: string;
   error?: string;
   floats: Float[];
-  start(cfg: { seed: bigint; formation: Formation; classes: UnitClass[]; redSkills: number }): void;
+  newMap(): Promise<void>;
+  setArmy(a: { formation?: Formation; classes?: UnitClass[] }): void;
+  setRedSkills(n: number): void;
+  fight(): Promise<void>;
   setSpeed(s: number): void;
   verify(): Promise<void>;
 };
@@ -30,28 +42,64 @@ const worker = new Worker(new URL('./sim/sim.worker.ts', import.meta.url), { typ
 const send = (m: ToWorker, transfer: Transferable[] = []) => worker.postMessage(m, transfer);
 let floatId = 0;
 
+const blueArmy = (s: State): Army => createMsg(ArmySchema, { formation: s.formation, units: s.classes.map((unitClass) => ({ unitClass })) });
+
+// The input the browser plays: what the server issued plus Blue's army.
+// Before locking, the combat seed is unknown; previews use 0, which only
+// changes combat rolls, never the map or the starting positions.
+function inputBytes(s: State, combatSeed: bigint) {
+  const b = s.battle!;
+  return toBinary(BattleInputSchema, createMsg(BattleInputSchema, {
+    simVersion: s.version, seed: b.seed, redSkillCount: b.redSkillCount, combatSeed, blue: blueArmy(s),
+  }));
+}
+
+const errMsg = (e: unknown) => (e as Error).message;
+
 export const useBattle = create<State>((set, get) => ({
+  phase: 'idle', formation: Formation.FORMATION_3_2, redSkills: 0,
+  classes: [UnitClass.WARRIOR, UnitClass.WARRIOR, UnitClass.ARCHER, UnitClass.ARCHER, UnitClass.MAGE],
   obstacles: [], currAt: 0, speed: 1, floats: [],
-  start({ seed, formation, classes, redSkills }) {
-    const version = get().version;
+
+  async newMap() {
+    const { version, redSkills } = get();
     if (!version) return;
-    const input = createMsg(BattleInputSchema, {
-      simVersion: version, seed, redSkillCount: redSkills,
-      blue: { formation, units: classes.map((unitClass) => ({ unitClass })) },
-    });
-    set({ input, outcome: undefined, verdict: undefined, error: undefined, prev: undefined, curr: undefined, floats: [] });
-    send({ type: 'start', input: toBinary(BattleInputSchema, input) });
+    set({ phase: 'starting', error: undefined, outcome: undefined, verdict: undefined, combatSeed: undefined, floats: [] });
+    try {
+      const battle = await battleApi.startBattle({ simVersion: version, redSkillCount: redSkills });
+      set({ battle, phase: 'deploying' });
+      send({ type: 'preview', input: inputBytes(get(), 0n) });
+    } catch (e) {
+      set({ phase: 'idle', error: `StartBattle: ${errMsg(e)}` });
+    }
+  },
+  setArmy(a) {
+    set(a);
+    if (get().phase === 'deploying') send({ type: 'preview', input: inputBytes(get(), 0n) });
+  },
+  setRedSkills(redSkills) { set({ redSkills }); },
+  async fight() {
+    const s = get();
+    if (s.phase !== 'deploying' || !s.battle) return;
+    set({ phase: 'locking', error: undefined });
+    try {
+      const r = await battleApi.lockDeployment({ battleId: s.battle.battleId, blue: blueArmy(s) });
+      set({ combatSeed: r.combatSeed, phase: 'fighting' });
+      send({ type: 'start', input: inputBytes(get(), r.combatSeed) });
+    } catch (e) {
+      set({ phase: 'deploying', error: `LockDeployment: ${errMsg(e)}` });
+    }
   },
   setSpeed(speed) { set({ speed }); send({ type: 'speed', speed }); },
   async verify() {
-    const { input, outcome } = get();
-    if (!input || !outcome) return;
+    const { battle, outcome } = get();
+    if (!battle || !outcome) return;
     set({ verdict: 'checking…' });
     try {
-      const r = await battleApi.verifyBattle({ input, claimed: outcome });
+      const r = await battleApi.verifyBattle({ battleId: battle.battleId, claimed: outcome });
       set({ verdict: r.fair ? `✅ fair (server checksum ${r.outcome?.checksum})` : `❌ ${r.reason}` });
     } catch (e) {
-      set({ verdict: `⚠️ ${(e as Error).message}` });
+      set({ verdict: `⚠️ ${errMsg(e)}` });
     }
   },
 }));
@@ -90,7 +138,7 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
       break;
     }
     case 'done':
-      useBattle.setState({ outcome: fromBinary(BattleOutcomeSchema, m.outcome) });
+      useBattle.setState({ outcome: fromBinary(BattleOutcomeSchema, m.outcome), phase: 'done' });
       setTimeout(() => useBattle.setState({ floats: [] }), 1200); // let the last numbers fade
       break;
   }

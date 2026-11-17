@@ -18,7 +18,7 @@ func Input(in *chillv1.BattleInput) (sim.Input, error) {
 	if in.RedSkillCount > sim.ArmySize*sim.MaxSkills {
 		return sim.Input{}, fmt.Errorf("%w: red skill count %d out of range", sim.ErrInvalid, in.RedSkillCount)
 	}
-	out := sim.Input{Version: in.SimVersion, Seed: in.Seed, RedSkills: int(in.RedSkillCount)}
+	out := sim.Input{Version: in.SimVersion, Seed: in.Seed, CombatSeed: in.CombatSeed, RedSkills: int(in.RedSkillCount)}
 	var err error
 	if out.Blue, err = army(in.Blue, "blue", true); err != nil {
 		return sim.Input{}, err

@@ -1,6 +1,5 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useState } from 'react';
 import { Formation, UnitClass } from './gen/chill/v1/battle_pb.ts';
 import { useBattle } from './store.ts';
 import { RESULT, UF } from './sim/snapshot.ts';
@@ -17,35 +16,34 @@ const CLASSES: [UnitClass, string][] = [[UnitClass.WARRIOR, '⚔️'], [UnitClas
 const RESULT_TEXT = { [RESULT.blue]: 'Blue wins', [RESULT.red]: 'Red wins', [RESULT.draw]: 'Draw' } as Record<number, string>;
 
 function Hud() {
-  const { version, curr, outcome, verdict, error, speed, start, setSpeed, verify } = useBattle();
-  const [seed, setSeed] = useState(() => String(Math.floor(Math.random() * 1e6)));
-  const [formation, setFormation] = useState(Formation.FORMATION_3_2);
-  const [classes, setClasses] = useState([UnitClass.WARRIOR, UnitClass.WARRIOR, UnitClass.ARCHER, UnitClass.ARCHER, UnitClass.MAGE]);
-  const [redSkills, setRedSkills] = useState(0);
+  const { version, phase, battle, curr, outcome, verdict, error, speed, formation, classes, redSkills,
+    newMap, setArmy, setRedSkills, fight, setSpeed, verify } = useBattle();
   const alive = (team: number) => curr?.units.filter((u) => u.team === team && !(u.flags & UF.dead)).length ?? 0;
-  const go = () => start({ seed: BigInt(seed || '0'), formation, classes, redSkills });
+  const deploying = phase === 'deploying';
+  const busy = phase === 'starting' || phase === 'locking' || phase === 'fighting';
 
   return (
     <div className="hud">
       <b>Chill Autobattler</b> <span className="dim">sim {version ?? 'loading…'} · debug viewer</span>
       <div className="row">
-        <label>Seed <input value={seed} onChange={(e) => setSeed(e.target.value.replace(/\D/g, ''))} size={8} /></label>
-        <button onClick={() => setSeed(String(Math.floor(Math.random() * 1e6)))}>🎲</button>
-        <label>Red ★ <input type="number" min={0} max={25} value={redSkills} onChange={(e) => setRedSkills(+e.target.value)} style={{ width: 44 }} /></label>
+        <button className={phase === 'idle' || phase === 'done' ? 'primary' : ''} disabled={!version || busy} onClick={newMap}>🗺 New map</button>
+        <label>Red ★ <input type="number" min={0} max={25} value={redSkills} disabled={busy} onChange={(e) => setRedSkills(+e.target.value)} style={{ width: 44 }} /></label>
+        {battle && <span className="dim" title={battle.battleId}>map #{String(battle.seed).slice(0, 6)}…</span>}
       </div>
       <div className="row">
         Blue {classes.map((c, i) => (
-          <button key={i} title="click to change class" onClick={() => setClasses(classes.map((x, j) => (j === i ? ((x % 3) + 1) as UnitClass : x)))}>
+          <button key={i} title="click to change class" disabled={busy} onClick={() => setArmy({ classes: classes.map((x, j) => (j === i ? ((x % 3) + 1) as UnitClass : x)) })}>
             {CLASSES.find(([k]) => k === c)?.[1]}
           </button>
         ))}
-        <select value={formation} onChange={(e) => setFormation(+e.target.value)}>
+        <select value={formation} disabled={busy} onChange={(e) => setArmy({ formation: +e.target.value })}>
           {FORMATIONS.map(([f, n]) => <option key={f} value={f}>{n}</option>)}
         </select>
       </div>
       <div className="row">
-        <button className="primary" disabled={!version} onClick={go}>▶ Fight</button>
+        <button className={deploying ? 'primary' : ''} disabled={!deploying} onClick={fight}>▶ Fight</button>
         {[1, 2, 4].map((s) => <button key={s} className={speed === s ? 'on' : ''} onClick={() => setSpeed(s)}>{s}×</button>)}
+        <span className="dim">{{ idle: 'press New map', starting: 'starting…', deploying: 'deploying: pick a formation', locking: 'locking…', fighting: 'fighting', done: 'done' }[phase]}</span>
       </div>
       {curr && (
         <div className="row" data-testid="status">

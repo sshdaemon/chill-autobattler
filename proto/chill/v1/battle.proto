@@ -2,9 +2,15 @@ syntax = "proto3";
 
 package chill.v1;
 
-// The server never drives a battle. The client plays it locally (sim in WASM)
-// and the server re-runs it afterwards to check the claimed outcome.
+// The server never drives a battle. It issues one (seeds), takes the player's
+// army before revealing the combat seed, and afterwards re-runs the battle to
+// check the outcome the client claims. The client plays it locally (sim in WASM).
 service BattleService {
+  // Creates a battle: returns its id and map seed (not the combat seed).
+  rpc StartBattle(StartBattleRequest) returns (StartBattleResponse);
+  // Commits Blue's army (once, before the deploy deadline) and reveals the combat seed.
+  rpc LockDeployment(LockDeploymentRequest) returns (LockDeploymentResponse);
+  // Re-runs the stored battle and judges the claim. The first verdict is final.
   rpc VerifyBattle(VerifyBattleRequest) returns (VerifyBattleResponse);
 }
 
@@ -62,15 +68,18 @@ message Army {
   repeated UnitSpec units = 2;
 }
 
-// Everything that decides a battle.
+// Everything that decides a battle. The client assembles it from what the
+// server issued; the server rebuilds it from what it stored.
 message BattleInput {
   string sim_version = 1;
-  // TODO(next change): issued by the server before the battle.
+  // Map seed: the map and a generated Red army. Public from StartBattle.
   uint64 seed = 2;
   Army blue = 3;
   // Empty: Red's army, formation and red_skill_count skills come from the seed.
   Army red = 4;
   uint32 red_skill_count = 5;
+  // Every combat roll. Revealed by LockDeployment.
+  uint64 combat_seed = 6;
 }
 
 enum BattleResult {
@@ -93,8 +102,33 @@ message BattleOutcome {
   uint64 checksum = 4;
 }
 
+message StartBattleRequest {
+  string sim_version = 1;
+  // Red's total skills. Client-chosen until runs exist.
+  uint32 red_skill_count = 2;
+}
+
+message StartBattleResponse {
+  string battle_id = 1;
+  uint64 seed = 2; // map seed
+  uint32 red_skill_count = 3;
+  // Unix milliseconds.
+  int64 deploy_deadline_ms = 4;
+}
+
+message LockDeploymentRequest {
+  string battle_id = 1;
+  Army blue = 2;
+}
+
+message LockDeploymentResponse {
+  uint64 combat_seed = 1;
+  // Unix milliseconds.
+  int64 verify_deadline_ms = 2;
+}
+
 message VerifyBattleRequest {
-  BattleInput input = 1;
+  string battle_id = 1;
   // What the client says happened.
   BattleOutcome claimed = 2;
 }
