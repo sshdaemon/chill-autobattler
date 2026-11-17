@@ -34,4 +34,6 @@ Golden replays (`sim/testdata/golden.json`):
 
 The snapshot layout is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync; `TestSnapshotLayout` pins it.
 
+Fog of war comes from the sim: `Battle.SeenCells` (exported by `wasm fog()`) and the snapshot's `UFSeen` flag. Never re-implement vision in TS. The camera is `scene/RtsCamera.tsx`; portraits are `scene/portraits.ts` and `ui/Portraits.tsx`.
+
 Units are rendered by `web/src/scene/models.ts` + `Units.tsx`: baked Quaternius looks per class and team, animated from snapshot flags. Re-bake with `tools/blender/bake_units.py`, then pack with `tools/assets/pack_units.py`.

@@ -9,6 +9,7 @@ type SimApi = {
   outcome(): Uint8Array;
   data(): string;
   formationSlots(formation: number, classes: number[]): Uint8Array | null;
+  fog(): Uint8Array | null;
 };
 // preview: set the battle up and show tick 0 (deployment) without playing it
 export type ToWorker =
@@ -21,6 +22,7 @@ export type FromWorker =
   | { type: 'slots'; slots: Record<number, { x: number; z: number }[]> } // keyed by sim formation (1..7)
   | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer }
   | { type: 'snapshot'; snapshot: ArrayBuffer }
+  | { type: 'fog'; seen: ArrayBuffer } // Blue's visible cells, 56×56, every 2 ticks
   | { type: 'done'; outcome: Uint8Array }
   | { type: 'error'; message: string };
 
@@ -45,7 +47,8 @@ function loop(sim: SimApi) {
   clearInterval(timer);
   timer = setInterval(() => {
     const snap = buf(sim.step(1));
-    const finished = new Int32Array(snap, 4, 1)[0] !== 0; // header: tick, result, ...
+    const header = new Int32Array(snap, 0, 2), finished = header[1] !== 0; // header: tick, result, ...
+    if (header[0] % 2 === 0 || finished) { const f = sim.fog(); if (f) { const seen = buf(f); post({ type: 'fog', seen }, [seen]); } }
     post({ type: 'snapshot', snapshot: snap }, [snap]); // transfers (detaches) snap
     if (finished) {
       clearInterval(timer);

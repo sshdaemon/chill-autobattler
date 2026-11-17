@@ -60,6 +60,23 @@
       table.board tr.mine { background: #fff1c2; font-weight: 600; }
       .result.run-over h1 { color: #d83a3a; }
       .stars { color: #ffd23f; font: 700 13px system-ui; text-shadow: 0 0 3px #000, 0 0 3px #000; letter-spacing: -1px; white-space: nowrap; }
+      .portraits { position: fixed; bottom: 10px; display: flex; gap: 4px; z-index: 6; }
+      .portraits.blue { left: 10px; } .portraits.red { right: 10px; flex-direction: row-reverse; }
+      .card { position: relative; width: 62px; background: #0b1420cc; border: 2px solid #3a8cff; border-radius: 8px; padding: 3px; color: #fff; cursor: pointer; text-align: center; }
+      .card.t1 { border-color: #ff4040; } .card.sel { box-shadow: 0 0 0 2px #ffd23f; }
+      .card img, .card .ph { width: 56px; height: 56px; border-radius: 5px; display: grid; place-items: center; font-size: 28px; background: #233; object-fit: cover; }
+      .card.dead img, .card.dead .ph { filter: grayscale(1) brightness(.5); }
+      .card .cross { position: absolute; top: 18px; left: 0; right: 0; font-size: 26px; color: #ddd; text-shadow: 0 0 4px #000; }
+      .card .vet { position: absolute; top: -9px; left: 0; right: 0; color: #ffd23f; font-size: 11px; text-shadow: 0 0 3px #000; letter-spacing: -1px; }
+      .card .bar { height: 5px; background: #222; border-radius: 3px; margin-top: 3px; overflow: hidden; } .card .bar i { display: block; height: 100%; background: #3a8cff; }
+      .card.t1 .bar i { background: #ff4040; } .card .num { font-size: 11px; font-variant-numeric: tabular-nums; }
+      .info { position: fixed; left: 10px; bottom: 112px; width: 280px; background: #fffe; border-radius: 10px; padding: 10px 12px; box-shadow: 0 4px 16px #0003; z-index: 6; font-size: 12px; }
+      .info .x { position: absolute; top: 4px; right: 6px; border: 0; background: none; font-size: 18px; }
+      .info .title { font-size: 15px; font-weight: 700; } .info .vetstars { color: #c99a1e; }
+      .info .hp { position: relative; height: 14px; background: #ddd; border-radius: 7px; margin: 6px 0; overflow: hidden; }
+      .info .hp i { display: block; height: 100%; background: #4caf50; } .info .hp span { position: absolute; inset: 0; text-align: center; font-size: 10px; line-height: 14px; }
+      .info .st { font-weight: 600; margin-bottom: 4px; } .info table { width: 100%; border-collapse: collapse; } .info td:nth-child(2n) { text-align: right; padding-right: 8px; font-variant-numeric: tabular-nums; }
+      .info .takes, .info .skills { margin-top: 4px; } .info .keys { margin-top: 6px; font-size: 10px; }
       .float { font: bold 16px system-ui; text-shadow: 0 0 3px #000, 0 0 3px #000; white-space: nowrap; animation: rise 1s linear forwards; }
       @keyframes rise { from { transform: translateY(0); opacity: 1 } to { transform: translateY(-28px); opacity: 0 } }
     </style>
