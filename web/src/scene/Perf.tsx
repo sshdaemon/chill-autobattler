@@ -10,7 +10,20 @@ function FpsCounter() {
   const gl = useThree((s) => s.gl), scene = useThree((s) => s.scene), camera = useThree((s) => s.camera);
   // dev only: ms per frame rendered directly, independent of the page's frame loop
   // (embedded and background panes throttle requestAnimationFrame)
-  if (import.meta.env.DEV) Object.assign(window, { benchScene: scene });
+  const advance = useThree((s) => s.advance);
+  if (import.meta.env.DEV) Object.assign(window, {
+    benchScene: scene,
+    battle: useBattle,
+    // ms per full frame (frame loop subscribers, so post-processing too), synced with the GPU
+    benchFrame: (n = 20) => {
+      const ctx = gl.getContext(), px = new Uint8Array(4);
+      const sync = () => ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, px);
+      advance(performance.now()); sync();
+      const t = performance.now();
+      for (let i = 0; i < n; i++) { advance(performance.now()); sync(); }
+      return (performance.now() - t) / n;
+    },
+  });
   if (import.meta.env.DEV) (window as unknown as { benchRender: (n?: number) => number }).benchRender = (n = 20) => {
     const ctx = gl.getContext(), px = new Uint8Array(4);
     const sync = () => ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, px); // waits for the GPU

@@ -5,9 +5,10 @@ import type { DirectionalLight } from 'three';
 import { useBattle } from '../store.ts';
 import { camView } from './RtsCamera.tsx';
 
-// Late-afternoon sun, from the south-west; the sky and the image-based
+// Mid-afternoon sun from the south-west, high enough that trees don't throw
+// long shadows across the field; the sky and the image-based
 // lighting are generated in code (no HDRI download).
-const SUN = { x: -0.45, y: 0.62, z: 0.64 };
+const SUN = { x: -0.42, y: 0.95, z: 0.55 };
 const SHADOW_HALF = 14, SHADOW_MAP = 2048, TEXEL = (2 * SHADOW_HALF) / SHADOW_MAP;
 
 export function Lighting() {
@@ -42,7 +43,7 @@ export function Lighting() {
       )}
       {high && <hemisphereLight args={['#d4e4f5', '#3a4a2c', 0.25]} />}
       <directionalLight ref={sun} color="#fff2dd" intensity={high ? 2.3 : 2.0} castShadow
-        shadow-mapSize={[high ? SHADOW_MAP : 1024, high ? SHADOW_MAP : 1024]} shadow-bias={-0.0004} shadow-normalBias={0.03} shadow-radius={high ? 4 : 1} shadow-blurSamples={high ? 12 : 4}
+        shadow-intensity={0.75} shadow-mapSize={[high ? SHADOW_MAP : 1024, high ? SHADOW_MAP : 1024]} shadow-bias={-0.0004} shadow-normalBias={0.03} shadow-radius={high ? 4 : 1} shadow-blurSamples={high ? 12 : 4}
         shadow-camera-left={-SHADOW_HALF} shadow-camera-right={SHADOW_HALF} shadow-camera-top={SHADOW_HALF} shadow-camera-bottom={-SHADOW_HALF}
         shadow-camera-near={1} shadow-camera-far={90} />
     </>

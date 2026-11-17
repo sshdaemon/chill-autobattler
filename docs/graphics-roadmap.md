@@ -20,7 +20,7 @@ The goal is to make battles look **rich and believable without leaving the styli
 - **Sky and lighting:** a code-generated sky with matching image-based lighting, so the characters' materials get proper ambient light and soft highlights. It replaces the flat blue background and the hemisphere light.
 - **Shadows:** soft shadows from a sun whose shadow box follows the camera, so they're sharp where you look instead of spread over the whole arena.
 - **Post-processing** (`@react-three/postprocessing`):
-  - ambient occlusion: contact shadows under units, rocks and trees;
+  - ambient occlusion: tried (N8AO) and dropped in step 2; it cost 8–14 ms per frame on an Apple M3;
   - bloom: mage orbs, bolts, Blink and Frost glow;
   - colour grading and a light vignette;
   - an optional subtle tilt-shift depth of field, for the "battle table" feel.

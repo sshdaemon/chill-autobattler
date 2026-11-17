@@ -92,3 +92,22 @@ A real browser measured 37–46 fps on High. The changes:
 - **Grass:** 9,000 clumps instead of 12,000.
 - **N8AO:** its "performance" quality.
 - **Stepped fallback:** when High runs slow, the game first drops pixel density to 1× and keeps every effect; only if that's still slow does it switch to Low.
+
+### Post-processing was the real cost
+
+GPU timer queries on an Apple M3 at 1536×1152 showed where the time went:
+
+| High, per frame | GPU ms |
+|---|---|
+| Everything on (as after step 1) | 26.4 |
+| without N8AO | 12.5 |
+| without bloom | 17.0 |
+| without MSAA | 21.0 |
+| no post-processing at all | 6.8 |
+
+- **N8AO is dropped.** It costs 8–14 ms even at its lightest settings; the soft sun shadows already ground units and rocks.
+- **Bloom is cheaper:** half resolution and 4 mip levels, about 0.1 ms, with the same glow on magic.
+- **SMAA replaces MSAA.**
+- **Result:** High now costs about 9.6 ms of GPU per frame and Low 6.8 ms, inside the 16.7 ms that 60 fps allows.
+- **The sun is higher** (shorter tree shadows), and shadows are slightly lighter (`shadow.intensity` 0.75).
+- **Profiling hooks (dev only):** `window.benchFrame(n)` and `window.benchRender(n)` time frames directly, independent of the browser's frame loop.

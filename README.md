@@ -36,7 +36,7 @@ A **run** is a chain of matches. You keep playing while you keep winning, and th
    - **Portraits** run along the bottom: yours on the left, Red's on the right, with "?" for enemies out of sight. Click one (or a unit) for its info panel, which shows status, kills, damage and skills.
    - The **minimap** (top right) shows the field under the same fog; click it to move the camera.
    - **Sound effects** are synthesized in the browser. The dev panel (top right) has mute, volume, and 1×/2×/4× speed.
-   - **Graphics quality** (dev panel): High adds image-based lighting, soft shadows, ambient occlusion, bloom, a colour grade and swaying grass; Low keeps plain lighting and no grass. The choice is remembered per browser. If High can't keep up on your machine, the game switches to Low and says so. DoF toggles an experimental tilt-shift blur, and the panel shows the current fps.
+   - **Graphics quality** (dev panel): High adds image-based lighting, soft shadows, bloom, a colour grade, anti-aliasing and swaying grass; Low keeps plain lighting and no grass. The choice is remembered per browser. If High can't keep up on your machine, the game first renders fewer pixels, then switches to Low and says so. DoF toggles an experimental tilt-shift blur, and the panel shows the current fps.
 
    | Key | Does |
    |---|---|
@@ -181,7 +181,7 @@ Pathfinding, steering, spatial queries and the RNG are written by hand in `sim/`
 | [three.js](https://threejs.org) | WebGL rendering |
 | [@react-three/fiber](https://r3f.docs.pmnd.rs) | three.js scenes written as React components (`<mesh>`, `useFrame`) |
 | [@react-three/drei](https://drei.docs.pmnd.rs) | R3F helpers: `Billboard` (health bars), `Html` (floating numbers), `Sky`, `Environment` (lighting from a generated sky), `PerformanceMonitor` |
-| [@react-three/postprocessing](https://react-postprocessing.docs.pmnd.rs) + [postprocessing](https://github.com/pmndrs/postprocessing) | High-quality effects: N8AO ambient occlusion, bloom, colour grading, vignette, tilt-shift |
+| [@react-three/postprocessing](https://react-postprocessing.docs.pmnd.rs) + [postprocessing](https://github.com/pmndrs/postprocessing) | High-quality effects: bloom, colour grading, vignette, SMAA, tilt-shift |
 | [zustand](https://zustand.docs.pmnd.rs) | Small state store between the worker, HUD and scene. The scene reads it with `getState()` inside `useFrame`, so it doesn't re-render React every frame. |
 | [@bufbuild/protobuf](https://github.com/bufbuild/protobuf-es) (protobuf-es v2) | Generated TypeScript types, and binary encode/decode of `BattleInput`/`BattleOutcome` |
 | [@connectrpc/connect](https://connectrpc.com/docs/web/getting-started) + `connect-web` | Typed client for `BattleService` over HTTP |

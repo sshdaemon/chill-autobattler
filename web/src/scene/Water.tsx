@@ -7,7 +7,7 @@ import { alpha, lerp } from './interp.ts';
 import { NOISE_GLSL, POND_GLSL, pondUniforms } from './natureShader.ts';
 
 const ARENA = 28, MAX_WET = 10;
-const SUN = new THREE.Vector3(-0.45, 0.62, 0.64).normalize();
+const SUN = new THREE.Vector3(-0.42, 0.95, 0.55).normalize();
 
 // All ponds as one surface: the shader draws the union of the sim's water
 // circles, so overlapping blobs read as one pond. A soft shore, moving
