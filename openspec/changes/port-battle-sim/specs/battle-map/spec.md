@@ -19,7 +19,7 @@ The obstacles SHALL be generated only from the battle seed:
 - 3–6 rocks with radius 0.9–1.9 m.
 - 3–7 trees with radius 0.8 m.
 
-Obstacles SHALL keep 1.6 m clearance from each other and 2 m from the border, and SHALL stay out of the deployment zones.
+Obstacles SHALL keep 1.6 m clearance from each other and 2 m from the border, and SHALL stay out of the middle of each deployment zone (|x| < 6 m, |z| > 7.5 m). Ponds SHALL stay in the middle band (|z| + r < 6.5 m).
 
 #### Scenario: Same seed, same map
 - **WHEN** a map is generated twice from the same seed, natively or in WASM
