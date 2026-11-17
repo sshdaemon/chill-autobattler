@@ -88,7 +88,7 @@ func goldenCases() []struct {
 	pvp.Red = Army{Formation: F1x4, Units: allSkills(Mage, 2)}
 	add("explicit red army", pvp)
 	add("wet map", in(121, Army{Formation: Spread, Units: mix()}, 0))
-	for _, s := range []uint64{74, 427} { // these end with both armies dying on the same tick
+	for _, s := range []uint64{1069, 1710} { // these end with both armies dying on the same tick
 		add("mutual wipe", in(s, Army{Formation: Presets[s%7], Units: mix()}, int(s%6)))
 		cases[len(cases)-1].name += " " + itoa(int(s))
 	}

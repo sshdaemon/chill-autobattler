@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"chill/sim"
@@ -14,8 +15,29 @@ import (
 
 func main() {
 	n := flag.Int("n", 2000, "battles per experiment row")
+	exp := flag.String("exp", "", "only these experiments, comma separated (side,matchups,comps,skills); for quick tuning")
 	flag.Parse()
 	start := time.Now()
+	if *exp != "" { // tuning mode: just the tables asked for
+		for _, e := range strings.Split(*exp, ",") {
+			switch e {
+			case "side":
+				s, _ := SideBias(*n)
+				fmt.Print(s)
+			case "matchups":
+				s, _ := Matchups(*n)
+				fmt.Print(s)
+			case "comps":
+				s, rows := Compositions(*n / 4)
+				fmt.Print(s, Lengths(rows))
+			case "skills":
+				s, _ := Skills(*n * 2)
+				fmt.Print(s)
+			}
+		}
+		fmt.Fprintf(os.Stderr, "done in %s\n", time.Since(start).Round(time.Second))
+		return
+	}
 	side, _ := SideBias(*n)
 	match, _ := Matchups(*n)
 	comp, rows := Compositions(*n / 4)

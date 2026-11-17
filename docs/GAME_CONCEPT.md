@@ -1,6 +1,6 @@
 # Auto-battle: game concept
 
-Status: concept taken from the throwaway prototype in `battle.html` (November 2026).
+Status: concept taken from the throwaway prototype in `battle.html` (November 2026). Numbers updated by balance pass 1 (sim 0.4.0), measured with `pnpm balance`; see `docs/balance-findings.md`.
 Every number here is a prototype value: a starting point for balancing, not a final value.
 
 ## 1. The idea in one paragraph
@@ -39,12 +39,12 @@ New run (random name)
 | | ⚔️ Warrior | 🏹 Archer | ✨ Mage |
 |---|---|---|---|
 | Role | Sturdy melee | Fragile ranged; backs off from melee | Mid-range caster; holds ground |
-| Health | 100 | 45 | 55 |
+| Health | 100 | 55 | 55 |
 | Damage per hit | 10–16 | 9–14 | 14–20 |
 | Attack cooldown | 1.3 s | 1.7 s | 2.2 s |
 | ≈ Base DPS | ~10 | ~6.8 | ~7.7 |
 | Range | 1.5 m | 9 m | 7 m |
-| Speed | 3.2 m/s | 3.4 m/s | 3.0 m/s |
+| Speed | 3.2 m/s | 3.6 m/s | 3.0 m/s |
 | Sight | 7 m | 11 m | 9 m |
 | Attack | Sword swing (hit lands 45% into the animation) | Arrow: arcs, homes in, 18 m/s; a miss sticks in the ground | Magic bolt: straight, homes in, 14 m/s; a miss fizzles |
 | Wind-up | up to the cooldown | 0.6 s | 0.8 s |
@@ -56,15 +56,14 @@ Damage multiplier, **attacker → victim**. It stacks with every other multiplie
 
 | Attacker ↓ / Victim → | Warrior | Archer | Mage |
 |---|---|---|---|
-| ⚔️ Warrior | 100% | **150%** | 100% |
-| 🏹 Archer | **75%** | 100% | **125%** |
-| ✨ Mage | **125%** | **75%** | 100% |
+| ⚔️ Warrior | 100% | **145%** | 95% |
+| 🏹 Archer | 100% | 100% | 100% |
+| ✨ Mage | **135%** | 100% | 100% |
 
 How to read it:
-- Warriors crush archers.
-- Archers counter mages but bounce off warriors.
-- Mages melt warriors but lose to archers.
-- Same-class hits are 100% (an assumption; the original brief didn't specify them).
+- Each counter should win about 65–75% five against five, not 100%. Measured: warriors beat archers 65%, archers beat mages 69%, mages beat warriors 65%.
+- Archers win against mages through range (9 m against 7 m) and kiting, not through a multiplier.
+- Same-class hits are 100%.
 
 ## 5. Combat rules
 
@@ -78,8 +77,8 @@ How to read it:
   - They pick the nearest visible enemy and re-check targets and paths every 0.5 s.
 - **Ranged line of fire:** archers and mages need a clear walkable line to the target, so rocks and trees block shots unless the unit has Arcing shot. Water never blocks shots.
 - **Archer kiting:**
-  - **Trigger:** when a melee enemy comes within 3.5 m, the archer retreats in about 2.5 m steps. Several threats are combined into one escape direction (Yuka's FleeBehavior).
-  - **Limits:** retreats come in **bursts** of at most 1.2 s, followed by at least 2 s standing and shooting. Archers are faster than warriors, so without this limit they would run away forever.
+  - **Trigger:** when a melee enemy comes within 4.5 m, the archer backs away in about 2.5 m steps, **still facing** its attackers, at full speed. Several threats are combined into one escape direction.
+  - **Limits:** retreats come in **bursts** of at most 2 s, followed by at least 1.2 s standing and shooting. Archers are faster than warriors, so without this limit they would run away forever.
   - **Cornered:** a cornered archer stands and shoots.
 - **Movement:**
   - **Pathing:** A* on a 0.5 m grid, with string-pulling for natural paths.
@@ -150,30 +149,30 @@ How to read it:
 
 | Skill | Effect |
 |---|---|
-| ❤️ Toughness | +15% health |
-| 👟 Swift | +25% speed |
-| 💪 Strength | +10% damage |
+| ❤️ Toughness | +10% health |
+| 👟 Swift | +40% speed, and attacks 20% faster |
+| 💪 Strength | +15% damage |
 | 💨 Dash | Rush up to 10 m at an enemy (16 m/s, stops at sword range); 10 s cooldown. Fires when an enemy is between range + 1.5 m and 10 m away with a clear path. |
-| 💀 Executioner | 25% chance per hit to kill outright |
+| 💀 Executioner | 35% chance per hit to kill outright a victim below 40% health |
 
 **🏹 Archer**
 
 | Skill | Effect |
 |---|---|
-| 🎯 Long shot | +10% range |
-| 🏹 Sharp arrows | +15% damage |
-| 🌳 Arcing shot | Shoots over rocks and trees, with a higher arc (the team still has to see the target) |
-| 💀 Headshot | 15% chance per hit to kill outright |
+| 🎯 Long shot | +25% range |
+| 🏹 Sharp arrows | +10% damage |
+| 🌳 Arcing shot | Shoots over rocks and trees, with a higher arc (the team still has to see the target); +10% damage |
+| 💀 Headshot | 25% chance per hit to kill outright a victim below 40% health |
 | ❤️ Toughness | +20% health |
 
 **✨ Mage**
 
 | Skill | Effect |
 |---|---|
-| ❄️ Frost | 50% chance a bolt slows the target by 40% for 3 s (stacks with water) |
-| 🔥 Power | +15% damage |
-| 🌀 Blink | Teleports about 8 m away when a melee enemy gets within 2.5 m; 15 s cooldown |
-| 💥 Blast | Bolts also hit other enemies within 2 m of the target for 50% damage |
+| ❄️ Frost | Every bolt slows the target by 40% for 3 s (stacks with water) |
+| 🔥 Power | +10% damage |
+| 🌀 Blink | Teleports about 8 m away when a melee enemy gets within 2.5 m; 8 s cooldown |
+| 💥 Blast | Bolts also hit other enemies within 2 m of the target for 35% damage |
 | ❤️ Toughness | +20% health |
 
 ### 10.2 Enemy scaling
@@ -229,7 +228,7 @@ Earlier versions tried and dropped:
 ## 14. Open questions and ideas for the real game
 
 **Balance**
-- Executioner (25% per hit) and Headshot (15%) are very strong. Consider lowering them, rolling only against units below some health threshold, or giving them a cooldown.
+- ~~Executioner and Headshot are very strong.~~ Done in balance pass 1: they now only finish off victims below 40% health.
 - Snowballing: a full ★★★★★ army versus random Red skills. Do the classes and skills stay balanced as runs get longer?
 - Red's skills are fully random. Should they counter your army instead (for example more Frost against a warrior-heavy army)?
 - Should healing between matches stay full (as now) or be partial?

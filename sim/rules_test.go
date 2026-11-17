@@ -239,11 +239,12 @@ func TestFlankAndMatchup(t *testing.T) {
 	front, ff := hit(p(0, -10))
 	back, bf := hit(p(0, 10))
 	roll := NewRNG(99).Between(I(10), I(16))
-	if front != roll.Mul(Ratio(3, 2)) || ff != FlagStrong {
-		t.Errorf("front hit %v flags %b, want roll×1.5 = %v", front, ff, roll.Mul(Ratio(3, 2)))
+	m := Matchup[Warrior][Archer]
+	if front != roll.Mul(m) || ff != FlagStrong {
+		t.Errorf("front hit %v flags %b, want roll×%v = %v", front, ff, m, roll.Mul(m))
 	}
-	if back != roll.Mul(I(2)).Mul(Ratio(3, 2)) || bf != FlagFlank|FlagStrong {
-		t.Errorf("flanked hit %v flags %b, want roll×1.5×2", back, bf)
+	if back != roll.Mul(I(2)).Mul(m) || bf != FlagFlank|FlagStrong {
+		t.Errorf("flanked hit %v flags %b, want roll×2×matchup", back, bf)
 	}
 	side, _ := hit(p(10, 0)) // 90° off facing: flank
 	if side != back {
@@ -310,12 +311,15 @@ func TestStatSkills(t *testing.T) {
 		s     Skill
 		check func(Stats) bool
 	}{
-		{Warrior, SkillHealth, func(s Stats) bool { return s.HP == I(115) }},
-		{Archer, SkillHealth, func(s Stats) bool { return s.HP == I(54) }},
+		{Warrior, SkillHealth, func(s Stats) bool { return s.HP == I(110) }},
+		{Archer, SkillHealth, func(s Stats) bool { return s.HP == I(66) }},
 		{Mage, SkillHealth, func(s Stats) bool { return s.HP == I(66) }},
-		{Warrior, SkillSpeed, func(s Stats) bool { return (s.Speed - I(4)).Abs() <= 2 }},
-		{Warrior, SkillDamage, func(s Stats) bool { return s.DmgLo == I(11) && s.DmgHi == Ratio(176, 10) }},
-		{Archer, SkillRange, func(s Stats) bool { return s.Range == Ratio(99, 10) }},
+		{Warrior, SkillSpeed, func(s Stats) bool { // Swift: +40% speed, attacks 20% faster
+			return (s.Speed-Ratio(448, 100)).Abs() <= 2 && s.Cooldown == sec(13)*80/100 && s.SwingTicks == sec(9)*80/100
+		}},
+		{Warrior, SkillDamage, func(s Stats) bool { return s.DmgLo == Ratio(115, 10) && (s.DmgHi-Ratio(184, 10)).Abs() <= 2 }},
+		{Archer, SkillRange, func(s Stats) bool { return s.Range == Ratio(1125, 100) }},
+		{Archer, SkillLob, func(s Stats) bool { return (s.DmgLo - Ratio(99, 10)).Abs() <= 2 }}, // Arcing shot: +10% damage
 	}
 	for _, c := range cases {
 		u := newUnit(0, 0, UnitSpec{Class: c.c, Skills: []Skill{c.s}}, Vec{})
@@ -353,7 +357,7 @@ func TestBlink(t *testing.T) {
 	if m.Pos.Z <= 0 {
 		t.Errorf("blink should go away from the warrior, landed at %v", m.Pos)
 	}
-	if m.blinkCd != 15*TicksPerSecond {
+	if m.blinkCd != 8*TicksPerSecond {
 		t.Errorf("blink cooldown %d", m.blinkCd)
 	}
 }
@@ -378,17 +382,26 @@ func TestLob(t *testing.T) {
 }
 
 func TestExecute(t *testing.T) {
-	kills := 0
-	for seed := uint64(0); seed < 400; seed++ {
-		b := testBattle(nil, tu{0, Warrior, V(0, 0), []Skill{SkillExecute}}, tu{1, Warrior, p(0, -10), nil})
-		b.rng = NewRNG(seed)
-		b.damage(b.Units[0], b.Units[1], V(0, 0), One)
-		if b.Units[1].Dead {
-			kills++
+	kills := func(hpPct int) int {
+		n := 0
+		for seed := uint64(0); seed < 400; seed++ {
+			b := testBattle(nil, tu{0, Warrior, V(0, 0), []Skill{SkillExecute}}, tu{1, Warrior, p(0, -10), nil})
+			v := b.Units[1]
+			v.HP = v.MaxHP.MulDiv(hpPct, 100)
+			v.Face = V(0, One) // facing the attacker: no flank bonus
+			b.rng = NewRNG(seed)
+			b.damage(b.Units[0], v, V(0, 0), One)
+			if v.Dead {
+				n++
+			}
 		}
+		return n
 	}
-	if kills < 70 || kills > 130 { // 25% of 400 = 100
-		t.Errorf("executioner killed %d/400 full-health warriors, want about 100", kills)
+	if k := kills(100); k != 0 {
+		t.Errorf("executioner killed %d/400 full-health warriors; it should only finish off the wounded", k)
+	}
+	if k := kills(38); k < 110 || k > 170 { // below 40%: 35% chance, about 140 (a normal hit can't kill 38 HP)
+		t.Errorf("executioner killed %d/400 warriors at 38%% health, want about 140", k)
 	}
 }
 
@@ -407,8 +420,8 @@ func TestFrostAndBlast(t *testing.T) {
 			splash++
 		}
 	}
-	if slowed < 70 || slowed > 130 {
-		t.Errorf("frost slowed %d/200, want about 100", slowed)
+	if slowed != 200 {
+		t.Errorf("frost slowed %d/200, want every time", slowed)
 	}
 	if splash != 200 {
 		t.Errorf("blast hit the neighbour %d/200 times, want every time", splash)

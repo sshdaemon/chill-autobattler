@@ -80,7 +80,8 @@ func (b *Battle) damage(att, v *Unit, from Vec, scale Fx) {
 	} else if m < One {
 		flags |= FlagWeak
 	}
-	if scale == One && att.Has(SkillExecute) && b.rng.IntN(100) < att.skill(SkillExecute).Pct {
+	// instant kills only finish off the wounded (below ExecuteBelowPct of max health)
+	if scale == One && att.Has(SkillExecute) && v.HP.MulDiv(100, ExecuteBelowPct) <= v.MaxHP && b.rng.IntN(100) < att.skill(SkillExecute).Pct {
 		amount = Max(amount, v.HP)
 		b.emit(Event{Kind: EvExecute, Unit: v.Index, Other: att.Index})
 	}
