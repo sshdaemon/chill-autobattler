@@ -17,7 +17,7 @@ Each unit SHALL be a warrior, archer or mage, with the health, damage range, att
 
 #### Scenario: Toughness
 - **WHEN** a warrior with Toughness spawns
-- **THEN** its health is 115
+- **THEN** its health is 110
 
 ### Requirement: Damage
 A hit SHALL deal a random roll in the attacker's damage range, multiplied by:
@@ -27,7 +27,7 @@ A hit SHALL deal a random roll in the attacker's damage range, multiplied by:
 
 #### Scenario: Flanked archer
 - **WHEN** a warrior hits an archer from behind
-- **THEN** the damage is the roll × 1.5 (matchup) × 2 (flank)
+- **THEN** the damage is the roll × 1.45 (matchup) × 2 (flank)
 
 ### Requirement: Shared team vision and targeting
 A team SHALL see an enemy if any of its living units has it within sight and not blocked by rocks or trees. Units SHALL target the nearest enemy their team sees, and SHALL re-check targets every 0.5 s.
@@ -62,22 +62,26 @@ A non-lethal hit SHALL stagger the victim for 0.3 s, unless the victim is mid-at
 - **THEN** it does not move or attack for 0.3 s
 
 ### Requirement: Archer kiting
-An archer SHALL retreat from melee enemies closer than 3.5 m, in bursts of at most 1.2 s followed by at least 2 s of standing and shooting. A cornered archer SHALL stand and shoot.
+An archer SHALL retreat from melee enemies closer than 4.5 m, in bursts of at most 2 s followed by at least 1.2 s of standing and shooting. It SHALL back away while still facing its attackers, at full speed. A cornered archer SHALL stand and shoot.
 
 #### Scenario: Warrior closes in
-- **WHEN** a warrior comes within 3.5 m of an archer that is not resting
-- **THEN** the archer steps away from it to a free spot it can walk to in a straight line
+- **WHEN** a warrior comes within 4.5 m of an archer that is not resting
+- **THEN** the archer steps away from it, still facing it, to a free spot it can walk to in a straight line
 
 ### Requirement: Skills
-Units SHALL apply the 15 skills in docs/GAME_CONCEPT.md §10.1, each learned at most once per unit. Chance-based skills (Executioner, Headshot, Frost) SHALL roll the battle's seeded random generator.
+Units SHALL apply the 15 skills in docs/GAME_CONCEPT.md §10.1, each learned at most once per unit. Chance-based skills (Executioner, Headshot) SHALL roll the battle's seeded random generator. Instant kills SHALL only be possible against victims below 40% of their maximum health.
 
 #### Scenario: Executioner
-- **WHEN** a warrior with Executioner hits and its roll succeeds
+- **WHEN** a warrior with Executioner hits a victim below 40% health and its roll succeeds
 - **THEN** the victim dies regardless of remaining health
+
+#### Scenario: No execute at full health
+- **WHEN** a warrior with Executioner hits a victim at full health
+- **THEN** the hit deals normal damage, whatever the roll
 
 #### Scenario: Blink
 - **WHEN** a melee enemy comes within 2.5 m of a mage with Blink off cooldown
-- **THEN** the mage teleports about 8 m away from the threats to a free spot, and Blink goes on a 15 s cooldown
+- **THEN** the mage teleports about 8 m away from the threats to a free spot, and Blink goes on an 8 s cooldown
 
 ### Requirement: Red army
 When an input leaves Red's army empty, Red SHALL get 5 units of seeded random classes, a seeded random formation preset, and as many skills in total as the given count, spread at random among its units. All of this SHALL come from the seed.
