@@ -36,7 +36,7 @@ A **run** is a chain of matches. You keep playing while you keep winning, and th
    - **Portraits** run along the bottom: yours on the left, Red's on the right, with "?" for enemies out of sight. Click one (or a unit) for its info panel, which shows status, kills, damage and skills.
    - The **minimap** (top right) shows the field under the same fog; click it to move the camera.
    - **Sound effects** are synthesized in the browser. The dev panel (top right) has mute, volume, and 1×/2×/4× speed.
-   - **Graphics quality** (dev panel): High adds image-based lighting, soft shadows, ambient occlusion, bloom and a colour grade; Low keeps plain lighting. The choice is remembered per browser. If High can't keep up on your machine, the game switches to Low and says so. DoF toggles an experimental tilt-shift blur, and the panel shows the current fps.
+   - **Graphics quality** (dev panel): High adds image-based lighting, soft shadows, bloom, a colour grade, anti-aliasing and swaying grass; Low keeps plain lighting and no grass. The choice is remembered per browser. If High can't keep up on your machine, the game first renders fewer pixels, then switches to Low and says so. DoF toggles an experimental tilt-shift blur, and the panel shows the current fps.
 
    | Key | Does |
    |---|---|
@@ -181,7 +181,7 @@ Pathfinding, steering, spatial queries and the RNG are written by hand in `sim/`
 | [three.js](https://threejs.org) | WebGL rendering |
 | [@react-three/fiber](https://r3f.docs.pmnd.rs) | three.js scenes written as React components (`<mesh>`, `useFrame`) |
 | [@react-three/drei](https://drei.docs.pmnd.rs) | R3F helpers: `Billboard` (health bars), `Html` (floating numbers), `Sky`, `Environment` (lighting from a generated sky), `PerformanceMonitor` |
-| [@react-three/postprocessing](https://react-postprocessing.docs.pmnd.rs) + [postprocessing](https://github.com/pmndrs/postprocessing) | High-quality effects: N8AO ambient occlusion, bloom, colour grading, vignette, tilt-shift |
+| [@react-three/postprocessing](https://react-postprocessing.docs.pmnd.rs) + [postprocessing](https://github.com/pmndrs/postprocessing) | High-quality effects: bloom, colour grading, vignette, SMAA, tilt-shift |
 | [zustand](https://zustand.docs.pmnd.rs) | Small state store between the worker, HUD and scene. The scene reads it with `getState()` inside `useFrame`, so it doesn't re-render React every frame. |
 | [@bufbuild/protobuf](https://github.com/bufbuild/protobuf-es) (protobuf-es v2) | Generated TypeScript types, and binary encode/decode of `BattleInput`/`BattleOutcome` |
 | [@connectrpc/connect](https://connectrpc.com/docs/web/getting-started) + `connect-web` | Typed client for `BattleService` over HTTP |
@@ -211,6 +211,10 @@ Characters and animations come from [Quaternius](https://quaternius.com)'s CC0 m
 | `web/public/assets/clips.json` | The shared animations: idle, jog, sword attack, spell shot, hit, death, cheer. |
 | `tools/blender/bake_units.py` | Re-bakes from the Quaternius source packs, which aren't in this repo (`QUATERNIUS_DIR`, default `../web3d-demo/assets/quaternius`): `blender --background --python tools/blender/bake_units.py`. |
 | `tools/assets/pack_units.py` | Packs a bake for the web: shares Blue/Red geometry, converts PNGs to JPEG (macOS `sips`), and trims the clips. Run `python3 tools/assets/pack_units.py tools/blender/out`. |
+| `web/public/assets/nature/` | The battlefield (about 7 MB): `nature.glb` holds rocks, pines for the far background, a bush, ferns, flowers and a pebble from Quaternius's CC0 [Stylized Nature MegaKit](https://quaternius.itch.io/stylized-nature-megakit); the ground textures are CC0 [ambientCG](https://ambientcg.com) Grass004, Ground037 (dirt) and Ground054 (mud). |
+| `tools/assets/pack_nature.py` | Packs those from the source downloads, which aren't in this repo (`NATURE_DIR`, default `../assets-src/quaternius-nature`; `AMBIENTCG_DIR`, default `../assets-src/ambientcg`). It downscales the textures and has Blender merge the chosen models into one GLB: `python3 tools/assets/pack_nature.py`. |
+| `web/public/assets/trees/` | Detailed trees and a bush (about 6 MB, ~3.5 MB compressed): oaks, an ash, an aspen and a pine generated with [EZ-Tree](https://github.com/dgreenheck/ez-tree) (MIT) and baked to `trees.glb`, plus its bark (Poly Haven and TextureCan, CC0) and leaf textures. |
+| `web/scripts/bake-trees.mjs` | Re-bakes those trees in Node (`node scripts/bake-trees.mjs` from `web/`); EZ-Tree is a dev-only dependency, so players never download the generator. |
 
 The renderer drives each character's animation purely from the sim's snapshot flags (walking, attacking, staggered, dashing, dead). An attack animation is stretched to the sim's swing time, so the blow lands when the sim says it does. Rendering never feeds back into the battle.
 

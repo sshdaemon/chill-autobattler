@@ -51,6 +51,9 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
     devDependencies:
+      '@dgreenheck/ez-tree':
+        specifier: 1.1.0
+        version: 1.1.0(three@0.187.0)
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
@@ -136,6 +139,11 @@ packages:
     resolution: {integrity: sha512-rjAn8L9KbAZrkwiB8m1qzDsLs74hkYmwwM2iSWuxTPVOTRm/EZw31smKbQqPU50AXqJC5eKKpEnA6Uf/swQOgQ==}
     peerDependencies:
       '@bufbuild/protobuf': ^2.7.0
+
+  '@dgreenheck/ez-tree@1.1.0':
+    resolution: {integrity: sha512-6pvS6hD6B6h00dm0SnkgYeT4ABU5Y1Z9M44p1tXiV5C0eKrQy2sKECXshoaUv0qAOqYVL68w/PwadUxDFDiHUg==}
+    peerDependencies:
+      three: '>=0.167'
 
   '@dimforge/rapier3d-compat@0.12.0':
     resolution: {integrity: sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow==}
@@ -944,6 +952,10 @@ snapshots:
   '@connectrpc/connect@2.3.0(@bufbuild/protobuf@2.17.0)':
     dependencies:
       '@bufbuild/protobuf': 2.17.0
+
+  '@dgreenheck/ez-tree@1.1.0(three@0.187.0)':
+    dependencies:
+      three: 0.187.0
 
   '@dimforge/rapier3d-compat@0.12.0': {}
 

@@ -1,21 +1,26 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { DataTexture, LinearFilter } from 'three';
 import { useBattle } from '../store.ts';
 
 const N = 56, ARENA = 28, DARK = 0.62 * 255;
 export const FOGGED_FIGHT = ['countdown', 'fighting'];
+const DEPLOYING = ['starting', 'deploying', 'locking'];
+
+// The fog grid as a texture (alpha = darkness), shared with the grass,
+// which stands above the overlay and darkens itself.
+export const fogTex = new DataTexture(new Uint8Array(N * N * 4), N, N);
+fogTex.magFilter = fogTex.minFilter = LinearFilter; // soft edges
+
+export const fogActive = (s: { fogOn: boolean; phase: string }) =>
+  s.fogOn && (DEPLOYING.includes(s.phase) || FOGGED_FIGHT.includes(s.phase));
 
 // Darkens what Blue can't see. The grid comes from the sim (same sight rules
 // as the battle); while deploying only Blue's own zone is lit.
 export function Fog() {
   const { fog, fogOn, phase, data } = useBattle();
-  const tex = useMemo(() => {
-    const t = new DataTexture(new Uint8Array(N * N * 4), N, N);
-    t.magFilter = t.minFilter = LinearFilter; // soft edges
-    return t;
-  }, []);
-  const deploying = ['starting', 'deploying', 'locking'].includes(phase);
-  const active = fogOn && (deploying || FOGGED_FIGHT.includes(phase));
+  const tex = fogTex;
+  const deploying = DEPLOYING.includes(phase);
+  const active = fogActive({ fogOn, phase });
   useEffect(() => {
     const d = tex.image.data as Uint8Array, z = data?.deployZone;
     for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
