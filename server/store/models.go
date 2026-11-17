@@ -23,4 +23,27 @@ type Battle struct {
 	Fair           sql.NullInt64
 	Reason         sql.NullString
 	Outcome        []byte
+	RunID          sql.NullString
+	MatchNo        sql.NullInt64
+}
+
+type Player struct {
+	ID        string
+	TokenHash []byte
+	CreatedAt int64
+}
+
+type Run struct {
+	ID              string
+	PlayerID        string
+	Name            string
+	State           string
+	MatchNo         int64
+	Wins            int64
+	Score           int64
+	Veterans        []byte
+	CurrentBattleID sql.NullString
+	EndReason       sql.NullString
+	CreatedAt       int64
+	EndedAt         sql.NullInt64
 }

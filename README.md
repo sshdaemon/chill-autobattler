@@ -26,10 +26,14 @@ pnpm test       # Go tests natively and under WASM, TS typecheck
 
 ### How to play
 
-1. **Choose your army.** Pick 5 units from the warrior, archer and mage cards. Each card shows its stats and how much damage it takes from each class. Your last pick is remembered.
+A **run** is a chain of matches. You keep playing while you keep winning, and the first loss ends it. Reloading the page resumes your run.
+
+1. **Choose your army.** Pick 5 units from the warrior, archer and mage cards. Each card shows its stats and how much damage it takes from each class. Your last pick is remembered. Veterans from earlier matches are already in, shown in gold with their ★, and can't be dismissed.
 2. **Deploy (15 s).** The server issues a battle and you see its map. Red is hidden under fog. Pick a formation from the bottom bar (the diagrams show your actual mix), or drag your units anywhere inside the blue zone. **Ready** starts early.
-3. **Fight.** Your deployment is locked with the server, which only then reveals the combat seed. After a "Fight!" banner, the armies fight on their own. The dev panel (top right) sets 1×/2×/4× speed, and Red's skill count for the next match.
-4. **Result.** Victory, Defeat or Draw, with survivors. The battle is verified with the server automatically. **Next match** goes back to the army picker.
+3. **Fight.** Your deployment is locked with the server, which only then reveals the combat seed. After a "Fight!" banner, the armies fight on their own. The dev panel (top right) sets 1×/2×/4× speed.
+4. **Result.** Victory, Defeat or Draw, with survivors. The battle is verified with the server automatically.
+   - **After a win:** +100 points, plus 10 per survivor. Every survivor becomes a veteran and learns one new skill of its class, up to 5. Then **Next match**. Red gets as many skills in total as your veterans have.
+   - **After a loss or draw:** **Run over**, with the top-10 scoreboard (your runs highlighted) and **New run**.
 
 ## Architecture
 
@@ -98,8 +102,11 @@ These rules are enforced by tests:
 | Change the army after seeing how the fight goes | The server verifies with the army it stored at lock time, not one the client sends. |
 | Verify again until it passes | The first verdict is final. |
 | Invalid armies (6 units, a skill twice, outside the zone) | Rejected at lock time by the same validation the sim uses. |
+| Invent veterans, drop them, or weaken Red | The server stores the run's veterans. The army must lead with them exactly, and recruits have no skills. Red's skill count is computed from the veterans. |
+| Close the tab when losing | A battle that misses its deadline counts as a loss, and the run ends. |
+| Reload to undo a loss | Runs live on the server; a reload resumes the same run. |
 
-Known limits: the client can read Red's army and the map, because the browser sim needs them, so fog of war is presentation only. A client can still search deployments against *estimated* rolls. Red's skill count is client-chosen until runs exist.
+Known limits: the client can read Red's army and the map, because the browser sim needs them, so fog of war is presentation only. A client can still search deployments against *estimated* rolls. Players are anonymous: a random token kept in localStorage, which the server stores only as a SHA-256 hash.
 
 ## Repository layout
 
@@ -120,8 +127,10 @@ sim/            Go: deterministic battle rules (no I/O, no dependencies outside 
 pb/             Go module: code generated from proto/, plus pb/convert (wire ⇄ sim types)
 wasm/           Go → WASM bridge: globalThis.chillSim.{create,map,step,outcome}
 server/         Go Connect server
-  battle/         StartBattle / LockDeployment / VerifyBattle (state machine, deadlines)
-  store/          SQLite store: schema.sql, queries.sql → sqlc-generated Go
+  auth/           anonymous player tokens (Bearer → player id; only hashes stored)
+  run/            RunService: runs, veterans, skill picks, Red scaling, scores, scoreboard, abandonment
+  battle/         StartBattle / LockDeployment / VerifyBattle for a run's matches (state machine, deadlines)
+  store/          SQLite: migrations/*.sql (PRAGMA user_version), queries.sql → sqlc-generated Go
 proto/          protobuf schema (chill.v1): BattleInput, BattleOutcome, BattleService
 web/            Vite + React + react-three-fiber debug viewer
   src/sim/        Web Worker loop and snapshot decoder
@@ -183,5 +192,5 @@ Characters and animations come from [Quaternius](https://quaternius.com)'s CC0 m
 - **One PR per change.** Every change lands as a pull request.
 - **Changing a rule** means changing `sim/data.go` or the logic, bumping `sim.Version`, then running `go test ./sim -run TestGoldenReplays -update` and reviewing the outcome changes in the diff.
 - **Changing the wire format** means editing `proto/chill/v1/battle.proto`, then running `pnpm gen && pnpm lint:proto`.
-- **Changing the database** means editing `server/store/schema.sql` or `queries.sql`, then running `go generate ./server/store`. The schema is applied at startup with `CREATE TABLE IF NOT EXISTS`, and real migrations come with the first schema change.
+- **Changing the database** means adding a new numbered file in `server/store/migrations/` (never editing an applied one) and/or editing `queries.sql`, then running `go generate ./server/store`. `store.Open` applies the migrations above `PRAGMA user_version` at startup.
 - **Snapshot layout** is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync.

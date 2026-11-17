@@ -8,14 +8,20 @@ package store
 import (
 	"context"
 	"database/sql"
-	_ "embed"
+	"embed"
 	"fmt"
+	"io/fs"
+	"sort"
 
 	_ "modernc.org/sqlite"
 )
 
-//go:embed schema.sql
-var schema string
+// Migrations are numbered files (0001_*.sql, 0002_*.sql …). Open applies the
+// ones above PRAGMA user_version in order, each in its own transaction that
+// also bumps user_version. Never edit an applied migration; add a new one.
+//
+//go:embed migrations/*.sql
+var migrations embed.FS
 
 // DB is an open store: the generated queries plus the connection.
 type DB struct {
@@ -23,17 +29,65 @@ type DB struct {
 	conn *sql.DB
 }
 
-// Open opens (creating if needed) the SQLite file at path and applies the schema.
+// Open opens (creating if needed) the SQLite file at path and migrates it.
 func Open(ctx context.Context, path string) (*DB, error) {
-	conn, err := sql.Open("sqlite", "file:"+path+"?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)")
+	conn, err := sql.Open("sqlite", "file:"+path+"?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&_pragma=foreign_keys(1)")
 	if err != nil {
 		return nil, err
 	}
-	if _, err := conn.ExecContext(ctx, schema); err != nil {
+	conn.SetMaxOpenConns(1) // SQLite: one writer; also keeps transactions simple
+	if err := migrate(ctx, conn); err != nil {
 		conn.Close()
-		return nil, fmt.Errorf("applying schema: %w", err)
+		return nil, err
 	}
 	return &DB{Queries: New(conn), conn: conn}, nil
+}
+
+func migrate(ctx context.Context, conn *sql.DB) error {
+	files, err := fs.Glob(migrations, "migrations/*.sql")
+	if err != nil {
+		return err
+	}
+	sort.Strings(files)
+	var version int
+	if err := conn.QueryRowContext(ctx, "PRAGMA user_version").Scan(&version); err != nil {
+		return err
+	}
+	for i := version; i < len(files); i++ {
+		sqlText, err := migrations.ReadFile(files[i])
+		if err != nil {
+			return err
+		}
+		tx, err := conn.BeginTx(ctx, nil)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, string(sqlText)); err != nil {
+			tx.Rollback()
+			return fmt.Errorf("migration %s: %w", files[i], err)
+		}
+		if _, err := tx.ExecContext(ctx, fmt.Sprintf("PRAGMA user_version = %d", i+1)); err != nil {
+			tx.Rollback()
+			return err
+		}
+		if err := tx.Commit(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Tx runs fn in one transaction with queries bound to it.
+func (d *DB) Tx(ctx context.Context, fn func(*Queries) error) error {
+	tx, err := d.conn.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	if err := fn(d.Queries.WithTx(tx)); err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit()
 }
 
 func (d *DB) Close() error { return d.conn.Close() }

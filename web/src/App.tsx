@@ -7,7 +7,7 @@ import { Shots } from './scene/Shots.tsx';
 import { Floats } from './scene/Floats.tsx';
 import { Picker } from './ui/Picker.tsx';
 import { DeployBar } from './ui/DeployBar.tsx';
-import { Banner, DevPanel, Result, Status } from './ui/Overlays.tsx';
+import { Banner, DevPanel, Result, RunBar, Status } from './ui/Overlays.tsx';
 
 export function App() {
   const phase = useBattle((s) => s.phase);
@@ -27,6 +27,7 @@ export function App() {
         <Floats />
         <OrbitControls enabled={!noOrbit} maxPolarAngle={1.3} minDistance={10} maxDistance={45} target={[0, 0, 5]} />
       </Canvas>
+      <RunBar />
       <Status />
       <Banner />
       {phase === 'picker' && <Picker />}

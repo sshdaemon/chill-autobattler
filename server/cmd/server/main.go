@@ -14,7 +14,9 @@ import (
 	"connectrpc.com/connect/v2/connecthttp"
 
 	"chill/pb/chill/v1/chillv1connect"
+	"chill/server/auth"
 	"chill/server/battle"
+	"chill/server/run"
 	"chill/server/store"
 	"chill/sim"
 )
@@ -30,11 +32,13 @@ func main() {
 	}
 	defer db.Close()
 
+	runs := run.NewService(db)
 	rpc := connect.NewServer()
-	chillv1connect.RegisterBattleServiceHandler(rpc, battle.NewService(db))
+	chillv1connect.RegisterRunServiceHandler(rpc, runs)
+	chillv1connect.RegisterBattleServiceHandler(rpc, battle.NewService(db, runs))
 	mux := http.NewServeMux()
 	connecthttp.Mount(mux, rpc)
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) { fmt.Fprintln(w, "ok", sim.Version) })
 	log.Printf("server on :8080 (db %s)", path)
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	log.Fatal(http.ListenAndServe(":8080", auth.Middleware(db, mux)))
 }

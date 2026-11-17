@@ -10,6 +10,28 @@ import (
 	"database/sql"
 )
 
+const bestFinishedScore = `-- name: BestFinishedScore :one
+SELECT CAST(COALESCE(MAX(score), -1) AS INTEGER) FROM runs WHERE player_id = ?1 AND state = 'over'
+`
+
+func (q *Queries) BestFinishedScore(ctx context.Context, playerID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, bestFinishedScore, playerID)
+	var column_1 int64
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const countFinishedAbove = `-- name: CountFinishedAbove :one
+SELECT COUNT(*) FROM runs WHERE state = 'over' AND score > ?1
+`
+
+func (q *Queries) CountFinishedAbove(ctx context.Context, score int64) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countFinishedAbove, score)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createBattle = `-- name: CreateBattle :exec
 INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline)
 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
@@ -38,8 +60,132 @@ func (q *Queries) CreateBattle(ctx context.Context, arg CreateBattleParams) erro
 	return err
 }
 
+const createPlayer = `-- name: CreatePlayer :exec
+
+INSERT INTO players (id, token_hash, created_at) VALUES (?1, ?2, ?3)
+`
+
+type CreatePlayerParams struct {
+	ID        string
+	TokenHash []byte
+	CreatedAt int64
+}
+
+// ---------- players ----------
+func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) error {
+	_, err := q.db.ExecContext(ctx, createPlayer, arg.ID, arg.TokenHash, arg.CreatedAt)
+	return err
+}
+
+const createRun = `-- name: CreateRun :exec
+
+INSERT INTO runs (id, player_id, name, state, match_no, wins, score, created_at)
+VALUES (?1, ?2, ?3, 'ready', 1, 0, 0, ?4)
+`
+
+type CreateRunParams struct {
+	ID        string
+	PlayerID  string
+	Name      string
+	CreatedAt int64
+}
+
+// ---------- runs ----------
+func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) error {
+	_, err := q.db.ExecContext(ctx, createRun,
+		arg.ID,
+		arg.PlayerID,
+		arg.Name,
+		arg.CreatedAt,
+	)
+	return err
+}
+
+const createRunBattle = `-- name: CreateRunBattle :exec
+
+INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+`
+
+type CreateRunBattleParams struct {
+	ID             string
+	SimVersion     string
+	MapSeed        int64
+	CombatSeed     int64
+	RedSkillCount  int64
+	CreatedAt      int64
+	DeployDeadline int64
+	RunID          sql.NullString
+	MatchNo        sql.NullInt64
+}
+
+// ---------- battles in runs ----------
+func (q *Queries) CreateRunBattle(ctx context.Context, arg CreateRunBattleParams) error {
+	_, err := q.db.ExecContext(ctx, createRunBattle,
+		arg.ID,
+		arg.SimVersion,
+		arg.MapSeed,
+		arg.CombatSeed,
+		arg.RedSkillCount,
+		arg.CreatedAt,
+		arg.DeployDeadline,
+		arg.RunID,
+		arg.MatchNo,
+	)
+	return err
+}
+
+const endActiveRuns = `-- name: EndActiveRuns :exec
+UPDATE runs SET state = 'over', end_reason = ?1, ended_at = ?2, current_battle_id = NULL
+WHERE player_id = ?3 AND state != 'over'
+`
+
+type EndActiveRunsParams struct {
+	EndReason sql.NullString
+	Now       sql.NullInt64
+	PlayerID  string
+}
+
+func (q *Queries) EndActiveRuns(ctx context.Context, arg EndActiveRunsParams) error {
+	_, err := q.db.ExecContext(ctx, endActiveRuns, arg.EndReason, arg.Now, arg.PlayerID)
+	return err
+}
+
+const endRun = `-- name: EndRun :exec
+UPDATE runs SET state = 'over', end_reason = ?1, ended_at = ?2, current_battle_id = NULL
+WHERE id = ?3 AND state != 'over'
+`
+
+type EndRunParams struct {
+	EndReason sql.NullString
+	Now       sql.NullInt64
+	ID        string
+}
+
+func (q *Queries) EndRun(ctx context.Context, arg EndRunParams) error {
+	_, err := q.db.ExecContext(ctx, endRun, arg.EndReason, arg.Now, arg.ID)
+	return err
+}
+
+const finishPicks = `-- name: FinishPicks :execrows
+UPDATE runs SET state = 'ready', veterans = ?1 WHERE id = ?2 AND state = 'picking'
+`
+
+type FinishPicksParams struct {
+	Veterans []byte
+	ID       string
+}
+
+func (q *Queries) FinishPicks(ctx context.Context, arg FinishPicksParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, finishPicks, arg.Veterans, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const getBattle = `-- name: GetBattle :one
-SELECT id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, blue_army, locked_at, verify_deadline, verified_at, fair, reason, outcome FROM battles WHERE id = ?1
+SELECT id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, blue_army, locked_at, verify_deadline, verified_at, fair, reason, outcome, run_id, match_no FROM battles WHERE id = ?1
 `
 
 func (q *Queries) GetBattle(ctx context.Context, id string) (Battle, error) {
@@ -60,6 +206,58 @@ func (q *Queries) GetBattle(ctx context.Context, id string) (Battle, error) {
 		&i.Fair,
 		&i.Reason,
 		&i.Outcome,
+		&i.RunID,
+		&i.MatchNo,
+	)
+	return i, err
+}
+
+const getRun = `-- name: GetRun :one
+SELECT id, player_id, name, state, match_no, wins, score, veterans, current_battle_id, end_reason, created_at, ended_at FROM runs WHERE id = ?1
+`
+
+func (q *Queries) GetRun(ctx context.Context, id string) (Run, error) {
+	row := q.db.QueryRowContext(ctx, getRun, id)
+	var i Run
+	err := row.Scan(
+		&i.ID,
+		&i.PlayerID,
+		&i.Name,
+		&i.State,
+		&i.MatchNo,
+		&i.Wins,
+		&i.Score,
+		&i.Veterans,
+		&i.CurrentBattleID,
+		&i.EndReason,
+		&i.CreatedAt,
+		&i.EndedAt,
+	)
+	return i, err
+}
+
+const latestRun = `-- name: LatestRun :one
+SELECT id, player_id, name, state, match_no, wins, score, veterans, current_battle_id, end_reason, created_at, ended_at FROM runs WHERE player_id = ?1
+ORDER BY (state != 'over') DESC, created_at DESC, id DESC LIMIT 1
+`
+
+// The player's active run if any, else their latest.
+func (q *Queries) LatestRun(ctx context.Context, playerID string) (Run, error) {
+	row := q.db.QueryRowContext(ctx, latestRun, playerID)
+	var i Run
+	err := row.Scan(
+		&i.ID,
+		&i.PlayerID,
+		&i.Name,
+		&i.State,
+		&i.MatchNo,
+		&i.Wins,
+		&i.Score,
+		&i.Veterans,
+		&i.CurrentBattleID,
+		&i.EndReason,
+		&i.CreatedAt,
+		&i.EndedAt,
 	)
 	return i, err
 }
@@ -91,6 +289,17 @@ func (q *Queries) LockBattle(ctx context.Context, arg LockBattleParams) (int64, 
 	return result.RowsAffected()
 }
 
+const playerByTokenHash = `-- name: PlayerByTokenHash :one
+SELECT id FROM players WHERE token_hash = ?1
+`
+
+func (q *Queries) PlayerByTokenHash(ctx context.Context, tokenHash []byte) (string, error) {
+	row := q.db.QueryRowContext(ctx, playerByTokenHash, tokenHash)
+	var id string
+	err := row.Scan(&id)
+	return id, err
+}
+
 const recordVerdict = `-- name: RecordVerdict :execrows
 UPDATE battles
 SET verified_at = ?1, fair = ?2, reason = ?3, outcome = ?4
@@ -118,4 +327,100 @@ func (q *Queries) RecordVerdict(ctx context.Context, arg RecordVerdictParams) (i
 		return 0, err
 	}
 	return result.RowsAffected()
+}
+
+const setCurrentBattle = `-- name: SetCurrentBattle :execrows
+UPDATE runs SET current_battle_id = ?1
+WHERE id = ?2 AND state = 'ready' AND current_battle_id IS NULL
+`
+
+type SetCurrentBattleParams struct {
+	BattleID sql.NullString
+	ID       string
+}
+
+func (q *Queries) SetCurrentBattle(ctx context.Context, arg SetCurrentBattleParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, setCurrentBattle, arg.BattleID, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const sweepAbandoned = `-- name: SweepAbandoned :exec
+UPDATE runs SET state = 'over', end_reason = 'abandoned', ended_at = ?1, current_battle_id = NULL
+WHERE state != 'over' AND current_battle_id IN (
+  SELECT b.id FROM battles b
+  WHERE (b.locked_at IS NULL AND b.deploy_deadline <= ?1)
+     OR (b.locked_at IS NOT NULL AND b.verified_at IS NULL AND b.verify_deadline <= ?1)
+)
+`
+
+// Ends every active run whose current battle missed its deadline.
+func (q *Queries) SweepAbandoned(ctx context.Context, now sql.NullInt64) error {
+	_, err := q.db.ExecContext(ctx, sweepAbandoned, now)
+	return err
+}
+
+const topRuns = `-- name: TopRuns :many
+SELECT name, score, wins, player_id = ?1 AS mine FROM runs
+WHERE state = 'over' ORDER BY score DESC, ended_at ASC, id ASC LIMIT 10
+`
+
+type TopRunsRow struct {
+	Name  string
+	Score int64
+	Wins  int64
+	Mine  bool
+}
+
+func (q *Queries) TopRuns(ctx context.Context, playerID string) ([]TopRunsRow, error) {
+	rows, err := q.db.QueryContext(ctx, topRuns, playerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []TopRunsRow
+	for rows.Next() {
+		var i TopRunsRow
+		if err := rows.Scan(
+			&i.Name,
+			&i.Score,
+			&i.Wins,
+			&i.Mine,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const winMatch = `-- name: WinMatch :exec
+UPDATE runs SET state = ?1, wins = wins + 1, score = score + ?2, match_no = match_no + 1,
+  veterans = ?3, current_battle_id = NULL
+WHERE id = ?4
+`
+
+type WinMatchParams struct {
+	State    string
+	Points   int64
+	Veterans []byte
+	ID       string
+}
+
+func (q *Queries) WinMatch(ctx context.Context, arg WinMatchParams) error {
+	_, err := q.db.ExecContext(ctx, winMatch,
+		arg.State,
+		arg.Points,
+		arg.Veterans,
+		arg.ID,
+	)
+	return err
 }

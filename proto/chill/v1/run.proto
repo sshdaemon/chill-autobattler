@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package chill.v1;
+
+import "chill/v1/runstate.proto";
+import "chill/v1/units.proto";
+
+// Runs chain matches: survivors become veterans who learn skills, Red grows to
+// match them, and the run ends at the first loss. The server decides all of it.
+// Every RPC except CreatePlayer needs "Authorization: Bearer <player_token>".
+service RunService {
+  // Issues an anonymous player token. Keep it secret; it is the player.
+  rpc CreatePlayer(CreatePlayerRequest) returns (CreatePlayerResponse);
+  // Starts a new run; an active run of the player ends (restarted).
+  rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  // The player's active run, or the last one if none is active.
+  rpc GetRun(GetRunRequest) returns (GetRunResponse);
+  // One new skill for every veteran owed one, all at once.
+  rpc PickSkills(PickSkillsRequest) returns (PickSkillsResponse);
+  rpc GetScoreboard(GetScoreboardRequest) returns (GetScoreboardResponse);
+}
+
+message CreatePlayerRequest {}
+
+message CreatePlayerResponse {
+  string player_token = 1;
+}
+
+message StartRunRequest {}
+
+message StartRunResponse {
+  Run run = 1;
+}
+
+message GetRunRequest {}
+
+message GetRunResponse {
+  // Absent if the player never started a run.
+  Run run = 1;
+}
+
+message SkillPick {
+  uint32 veteran = 1; // index into Run.veterans
+  Skill skill = 2;
+}
+
+message PickSkillsRequest {
+  string run_id = 1;
+  repeated SkillPick picks = 2;
+}
+
+message PickSkillsResponse {
+  Run run = 1;
+}
+
+message GetScoreboardRequest {}
+
+message ScoreRow {
+  uint32 rank = 1;
+  string name = 2;
+  uint32 score = 3;
+  uint32 wins = 4;
+  bool mine = 5;
+}
+
+message GetScoreboardResponse {
+  repeated ScoreRow top = 1; // best 10 finished runs
+  uint32 my_best_rank = 2; // 0 if the player has no finished run
+  uint32 my_best_score = 3;
+}

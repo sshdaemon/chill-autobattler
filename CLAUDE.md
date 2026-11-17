@@ -5,8 +5,10 @@ Monorepo:
 - `pb/`: generated protobuf/Connect Go code plus `pb/convert` (wire ⇄ sim types). Shared by `wasm/` and `server/`.
 - `wasm/`: the browser build of the sim, exposed as `globalThis.chillSim` (create / map / step / outcome).
 - `server/`: Go, Connect RPC.
-  - `server/battle` issues battles: `StartBattle` (map seed), `LockDeployment` (stores the army, reveals the combat seed), `VerifyBattle` (re-runs the stored input; the first verdict is final).
-  - `server/store` is SQLite (modernc, pure Go) with sqlc. Regenerate with `go generate ./server/store`.
+  - `server/auth`: anonymous player tokens. Every RPC except `CreatePlayer` needs `Authorization: Bearer`.
+  - `server/run`: runs, with veterans, skill picks, Red scaling, scores and the scoreboard. The server is the authority on all of it.
+  - `server/battle`: battles of a run. `StartBattle` (map seed), `LockDeployment` (veterans must lead the army; reveals the combat seed), `VerifyBattle` (re-runs the stored input, updates the run in the same transaction; the first verdict is final).
+  - `server/store`: SQLite (modernc, pure Go) with sqlc. Migrations are numbered files in `migrations/`, tracked with `user_version`; never edit an applied one. Regenerate with `go generate ./server/store`.
 - `web/`: Vite, React and react-three-fiber.
   - The sim runs in a Web Worker at 20 Hz, and the scene interpolates snapshots.
   - The match flow (picker → deploy → countdown → fight → result) is a phase machine in `web/src/store.ts`; its UI is in `web/src/ui/`.

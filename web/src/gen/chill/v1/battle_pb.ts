@@ -4,89 +4,17 @@
 
 import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Run } from "./runstate_pb";
+import { file_chill_v1_runstate } from "./runstate_pb";
+import type { Army } from "./units_pb";
+import { file_chill_v1_units } from "./units_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file chill/v1/battle.proto.
  */
 export const file_chill_v1_battle: GenFile = /*@__PURE__*/
-  fileDesc("ChVjaGlsbC92MS9iYXR0bGUucHJvdG8SCGNoaWxsLnYxIiUKBVBvaW50Eg0KBXhfcmF3GAEgASgSEg0KBXpfcmF3GAIgASgSIncKCFVuaXRTcGVjEicKCnVuaXRfY2xhc3MYASABKA4yEy5jaGlsbC52MS5Vbml0Q2xhc3MSHwoGc2tpbGxzGAIgAygOMg8uY2hpbGwudjEuU2tpbGwSIQoIcG9zaXRpb24YAyABKAsyDy5jaGlsbC52MS5Qb2ludCJRCgRBcm15EiYKCWZvcm1hdGlvbhgBIAEoDjITLmNoaWxsLnYxLkZvcm1hdGlvbhIhCgV1bml0cxgCIAMoCzISLmNoaWxsLnYxLlVuaXRTcGVjIpkBCgtCYXR0bGVJbnB1dBITCgtzaW1fdmVyc2lvbhgBIAEoCRIMCgRzZWVkGAIgASgEEhwKBGJsdWUYAyABKAsyDi5jaGlsbC52MS5Bcm15EhsKA3JlZBgEIAEoCzIOLmNoaWxsLnYxLkFybXkSFwoPcmVkX3NraWxsX2NvdW50GAUgASgNEhMKC2NvbWJhdF9zZWVkGAYgASgEIikKCFN1cnZpdm9yEg0KBWluZGV4GAEgASgNEg4KBmhwX3JhdxgCIAEoEiJ/Cg1CYXR0bGVPdXRjb21lEiYKBnJlc3VsdBgBIAEoDjIWLmNoaWxsLnYxLkJhdHRsZVJlc3VsdBINCgV0aWNrcxgCIAEoDRIlCglzdXJ2aXZvcnMYAyADKAsyEi5jaGlsbC52MS5TdXJ2aXZvchIQCghjaGVja3N1bRgEIAEoBCJCChJTdGFydEJhdHRsZVJlcXVlc3QSEwoLc2ltX3ZlcnNpb24YASABKAkSFwoPcmVkX3NraWxsX2NvdW50GAIgASgNImsKE1N0YXJ0QmF0dGxlUmVzcG9uc2USEQoJYmF0dGxlX2lkGAEgASgJEgwKBHNlZWQYAiABKAQSFwoPcmVkX3NraWxsX2NvdW50GAMgASgNEhoKEmRlcGxveV9kZWFkbGluZV9tcxgEIAEoAyJIChVMb2NrRGVwbG95bWVudFJlcXVlc3QSEQoJYmF0dGxlX2lkGAEgASgJEhwKBGJsdWUYAiABKAsyDi5jaGlsbC52MS5Bcm15IkkKFkxvY2tEZXBsb3ltZW50UmVzcG9uc2USEwoLY29tYmF0X3NlZWQYASABKAQSGgoSdmVyaWZ5X2RlYWRsaW5lX21zGAIgASgDIlIKE1ZlcmlmeUJhdHRsZVJlcXVlc3QSEQoJYmF0dGxlX2lkGAEgASgJEigKB2NsYWltZWQYAiABKAsyFy5jaGlsbC52MS5CYXR0bGVPdXRjb21lIl4KFFZlcmlmeUJhdHRsZVJlc3BvbnNlEgwKBGZhaXIYASABKAgSDgoGcmVhc29uGAIgASgJEigKB291dGNvbWUYAyABKAsyFy5jaGlsbC52MS5CYXR0bGVPdXRjb21lKmsKCVVuaXRDbGFzcxIaChZVTklUX0NMQVNTX1VOU1BFQ0lGSUVEEAASFgoSVU5JVF9DTEFTU19XQVJSSU9SEAESFQoRVU5JVF9DTEFTU19BUkNIRVIQAhITCg9VTklUX0NMQVNTX01BR0UQAyrJAQoFU2tpbGwSFQoRU0tJTExfVU5TUEVDSUZJRUQQABIQCgxTS0lMTF9IRUFMVEgQARIPCgtTS0lMTF9TUEVFRBACEhAKDFNLSUxMX0RBTUFHRRADEg4KClNLSUxMX0RBU0gQBBIRCg1TS0lMTF9FWEVDVVRFEAUSDwoLU0tJTExfUkFOR0UQBhINCglTS0lMTF9MT0IQBxIPCgtTS0lMTF9GUk9TVBAIEg8KC1NLSUxMX0JMSU5LEAkSDwoLU0tJTExfQkxBU1QQCirEAQoJRm9ybWF0aW9uEhkKFUZPUk1BVElPTl9VTlNQRUNJRklFRBAAEhQKEEZPUk1BVElPTl9DVVNUT00QARIUChBGT1JNQVRJT05fU1BSRUFEEAISEQoNRk9STUFUSU9OXzNfMhADEhEKDUZPUk1BVElPTl8yXzMQBBIRCg1GT1JNQVRJT05fNF8xEAUSEQoNRk9STUFUSU9OXzFfNBAGEhEKDUZPUk1BVElPTl8wXzUQBxIRCg1GT1JNQVRJT05fNV8wEAgqfAoMQmF0dGxlUmVzdWx0Eh0KGUJBVFRMRV9SRVNVTFRfVU5TUEVDSUZJRUQQABIaChZCQVRUTEVfUkVTVUxUX0JMVUVfV0lOEAESGQoVQkFUVExFX1JFU1VMVF9SRURfV0lOEAISFgoSQkFUVExFX1JFU1VMVF9EUkFXEAMy/wEKDUJhdHRsZVNlcnZpY2USSgoLU3RhcnRCYXR0bGUSHC5jaGlsbC52MS5TdGFydEJhdHRsZVJlcXVlc3QaHS5jaGlsbC52MS5TdGFydEJhdHRsZVJlc3BvbnNlElMKDkxvY2tEZXBsb3ltZW50Eh8uY2hpbGwudjEuTG9ja0RlcGxveW1lbnRSZXF1ZXN0GiAuY2hpbGwudjEuTG9ja0RlcGxveW1lbnRSZXNwb25zZRJNCgxWZXJpZnlCYXR0bGUSHS5jaGlsbC52MS5WZXJpZnlCYXR0bGVSZXF1ZXN0Gh4uY2hpbGwudjEuVmVyaWZ5QmF0dGxlUmVzcG9uc2VCdwoMY29tLmNoaWxsLnYxQgtCYXR0bGVQcm90b1ABWhljaGlsbC9wYi9jaGlsbC92MTtjaGlsbHYxogIDQ1hYqgIIQ2hpbGwuVjHKAghDaGlsbFxWMeICFENoaWxsXFYxXEdQQk1ldGFkYXRh6gIJQ2hpbGw6OlYxYgZwcm90bzM");
-
-/**
- * A point in raw Q48.16 fixed-point metres (value × 65536), so no float
- * rounding ever happens on the wire.
- *
- * @generated from message chill.v1.Point
- */
-export type Point = Message<"chill.v1.Point"> & {
-  /**
-   * @generated from field: sint64 x_raw = 1;
-   */
-  xRaw: bigint;
-
-  /**
-   * @generated from field: sint64 z_raw = 2;
-   */
-  zRaw: bigint;
-};
-
-/**
- * Describes the message chill.v1.Point.
- * Use `create(PointSchema)` to create a new message.
- */
-export const PointSchema: GenMessage<Point> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 0);
-
-/**
- * @generated from message chill.v1.UnitSpec
- */
-export type UnitSpec = Message<"chill.v1.UnitSpec"> & {
-  /**
-   * @generated from field: chill.v1.UnitClass unit_class = 1;
-   */
-  unitClass: UnitClass;
-
-  /**
-   * @generated from field: repeated chill.v1.Skill skills = 2;
-   */
-  skills: Skill[];
-
-  /**
-   * Required with FORMATION_CUSTOM, absent otherwise.
-   *
-   * @generated from field: chill.v1.Point position = 3;
-   */
-  position?: Point | undefined;
-};
-
-/**
- * Describes the message chill.v1.UnitSpec.
- * Use `create(UnitSpecSchema)` to create a new message.
- */
-export const UnitSpecSchema: GenMessage<UnitSpec> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 1);
-
-/**
- * @generated from message chill.v1.Army
- */
-export type Army = Message<"chill.v1.Army"> & {
-  /**
-   * @generated from field: chill.v1.Formation formation = 1;
-   */
-  formation: Formation;
-
-  /**
-   * @generated from field: repeated chill.v1.UnitSpec units = 2;
-   */
-  units: UnitSpec[];
-};
-
-/**
- * Describes the message chill.v1.Army.
- * Use `create(ArmySchema)` to create a new message.
- */
-export const ArmySchema: GenMessage<Army> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 2);
+  fileDesc("ChVjaGlsbC92MS9iYXR0bGUucHJvdG8SCGNoaWxsLnYxIpkBCgtCYXR0bGVJbnB1dBITCgtzaW1fdmVyc2lvbhgBIAEoCRIMCgRzZWVkGAIgASgEEhwKBGJsdWUYAyABKAsyDi5jaGlsbC52MS5Bcm15EhsKA3JlZBgEIAEoCzIOLmNoaWxsLnYxLkFybXkSFwoPcmVkX3NraWxsX2NvdW50GAUgASgNEhMKC2NvbWJhdF9zZWVkGAYgASgEIikKCFN1cnZpdm9yEg0KBWluZGV4GAEgASgNEg4KBmhwX3JhdxgCIAEoEiJ/Cg1CYXR0bGVPdXRjb21lEiYKBnJlc3VsdBgBIAEoDjIWLmNoaWxsLnYxLkJhdHRsZVJlc3VsdBINCgV0aWNrcxgCIAEoDRIlCglzdXJ2aXZvcnMYAyADKAsyEi5jaGlsbC52MS5TdXJ2aXZvchIQCghjaGVja3N1bRgEIAEoBCJQChJTdGFydEJhdHRsZVJlcXVlc3QSEwoLc2ltX3ZlcnNpb24YASABKAkSDgoGcnVuX2lkGAMgASgJSgQIAhADUg9yZWRfc2tpbGxfY291bnQiawoTU3RhcnRCYXR0bGVSZXNwb25zZRIRCgliYXR0bGVfaWQYASABKAkSDAoEc2VlZBgCIAEoBBIXCg9yZWRfc2tpbGxfY291bnQYAyABKA0SGgoSZGVwbG95X2RlYWRsaW5lX21zGAQgASgDIkgKFUxvY2tEZXBsb3ltZW50UmVxdWVzdBIRCgliYXR0bGVfaWQYASABKAkSHAoEYmx1ZRgCIAEoCzIOLmNoaWxsLnYxLkFybXkiSQoWTG9ja0RlcGxveW1lbnRSZXNwb25zZRITCgtjb21iYXRfc2VlZBgBIAEoBBIaChJ2ZXJpZnlfZGVhZGxpbmVfbXMYAiABKAMiUgoTVmVyaWZ5QmF0dGxlUmVxdWVzdBIRCgliYXR0bGVfaWQYASABKAkSKAoHY2xhaW1lZBgCIAEoCzIXLmNoaWxsLnYxLkJhdHRsZU91dGNvbWUiegoUVmVyaWZ5QmF0dGxlUmVzcG9uc2USDAoEZmFpchgBIAEoCBIOCgZyZWFzb24YAiABKAkSKAoHb3V0Y29tZRgDIAEoCzIXLmNoaWxsLnYxLkJhdHRsZU91dGNvbWUSGgoDcnVuGAQgASgLMg0uY2hpbGwudjEuUnVuKnwKDEJhdHRsZVJlc3VsdBIdChlCQVRUTEVfUkVTVUxUX1VOU1BFQ0lGSUVEEAASGgoWQkFUVExFX1JFU1VMVF9CTFVFX1dJThABEhkKFUJBVFRMRV9SRVNVTFRfUkVEX1dJThACEhYKEkJBVFRMRV9SRVNVTFRfRFJBVxADMv8BCg1CYXR0bGVTZXJ2aWNlEkoKC1N0YXJ0QmF0dGxlEhwuY2hpbGwudjEuU3RhcnRCYXR0bGVSZXF1ZXN0Gh0uY2hpbGwudjEuU3RhcnRCYXR0bGVSZXNwb25zZRJTCg5Mb2NrRGVwbG95bWVudBIfLmNoaWxsLnYxLkxvY2tEZXBsb3ltZW50UmVxdWVzdBogLmNoaWxsLnYxLkxvY2tEZXBsb3ltZW50UmVzcG9uc2USTQoMVmVyaWZ5QmF0dGxlEh0uY2hpbGwudjEuVmVyaWZ5QmF0dGxlUmVxdWVzdBoeLmNoaWxsLnYxLlZlcmlmeUJhdHRsZVJlc3BvbnNlQncKDGNvbS5jaGlsbC52MUILQmF0dGxlUHJvdG9QAVoZY2hpbGwvcGIvY2hpbGwvdjE7Y2hpbGx2MaICA0NYWKoCCENoaWxsLlYxygIIQ2hpbGxcVjHiAhRDaGlsbFxWMVxHUEJNZXRhZGF0YeoCCUNoaWxsOjpWMWIGcHJvdG8z", [file_chill_v1_runstate, file_chill_v1_units]);
 
 /**
  * Everything that decides a battle. The client assembles it from what the
@@ -137,7 +65,7 @@ export type BattleInput = Message<"chill.v1.BattleInput"> & {
  * Use `create(BattleInputSchema)` to create a new message.
  */
 export const BattleInputSchema: GenMessage<BattleInput> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 3);
+  messageDesc(file_chill_v1_battle, 0);
 
 /**
  * @generated from message chill.v1.Survivor
@@ -161,7 +89,7 @@ export type Survivor = Message<"chill.v1.Survivor"> & {
  * Use `create(SurvivorSchema)` to create a new message.
  */
 export const SurvivorSchema: GenMessage<Survivor> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 4);
+  messageDesc(file_chill_v1_battle, 1);
 
 /**
  * @generated from message chill.v1.BattleOutcome
@@ -193,7 +121,7 @@ export type BattleOutcome = Message<"chill.v1.BattleOutcome"> & {
  * Use `create(BattleOutcomeSchema)` to create a new message.
  */
 export const BattleOutcomeSchema: GenMessage<BattleOutcome> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 5);
+  messageDesc(file_chill_v1_battle, 2);
 
 /**
  * @generated from message chill.v1.StartBattleRequest
@@ -205,11 +133,11 @@ export type StartBattleRequest = Message<"chill.v1.StartBattleRequest"> & {
   simVersion: string;
 
   /**
-   * Red's total skills. Client-chosen until runs exist.
+   * The run this battle is the next match of.
    *
-   * @generated from field: uint32 red_skill_count = 2;
+   * @generated from field: string run_id = 3;
    */
-  redSkillCount: number;
+  runId: string;
 };
 
 /**
@@ -217,7 +145,7 @@ export type StartBattleRequest = Message<"chill.v1.StartBattleRequest"> & {
  * Use `create(StartBattleRequestSchema)` to create a new message.
  */
 export const StartBattleRequestSchema: GenMessage<StartBattleRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 6);
+  messageDesc(file_chill_v1_battle, 3);
 
 /**
  * @generated from message chill.v1.StartBattleResponse
@@ -236,6 +164,8 @@ export type StartBattleResponse = Message<"chill.v1.StartBattleResponse"> & {
   seed: bigint;
 
   /**
+   * Total skills of the run's veterans; Red gets as many.
+   *
    * @generated from field: uint32 red_skill_count = 3;
    */
   redSkillCount: number;
@@ -253,7 +183,7 @@ export type StartBattleResponse = Message<"chill.v1.StartBattleResponse"> & {
  * Use `create(StartBattleResponseSchema)` to create a new message.
  */
 export const StartBattleResponseSchema: GenMessage<StartBattleResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 7);
+  messageDesc(file_chill_v1_battle, 4);
 
 /**
  * @generated from message chill.v1.LockDeploymentRequest
@@ -275,7 +205,7 @@ export type LockDeploymentRequest = Message<"chill.v1.LockDeploymentRequest"> & 
  * Use `create(LockDeploymentRequestSchema)` to create a new message.
  */
 export const LockDeploymentRequestSchema: GenMessage<LockDeploymentRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 8);
+  messageDesc(file_chill_v1_battle, 5);
 
 /**
  * @generated from message chill.v1.LockDeploymentResponse
@@ -299,7 +229,7 @@ export type LockDeploymentResponse = Message<"chill.v1.LockDeploymentResponse"> 
  * Use `create(LockDeploymentResponseSchema)` to create a new message.
  */
 export const LockDeploymentResponseSchema: GenMessage<LockDeploymentResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 9);
+  messageDesc(file_chill_v1_battle, 6);
 
 /**
  * @generated from message chill.v1.VerifyBattleRequest
@@ -323,7 +253,7 @@ export type VerifyBattleRequest = Message<"chill.v1.VerifyBattleRequest"> & {
  * Use `create(VerifyBattleRequestSchema)` to create a new message.
  */
 export const VerifyBattleRequestSchema: GenMessage<VerifyBattleRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 10);
+  messageDesc(file_chill_v1_battle, 7);
 
 /**
  * @generated from message chill.v1.VerifyBattleResponse
@@ -345,6 +275,13 @@ export type VerifyBattleResponse = Message<"chill.v1.VerifyBattleResponse"> & {
    * @generated from field: chill.v1.BattleOutcome outcome = 3;
    */
   outcome?: BattleOutcome | undefined;
+
+  /**
+   * The run after this result (score, veterans, picks owed, or over).
+   *
+   * @generated from field: chill.v1.Run run = 4;
+   */
+  run?: Run | undefined;
 };
 
 /**
@@ -352,178 +289,7 @@ export type VerifyBattleResponse = Message<"chill.v1.VerifyBattleResponse"> & {
  * Use `create(VerifyBattleResponseSchema)` to create a new message.
  */
 export const VerifyBattleResponseSchema: GenMessage<VerifyBattleResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 11);
-
-/**
- * @generated from enum chill.v1.UnitClass
- */
-export enum UnitClass {
-  /**
-   * @generated from enum value: UNIT_CLASS_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: UNIT_CLASS_WARRIOR = 1;
-   */
-  WARRIOR = 1,
-
-  /**
-   * @generated from enum value: UNIT_CLASS_ARCHER = 2;
-   */
-  ARCHER = 2,
-
-  /**
-   * @generated from enum value: UNIT_CLASS_MAGE = 3;
-   */
-  MAGE = 3,
-}
-
-/**
- * Describes the enum chill.v1.UnitClass.
- */
-export const UnitClassSchema: GenEnum<UnitClass> = /*@__PURE__*/
-  enumDesc(file_chill_v1_battle, 0);
-
-/**
- * Skills by effect; which ones a class can learn is in docs/GAME_CONCEPT.md §10.1.
- *
- * @generated from enum chill.v1.Skill
- */
-export enum Skill {
-  /**
-   * @generated from enum value: SKILL_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * Toughness
-   *
-   * @generated from enum value: SKILL_HEALTH = 1;
-   */
-  HEALTH = 1,
-
-  /**
-   * Swift
-   *
-   * @generated from enum value: SKILL_SPEED = 2;
-   */
-  SPEED = 2,
-
-  /**
-   * Strength / Sharp arrows / Power
-   *
-   * @generated from enum value: SKILL_DAMAGE = 3;
-   */
-  DAMAGE = 3,
-
-  /**
-   * @generated from enum value: SKILL_DASH = 4;
-   */
-  DASH = 4,
-
-  /**
-   * Executioner / Headshot
-   *
-   * @generated from enum value: SKILL_EXECUTE = 5;
-   */
-  EXECUTE = 5,
-
-  /**
-   * Long shot
-   *
-   * @generated from enum value: SKILL_RANGE = 6;
-   */
-  RANGE = 6,
-
-  /**
-   * Arcing shot
-   *
-   * @generated from enum value: SKILL_LOB = 7;
-   */
-  LOB = 7,
-
-  /**
-   * @generated from enum value: SKILL_FROST = 8;
-   */
-  FROST = 8,
-
-  /**
-   * @generated from enum value: SKILL_BLINK = 9;
-   */
-  BLINK = 9,
-
-  /**
-   * @generated from enum value: SKILL_BLAST = 10;
-   */
-  BLAST = 10,
-}
-
-/**
- * Describes the enum chill.v1.Skill.
- */
-export const SkillSchema: GenEnum<Skill> = /*@__PURE__*/
-  enumDesc(file_chill_v1_battle, 1);
-
-/**
- * FORMATION_CUSTOM means every unit carries its own position.
- *
- * @generated from enum chill.v1.Formation
- */
-export enum Formation {
-  /**
-   * rejected
-   *
-   * @generated from enum value: FORMATION_UNSPECIFIED = 0;
-   */
-  FORMATION_UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: FORMATION_CUSTOM = 1;
-   */
-  FORMATION_CUSTOM = 1,
-
-  /**
-   * @generated from enum value: FORMATION_SPREAD = 2;
-   */
-  FORMATION_SPREAD = 2,
-
-  /**
-   * @generated from enum value: FORMATION_3_2 = 3;
-   */
-  FORMATION_3_2 = 3,
-
-  /**
-   * @generated from enum value: FORMATION_2_3 = 4;
-   */
-  FORMATION_2_3 = 4,
-
-  /**
-   * @generated from enum value: FORMATION_4_1 = 5;
-   */
-  FORMATION_4_1 = 5,
-
-  /**
-   * @generated from enum value: FORMATION_1_4 = 6;
-   */
-  FORMATION_1_4 = 6,
-
-  /**
-   * @generated from enum value: FORMATION_0_5 = 7;
-   */
-  FORMATION_0_5 = 7,
-
-  /**
-   * @generated from enum value: FORMATION_5_0 = 8;
-   */
-  FORMATION_5_0 = 8,
-}
-
-/**
- * Describes the enum chill.v1.Formation.
- */
-export const FormationSchema: GenEnum<Formation> = /*@__PURE__*/
-  enumDesc(file_chill_v1_battle, 2);
+  messageDesc(file_chill_v1_battle, 8);
 
 /**
  * @generated from enum chill.v1.BattleResult
@@ -554,7 +320,7 @@ export enum BattleResult {
  * Describes the enum chill.v1.BattleResult.
  */
 export const BattleResultSchema: GenEnum<BattleResult> = /*@__PURE__*/
-  enumDesc(file_chill_v1_battle, 3);
+  enumDesc(file_chill_v1_battle, 0);
 
 /**
  * The server never drives a battle. It issues one (seeds), takes the player's

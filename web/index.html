@@ -44,6 +44,21 @@
       .dev { position: fixed; top: 12px; right: 12px; display: flex; gap: 6px; align-items: center; background: #fffd; padding: 6px 8px; border-radius: 8px; font-size: 12px; z-index: 20; }
       .dev button { border: 1px solid #c5cedd; background: #fff; border-radius: 4px; } .dev button.on { background: #3a8cff; color: #fff; border-color: #2a6fd0; }
       .dev input { width: 40px; }
+      .slots span.vet { border-color: #e0b84a; background: #fff6dc; position: relative; }
+      .slots span.vet i, .picks i { font-style: normal; color: #c99a1e; font-size: 10px; }
+      .slots span.vet i { position: absolute; bottom: -2px; }
+      .runbar { position: fixed; top: 12px; left: 12px; background: #fffe; padding: 6px 12px; border-radius: 8px; box-shadow: 0 2px 10px #0002; z-index: 20; font-size: 13px; }
+      .picks { margin: 12px 0; text-align: left; } .picks h3 { text-align: center; margin: 4px 0 8px; }
+      .pickrow { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
+      .pickrow .who { min-width: 130px; font-weight: 600; }
+      .pickrow button { border: 1px solid #c5cedd; background: #fff; border-radius: 6px; padding: 4px 8px; font-size: 12px; }
+      .pickrow button.on { background: #ffd23f; border-color: #c99a1e; }
+      .picks .go { display: block; margin: 10px auto 0; }
+      .runover { margin: 8px 0; }
+      table.board { margin: 8px auto 14px; border-collapse: collapse; min-width: 320px; font-size: 13px; }
+      table.board th, table.board td { padding: 3px 8px; text-align: left; } table.board td:last-child, table.board th:last-child { text-align: right; }
+      table.board tr.mine { background: #fff1c2; font-weight: 600; }
+      .result.run-over h1 { color: #d83a3a; }
       .float { font: bold 16px system-ui; text-shadow: 0 0 3px #000, 0 0 3px #000; white-space: nowrap; animation: rise 1s linear forwards; }
       @keyframes rise { from { transform: translateY(0); opacity: 1 } to { transform: translateY(-28px); opacity: 0 } }
     </style>

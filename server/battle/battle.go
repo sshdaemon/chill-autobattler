@@ -19,19 +19,21 @@ import (
 
 	chillv1 "chill/pb/chill/v1"
 	"chill/pb/convert"
+	"chill/server/run"
 	"chill/server/store"
 	"chill/sim"
 )
 
 type Service struct {
 	DB           *store.DB
+	Runs         *run.Service
 	Now          func() time.Time
 	DeployWindow time.Duration // start → lock
 	VerifyWindow time.Duration // lock → verify
 }
 
-func NewService(db *store.DB) *Service {
-	return &Service{DB: db, Now: time.Now, DeployWindow: 2 * time.Minute, VerifyWindow: 10 * time.Minute}
+func NewService(db *store.DB, runs *run.Service) *Service {
+	return &Service{DB: db, Runs: runs, Now: time.Now, DeployWindow: 2 * time.Minute, VerifyWindow: 10 * time.Minute}
 }
 
 func (s *Service) nowMs() int64 { return s.Now().UnixMilli() }
@@ -52,22 +54,80 @@ func wrongVersion(v string) error {
 	return connect.Errorf(connect.CodeFailedPrecondition, "unknown sim version %q (server has %q)", v, sim.Version)
 }
 
+// StartBattle creates the next battle of a ready run. Red gets as many skills
+// as the run's veterans have.
 func (s *Service) StartBattle(ctx context.Context, req *chillv1.StartBattleRequest) (*chillv1.StartBattleResponse, error) {
 	if req.SimVersion != sim.Version {
 		return nil, wrongVersion(req.SimVersion)
 	}
-	if req.RedSkillCount > sim.ArmySize*sim.MaxSkills {
-		return nil, connect.Errorf(connect.CodeInvalidArgument, "red skill count %d out of range", req.RedSkillCount)
-	}
-	now := s.nowMs()
-	p := store.CreateBattleParams{
-		ID: newID(), SimVersion: sim.Version, MapSeed: int64(random64()), CombatSeed: int64(random64()),
-		RedSkillCount: int64(req.RedSkillCount), CreatedAt: now, DeployDeadline: now + s.DeployWindow.Milliseconds(),
-	}
-	if err := s.DB.CreateBattle(ctx, p); err != nil {
+	player, err := run.Player(ctx)
+	if err != nil {
 		return nil, err
 	}
-	return &chillv1.StartBattleResponse{BattleId: p.ID, Seed: uint64(p.MapSeed), RedSkillCount: req.RedSkillCount, DeployDeadlineMs: p.DeployDeadline}, nil
+	r, err := s.Runs.Get(ctx, player, req.RunId)
+	if err != nil {
+		return nil, err
+	}
+	if r.State != run.Ready || r.CurrentBattleID.Valid {
+		return nil, connect.Errorf(connect.CodeFailedPrecondition, "run %s can't start a battle now (%s)", r.ID, describe(r))
+	}
+	vets, err := run.Veterans(r)
+	if err != nil {
+		return nil, err
+	}
+	now := s.nowMs()
+	p := store.CreateRunBattleParams{
+		ID: newID(), SimVersion: sim.Version, MapSeed: int64(random64()), CombatSeed: int64(random64()),
+		RedSkillCount: int64(run.SkillTotal(vets)), CreatedAt: now, DeployDeadline: now + s.DeployWindow.Milliseconds(),
+		RunID: sql.NullString{String: r.ID, Valid: true}, MatchNo: sql.NullInt64{Int64: r.MatchNo, Valid: true},
+	}
+	err = s.DB.Tx(ctx, func(q *store.Queries) error {
+		if err := q.CreateRunBattle(ctx, p); err != nil {
+			return err
+		}
+		n, err := q.SetCurrentBattle(ctx, store.SetCurrentBattleParams{ID: r.ID, BattleID: sql.NullString{String: p.ID, Valid: true}})
+		if err == nil && n == 0 {
+			err = connect.Errorf(connect.CodeFailedPrecondition, "run %s already has a battle", r.ID)
+		}
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &chillv1.StartBattleResponse{BattleId: p.ID, Seed: uint64(p.MapSeed), RedSkillCount: uint32(p.RedSkillCount), DeployDeadlineMs: p.DeployDeadline}, nil
+}
+
+func describe(r store.Run) string {
+	switch {
+	case r.State == run.Over:
+		return "it is over"
+	case r.State == run.Picking:
+		return "skill picks are owed"
+	case r.CurrentBattleID.Valid:
+		return "a battle is in progress"
+	}
+	return r.State
+}
+
+// owned loads a battle and its run, both owned by the calling player
+// (NotFound otherwise, so ids can't be probed). The run is settled.
+func (s *Service) owned(ctx context.Context, id string) (store.Battle, store.Run, error) {
+	player, err := run.Player(ctx)
+	if err != nil {
+		return store.Battle{}, store.Run{}, err
+	}
+	b, err := s.get(ctx, id)
+	if err != nil {
+		return b, store.Run{}, err
+	}
+	if !b.RunID.Valid {
+		return b, store.Run{}, connect.Errorf(connect.CodeNotFound, "no battle %q", id)
+	}
+	r, err := s.Runs.Get(ctx, player, b.RunID.String)
+	if connect.CodeOf(err) == connect.CodeNotFound {
+		return b, r, connect.Errorf(connect.CodeNotFound, "no battle %q", id)
+	}
+	return b, r, err
 }
 
 func (s *Service) get(ctx context.Context, id string) (store.Battle, error) {
@@ -87,12 +147,22 @@ func input(b store.Battle, blue *chillv1.Army) *chillv1.BattleInput {
 }
 
 func (s *Service) LockDeployment(ctx context.Context, req *chillv1.LockDeploymentRequest) (*chillv1.LockDeploymentResponse, error) {
-	b, err := s.get(ctx, req.BattleId)
+	b, r, err := s.owned(ctx, req.BattleId)
 	if err != nil {
 		return nil, err
 	}
 	if b.SimVersion != sim.Version {
 		return nil, wrongVersion(b.SimVersion)
+	}
+	if r.State == run.Over || r.CurrentBattleID.String != b.ID {
+		return nil, connect.Errorf(connect.CodeFailedPrecondition, "battle %s is no longer the run's current battle (%s)", b.ID, describe(r))
+	}
+	vets, err := run.Veterans(r)
+	if err != nil {
+		return nil, err
+	}
+	if err := run.CheckArmy(vets, req.Blue); err != nil {
+		return nil, connect.Errorf(connect.CodeInvalidArgument, "%v", err)
 	}
 	if _, err := convert.Input(input(b, req.Blue)); err != nil { // validate before storing
 		return nil, connect.Errorf(connect.CodeInvalidArgument, "%v", err)
@@ -121,6 +191,15 @@ func (s *Service) LockDeployment(ctx context.Context, req *chillv1.LockDeploymen
 	return &chillv1.LockDeploymentResponse{CombatSeed: uint64(b.CombatSeed), VerifyDeadlineMs: verifyBy}, nil
 }
 
+func (s *Service) withRun(ctx context.Context, res *chillv1.VerifyBattleResponse, runID string) (*chillv1.VerifyBattleResponse, error) {
+	r, err := s.DB.GetRun(ctx, runID)
+	if err != nil {
+		return nil, err
+	}
+	res.Run, err = s.Runs.Proto(ctx, r)
+	return res, err
+}
+
 func stored(b store.Battle) (*chillv1.VerifyBattleResponse, error) {
 	res := &chillv1.VerifyBattleResponse{Fair: b.Fair.Int64 == 1, Reason: b.Reason.String, Outcome: &chillv1.BattleOutcome{}}
 	if err := proto.Unmarshal(b.Outcome, res.Outcome); err != nil {
@@ -130,12 +209,16 @@ func stored(b store.Battle) (*chillv1.VerifyBattleResponse, error) {
 }
 
 func (s *Service) VerifyBattle(ctx context.Context, req *chillv1.VerifyBattleRequest) (*chillv1.VerifyBattleResponse, error) {
-	b, err := s.get(ctx, req.BattleId)
+	b, r, err := s.owned(ctx, req.BattleId)
 	if err != nil {
 		return nil, err
 	}
 	if b.VerifiedAt.Valid { // the first verdict is final
-		return stored(b)
+		res, err := stored(b)
+		if err != nil {
+			return nil, err
+		}
+		return s.withRun(ctx, res, r.ID)
 	}
 	if !b.LockedAt.Valid {
 		return nil, connect.Errorf(connect.CodeFailedPrecondition, "battle %s has no locked deployment", b.ID)
@@ -175,21 +258,37 @@ func (s *Service) VerifyBattle(ctx context.Context, req *chillv1.VerifyBattleReq
 	if res.Fair {
 		fair = 1
 	}
-	n, err := s.DB.RecordVerdict(ctx, store.RecordVerdictParams{
-		ID: b.ID, Now: sql.NullInt64{Int64: s.nowMs(), Valid: true}, Fair: sql.NullInt64{Int64: fair, Valid: true},
-		Reason: sql.NullString{String: res.Reason, Valid: true}, Outcome: outcome,
+	now := s.nowMs()
+	// The verdict and its effect on the run land together or not at all.
+	var recorded int64
+	err = s.DB.Tx(ctx, func(q *store.Queries) error {
+		recorded, err = q.RecordVerdict(ctx, store.RecordVerdictParams{
+			ID: b.ID, Now: sql.NullInt64{Int64: now, Valid: true}, Fair: sql.NullInt64{Int64: fair, Valid: true},
+			Reason: sql.NullString{String: res.Reason, Valid: true}, Outcome: outcome,
+		})
+		if err != nil || recorded == 0 {
+			return err
+		}
+		if r.State == run.Over || r.CurrentBattleID.String != b.ID {
+			return nil // the run already moved on (e.g. restarted); the verdict still stands
+		}
+		return run.ApplyResult(ctx, q, r, res.Fair, &blue, o, now)
 	})
 	if err != nil {
 		return nil, err
 	}
-	if n == 0 { // lost a race with another verify, or the deadline passed meanwhile
+	if recorded == 0 { // lost a race with another verify, or the deadline passed meanwhile
 		if b, err = s.get(ctx, req.BattleId); err != nil {
 			return nil, err
 		}
 		if b.VerifiedAt.Valid {
-			return stored(b)
+			res, err := stored(b)
+			if err != nil {
+				return nil, err
+			}
+			return s.withRun(ctx, res, r.ID)
 		}
 		return nil, connect.Errorf(connect.CodeFailedPrecondition, "battle %s expired: the verify deadline has passed", b.ID)
 	}
-	return res, nil
+	return s.withRun(ctx, res, r.ID)
 }
