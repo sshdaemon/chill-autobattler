@@ -21,200 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type UnitClass int32
-
-const (
-	UnitClass_UNIT_CLASS_UNSPECIFIED UnitClass = 0
-	UnitClass_UNIT_CLASS_WARRIOR     UnitClass = 1
-	UnitClass_UNIT_CLASS_ARCHER      UnitClass = 2
-	UnitClass_UNIT_CLASS_MAGE        UnitClass = 3
-)
-
-// Enum value maps for UnitClass.
-var (
-	UnitClass_name = map[int32]string{
-		0: "UNIT_CLASS_UNSPECIFIED",
-		1: "UNIT_CLASS_WARRIOR",
-		2: "UNIT_CLASS_ARCHER",
-		3: "UNIT_CLASS_MAGE",
-	}
-	UnitClass_value = map[string]int32{
-		"UNIT_CLASS_UNSPECIFIED": 0,
-		"UNIT_CLASS_WARRIOR":     1,
-		"UNIT_CLASS_ARCHER":      2,
-		"UNIT_CLASS_MAGE":        3,
-	}
-)
-
-func (x UnitClass) Enum() *UnitClass {
-	p := new(UnitClass)
-	*p = x
-	return p
-}
-
-func (x UnitClass) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (UnitClass) Descriptor() protoreflect.EnumDescriptor {
-	return file_chill_v1_battle_proto_enumTypes[0].Descriptor()
-}
-
-func (UnitClass) Type() protoreflect.EnumType {
-	return &file_chill_v1_battle_proto_enumTypes[0]
-}
-
-func (x UnitClass) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use UnitClass.Descriptor instead.
-func (UnitClass) EnumDescriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{0}
-}
-
-// Skills by effect; which ones a class can learn is in docs/GAME_CONCEPT.md §10.1.
-type Skill int32
-
-const (
-	Skill_SKILL_UNSPECIFIED Skill = 0
-	Skill_SKILL_HEALTH      Skill = 1 // Toughness
-	Skill_SKILL_SPEED       Skill = 2 // Swift
-	Skill_SKILL_DAMAGE      Skill = 3 // Strength / Sharp arrows / Power
-	Skill_SKILL_DASH        Skill = 4
-	Skill_SKILL_EXECUTE     Skill = 5 // Executioner / Headshot
-	Skill_SKILL_RANGE       Skill = 6 // Long shot
-	Skill_SKILL_LOB         Skill = 7 // Arcing shot
-	Skill_SKILL_FROST       Skill = 8
-	Skill_SKILL_BLINK       Skill = 9
-	Skill_SKILL_BLAST       Skill = 10
-)
-
-// Enum value maps for Skill.
-var (
-	Skill_name = map[int32]string{
-		0:  "SKILL_UNSPECIFIED",
-		1:  "SKILL_HEALTH",
-		2:  "SKILL_SPEED",
-		3:  "SKILL_DAMAGE",
-		4:  "SKILL_DASH",
-		5:  "SKILL_EXECUTE",
-		6:  "SKILL_RANGE",
-		7:  "SKILL_LOB",
-		8:  "SKILL_FROST",
-		9:  "SKILL_BLINK",
-		10: "SKILL_BLAST",
-	}
-	Skill_value = map[string]int32{
-		"SKILL_UNSPECIFIED": 0,
-		"SKILL_HEALTH":      1,
-		"SKILL_SPEED":       2,
-		"SKILL_DAMAGE":      3,
-		"SKILL_DASH":        4,
-		"SKILL_EXECUTE":     5,
-		"SKILL_RANGE":       6,
-		"SKILL_LOB":         7,
-		"SKILL_FROST":       8,
-		"SKILL_BLINK":       9,
-		"SKILL_BLAST":       10,
-	}
-)
-
-func (x Skill) Enum() *Skill {
-	p := new(Skill)
-	*p = x
-	return p
-}
-
-func (x Skill) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (Skill) Descriptor() protoreflect.EnumDescriptor {
-	return file_chill_v1_battle_proto_enumTypes[1].Descriptor()
-}
-
-func (Skill) Type() protoreflect.EnumType {
-	return &file_chill_v1_battle_proto_enumTypes[1]
-}
-
-func (x Skill) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use Skill.Descriptor instead.
-func (Skill) EnumDescriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{1}
-}
-
-// FORMATION_CUSTOM means every unit carries its own position.
-type Formation int32
-
-const (
-	Formation_FORMATION_UNSPECIFIED Formation = 0 // rejected
-	Formation_FORMATION_CUSTOM      Formation = 1
-	Formation_FORMATION_SPREAD      Formation = 2
-	Formation_FORMATION_3_2         Formation = 3
-	Formation_FORMATION_2_3         Formation = 4
-	Formation_FORMATION_4_1         Formation = 5
-	Formation_FORMATION_1_4         Formation = 6
-	Formation_FORMATION_0_5         Formation = 7
-	Formation_FORMATION_5_0         Formation = 8
-)
-
-// Enum value maps for Formation.
-var (
-	Formation_name = map[int32]string{
-		0: "FORMATION_UNSPECIFIED",
-		1: "FORMATION_CUSTOM",
-		2: "FORMATION_SPREAD",
-		3: "FORMATION_3_2",
-		4: "FORMATION_2_3",
-		5: "FORMATION_4_1",
-		6: "FORMATION_1_4",
-		7: "FORMATION_0_5",
-		8: "FORMATION_5_0",
-	}
-	Formation_value = map[string]int32{
-		"FORMATION_UNSPECIFIED": 0,
-		"FORMATION_CUSTOM":      1,
-		"FORMATION_SPREAD":      2,
-		"FORMATION_3_2":         3,
-		"FORMATION_2_3":         4,
-		"FORMATION_4_1":         5,
-		"FORMATION_1_4":         6,
-		"FORMATION_0_5":         7,
-		"FORMATION_5_0":         8,
-	}
-)
-
-func (x Formation) Enum() *Formation {
-	p := new(Formation)
-	*p = x
-	return p
-}
-
-func (x Formation) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (Formation) Descriptor() protoreflect.EnumDescriptor {
-	return file_chill_v1_battle_proto_enumTypes[2].Descriptor()
-}
-
-func (Formation) Type() protoreflect.EnumType {
-	return &file_chill_v1_battle_proto_enumTypes[2]
-}
-
-func (x Formation) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use Formation.Descriptor instead.
-func (Formation) EnumDescriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{2}
-}
-
 type BattleResult int32
 
 const (
@@ -251,11 +57,11 @@ func (x BattleResult) String() string {
 }
 
 func (BattleResult) Descriptor() protoreflect.EnumDescriptor {
-	return file_chill_v1_battle_proto_enumTypes[3].Descriptor()
+	return file_chill_v1_battle_proto_enumTypes[0].Descriptor()
 }
 
 func (BattleResult) Type() protoreflect.EnumType {
-	return &file_chill_v1_battle_proto_enumTypes[3]
+	return &file_chill_v1_battle_proto_enumTypes[0]
 }
 
 func (x BattleResult) Number() protoreflect.EnumNumber {
@@ -264,174 +70,7 @@ func (x BattleResult) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BattleResult.Descriptor instead.
 func (BattleResult) EnumDescriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{3}
-}
-
-// A point in raw Q48.16 fixed-point metres (value × 65536), so no float
-// rounding ever happens on the wire.
-type Point struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	XRaw          int64                  `protobuf:"zigzag64,1,opt,name=x_raw,json=xRaw,proto3" json:"x_raw,omitempty"`
-	ZRaw          int64                  `protobuf:"zigzag64,2,opt,name=z_raw,json=zRaw,proto3" json:"z_raw,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Point) Reset() {
-	*x = Point{}
-	mi := &file_chill_v1_battle_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Point) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Point) ProtoMessage() {}
-
-func (x *Point) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Point.ProtoReflect.Descriptor instead.
-func (*Point) Descriptor() ([]byte, []int) {
 	return file_chill_v1_battle_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *Point) GetXRaw() int64 {
-	if x != nil {
-		return x.XRaw
-	}
-	return 0
-}
-
-func (x *Point) GetZRaw() int64 {
-	if x != nil {
-		return x.ZRaw
-	}
-	return 0
-}
-
-type UnitSpec struct {
-	state     protoimpl.MessageState `protogen:"open.v1"`
-	UnitClass UnitClass              `protobuf:"varint,1,opt,name=unit_class,json=unitClass,proto3,enum=chill.v1.UnitClass" json:"unit_class,omitempty"`
-	Skills    []Skill                `protobuf:"varint,2,rep,packed,name=skills,proto3,enum=chill.v1.Skill" json:"skills,omitempty"`
-	// Required with FORMATION_CUSTOM, absent otherwise.
-	Position      *Point `protobuf:"bytes,3,opt,name=position,proto3" json:"position,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UnitSpec) Reset() {
-	*x = UnitSpec{}
-	mi := &file_chill_v1_battle_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UnitSpec) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UnitSpec) ProtoMessage() {}
-
-func (x *UnitSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UnitSpec.ProtoReflect.Descriptor instead.
-func (*UnitSpec) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *UnitSpec) GetUnitClass() UnitClass {
-	if x != nil {
-		return x.UnitClass
-	}
-	return UnitClass_UNIT_CLASS_UNSPECIFIED
-}
-
-func (x *UnitSpec) GetSkills() []Skill {
-	if x != nil {
-		return x.Skills
-	}
-	return nil
-}
-
-func (x *UnitSpec) GetPosition() *Point {
-	if x != nil {
-		return x.Position
-	}
-	return nil
-}
-
-type Army struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Formation     Formation              `protobuf:"varint,1,opt,name=formation,proto3,enum=chill.v1.Formation" json:"formation,omitempty"`
-	Units         []*UnitSpec            `protobuf:"bytes,2,rep,name=units,proto3" json:"units,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Army) Reset() {
-	*x = Army{}
-	mi := &file_chill_v1_battle_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Army) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Army) ProtoMessage() {}
-
-func (x *Army) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Army.ProtoReflect.Descriptor instead.
-func (*Army) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *Army) GetFormation() Formation {
-	if x != nil {
-		return x.Formation
-	}
-	return Formation_FORMATION_UNSPECIFIED
-}
-
-func (x *Army) GetUnits() []*UnitSpec {
-	if x != nil {
-		return x.Units
-	}
-	return nil
 }
 
 // Everything that decides a battle. The client assembles it from what the
@@ -453,7 +92,7 @@ type BattleInput struct {
 
 func (x *BattleInput) Reset() {
 	*x = BattleInput{}
-	mi := &file_chill_v1_battle_proto_msgTypes[3]
+	mi := &file_chill_v1_battle_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -465,7 +104,7 @@ func (x *BattleInput) String() string {
 func (*BattleInput) ProtoMessage() {}
 
 func (x *BattleInput) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[3]
+	mi := &file_chill_v1_battle_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -478,7 +117,7 @@ func (x *BattleInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BattleInput.ProtoReflect.Descriptor instead.
 func (*BattleInput) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{3}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *BattleInput) GetSimVersion() string {
@@ -534,7 +173,7 @@ type Survivor struct {
 
 func (x *Survivor) Reset() {
 	*x = Survivor{}
-	mi := &file_chill_v1_battle_proto_msgTypes[4]
+	mi := &file_chill_v1_battle_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -546,7 +185,7 @@ func (x *Survivor) String() string {
 func (*Survivor) ProtoMessage() {}
 
 func (x *Survivor) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[4]
+	mi := &file_chill_v1_battle_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -559,7 +198,7 @@ func (x *Survivor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Survivor.ProtoReflect.Descriptor instead.
 func (*Survivor) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{4}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Survivor) GetIndex() uint32 {
@@ -588,7 +227,7 @@ type BattleOutcome struct {
 
 func (x *BattleOutcome) Reset() {
 	*x = BattleOutcome{}
-	mi := &file_chill_v1_battle_proto_msgTypes[5]
+	mi := &file_chill_v1_battle_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -600,7 +239,7 @@ func (x *BattleOutcome) String() string {
 func (*BattleOutcome) ProtoMessage() {}
 
 func (x *BattleOutcome) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[5]
+	mi := &file_chill_v1_battle_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -613,7 +252,7 @@ func (x *BattleOutcome) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BattleOutcome.ProtoReflect.Descriptor instead.
 func (*BattleOutcome) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{5}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *BattleOutcome) GetResult() BattleResult {
@@ -647,15 +286,15 @@ func (x *BattleOutcome) GetChecksum() uint64 {
 type StartBattleRequest struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
 	SimVersion string                 `protobuf:"bytes,1,opt,name=sim_version,json=simVersion,proto3" json:"sim_version,omitempty"`
-	// Red's total skills. Client-chosen until runs exist.
-	RedSkillCount uint32 `protobuf:"varint,2,opt,name=red_skill_count,json=redSkillCount,proto3" json:"red_skill_count,omitempty"`
+	// The run this battle is the next match of.
+	RunId         string `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StartBattleRequest) Reset() {
 	*x = StartBattleRequest{}
-	mi := &file_chill_v1_battle_proto_msgTypes[6]
+	mi := &file_chill_v1_battle_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -667,7 +306,7 @@ func (x *StartBattleRequest) String() string {
 func (*StartBattleRequest) ProtoMessage() {}
 
 func (x *StartBattleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[6]
+	mi := &file_chill_v1_battle_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +319,7 @@ func (x *StartBattleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartBattleRequest.ProtoReflect.Descriptor instead.
 func (*StartBattleRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{6}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *StartBattleRequest) GetSimVersion() string {
@@ -690,18 +329,19 @@ func (x *StartBattleRequest) GetSimVersion() string {
 	return ""
 }
 
-func (x *StartBattleRequest) GetRedSkillCount() uint32 {
+func (x *StartBattleRequest) GetRunId() string {
 	if x != nil {
-		return x.RedSkillCount
+		return x.RunId
 	}
-	return 0
+	return ""
 }
 
 type StartBattleResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
-	Seed          uint64                 `protobuf:"varint,2,opt,name=seed,proto3" json:"seed,omitempty"` // map seed
-	RedSkillCount uint32                 `protobuf:"varint,3,opt,name=red_skill_count,json=redSkillCount,proto3" json:"red_skill_count,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	BattleId string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
+	Seed     uint64                 `protobuf:"varint,2,opt,name=seed,proto3" json:"seed,omitempty"` // map seed
+	// Total skills of the run's veterans; Red gets as many.
+	RedSkillCount uint32 `protobuf:"varint,3,opt,name=red_skill_count,json=redSkillCount,proto3" json:"red_skill_count,omitempty"`
 	// Unix milliseconds.
 	DeployDeadlineMs int64 `protobuf:"varint,4,opt,name=deploy_deadline_ms,json=deployDeadlineMs,proto3" json:"deploy_deadline_ms,omitempty"`
 	unknownFields    protoimpl.UnknownFields
@@ -710,7 +350,7 @@ type StartBattleResponse struct {
 
 func (x *StartBattleResponse) Reset() {
 	*x = StartBattleResponse{}
-	mi := &file_chill_v1_battle_proto_msgTypes[7]
+	mi := &file_chill_v1_battle_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -722,7 +362,7 @@ func (x *StartBattleResponse) String() string {
 func (*StartBattleResponse) ProtoMessage() {}
 
 func (x *StartBattleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[7]
+	mi := &file_chill_v1_battle_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -735,7 +375,7 @@ func (x *StartBattleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartBattleResponse.ProtoReflect.Descriptor instead.
 func (*StartBattleResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{7}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *StartBattleResponse) GetBattleId() string {
@@ -776,7 +416,7 @@ type LockDeploymentRequest struct {
 
 func (x *LockDeploymentRequest) Reset() {
 	*x = LockDeploymentRequest{}
-	mi := &file_chill_v1_battle_proto_msgTypes[8]
+	mi := &file_chill_v1_battle_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -788,7 +428,7 @@ func (x *LockDeploymentRequest) String() string {
 func (*LockDeploymentRequest) ProtoMessage() {}
 
 func (x *LockDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[8]
+	mi := &file_chill_v1_battle_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -801,7 +441,7 @@ func (x *LockDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*LockDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{8}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *LockDeploymentRequest) GetBattleId() string {
@@ -829,7 +469,7 @@ type LockDeploymentResponse struct {
 
 func (x *LockDeploymentResponse) Reset() {
 	*x = LockDeploymentResponse{}
-	mi := &file_chill_v1_battle_proto_msgTypes[9]
+	mi := &file_chill_v1_battle_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -841,7 +481,7 @@ func (x *LockDeploymentResponse) String() string {
 func (*LockDeploymentResponse) ProtoMessage() {}
 
 func (x *LockDeploymentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[9]
+	mi := &file_chill_v1_battle_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -854,7 +494,7 @@ func (x *LockDeploymentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockDeploymentResponse.ProtoReflect.Descriptor instead.
 func (*LockDeploymentResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{9}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *LockDeploymentResponse) GetCombatSeed() uint64 {
@@ -882,7 +522,7 @@ type VerifyBattleRequest struct {
 
 func (x *VerifyBattleRequest) Reset() {
 	*x = VerifyBattleRequest{}
-	mi := &file_chill_v1_battle_proto_msgTypes[10]
+	mi := &file_chill_v1_battle_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -894,7 +534,7 @@ func (x *VerifyBattleRequest) String() string {
 func (*VerifyBattleRequest) ProtoMessage() {}
 
 func (x *VerifyBattleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[10]
+	mi := &file_chill_v1_battle_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -907,7 +547,7 @@ func (x *VerifyBattleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VerifyBattleRequest.ProtoReflect.Descriptor instead.
 func (*VerifyBattleRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{10}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *VerifyBattleRequest) GetBattleId() string {
@@ -929,14 +569,16 @@ type VerifyBattleResponse struct {
 	Fair   bool                   `protobuf:"varint,1,opt,name=fair,proto3" json:"fair,omitempty"`
 	Reason string                 `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"`
 	// The server's own outcome (absent if the input was rejected).
-	Outcome       *BattleOutcome `protobuf:"bytes,3,opt,name=outcome,proto3" json:"outcome,omitempty"`
+	Outcome *BattleOutcome `protobuf:"bytes,3,opt,name=outcome,proto3" json:"outcome,omitempty"`
+	// The run after this result (score, veterans, picks owed, or over).
+	Run           *Run `protobuf:"bytes,4,opt,name=run,proto3" json:"run,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *VerifyBattleResponse) Reset() {
 	*x = VerifyBattleResponse{}
-	mi := &file_chill_v1_battle_proto_msgTypes[11]
+	mi := &file_chill_v1_battle_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -948,7 +590,7 @@ func (x *VerifyBattleResponse) String() string {
 func (*VerifyBattleResponse) ProtoMessage() {}
 
 func (x *VerifyBattleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[11]
+	mi := &file_chill_v1_battle_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -961,7 +603,7 @@ func (x *VerifyBattleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VerifyBattleResponse.ProtoReflect.Descriptor instead.
 func (*VerifyBattleResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{11}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *VerifyBattleResponse) GetFair() bool {
@@ -985,22 +627,18 @@ func (x *VerifyBattleResponse) GetOutcome() *BattleOutcome {
 	return nil
 }
 
+func (x *VerifyBattleResponse) GetRun() *Run {
+	if x != nil {
+		return x.Run
+	}
+	return nil
+}
+
 var File_chill_v1_battle_proto protoreflect.FileDescriptor
 
 const file_chill_v1_battle_proto_rawDesc = "" +
 	"\n" +
-	"\x15chill/v1/battle.proto\x12\bchill.v1\"1\n" +
-	"\x05Point\x12\x13\n" +
-	"\x05x_raw\x18\x01 \x01(\x12R\x04xRaw\x12\x13\n" +
-	"\x05z_raw\x18\x02 \x01(\x12R\x04zRaw\"\x94\x01\n" +
-	"\bUnitSpec\x122\n" +
-	"\n" +
-	"unit_class\x18\x01 \x01(\x0e2\x13.chill.v1.UnitClassR\tunitClass\x12'\n" +
-	"\x06skills\x18\x02 \x03(\x0e2\x0f.chill.v1.SkillR\x06skills\x12+\n" +
-	"\bposition\x18\x03 \x01(\v2\x0f.chill.v1.PointR\bposition\"c\n" +
-	"\x04Army\x121\n" +
-	"\tformation\x18\x01 \x01(\x0e2\x13.chill.v1.FormationR\tformation\x12(\n" +
-	"\x05units\x18\x02 \x03(\v2\x12.chill.v1.UnitSpecR\x05units\"\xd1\x01\n" +
+	"\x15chill/v1/battle.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\x1a\x14chill/v1/units.proto\"\xd1\x01\n" +
 	"\vBattleInput\x12\x1f\n" +
 	"\vsim_version\x18\x01 \x01(\tR\n" +
 	"simVersion\x12\x12\n" +
@@ -1017,11 +655,11 @@ const file_chill_v1_battle_proto_rawDesc = "" +
 	"\x06result\x18\x01 \x01(\x0e2\x16.chill.v1.BattleResultR\x06result\x12\x14\n" +
 	"\x05ticks\x18\x02 \x01(\rR\x05ticks\x120\n" +
 	"\tsurvivors\x18\x03 \x03(\v2\x12.chill.v1.SurvivorR\tsurvivors\x12\x1a\n" +
-	"\bchecksum\x18\x04 \x01(\x04R\bchecksum\"]\n" +
+	"\bchecksum\x18\x04 \x01(\x04R\bchecksum\"c\n" +
 	"\x12StartBattleRequest\x12\x1f\n" +
 	"\vsim_version\x18\x01 \x01(\tR\n" +
-	"simVersion\x12&\n" +
-	"\x0fred_skill_count\x18\x02 \x01(\rR\rredSkillCount\"\x9c\x01\n" +
+	"simVersion\x12\x15\n" +
+	"\x06run_id\x18\x03 \x01(\tR\x05runIdJ\x04\b\x02\x10\x03R\x0fred_skill_count\"\x9c\x01\n" +
 	"\x13StartBattleResponse\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x12\n" +
 	"\x04seed\x18\x02 \x01(\x04R\x04seed\x12&\n" +
@@ -1036,40 +674,12 @@ const file_chill_v1_battle_proto_rawDesc = "" +
 	"\x12verify_deadline_ms\x18\x02 \x01(\x03R\x10verifyDeadlineMs\"e\n" +
 	"\x13VerifyBattleRequest\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x121\n" +
-	"\aclaimed\x18\x02 \x01(\v2\x17.chill.v1.BattleOutcomeR\aclaimed\"u\n" +
+	"\aclaimed\x18\x02 \x01(\v2\x17.chill.v1.BattleOutcomeR\aclaimed\"\x96\x01\n" +
 	"\x14VerifyBattleResponse\x12\x12\n" +
 	"\x04fair\x18\x01 \x01(\bR\x04fair\x12\x16\n" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\x121\n" +
-	"\aoutcome\x18\x03 \x01(\v2\x17.chill.v1.BattleOutcomeR\aoutcome*k\n" +
-	"\tUnitClass\x12\x1a\n" +
-	"\x16UNIT_CLASS_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12UNIT_CLASS_WARRIOR\x10\x01\x12\x15\n" +
-	"\x11UNIT_CLASS_ARCHER\x10\x02\x12\x13\n" +
-	"\x0fUNIT_CLASS_MAGE\x10\x03*\xc9\x01\n" +
-	"\x05Skill\x12\x15\n" +
-	"\x11SKILL_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fSKILL_HEALTH\x10\x01\x12\x0f\n" +
-	"\vSKILL_SPEED\x10\x02\x12\x10\n" +
-	"\fSKILL_DAMAGE\x10\x03\x12\x0e\n" +
-	"\n" +
-	"SKILL_DASH\x10\x04\x12\x11\n" +
-	"\rSKILL_EXECUTE\x10\x05\x12\x0f\n" +
-	"\vSKILL_RANGE\x10\x06\x12\r\n" +
-	"\tSKILL_LOB\x10\a\x12\x0f\n" +
-	"\vSKILL_FROST\x10\b\x12\x0f\n" +
-	"\vSKILL_BLINK\x10\t\x12\x0f\n" +
-	"\vSKILL_BLAST\x10\n" +
-	"*\xc4\x01\n" +
-	"\tFormation\x12\x19\n" +
-	"\x15FORMATION_UNSPECIFIED\x10\x00\x12\x14\n" +
-	"\x10FORMATION_CUSTOM\x10\x01\x12\x14\n" +
-	"\x10FORMATION_SPREAD\x10\x02\x12\x11\n" +
-	"\rFORMATION_3_2\x10\x03\x12\x11\n" +
-	"\rFORMATION_2_3\x10\x04\x12\x11\n" +
-	"\rFORMATION_4_1\x10\x05\x12\x11\n" +
-	"\rFORMATION_1_4\x10\x06\x12\x11\n" +
-	"\rFORMATION_0_5\x10\a\x12\x11\n" +
-	"\rFORMATION_5_0\x10\b*|\n" +
+	"\aoutcome\x18\x03 \x01(\v2\x17.chill.v1.BattleOutcomeR\aoutcome\x12\x1f\n" +
+	"\x03run\x18\x04 \x01(\v2\r.chill.v1.RunR\x03run*|\n" +
 	"\fBattleResult\x12\x1d\n" +
 	"\x19BATTLE_RESULT_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16BATTLE_RESULT_BLUE_WIN\x10\x01\x12\x19\n" +
@@ -1093,50 +703,42 @@ func file_chill_v1_battle_proto_rawDescGZIP() []byte {
 	return file_chill_v1_battle_proto_rawDescData
 }
 
-var file_chill_v1_battle_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_chill_v1_battle_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_chill_v1_battle_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_chill_v1_battle_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_chill_v1_battle_proto_goTypes = []any{
-	(UnitClass)(0),                 // 0: chill.v1.UnitClass
-	(Skill)(0),                     // 1: chill.v1.Skill
-	(Formation)(0),                 // 2: chill.v1.Formation
-	(BattleResult)(0),              // 3: chill.v1.BattleResult
-	(*Point)(nil),                  // 4: chill.v1.Point
-	(*UnitSpec)(nil),               // 5: chill.v1.UnitSpec
-	(*Army)(nil),                   // 6: chill.v1.Army
-	(*BattleInput)(nil),            // 7: chill.v1.BattleInput
-	(*Survivor)(nil),               // 8: chill.v1.Survivor
-	(*BattleOutcome)(nil),          // 9: chill.v1.BattleOutcome
-	(*StartBattleRequest)(nil),     // 10: chill.v1.StartBattleRequest
-	(*StartBattleResponse)(nil),    // 11: chill.v1.StartBattleResponse
-	(*LockDeploymentRequest)(nil),  // 12: chill.v1.LockDeploymentRequest
-	(*LockDeploymentResponse)(nil), // 13: chill.v1.LockDeploymentResponse
-	(*VerifyBattleRequest)(nil),    // 14: chill.v1.VerifyBattleRequest
-	(*VerifyBattleResponse)(nil),   // 15: chill.v1.VerifyBattleResponse
+	(BattleResult)(0),              // 0: chill.v1.BattleResult
+	(*BattleInput)(nil),            // 1: chill.v1.BattleInput
+	(*Survivor)(nil),               // 2: chill.v1.Survivor
+	(*BattleOutcome)(nil),          // 3: chill.v1.BattleOutcome
+	(*StartBattleRequest)(nil),     // 4: chill.v1.StartBattleRequest
+	(*StartBattleResponse)(nil),    // 5: chill.v1.StartBattleResponse
+	(*LockDeploymentRequest)(nil),  // 6: chill.v1.LockDeploymentRequest
+	(*LockDeploymentResponse)(nil), // 7: chill.v1.LockDeploymentResponse
+	(*VerifyBattleRequest)(nil),    // 8: chill.v1.VerifyBattleRequest
+	(*VerifyBattleResponse)(nil),   // 9: chill.v1.VerifyBattleResponse
+	(*Army)(nil),                   // 10: chill.v1.Army
+	(*Run)(nil),                    // 11: chill.v1.Run
 }
 var file_chill_v1_battle_proto_depIdxs = []int32{
-	0,  // 0: chill.v1.UnitSpec.unit_class:type_name -> chill.v1.UnitClass
-	1,  // 1: chill.v1.UnitSpec.skills:type_name -> chill.v1.Skill
-	4,  // 2: chill.v1.UnitSpec.position:type_name -> chill.v1.Point
-	2,  // 3: chill.v1.Army.formation:type_name -> chill.v1.Formation
-	5,  // 4: chill.v1.Army.units:type_name -> chill.v1.UnitSpec
-	6,  // 5: chill.v1.BattleInput.blue:type_name -> chill.v1.Army
-	6,  // 6: chill.v1.BattleInput.red:type_name -> chill.v1.Army
-	3,  // 7: chill.v1.BattleOutcome.result:type_name -> chill.v1.BattleResult
-	8,  // 8: chill.v1.BattleOutcome.survivors:type_name -> chill.v1.Survivor
-	6,  // 9: chill.v1.LockDeploymentRequest.blue:type_name -> chill.v1.Army
-	9,  // 10: chill.v1.VerifyBattleRequest.claimed:type_name -> chill.v1.BattleOutcome
-	9,  // 11: chill.v1.VerifyBattleResponse.outcome:type_name -> chill.v1.BattleOutcome
-	10, // 12: chill.v1.BattleService.StartBattle:input_type -> chill.v1.StartBattleRequest
-	12, // 13: chill.v1.BattleService.LockDeployment:input_type -> chill.v1.LockDeploymentRequest
-	14, // 14: chill.v1.BattleService.VerifyBattle:input_type -> chill.v1.VerifyBattleRequest
-	11, // 15: chill.v1.BattleService.StartBattle:output_type -> chill.v1.StartBattleResponse
-	13, // 16: chill.v1.BattleService.LockDeployment:output_type -> chill.v1.LockDeploymentResponse
-	15, // 17: chill.v1.BattleService.VerifyBattle:output_type -> chill.v1.VerifyBattleResponse
-	15, // [15:18] is the sub-list for method output_type
-	12, // [12:15] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	10, // 0: chill.v1.BattleInput.blue:type_name -> chill.v1.Army
+	10, // 1: chill.v1.BattleInput.red:type_name -> chill.v1.Army
+	0,  // 2: chill.v1.BattleOutcome.result:type_name -> chill.v1.BattleResult
+	2,  // 3: chill.v1.BattleOutcome.survivors:type_name -> chill.v1.Survivor
+	10, // 4: chill.v1.LockDeploymentRequest.blue:type_name -> chill.v1.Army
+	3,  // 5: chill.v1.VerifyBattleRequest.claimed:type_name -> chill.v1.BattleOutcome
+	3,  // 6: chill.v1.VerifyBattleResponse.outcome:type_name -> chill.v1.BattleOutcome
+	11, // 7: chill.v1.VerifyBattleResponse.run:type_name -> chill.v1.Run
+	4,  // 8: chill.v1.BattleService.StartBattle:input_type -> chill.v1.StartBattleRequest
+	6,  // 9: chill.v1.BattleService.LockDeployment:input_type -> chill.v1.LockDeploymentRequest
+	8,  // 10: chill.v1.BattleService.VerifyBattle:input_type -> chill.v1.VerifyBattleRequest
+	5,  // 11: chill.v1.BattleService.StartBattle:output_type -> chill.v1.StartBattleResponse
+	7,  // 12: chill.v1.BattleService.LockDeployment:output_type -> chill.v1.LockDeploymentResponse
+	9,  // 13: chill.v1.BattleService.VerifyBattle:output_type -> chill.v1.VerifyBattleResponse
+	11, // [11:14] is the sub-list for method output_type
+	8,  // [8:11] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_chill_v1_battle_proto_init() }
@@ -1144,13 +746,15 @@ func file_chill_v1_battle_proto_init() {
 	if File_chill_v1_battle_proto != nil {
 		return
 	}
+	file_chill_v1_runstate_proto_init()
+	file_chill_v1_units_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_chill_v1_battle_proto_rawDesc), len(file_chill_v1_battle_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   12,
+			NumEnums:      1,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

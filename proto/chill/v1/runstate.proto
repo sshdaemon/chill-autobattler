@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package chill.v1;
+
+import "chill/v1/units.proto";
+
+// Run state shared by RunService and BattleService.
+
+enum RunState {
+  RUN_STATE_UNSPECIFIED = 0;
+  RUN_STATE_READY = 1; // may start the next battle
+  RUN_STATE_PICKING = 2; // skill picks are owed (owed_picks)
+  RUN_STATE_OVER = 3;
+}
+
+// The battle started for the current match and not yet resolved.
+message CurrentBattle {
+  string battle_id = 1;
+  uint64 seed = 2;
+  uint32 red_skill_count = 3;
+  int64 deploy_deadline_ms = 4;
+  bool locked = 5;
+  // Only once locked: what is needed to replay it after a reload.
+  uint64 combat_seed = 6;
+  Army blue = 7;
+  int64 verify_deadline_ms = 8;
+}
+
+message Run {
+  string id = 1;
+  string name = 2;
+  uint32 match = 3; // 1-based number of the next / current match
+  uint32 wins = 4;
+  uint32 score = 5;
+  RunState state = 6;
+  // In army order; they must lead Blue's army, exactly as listed.
+  repeated UnitSpec veterans = 7;
+  // Indexes into veterans that owe a pick (state PICKING).
+  repeated uint32 owed_picks = 8;
+  CurrentBattle battle = 9;
+  // Set when over: defeat, draw, not fair, abandoned or restarted.
+  string end_reason = 10;
+  // Total skills of the veterans: Red's skill count for the next match.
+  uint32 red_skills = 11;
+}
+

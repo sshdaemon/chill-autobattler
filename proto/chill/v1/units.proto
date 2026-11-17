@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package chill.v1;
+
+// Building blocks of an army, shared by battles and runs.
+
+enum UnitClass {
+  UNIT_CLASS_UNSPECIFIED = 0;
+  UNIT_CLASS_WARRIOR = 1;
+  UNIT_CLASS_ARCHER = 2;
+  UNIT_CLASS_MAGE = 3;
+}
+
+// Skills by effect; which ones a class can learn is in docs/GAME_CONCEPT.md §10.1.
+enum Skill {
+  SKILL_UNSPECIFIED = 0;
+  SKILL_HEALTH = 1; // Toughness
+  SKILL_SPEED = 2; // Swift
+  SKILL_DAMAGE = 3; // Strength / Sharp arrows / Power
+  SKILL_DASH = 4;
+  SKILL_EXECUTE = 5; // Executioner / Headshot
+  SKILL_RANGE = 6; // Long shot
+  SKILL_LOB = 7; // Arcing shot
+  SKILL_FROST = 8;
+  SKILL_BLINK = 9;
+  SKILL_BLAST = 10;
+}
+
+// FORMATION_CUSTOM means every unit carries its own position.
+enum Formation {
+  FORMATION_UNSPECIFIED = 0; // rejected
+  FORMATION_CUSTOM = 1;
+  FORMATION_SPREAD = 2;
+  FORMATION_3_2 = 3;
+  FORMATION_2_3 = 4;
+  FORMATION_4_1 = 5;
+  FORMATION_1_4 = 6;
+  FORMATION_0_5 = 7;
+  FORMATION_5_0 = 8;
+}
+
+// A point in raw Q48.16 fixed-point metres (value × 65536), so no float
+// rounding ever happens on the wire.
+message Point {
+  sint64 x_raw = 1;
+  sint64 z_raw = 2;
+}
+
+message UnitSpec {
+  UnitClass unit_class = 1;
+  repeated Skill skills = 2;
+  // Required with FORMATION_CUSTOM, absent otherwise.
+  Point position = 3;
+}
+
+message Army {
+  Formation formation = 1;
+  repeated UnitSpec units = 2;
+}
+
