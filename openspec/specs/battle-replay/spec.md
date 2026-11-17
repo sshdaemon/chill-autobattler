@@ -6,7 +6,7 @@ Defines what a battle replay is (its input and outcome) and guarantees that the 
 ## Requirements
 
 ### Requirement: Battle input is complete
-A battle input SHALL contain everything that affects the outcome: sim version, seed, and per team the units (class, skills) with deployment positions or a formation preset. Nothing outside the input (time, device, frame rate) SHALL affect the outcome.
+A battle input SHALL contain everything that affects the outcome: sim version, map seed, combat seed, and per team the units (class, skills) with deployment positions or a formation preset. The map seed SHALL decide the map and a generated Red army. The combat seed SHALL decide every random combat roll. Nothing outside the input (time, device, frame rate) SHALL affect the outcome.
 
 #### Scenario: Frame rate does not matter
 - **WHEN** the same battle input is played once at 30 fps and once at 144 fps in the browser
@@ -14,7 +14,11 @@ A battle input SHALL contain everything that affects the outcome: sim version, s
 
 #### Scenario: Red army comes from the seed
 - **WHEN** a battle input lists no units for Red
-- **THEN** Red's army, formation and skills are generated from the seed, and the same seed always gives the same Red army
+- **THEN** Red's army, formation and skills are generated from the map seed, and the same map seed always gives the same Red army
+
+#### Scenario: Combat seed changes only the fight
+- **WHEN** the same input is played with two different combat seeds
+- **THEN** the map and both armies' starting positions are identical, but the battles play out differently
 
 ### Requirement: Outcome is deterministic across platforms
 Playing the same battle input SHALL produce a bit-identical outcome (winner, tick count, surviving units with health, state checksum) in the WASM build and in the native server build.
@@ -38,10 +42,10 @@ Every battle input SHALL carry the sim version that played it. The server SHALL 
 - **THEN** it answers "not fair" with a reason naming both versions, and does not run the battle
 
 ### Requirement: Server verifies a claimed outcome
-The server SHALL re-run the battle input natively and report it fair only if winner, tick count and checksum all match the client's claim.
+The server SHALL verify a claimed outcome against the battle input it stored for that battle (see battle-sessions), re-running it natively and reporting it fair only if winner, tick count and checksum all match the client's claim.
 
 #### Scenario: Honest claim
-- **WHEN** a client submits a battle input with the outcome its WASM sim produced
+- **WHEN** a client submits the outcome its WASM sim produced for a battle it locked
 - **THEN** the server reports it fair and returns its own outcome
 
 #### Scenario: Tampered claim
@@ -49,5 +53,5 @@ The server SHALL re-run the battle input natively and report it fair only if win
 - **THEN** the server reports it not fair with a reason, and returns its own outcome
 
 #### Scenario: Tampered input
-- **WHEN** a battle input puts a unit outside its team's deployment zone, gives a unit a skill twice, or has more than 5 units per team
-- **THEN** the server rejects the input as invalid without verifying it
+- **WHEN** a client tries to lock an army that puts a unit outside its team's deployment zone, gives a unit a skill twice, or has more than 5 units per team
+- **THEN** the server rejects the army as invalid, and no battle with that army can be verified
