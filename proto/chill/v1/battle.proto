@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package chill.v1;
+
+// The server never drives a battle. The client plays it locally (sim in WASM)
+// and the server re-runs it afterwards to check the claimed result.
+service BattleService {
+  rpc VerifyBattle(VerifyBattleRequest) returns (VerifyBattleResponse);
+}
+
+message VerifyBattleRequest {
+  string sim_version = 1;
+  // TODO(port-battle-sim): the seed must be issued by the server before the
+  // battle, plus both armies and timed player commands.
+  uint64 seed = 2;
+  uint32 max_ticks = 3;
+  // What the client says happened.
+  int32 claimed_winner = 4;
+  uint64 claimed_checksum = 5;
+}
+
+message VerifyBattleResponse {
+  bool fair = 1;
+  string reason = 2;
+  int32 winner = 3;
+  uint32 ticks = 4;
+  uint64 checksum = 5;
+}

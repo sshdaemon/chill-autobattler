@@ -1,0 +1,29 @@
+schema: spec-driven
+
+context: |
+  Product: "Chill Autobattler", a web 3D auto-battler (indirect control, Warcraft III look).
+  The game concept is docs/GAME_CONCEPT.md; the throwaway JS prototype it came from lives
+  outside this repo at ../web3d-demo/battle.html (reference only, never import from it).
+
+  Architecture constraints:
+  - Battle logic lives ONLY in the Go module sim/ and is compiled to WASM (wasm/) for the
+    browser and run natively by server/. Client plays battles locally; the server never
+    drives a battle, it re-runs replays afterwards to check fairness.
+  - sim/ must be bit-for-bit deterministic across WASM and native: fixed-point maths
+    (sim.Fx, Q48.16) only, no float64 in logic, no map iteration order, no time, no
+    goroutines, randomness only from the battle's seeded RNG (own SplitMix64, never
+    math/rand helpers).
+  - The server issues the battle seed before a battle, so clients cannot re-roll.
+  - Every replay carries sim.Version; any rule change bumps it.
+  - Balance numbers live in data (Go tables / config), not scattered in code.
+  - API contracts are protobuf in proto/ (Connect RPC, buf generates Go + TS).
+  - Frontend: React + react-three-fiber + drei + zustand in web/; the sim runs in a Web
+    Worker. The renderer only interpolates sim state, it never decides outcomes.
+
+rules:
+  proposal:
+    - State what is out of scope.
+  design:
+    - Say how determinism is preserved and how it is tested (native vs WASM golden replays).
+  tasks:
+    - Include golden replay tests for any sim change.
