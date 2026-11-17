@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.work
+          cache: true
+          cache-dependency-path: "**/go.sum"
+
+      - uses: pnpm/action-setup@v4 # version comes from packageManager in package.json
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: gofmt
+        run: |
+          # pb/convert exists only once the port-battle-sim work lands.
+          dirs=()
+          for d in sim pb/convert server wasm; do [ -d "$d" ] && dirs+=("$d"); done
+          unformatted=$(gofmt -l "${dirs[@]}")
+          if [ -n "$unformatted" ]; then
+            echo "These files need gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Lint protos
+        run: pnpm lint:proto
+
+      - name: Check generated code is up to date
+        run: |
+          pnpm gen
+          git diff --exit-code
+          untracked=$(git status --porcelain --untracked-files=all)
+          if [ -n "$untracked" ]; then
+            echo "pnpm gen produced files that are not committed:"
+            echo "$untracked"
+            exit 1
+          fi
+
+      # Native Go tests, then sim/wasm tests under GOOS=js GOARCH=wasm
+      # (go_js_wasm_exec runs them with node), then the web typecheck.
+      # wasm_exec.js only allows ~8 KB of argv + environment for the WASM
+      # program and the runner's environment is larger, so run with a
+      # minimal one ("total length of command line and environment
+      # variables exceeds limit" otherwise).
+      - name: Test
+        run: |
+          env -i \
+            HOME="$HOME" \
+            PATH="$PATH" \
+            PNPM_HOME="$PNPM_HOME" \
+            GOTOOLCHAIN=local \
+            GOCACHE="$(go env GOCACHE)" \
+            GOMODCACHE="$(go env GOMODCACHE)" \
+            CI=true \
+            pnpm test
+
+      - name: Build
+        run: pnpm build:wasm && pnpm --filter web build
