@@ -4,6 +4,7 @@ import { Arena } from './scene/Arena.tsx';
 import { Units } from './scene/Units.tsx';
 import { Shots } from './scene/Shots.tsx';
 import { Floats } from './scene/Floats.tsx';
+import { Particles } from './scene/Particles.tsx';
 import { Fog } from './scene/Fog.tsx';
 import { RtsCamera } from './scene/RtsCamera.tsx';
 import { Lighting } from './scene/Lighting.tsx';
@@ -29,6 +30,7 @@ export function App() {
         <Units />
         <Shots />
         <Floats />
+        <Particles />
         <Fog />
         <RtsCamera />
         <Effects />

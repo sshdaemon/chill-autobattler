@@ -1,3 +1,4 @@
+import { lastKill, onSnapshot, viewOf } from './scene/effects.ts';
 import { create } from 'zustand';
 import { create as createMsg, toBinary, fromBinary } from '@bufbuild/protobuf';
 import { BattleInputSchema, BattleOutcomeSchema, BattleResult, type BattleOutcome } from './gen/chill/v1/battle_pb.ts';
@@ -386,12 +387,14 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
     }
     case 'snapshot': {
       const s = decodeSnapshot(m.snapshot);
+      onSnapshot(s, s.events, viewOf(useBattle.getState()));
       useBattle.setState((st) => ({ prev: st.curr, curr: s, currAt: performance.now(), floats: addFloats(s, s.events) }));
       break;
     }
     case 'done': {
       const outcome = fromBinary(BattleOutcomeSchema, m.outcome);
       playSound(outcome.result === BattleResult.BLUE_WIN ? 'victory' : 'defeat');
+      lastKill();
       useBattle.setState({ outcome, phase: 'done' });
       setTimeout(() => useBattle.setState({ floats: [] }), 1200); // let the last numbers fade
       void useBattle.getState().verify();

@@ -1,3 +1,4 @@
+import { shakeOffset } from './shake.ts';
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useBattle } from '../store.ts';
@@ -76,8 +77,9 @@ export function RtsCamera() {
     s.tx = Math.max(-LIM, Math.min(LIM, s.tx));
     s.tz = Math.max(-LIM, Math.min(LIM, s.tz));
     // the camera sits south (+z) of the target, raised by the pitch angle
-    camera.position.set(s.tx, Math.sin(PITCH) * s.dist, s.tz + Math.cos(PITCH) * s.dist);
-    camera.lookAt(s.tx, 0, s.tz);
+    const [ox, oy, oz] = shakeOffset(dt, performance.now() / 1000);
+    camera.position.set(s.tx + ox, Math.sin(PITCH) * s.dist + oy, s.tz + Math.cos(PITCH) * s.dist + oz);
+    camera.lookAt(s.tx + ox, oy, s.tz + oz);
     camView.x = s.tx; camView.z = s.tz; camView.dist = s.dist;
     camView.aspect = gl.domElement.clientWidth / Math.max(1, gl.domElement.clientHeight);
   });

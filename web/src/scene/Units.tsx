@@ -8,10 +8,12 @@ import { BattleResult } from '../gen/chill/v1/battle_pb.ts';
 import { alpha, lerp } from './interp.ts';
 import { lookFor, makeCharacter, type Character } from './models.ts';
 import { FOGGED_FIGHT } from './Fog.tsx';
+import { feet, viewOf } from './effects.ts';
+import { Material, Mesh } from 'three';
 
 const TEAM = ['#3a8cff', '#ff4040'];
 const FOGGED = ['starting', 'deploying', 'locking'];
-const SINK_AFTER = 3; // seconds a body lies before sinking into the ground
+const FADE_AFTER = 1.2, FADE_FOR = 1.5; // a body lies, then fades into the ground
 
 // Which animation the sim state asks for, and at what speed.
 function wanted(flags: number, cls: number, cheering: boolean): [string, number] {
@@ -39,7 +41,7 @@ function Unit({ index }: { index: number }) {
   const selected = useBattle((s) => s.selected === index);
   const draggable = useBattle((s) => info?.team === 0 && s.phase === 'deploying');
   const [ch, setCh] = useState<Character>();
-  const anim = useRef({ name: 'Sword_Idle', flags: 0, deadAt: 0 });
+  const anim = useRef({ name: 'Sword_Idle', flags: 0, deadAt: 0, faded: [] as Material[] });
 
   const team = info?.team, cls = info?.cls;
   useEffect(() => {
@@ -50,7 +52,8 @@ function Unit({ index }: { index: number }) {
   }, [team, cls, nth]);
 
   useFrame((state, delta) => {
-    const { prev, curr, dragging, speed, data, outcome, phase } = useBattle.getState();
+    const bs = useBattle.getState();
+    const { prev, curr, dragging, speed, data, outcome, phase } = bs;
     const a = prev?.units[index], b = curr?.units[index];
     if (!a || !b || !g.current) return;
     if (dragging?.index === index) { // follows the pointer until the sim places it
@@ -59,6 +62,7 @@ function Unit({ index }: { index: number }) {
       const k = alpha();
       g.current.position.set(lerp(a.x, b.x, k), b.flags & UF.wet && !(b.flags & UF.dead) ? -0.12 : 0, lerp(a.z, b.z, k));
       g.current.rotation.y = Math.atan2(lerp(a.fx, b.fx, k), lerp(a.fz, b.fz, k));
+      if (phase === 'fighting') feet(index, g.current.position.x, g.current.position.z, b.flags, delta, viewOf(bs), b);
     }
     if (bar.current) bar.current.scale.x = Math.max(0.001, b.hp / b.maxHp);
 
@@ -66,10 +70,26 @@ function Unit({ index }: { index: number }) {
     const t = state.clock.elapsedTime;
     if (b.flags & UF.dead) {
       st.deadAt ||= t;
-      if (sink.current) sink.current.position.y = -Math.min(1.2, Math.max(0, t - st.deadAt - SINK_AFTER) * 0.4);
+      const p = Math.min(1, Math.max(0, (t - st.deadAt - FADE_AFTER) / FADE_FOR));
+      if (p > 0 && ch && !st.faded.length) {
+        // this body's own materials (looks share theirs), so only it fades
+        ch.root.traverse((o) => {
+          const m = o as Mesh;
+          if (!m.isMesh) return;
+          m.material = (Array.isArray(m.material) ? m.material : [m.material]).map((mat) => {
+            const c = mat.clone();
+            c.transparent = true;
+            st.faded.push(c);
+            return c;
+          }) as unknown as Material;
+          if (Array.isArray(m.material) && m.material.length === 1) m.material = m.material[0];
+        });
+      }
+      for (const m of st.faded) m.opacity = 1 - p;
+      if (sink.current) { sink.current.position.y = -0.35 * p; sink.current.visible = p < 1; }
     } else {
       st.deadAt = 0;
-      if (sink.current) sink.current.position.y = 0;
+      if (sink.current) { sink.current.position.y = 0; sink.current.visible = true; }
     }
     if (!ch) return;
     const won = phase === 'done' && ((outcome?.result === BattleResult.BLUE_WIN && b.team === 0) || (outcome?.result === BattleResult.RED_WIN && b.team === 1));

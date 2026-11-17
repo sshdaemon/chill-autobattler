@@ -4,6 +4,7 @@ import { CylinderGeometry, ConeGeometry, InstancedMesh, Object3D, Vector3 } from
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { useBattle } from '../store.ts';
 import { alpha } from './interp.ts';
+import { trail, viewOf } from './effects.ts';
 
 const MAX = 64, dummy = new Object3D(), ahead = new Vector3();
 
@@ -23,12 +24,13 @@ export function Shots() {
     return mergeGeometries([shaft.toNonIndexed(), tip.toNonIndexed()]);
   }, []);
   useFrame(() => {
-    const shots = useBattle.getState().curr?.shots ?? [];
+    const st = useBattle.getState(), shots = st.curr?.shots ?? [], view = viewOf(st);
     const k = alpha();
     let na = 0, nb = 0;
     for (const s of shots) {
       const f = Math.min(1, (s.t + k) / s.dur);
       at(s, f, dummy.position);
+      if (f < 1) trail(dummy.position.x, dummy.position.y, dummy.position.z, s.bolt, view);
       if (s.bolt) {
         dummy.rotation.set(0, 0, 0);
         dummy.updateMatrix();

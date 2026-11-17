@@ -42,3 +42,5 @@ Fog of war comes from the sim: `Battle.SeenCells` (exported by `wasm fog()`) and
 Units are rendered by `web/src/scene/models.ts` + `Units.tsx`: baked Quaternius looks per class and team, animated from snapshot flags. Re-bake with `tools/blender/bake_units.py`, then pack with `tools/assets/pack_units.py`.
 
 The battlefield is `scene/Arena.tsx`: `Ground`, `Water` (all ponds as one shader surface from the sim's circles), `Nature` (rocks and trees placed from the sim's obstacles, variant picked by position; wall and scenery) and `Grass` (High only). Models and ground textures come from `tools/assets/pack_nature.py`; the detailed trees from `web/scripts/bake-trees.mjs` (EZ-Tree, dev-only). Obstacle models must keep matching the sim's footprints.
+
+Combat effects: `scene/effects.ts` turns sim events and unit flags into particles (`scene/Particles.tsx`, pooled GPU billboards) and camera shake (`scene/shake.ts`); the store calls it with each snapshot. Effects skip units hidden by fog. Dev helpers: `window.fxDemo()` fires every cue, `window.fxSlow(k)` slows particles, `window.benchFrame(n)` times a frame.
