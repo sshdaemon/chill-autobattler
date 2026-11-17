@@ -63,8 +63,21 @@ jobs:
 
       # Native Go tests, then sim/wasm tests under GOOS=js GOARCH=wasm
       # (go_js_wasm_exec runs them with node), then the web typecheck.
+      # wasm_exec.js only allows ~8 KB of argv + environment for the WASM
+      # program and the runner's environment is larger, so run with a
+      # minimal one ("total length of command line and environment
+      # variables exceeds limit" otherwise).
       - name: Test
-        run: pnpm test
+        run: |
+          env -i \
+            HOME="$HOME" \
+            PATH="$PATH" \
+            PNPM_HOME="$PNPM_HOME" \
+            GOTOOLCHAIN=local \
+            GOCACHE="$(go env GOCACHE)" \
+            GOMODCACHE="$(go env GOMODCACHE)" \
+            CI=true \
+            pnpm test
 
       - name: Build
         run: pnpm build:wasm && pnpm --filter web build
