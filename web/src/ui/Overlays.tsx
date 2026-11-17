@@ -4,6 +4,8 @@ import { CLASS_ICON, CLASS_LABEL } from '../gamedata.ts';
 import { RunState } from '../gen/chill/v1/runstate_pb.ts';
 import { useState } from 'react';
 import { setSound, soundPrefs } from '../sound.ts';
+import { useEffect } from 'react';
+import { fps } from '../scene/perfStats.ts';
 
 export function Banner() {
   const phase = useBattle((s) => s.phase);
@@ -132,8 +134,10 @@ export function Result() {
 
 // Playback speed and sound.
 export function DevPanel() {
-  const { speed, setSpeed, version } = useBattle();
+  const { speed, setSpeed, version, quality, setQuality, autoLowered, tiltShift, toggleTiltShift } = useBattle();
   const [snd, setSnd] = useState(soundPrefs());
+  const [rate, setRate] = useState(0);
+  useEffect(() => { const t = setInterval(() => setRate(fps.value), 1000); return () => clearInterval(t); }, []);
   const change = (p: Partial<typeof snd>) => { setSound(p); setSnd(soundPrefs()); };
   return (
     <div className="dev">
@@ -142,6 +146,12 @@ export function DevPanel() {
       <button aria-label={snd.muted ? 'unmute' : 'mute'} title={snd.muted ? 'Sound off' : 'Sound on'} onClick={() => change({ muted: !snd.muted })}>{snd.muted ? '🔇' : '🔊'}</button>
       <input type="range" min={0} max={1} step={0.05} value={snd.volume} aria-label="volume" style={{ width: 60 }}
         onChange={(e) => change({ volume: +e.target.value, muted: false })} />
+      <select aria-label="graphics quality" value={quality} onChange={(e) => setQuality(e.target.value as 'high' | 'low')}>
+        <option value="high">High</option><option value="low">Low</option>
+      </select>
+      <button className={tiltShift ? 'on' : ''} title="Tilt-shift depth of field (experimental)" onClick={toggleTiltShift}>DoF</button>
+      <span className="dim" data-testid="fps">{rate} fps</span>
+      {autoLowered && <span className="err" style={{ margin: 0 }} title="High couldn't keep up with this display's refresh rate">lowered for smoothness</span>}
     </div>
   );
 }

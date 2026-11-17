@@ -50,11 +50,11 @@ export function Shots() {
       <instancedMesh ref={arrows} args={[arrowGeo, undefined, MAX]} castShadow><meshStandardMaterial color="#d8c08a" /></instancedMesh>
       <instancedMesh ref={boltsOuter} args={[undefined, undefined, MAX]}>
         <sphereGeometry args={[0.14, 12, 8]} />
-        <meshBasicMaterial color="#b48cff" transparent opacity={0.55} toneMapped={false} />
+        <meshBasicMaterial color={[1.7, 1.15, 2.6]} transparent opacity={0.6} toneMapped={false} />{/* >1: glows under bloom */}
       </instancedMesh>
       <instancedMesh ref={boltsInner} args={[undefined, undefined, MAX]}>
         <sphereGeometry args={[0.07, 10, 6]} />
-        <meshBasicMaterial color="#ffffff" toneMapped={false} />
+        <meshBasicMaterial color={[2.6, 2.4, 3]} toneMapped={false} />
       </instancedMesh>
     </>
   );

@@ -49,6 +49,10 @@ type State = {
   floats: Float[];
   fog?: Uint8Array; // Blue's visible cells (from the sim)
   fogOn: boolean;
+  quality: 'high' | 'low'; // graphics; remembered per browser
+  autoLowered: boolean; // the game dropped to Low because High was too slow
+  qualityChosen: boolean; // the player picked the quality by hand this session: never override it
+  tiltShift: boolean; // experimental depth-of-field (dev)
   selected?: number; // unit index
   follow: boolean; // camera follows the selected unit
   centerOn?: { index?: number; x?: number; z?: number; n: number }; // a request for the camera to jump to a unit or point
@@ -57,6 +61,8 @@ type State = {
   center(i: number): void;
   centerAt(x: number, z: number): void;
   toggleFog(): void;
+  setQuality(q: 'high' | 'low', auto?: boolean): void;
+  toggleTiltShift(): void;
   toggleFollow(): void;
   newRun(): Promise<void>;
   setCount(cls: number, delta: number): void;
@@ -85,6 +91,10 @@ const savedCounts = (): Counts => {
     if (Array.isArray(c) && c.length === 3 && c.every((n) => Number.isInteger(n) && n >= 0)) return c as Counts;
   } catch { /* first visit or storage blocked */ }
   return [2, 2, 1];
+};
+
+const savedQuality = (): 'high' | 'low' => {
+  try { return localStorage.getItem('quality') === 'low' ? 'low' : 'high'; } catch { return 'high'; }
 };
 
 export const vetCounts = (run?: Run): Counts => {
@@ -184,6 +194,13 @@ export const useBattle = create<State>((set, get) => {
   return {
     phase: 'loading', counts: savedCounts(), formation: 2 /* 3-2 */, slots: {}, deployLeft: DEPLOY_SECONDS,
     obstacles: [], currAt: 0, speed: 1, floats: [], picks: {}, fogOn: true, follow: false,
+    quality: savedQuality(), autoLowered: false, qualityChosen: false, tiltShift: false,
+    setQuality(quality, auto = false) {
+      if (auto && (get().qualityChosen || get().autoLowered)) return; // once per session, never over a manual choice
+      set({ quality, autoLowered: auto, qualityChosen: get().qualityChosen || !auto });
+      if (!auto) try { localStorage.setItem('quality', quality); } catch { /* storage blocked */ }
+    },
+    toggleTiltShift() { set({ tiltShift: !get().tiltShift }); },
 
     select(selected) { set({ selected, follow: selected === undefined ? false : get().follow }); },
     center(index) { set({ selected: index, centerOn: { index, n: (get().centerOn?.n ?? 0) + 1 } }); },

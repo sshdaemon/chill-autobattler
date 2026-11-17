@@ -61,7 +61,7 @@ function makeStaff() {
   const g = new THREE.Group();
   const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.03, 1.6, 6), new THREE.MeshStandardMaterial({ color: 0x5b3a1e, roughness: 0.8 }));
   shaft.position.y = 0.25;
-  const orb = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 8), new THREE.MeshBasicMaterial({ color: 0xc9a8ff, toneMapped: false }));
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.9, 1.5, 3), toneMapped: false })); // >1: glows under bloom
   orb.position.y = 1.1;
   g.add(shaft, orb);
   return g;
