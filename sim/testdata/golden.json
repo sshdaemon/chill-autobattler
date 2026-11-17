@@ -1,0 +1,297 @@
+{
+  "version": "0.2.0",
+  "outcomes": {
+    "archer skills": {
+      "result": 2,
+      "ticks": 263,
+      "checksum": "16388161971960454964",
+      "survivors": [
+        {
+          "Index": 5,
+          "HP": 4879281
+        },
+        {
+          "Index": 7,
+          "HP": 3558738
+        },
+        {
+          "Index": 8,
+          "HP": 1560410
+        },
+        {
+          "Index": 9,
+          "HP": 2949120
+        }
+      ]
+    },
+    "custom positions": {
+      "result": 2,
+      "ticks": 300,
+      "checksum": "7037618272554545461",
+      "survivors": [
+        {
+          "Index": 7,
+          "HP": 2949120
+        },
+        {
+          "Index": 8,
+          "HP": 2949120
+        },
+        {
+          "Index": 9,
+          "HP": 505114
+        }
+      ]
+    },
+    "explicit red army": {
+      "result": 2,
+      "ticks": 263,
+      "checksum": "9419789164422122468",
+      "survivors": [
+        {
+          "Index": 6,
+          "HP": 916325
+        },
+        {
+          "Index": 7,
+          "HP": 746522
+        },
+        {
+          "Index": 9,
+          "HP": 4325376
+        }
+      ]
+    },
+    "formation 0-5": {
+      "result": 2,
+      "ticks": 308,
+      "checksum": "1106840418320466774",
+      "survivors": [
+        {
+          "Index": 5,
+          "HP": 1335722
+        },
+        {
+          "Index": 8,
+          "HP": 2949120
+        },
+        {
+          "Index": 9,
+          "HP": 3604480
+        }
+      ]
+    },
+    "formation 1-4": {
+      "result": 2,
+      "ticks": 359,
+      "checksum": "7606746074253089611",
+      "survivors": [
+        {
+          "Index": 8,
+          "HP": 892097
+        },
+        {
+          "Index": 9,
+          "HP": 1699077
+        }
+      ]
+    },
+    "formation 2-3": {
+      "result": 1,
+      "ticks": 305,
+      "checksum": "11302300921985462690",
+      "survivors": [
+        {
+          "Index": 1,
+          "HP": 2949120
+        }
+      ]
+    },
+    "formation 3-2": {
+      "result": 2,
+      "ticks": 235,
+      "checksum": "7255522072546384078",
+      "survivors": [
+        {
+          "Index": 5,
+          "HP": 66241
+        },
+        {
+          "Index": 7,
+          "HP": 1766827
+        },
+        {
+          "Index": 8,
+          "HP": 2204283
+        },
+        {
+          "Index": 9,
+          "HP": 2559032
+        }
+      ]
+    },
+    "formation 4-1": {
+      "result": 1,
+      "ticks": 346,
+      "checksum": "4737968049882366427",
+      "survivors": [
+        {
+          "Index": 1,
+          "HP": 2236166
+        },
+        {
+          "Index": 3,
+          "HP": 1491977
+        }
+      ]
+    },
+    "formation 5-0": {
+      "result": 2,
+      "ticks": 455,
+      "checksum": "7960512234031534246",
+      "survivors": [
+        {
+          "Index": 7,
+          "HP": 764318
+        }
+      ]
+    },
+    "formation Spread": {
+      "result": 2,
+      "ticks": 325,
+      "checksum": "13490548359533748665",
+      "survivors": [
+        {
+          "Index": 5,
+          "HP": 3529131
+        },
+        {
+          "Index": 8,
+          "HP": 861628
+        },
+        {
+          "Index": 9,
+          "HP": 1600922
+        }
+      ]
+    },
+    "mage skills": {
+      "result": 1,
+      "ticks": 313,
+      "checksum": "12114032617979479180",
+      "survivors": [
+        {
+          "Index": 4,
+          "HP": 1041078
+        }
+      ]
+    },
+    "mutual wipe 334": {
+      "result": 3,
+      "ticks": 418,
+      "checksum": "16856944980870933639",
+      "survivors": null
+    },
+    "mutual wipe 921": {
+      "result": 3,
+      "ticks": 416,
+      "checksum": "15484281870423255214",
+      "survivors": null
+    },
+    "ranged standoff 657": {
+      "result": 2,
+      "ticks": 264,
+      "checksum": "10462747789891630333",
+      "survivors": [
+        {
+          "Index": 7,
+          "HP": 3538944
+        },
+        {
+          "Index": 8,
+          "HP": 2876082
+        }
+      ]
+    },
+    "ranged standoff 90": {
+      "result": 2,
+      "ticks": 297,
+      "checksum": "10624281289115832376",
+      "survivors": [
+        {
+          "Index": 6,
+          "HP": 75199
+        },
+        {
+          "Index": 7,
+          "HP": 430059
+        },
+        {
+          "Index": 9,
+          "HP": 2475920
+        }
+      ]
+    },
+    "veterans 5 stars": {
+      "result": 2,
+      "ticks": 204,
+      "checksum": "4266030669300384357",
+      "survivors": [
+        {
+          "Index": 4,
+          "HP": 113378
+        },
+        {
+          "Index": 5,
+          "HP": 2436891
+        },
+        {
+          "Index": 6,
+          "HP": 2984932
+        },
+        {
+          "Index": 7,
+          "HP": 3265300
+        }
+      ]
+    },
+    "warrior skills": {
+      "result": 2,
+      "ticks": 291,
+      "checksum": "8154018535554109193",
+      "survivors": [
+        {
+          "Index": 7,
+          "HP": 2949120
+        },
+        {
+          "Index": 8,
+          "HP": 1709175
+        },
+        {
+          "Index": 9,
+          "HP": 3604480
+        }
+      ]
+    },
+    "wet map": {
+      "result": 1,
+      "ticks": 288,
+      "checksum": "14608534481819871396",
+      "survivors": [
+        {
+          "Index": 1,
+          "HP": 198217
+        },
+        {
+          "Index": 2,
+          "HP": 3604480
+        },
+        {
+          "Index": 3,
+          "HP": 2949120
+        }
+      ]
+    }
+  }
+}

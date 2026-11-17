@@ -5,7 +5,7 @@
 package chillv1connect
 
 import (
-	v1 "chill/server/gen/chill/v1"
+	v1 "chill/pb/chill/v1"
 	connect "connectrpc.com/connect/v2"
 	context "context"
 	sync "sync"

@@ -102,6 +102,12 @@ func (m *Map) ClearView(a, b Vec) bool {
 	return true
 }
 
+// LineOfFire reports whether a shot from a to b clears rocks and trees.
+// Same test as sight: the obstacles themselves block, not the walking
+// padding round them (a unit may stand in a padded cell, and the prototype's
+// walkability test then left two archers unable to shoot each other forever).
+func (m *Map) LineOfFire(a, b Vec) bool { return m.ClearView(a, b) }
+
 // WetLength estimates the metres of water along a straight segment.
 func (m *Map) WetLength(a, b Vec) Fx {
 	steps := Dist(a, b).Div(sample).Ceil()

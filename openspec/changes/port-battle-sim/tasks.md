@@ -31,18 +31,18 @@
 
 - [x] 5.1 Formation presets and slot snapping; verify a test for every preset
 - [x] 5.2 Seeded Red army, formation and skill spread; verify the "matching skills" test
-- [ ] 5.3 Add `BattleInput` and `BattleOutcome` to `proto/chill/v1`, `pnpm gen`, and input validation (zones, 5 units, unique skills); verify `pnpm lint:proto` and validation tests
+- [x] 5.3 Add `BattleInput` and `BattleOutcome` to `proto/chill/v1`, `pnpm gen`, and input validation (zones, 5 units, unique skills); verify `pnpm lint:proto` and validation tests
 - [x] 5.4 Replace the toy battle with `sim.New(input)`, `Step`, `Outcome` and the checksum; bump `sim.Version` to `0.2.0`
 
 ## 6. Golden replays
 
-- [ ] 6.1 Write about 20 golden inputs to `sim/testdata/golden.json` (all formations, every skill, a water-heavy map, mutual wipe, tick limit), with an `-update` flag and a version guard; verify `pnpm test:go` and `pnpm test:wasm` both pass and match
-- [ ] 6.2 Add a determinism fuzz test (same input played twice gives an identical outcome); verify it runs for 30 s clean
-- [ ] 6.3 Add a benchmark; verify a full golden battle runs natively in under 50 ms
+- [x] 6.1 Write about 20 golden inputs to `sim/testdata/golden.json` (all formations, every skill, a water-heavy map, mutual wipe, tick limit), with an `-update` flag and a version guard; verify `pnpm test:go` and `pnpm test:wasm` both pass and match. (18 cases. No valid input reaches the tick limit any more (0 of 3,000 seeds), so the limit is covered by `TestBattleEnd`; the two former stalemate seeds are kept as regression cases.)
+- [x] 6.2 Add a determinism fuzz test (same input played twice gives an identical outcome); verify it runs for 30 s clean
+- [x] 6.3 Add a benchmark; verify a full golden battle runs natively in under 50 ms
 
 ## 7. Server and browser
 
-- [ ] 7.1 Change `VerifyBattle` to take `BattleInput` plus the claimed outcome; verify server tests for honest, tampered-claim, tampered-input and unknown-version cases
+- [x] 7.1 Change `VerifyBattle` to take `BattleInput` plus the claimed outcome; verify server tests for honest, tampered-claim, tampered-input and unknown-version cases
 - [ ] 7.2 WASM API: `create(bytes)`, `step(n)` returning snapshots and events, `outcome()`; verify a WASM test steps a golden input to the golden outcome
 - [ ] 7.3 Worker loop at 20 Hz with 1×/2×/4× speed, and interpolated R3F debug viewer (obstacles, capsules, projectiles, health bars); verify in the browser that a battle plays to the end and "Verify on server" says fair
 - [ ] 7.4 Update CLAUDE.md and README for the new API and golden workflow; verify `pnpm test` passes

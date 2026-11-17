@@ -161,7 +161,7 @@ func (b *Battle) think(u *Unit) {
 	}
 
 	// ranged units need a clear line of fire (unless they lob over); otherwise they walk until they have one
-	canHit := d <= u.Stats.Range && (!u.Stats.Ranged || u.Has(SkillLob) || b.Map.LineOfSight(u.Pos, t.Pos))
+	canHit := d <= u.Stats.Range && (!u.Stats.Ranged || u.Has(SkillLob) || b.Map.LineOfFire(u.Pos, t.Pos))
 	if !canHit {
 		b.moveToward(u, t.Pos)
 		return
