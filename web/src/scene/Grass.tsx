@@ -6,7 +6,7 @@ import { OBSTACLE, type Obstacle } from '../sim/snapshot.ts';
 import { fogActive, fogTex } from './Fog.tsx';
 import { NOISE_GLSL, rng } from './natureShader.ts';
 
-const CLUMPS = 12000, AREA = 20; // clumps of 3 blades over ±20 m (the arena plus a margin)
+const CLUMPS = 9000, AREA = 20; // clumps of 3 blades over ±20 m (the arena plus a margin)
 
 // One clump: three tapered blades fanned around the origin (3 triangles each).
 function clumpGeometry() {

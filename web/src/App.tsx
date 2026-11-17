@@ -19,10 +19,11 @@ import { Banner, DevPanel, Result, RunBar, Status } from './ui/Overlays.tsx';
 export function App() {
   const phase = useBattle((s) => s.phase);
   const quality = useBattle((s) => s.quality);
+  const lowDpr = useBattle((s) => s.lowDpr);
   return (
     <>
       {/* cap pixel density: full Retina (2x) with post-processing costs 4x the pixels */}
-      <Canvas shadows dpr={quality === 'high' ? [1, 1.5] : 1} camera={{ position: [0, 25, 24], fov: 45, far: 600 }}>
+      <Canvas shadows dpr={quality === 'high' && !lowDpr ? [1, 1.5] : 1} camera={{ position: [0, 25, 24], fov: 45, far: 600 }}>
         <Lighting />
         <Arena />
         <Units />

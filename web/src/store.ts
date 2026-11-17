@@ -51,6 +51,7 @@ type State = {
   fogOn: boolean;
   quality: 'high' | 'low'; // graphics; remembered per browser
   autoLowered: boolean; // the game dropped to Low because High was too slow
+  lowDpr: boolean; // High renders at 1x pixel density: the first step when it runs slow
   qualityChosen: boolean; // the player picked the quality by hand this session: never override it
   tiltShift: boolean; // experimental depth-of-field (dev)
   selected?: number; // unit index
@@ -194,7 +195,7 @@ export const useBattle = create<State>((set, get) => {
   return {
     phase: 'loading', counts: savedCounts(), formation: 2 /* 3-2 */, slots: {}, deployLeft: DEPLOY_SECONDS,
     obstacles: [], currAt: 0, speed: 1, floats: [], picks: {}, fogOn: true, follow: false,
-    quality: savedQuality(), autoLowered: false, qualityChosen: false, tiltShift: false,
+    quality: savedQuality(), autoLowered: false, lowDpr: false, qualityChosen: false, tiltShift: false,
     setQuality(quality, auto = false) {
       if (auto && (get().qualityChosen || get().autoLowered)) return; // once per session, never over a manual choice
       set({ quality, autoLowered: auto, qualityChosen: get().qualityChosen || !auto });

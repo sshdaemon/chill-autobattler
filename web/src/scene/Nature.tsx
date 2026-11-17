@@ -79,10 +79,11 @@ function sceneryPlacements(models: Record<string, Model>) {
       items.push({ model, p: { x, z, rot: r() * 6.28, scale: byHeight ? size() / m.height : size() / m.radius } });
     }
   };
-  scatter(18, TREES.map((t) => 'ez' + t), 17, 26, () => 6 + r() * 3, true, 30);
-  scatter(34, FAR_TREES, 26, 44, () => 6 + r() * 3, true, 30);
-  scatter(14, ['ezBush_1'], 16, 26, () => 1.1 + r() * 0.6, false);
-  scatter(12, ['Bush_Common'], 16, 30, () => 0.9 + r() * 0.6, false);
+  // detailed trees are ~10–16k triangles each: only a few near the wall, light pines beyond
+  scatter(8, TREES.map((t) => 'ez' + t), 17, 24, () => 6 + r() * 3, true, 30);
+  scatter(44, FAR_TREES, 22, 44, () => 6 + r() * 3, true, 30);
+  scatter(6, ['ezBush_1'], 16, 24, () => 1.1 + r() * 0.6, false);
+  scatter(18, ['Bush_Common'], 16, 30, () => 0.9 + r() * 0.6, false);
   scatter(18, ROCKS, 16, 34, () => 0.8 + r() * 1.2, false);
   scatter(40, ['Fern_1', 'Flower_3_Group', 'Pebble_Round_2'], 15.2, 22, () => 0.35 + r() * 0.3, false);
   return items;

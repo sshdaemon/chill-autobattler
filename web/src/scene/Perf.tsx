@@ -40,7 +40,10 @@ export function Perf() {
           // A few fps means the page is throttled (a hidden pane that still says "visible"), not a slow GPU.
           if (performance.now() - mountedAt < 10_000 || document.visibilityState !== 'visible' || rate < 5) return;
           const s = useBattle.getState();
-          if (s.quality === 'high') s.setQuality('low', true);
+          if (s.quality !== 'high') return;
+          // first render fewer pixels (keeps every effect), only then drop to Low
+          if (!s.lowDpr) useBattle.setState({ lowDpr: true });
+          else s.setQuality('low', true);
         }} />
     </>
   );

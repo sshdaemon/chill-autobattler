@@ -83,3 +83,12 @@ On High: about 18,000 blades (54k triangles); obstacles ~5k triangles each, at m
 - **Arena trees:** sized by canopy radius (about 1.8 m, at most 6.5 m tall), so they don't bury units.
 - **The ring around the arena:** EZ-Tree trees near the wall, Quaternius pines farther out (lighter). None of the scenery casts shadows; tall trees outside would shade half the field.
 - **Download:** the nature and trees assets are about 9 MB compressed, within the step's ≤ 10 MB.
+
+## Frame-rate pass
+
+A real browser measured 37–46 fps on High. The changes:
+
+- **Trees:** 8 detailed trees around the wall instead of 18, and 6 bushes instead of 14; Quaternius pines fill the rest. Detailed trees overall went from 39 to 14 instances, and from about 550k to 187k triangles. Scene render time fell from about 9 ms to 4–6.5 ms at 1536×1152.
+- **Grass:** 9,000 clumps instead of 12,000.
+- **N8AO:** its "performance" quality.
+- **Stepped fallback:** when High runs slow, the game first drops pixel density to 1× and keeps every effect; only if that's still slow does it switch to Low.
