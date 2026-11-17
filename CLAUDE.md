@@ -22,6 +22,7 @@ Commands:
 - `pnpm dev`: builds the WASM, then starts Vite on :5173.
 - `pnpm server`: the Go server on :8080. Its DB file is `CHILL_DB`, default `server/chill.db`.
 - `pnpm test`: Go tests natively, sim and bridge tests under WASM, and a TS typecheck.
+- `pnpm balance`: the balance lab (`tools/balance`). It plays ~160k seeded battles and writes `docs/balance-report.md`. Run it before and after any balance change.
 
 sim/ rules (enforced by `TestNoNondeterministicImports`):
 - Fixed-point `sim.Fx` only.
