@@ -3,6 +3,8 @@
 package main
 
 import (
+	"encoding/binary"
+	"encoding/json"
 	"syscall/js"
 	"testing"
 
@@ -56,5 +58,42 @@ func TestStepToOutcome(t *testing.T) {
 	raw, _ = proto.Marshal(bad)
 	if msg := api.Call("create", bytesToJS(raw)).String(); msg == "" {
 		t.Error("create should reject an invalid input")
+	}
+}
+
+func TestDataAndSlots(t *testing.T) {
+	register()
+	api := js.Global().Get("chillSim")
+	var d struct {
+		Classes []struct {
+			Name   string `json:"name"`
+			HP     float64
+			Skills []struct{ Name string }
+		}
+		Formations []string
+	}
+	if err := json.Unmarshal([]byte(api.Call("data").String()), &d); err != nil {
+		t.Fatal(err)
+	}
+	if len(d.Classes) != 3 || d.Classes[0].HP != 100 || len(d.Classes[2].Skills) != 5 || d.Formations[sim.F3x2] != "3-2" {
+		t.Errorf("data %+v", d)
+	}
+	classes := []sim.Class{sim.Warrior, sim.Archer, sim.Mage, sim.Archer, sim.Warrior}
+	jsClasses := js.Global().Get("Array").New()
+	for _, c := range classes {
+		jsClasses.Call("push", int(c))
+	}
+	for _, f := range sim.Presets {
+		v := api.Call("formationSlots", int(f), jsClasses)
+		b := make([]byte, v.Get("length").Int())
+		js.CopyBytesToGo(b, v)
+		want := sim.FormationSlots(f, classes, 0)
+		for i, p := range want {
+			x := int32(binary.LittleEndian.Uint32(b[8*i:]))
+			z := int32(binary.LittleEndian.Uint32(b[8*i+4:]))
+			if x != int32(p.X) || z != int32(p.Z) {
+				t.Errorf("%v unit %d: got %d,%d want %v", f, i, x, z, p)
+			}
+		}
 	}
 }

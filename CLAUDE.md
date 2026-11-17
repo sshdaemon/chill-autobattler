@@ -7,12 +7,16 @@ Monorepo:
 - `server/`: Go, Connect RPC.
   - `server/battle` issues battles: `StartBattle` (map seed), `LockDeployment` (stores the army, reveals the combat seed), `VerifyBattle` (re-runs the stored input; the first verdict is final).
   - `server/store` is SQLite (modernc, pure Go) with sqlc. Regenerate with `go generate ./server/store`.
-- `web/`: Vite, React and react-three-fiber. The sim runs in a Web Worker at 20 Hz; the scene interpolates snapshots.
+- `web/`: Vite, React and react-three-fiber.
+  - The sim runs in a Web Worker at 20 Hz, and the scene interpolates snapshots.
+  - The match flow (picker → deploy → countdown → fight → result) is a phase machine in `web/src/store.ts`; its UI is in `web/src/ui/`.
+  - Balance numbers and formation slots come from the WASM build (`data()`, `formationSlots()`); never copy them into TS.
 - `proto/`: buf schema. Run `pnpm gen` to write `pb/` and `web/src/gen/`.
 
 Specs and changes live in `openspec/`; plan with the openspec skills before larger work. Game design: `docs/GAME_CONCEPT.md`.
 
 Commands:
+- `pnpm start`: the whole game locally. It builds the WASM, then runs the server on :8080 and Vite on :5173; Ctrl-C stops both.
 - `pnpm dev`: builds the WASM, then starts Vite on :5173.
 - `pnpm server`: the Go server on :8080. Its DB file is `CHILL_DB`, default `server/chill.db`.
 - `pnpm test`: Go tests natively, sim and bridge tests under WASM, and a TS typecheck.

@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "scripts": {
+    "start": "pnpm build:wasm && sh -c 'trap \"kill 0\" INT TERM EXIT; pnpm server & pnpm --filter web dev & wait'",
     "gen": "buf generate",
     "build:wasm": "cd wasm && GOOS=js GOARCH=wasm go build -trimpath -ldflags='-s -w' -o ../web/public/sim.wasm . && cp \"$(go env GOROOT)/lib/wasm/wasm_exec.js\" ../web/public/",
     "dev": "pnpm build:wasm && pnpm --filter web dev",
