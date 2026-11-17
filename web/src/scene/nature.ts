@@ -5,6 +5,25 @@ import * as THREE from 'three';
 
 export const NATURE_GLB = '/assets/nature/nature.glb';
 
+// Shared clock for leaves swaying in the wind (advanced by Nature's frame loop).
+export const natureTime = { value: 0 };
+
+function swayLeaves(m: THREE.MeshStandardMaterial) {
+  m.onBeforeCompile = (s) => {
+    s.uniforms.uTime = natureTime;
+    s.vertexShader = s.vertexShader
+      .replace('#include <common>', '#include <common>\nuniform float uTime;')
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+#ifdef USE_INSTANCING
+vec2 root = instanceMatrix[3].xz;
+#else
+vec2 root = vec2(0.0);
+#endif
+float sway = sin(uTime * 1.4 + root.x * 0.5 + root.y * 0.3 + position.y * 0.6) + 0.5 * sin(uTime * 2.3 + position.x * 2.0);
+transformed.xz += vec2(0.6, 0.35) * sway * 0.02 * max(position.y, 0.0);`);
+  };
+}
+
 export type Model = {
   parts: { geometry: THREE.BufferGeometry; material: THREE.Material; local: THREE.Matrix4 }[];
   radius: number; // horizontal extent from the origin, in model units
@@ -25,6 +44,9 @@ export function readModel(root: THREE.Object3D): Model {
     for (const mat of Array.isArray(m.material) ? m.material : [m.material]) {
       const std = mat as THREE.MeshStandardMaterial;
       if (std.map && std.transparent) { std.transparent = false; std.alphaTest = 0.5; }
+      if (/leaf|leaves|bush/i.test(std.name) && !std.userData.sway) { std.userData.sway = true; swayLeaves(std); }
+      // match the darker battlefield: the pack's rocks and needles are bright
+      if (!std.userData.toned) { std.userData.toned = true; std.color?.multiplyScalar(/rock/i.test(std.name) ? 0.72 : /leaf|leaves/i.test(std.name) ? 0.82 : 1); }
     }
     parts.push({ geometry: m.geometry, material: Array.isArray(m.material) ? m.material[0] : m.material, local });
     m.geometry.computeBoundingBox();

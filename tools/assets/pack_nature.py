@@ -30,7 +30,7 @@ MODELS = [
     'Bush_Common', 'Fern_1', 'Flower_3_Group', 'Pebble_Round_2',
 ]
 # texture -> max size in px; leaves keep PNG for alpha, the rest become JPEG
-TEX_SIZE = {'Bark': 512, 'Rocks': 512, 'PathRocks': 256}
+TEX_SIZE = {'Bark': 1024, 'Rocks': 1024, 'PathRocks': 256, 'Leaf': 1024, 'Leaves': 1024}
 GROUND = ['Grass004', 'Ground037', 'Ground054']
 
 

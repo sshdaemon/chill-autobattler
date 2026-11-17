@@ -85,7 +85,7 @@ varying float vH;
 varying vec2 vXZ;
 ${NOISE_GLSL}`)
         .replace('#include <map_fragment>', `
-vec3 rootC = vec3(0.22, 0.32, 0.1), tipC = mix(vec3(0.5, 0.64, 0.22), vec3(0.64, 0.66, 0.3), vnoise(vXZ * 0.3));
+vec3 rootC = vec3(0.14, 0.22, 0.07), tipC = mix(vec3(0.38, 0.5, 0.17), vec3(0.5, 0.52, 0.22), vnoise(vXZ * 0.3));
 diffuseColor.rgb = mix(rootC, tipC, vH);`)
         .replace('#include <opaque_fragment>', `
 vec2 fuv = vec2((vXZ.x + 14.0) / 28.0, (14.0 - vXZ.y) / 28.0);

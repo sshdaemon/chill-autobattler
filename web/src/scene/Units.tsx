@@ -123,15 +123,17 @@ function Unit({ index }: { index: number }) {
         <mesh position-y={0.04} rotation-x={-Math.PI / 2}><ringGeometry args={[0.55, 0.66, 32]} /><meshBasicMaterial color="#ffd23f" /></mesh>
       )}
       {!dead && !hidden && <>
-        <mesh position-y={0.03} rotation-x={-Math.PI / 2}>
+        {/* drawn over the ground, grass and water, like a selection circle */}
+        <mesh position-y={0.06} rotation-x={-Math.PI / 2} renderOrder={6}>
           <ringGeometry args={[0.4, 0.5, 28]} />
-          <meshBasicMaterial color={TEAM[info.team]} transparent opacity={0.85} depthWrite={false} />
+          <meshBasicMaterial color={TEAM[info.team]} transparent opacity={0.85} depthWrite={false} depthTest={false} />
         </mesh>
         <Billboard position-y={2.15}>
-          <mesh><planeGeometry args={[0.96, 0.16]} /><meshBasicMaterial color="#fff" depthTest={false} /></mesh>
-          <mesh position-z={0.001}><planeGeometry args={[0.92, 0.12]} /><meshBasicMaterial color="#1a1a1a" depthTest={false} /></mesh>
+          {/* always on top: drawn last, never hidden by trees, grass or units */}
+          <mesh renderOrder={20}><planeGeometry args={[0.96, 0.16]} /><meshBasicMaterial color="#fff" transparent depthTest={false} depthWrite={false} /></mesh>
+          <mesh position-z={0.001} renderOrder={21}><planeGeometry args={[0.92, 0.12]} /><meshBasicMaterial color="#1a1a1a" transparent depthTest={false} depthWrite={false} /></mesh>
           <group ref={bar} position={[-0.45, 0, 0.002]}>{/* pinned at the left edge, scaled by health */}
-            <mesh position-x={0.45}><planeGeometry args={[0.9, 0.1]} /><meshBasicMaterial color={TEAM[info.team]} depthTest={false} /></mesh>
+            <mesh position-x={0.45} renderOrder={22}><planeGeometry args={[0.9, 0.1]} /><meshBasicMaterial color={TEAM[info.team]} transparent depthTest={false} depthWrite={false} /></mesh>
           </group>
         </Billboard>
         {info.skills > 0 && (

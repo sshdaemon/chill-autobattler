@@ -73,7 +73,7 @@ vec3 gw = gWeights();
 vec3 gcol = tri(grass, gp, gk).rgb * vec3(1.02, 1.08, 0.86) * gw.x;
 if (gw.y > 0.002) gcol += tri(dirt, gp, gk).rgb * gw.y;
 if (gw.z > 0.002) gcol += tri(mud, gp, gk).rgb * 0.8 * gw.z;
-gcol *= 0.92 + 0.16 * vnoise(gp * 0.35);                  // soft large-scale variation
+gcol *= (0.92 + 0.16 * vnoise(gp * 0.35)) * 0.82;                  // soft large-scale variation
 diffuseColor.rgb *= gcol;`)
         .replace('#include <normal_fragment_maps>', THREE.ShaderChunk.normal_fragment_maps.replace(
           'texture2D( normalMap, vNormalMapUv ).xyz',

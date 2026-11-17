@@ -9,19 +9,20 @@ import { Grass } from './Grass.tsx';
 // put them, grass (High only), the wall and the scenery around it.
 export function Arena() {
   const high = useBattle((s) => s.quality === 'high');
+  const deploying = useBattle((s) => ['starting', 'deploying', 'locking'].includes(s.phase));
   return (
     <>
       <Suspense fallback={<FlatGround />}><Ground /></Suspense>
       <Water />
       <Suspense fallback={null}><Nature /></Suspense>
       {high && <Grass />}
-      {/* deployment zones */}
-      {[[0, 10, '#3a8cff'], [0, -10, '#ff4040']].map(([x, z, c]) => (
-        <mesh key={String(c)} position={[x as number, 0.05, z as number]} rotation-x={-Math.PI / 2} renderOrder={3}>
+      {/* Blue's deployment zone, only while placing units */}
+      {deploying && (
+        <mesh position={[0, 0.05, 10]} rotation-x={-Math.PI / 2} renderOrder={3}>
           <planeGeometry args={[20, 6]} />
-          <meshBasicMaterial color={c as string} transparent opacity={0.12} depthWrite={false} />
+          <meshBasicMaterial color="#3a8cff" transparent opacity={0.12} depthWrite={false} />
         </mesh>
-      ))}
+      )}
     </>
   );
 }

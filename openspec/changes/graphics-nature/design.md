@@ -9,7 +9,7 @@ The source packs live outside the repo, in `../assets-src/quaternius-nature` and
    - Leaf textures stay PNG (alpha); the rest are JPEG.
 2. **Ground textures:** colour and normal maps at 1024 px, saved as JPEG (quality 82).
 
-The goal is under 6 MB in total.
+Textures for leaves, bark (with its normal map) and rocks are kept at 1024 px, so trees and rocks hold up close; the total is about 7 MB, within the roadmap's ≤ 10 MB for this step.
 
 ## Ground
 
@@ -64,3 +64,10 @@ The goal is under 6 MB in total.
 ## Budget
 
 On High: about 18,000 blades (54k triangles); obstacles ~5k triangles each, at most about 12 in the arena plus 60 outside; the wall is instanced. Draw calls stay under about 150.
+
+## Readability and tone
+
+- Health bars and unit rings ignore depth and draw last, so trees, grass and water never hide them.
+- Only Blue's deployment zone is shown, and only while deploying.
+- The overall tone is darker: the sun, the sky light and the environment light are dimmed, and the ground, grass, rocks and pine needles are toned down to match.
+- Leaves sway in the wind (a vertex shader on the leaf materials).

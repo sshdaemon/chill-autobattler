@@ -4,7 +4,7 @@ import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { useBattle } from '../store.ts';
 import { OBSTACLE, type Obstacle } from '../sim/snapshot.ts';
-import { NATURE_GLB, instances, readModel, type Model, type Placement } from './nature.ts';
+import { NATURE_GLB, instances, natureTime, readModel, type Model, type Placement } from './nature.ts';
 import { hash2, rng } from './natureShader.ts';
 
 const ROCKS = ['Rock_Medium_1', 'Rock_Medium_2', 'Rock_Medium_3'];
@@ -84,6 +84,7 @@ export function Nature() {
   const obstacles = useBattle((s) => s.obstacles);
   const rocksTrees = useMemo(() => build(models, obstaclePlacements(models, obstacles)), [models, obstacles]);
   const scenery = useMemo(() => build(models, sceneryPlacements(models)), [models]);
+  useFrame((_, dt) => { natureTime.value += dt; });
   return (
     <>
       <primitive object={rocksTrees} />

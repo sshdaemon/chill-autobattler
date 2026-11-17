@@ -2,7 +2,7 @@
 
 ## 1. Assets
 
-- [x] 1.1 `tools/assets/pack_nature.py` (Blender export of the chosen models plus downscaled textures) writes `web/public/assets/nature/`; verify the total size ≤ 6 MB, and credit Quaternius and ambientCG in the README
+- [x] 1.1 `tools/assets/pack_nature.py` (Blender export of the chosen models plus downscaled textures) writes `web/public/assets/nature/`; verify the total size ≤ 10 MB, and credit Quaternius and ambientCG in the README
 
 ## 2. Ground and water
 
