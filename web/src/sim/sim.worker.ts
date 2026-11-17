@@ -7,11 +7,18 @@ type SimApi = {
   map(): Uint8Array;
   step(n: number): Uint8Array;
   outcome(): Uint8Array;
+  data(): string;
+  formationSlots(formation: number, classes: number[]): Uint8Array | null;
 };
 // preview: set the battle up and show tick 0 (deployment) without playing it
-export type ToWorker = { type: 'start' | 'preview'; input: Uint8Array } | { type: 'speed'; speed: number } | { type: 'stop' };
+export type ToWorker =
+  | { type: 'start' | 'preview'; input: Uint8Array }
+  | { type: 'speed'; speed: number }
+  | { type: 'stop' }
+  | { type: 'slots'; classes: number[] }; // sim classes (0..2); replies with every preset's positions
 export type FromWorker =
-  | { type: 'ready'; version: string }
+  | { type: 'ready'; version: string; data: string }
+  | { type: 'slots'; slots: Record<number, { x: number; z: number }[]> } // keyed by sim formation (1..7)
   | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer }
   | { type: 'snapshot'; snapshot: ArrayBuffer }
   | { type: 'done'; outcome: Uint8Array }
@@ -27,7 +34,7 @@ const ready = (async () => {
   const { instance } = await WebAssembly.instantiateStreaming(fetch('/sim.wasm'), go.importObject);
   void go.run(instance); // never resolves; main() blocks to keep the API alive
   const sim = (globalThis as unknown as { chillSim: SimApi }).chillSim;
-  post({ type: 'ready', version: sim.version });
+  post({ type: 'ready', version: sim.version, data: sim.data() });
   return sim;
 })();
 
@@ -59,6 +66,15 @@ self.onmessage = async (e: MessageEvent<ToWorker>) => {
     const map = buf(sim.map()), snapshot = buf(sim.step(0));
     post({ type: 'started', map, snapshot }, [map, snapshot]);
     if (msg.type === 'start') loop(sim);
+  } else if (msg.type === 'slots') {
+    const slots: Record<number, { x: number; z: number }[]> = {};
+    for (let f = 1; f <= 7; f++) {
+      const raw = sim.formationSlots(f, msg.classes);
+      if (!raw) continue;
+      const a = new Int32Array(raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.byteLength));
+      slots[f] = Array.from({ length: a.length / 2 }, (_, i) => ({ x: a[2 * i] / 65536, z: a[2 * i + 1] / 65536 }));
+    }
+    post({ type: 'slots', slots });
   } else if (msg.type === 'speed') {
     speed = msg.speed;
     if (timer !== undefined) loop(sim);

@@ -10,17 +10,26 @@ You need Go 1.27+, Node 24+ and pnpm 11.
 
 ```bash
 pnpm install
+pnpm start      # builds sim.wasm, runs the Go server (:8080) and the web app (:5173); Ctrl-C stops both
+```
+
+Open http://localhost:5173.
+
+Other commands:
+
+```bash
 pnpm gen        # protobuf → pb/ (Go) and web/src/gen/ (TypeScript)
-pnpm server     # Go fairness server on :8080
-pnpm dev        # builds sim.wasm, then the web app on http://localhost:5173
+pnpm server     # only the Go fairness server on :8080
+pnpm dev        # only the web app (rebuilds sim.wasm first)
 pnpm test       # Go tests natively and under WASM, TS typecheck
 ```
 
-The debug viewer needs the server running.
-1. Pick Red's skill count and press **🗺 New map**. The server issues a battle, and you see its map and both armies deployed.
-2. Change Blue's classes or formation while deploying.
-3. Press **▶ Fight**. Your deployment is locked, the server reveals the combat seed, and the battle plays.
-4. When it ends, press **Verify on server**.
+### How to play
+
+1. **Choose your army.** Pick 5 units from the warrior, archer and mage cards. Each card shows its stats and how much damage it takes from each class. Your last pick is remembered.
+2. **Deploy (15 s).** The server issues a battle and you see its map. Red is hidden under fog. Pick a formation from the bottom bar (the diagrams show your actual mix), or drag your units anywhere inside the blue zone. **Ready** starts early.
+3. **Fight.** Your deployment is locked with the server, which only then reveals the combat seed. After a "Fight!" banner, the armies fight on their own. The dev panel (top right) sets 1×/2×/4× speed, and Red's skill count for the next match.
+4. **Result.** Victory, Defeat or Draw, with survivors. The battle is verified with the server automatically. **Next match** goes back to the army picker.
 
 ## Architecture
 
