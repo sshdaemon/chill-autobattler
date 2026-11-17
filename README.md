@@ -36,7 +36,7 @@ A **run** is a chain of matches. You keep playing while you keep winning, and th
    - **Portraits** run along the bottom: yours on the left, Red's on the right, with "?" for enemies out of sight. Click one (or a unit) for its info panel, which shows status, kills, damage and skills.
    - The **minimap** (top right) shows the field under the same fog; click it to move the camera.
    - **Sound effects** are synthesized in the browser. The dev panel (top right) has mute, volume, and 1×/2×/4× speed.
-   - **Graphics quality** (dev panel): High adds image-based lighting, soft shadows, ambient occlusion, bloom and a colour grade; Low keeps plain lighting. The choice is remembered per browser. If High can't keep up on your machine, the game switches to Low and says so. DoF toggles an experimental tilt-shift blur, and the panel shows the current fps.
+   - **Graphics quality** (dev panel): High adds image-based lighting, soft shadows, ambient occlusion, bloom, a colour grade and swaying grass; Low keeps plain lighting and no grass. The choice is remembered per browser. If High can't keep up on your machine, the game switches to Low and says so. DoF toggles an experimental tilt-shift blur, and the panel shows the current fps.
 
    | Key | Does |
    |---|---|
@@ -211,6 +211,8 @@ Characters and animations come from [Quaternius](https://quaternius.com)'s CC0 m
 | `web/public/assets/clips.json` | The shared animations: idle, jog, sword attack, spell shot, hit, death, cheer. |
 | `tools/blender/bake_units.py` | Re-bakes from the Quaternius source packs, which aren't in this repo (`QUATERNIUS_DIR`, default `../web3d-demo/assets/quaternius`): `blender --background --python tools/blender/bake_units.py`. |
 | `tools/assets/pack_units.py` | Packs a bake for the web: shares Blue/Red geometry, converts PNGs to JPEG (macOS `sips`), and trims the clips. Run `python3 tools/assets/pack_units.py tools/blender/out`. |
+| `web/public/assets/nature/` | The battlefield (about 5.5 MB): `nature.glb` holds rocks, trees, bushes, ferns, flowers and a pebble from Quaternius's CC0 [Stylized Nature MegaKit](https://quaternius.itch.io/stylized-nature-megakit); the ground textures are CC0 [ambientCG](https://ambientcg.com) Grass004, Ground037 (dirt) and Ground054 (mud). |
+| `tools/assets/pack_nature.py` | Packs those from the source downloads, which aren't in this repo (`NATURE_DIR`, default `../assets-src/quaternius-nature`; `AMBIENTCG_DIR`, default `../assets-src/ambientcg`). It downscales the textures and has Blender merge the chosen models into one GLB: `python3 tools/assets/pack_nature.py`. |
 
 The renderer drives each character's animation purely from the sim's snapshot flags (walking, attacking, staggered, dashing, dead). An attack animation is stretched to the sim's swing time, so the blow lands when the sim says it does. Rendering never feeds back into the battle.
 
