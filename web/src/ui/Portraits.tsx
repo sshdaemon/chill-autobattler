@@ -22,7 +22,7 @@ function Card({ index }: { index: number }) {
   useEffect(() => {
     if (cls === undefined || team === undefined) return;
     let live = true;
-    portrait(cls, lookFor(cls, nth), team).then((url) => { if (live) setImg(url); }).catch(() => undefined);
+    portrait(cls, lookFor(cls, nth), team, nth).then((url) => { if (live) setImg(url); }).catch(() => undefined);
     return () => { live = false; };
   }, [cls, team, nth]);
   if (!u) return null;

@@ -5,6 +5,9 @@ import { EF, EV, UF, type SimEvent, type Snapshot, type UnitSnap } from '../sim/
 import { shockwave, spawn, type PoolKind, type Spawn } from './Particles.tsx';
 import { addShake } from './shake.ts';
 
+// Recent hits per unit (direction away from the attacker), for the flinch in Units.
+export const flinches = new Map<number, { dx: number; dz: number; t: number }>();
+
 export type View = { fogOn: boolean; fogged: boolean; speed: number; high: boolean };
 export const viewOf = (s: { fogOn: boolean; phase: string; speed: number; quality: string }): View =>
   ({ fogOn: s.fogOn, fogged: s.phase === 'countdown' || s.phase === 'fighting', speed: s.speed, high: s.quality === 'high' });
@@ -69,6 +72,7 @@ export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
     if (!u || !visible(u, v)) continue;
     switch (e.kind) {
       case EV.hit: {
+        if (o) { const l = Math.hypot(u.x - o.x, u.z - o.z) || 1; flinches.set(e.unit, { dx: (u.x - o.x) / l, dz: (u.z - o.z) / l, t: performance.now() / 1000 }); }
         const flank = e.flags & EF.flank, strong = e.flags & EF.strong;
         const col: [number, number, number] = o?.cls === CLS_MAGE ? [1.6, 0.9, 2.6] : flank ? [3, 2.2, 0.6] : strong ? [3, 1.4, 0.4] : [2.2, 1.9, 1.5];
         sparks(u, o, flank ? 18 : strong ? 12 : 8, col, flank ? 5.5 : 4);

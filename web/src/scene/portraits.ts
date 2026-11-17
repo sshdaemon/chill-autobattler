@@ -1,4 +1,4 @@
-// Face close-ups, rendered once per look and team with a short-lived second
+// Face close-ups, rendered once per unit look (look, team, nth: hair varies per unit) with a short-lived second
 // renderer, cached as data URLs.
 import * as THREE from 'three';
 import { makeCharacter } from './models.ts';
@@ -6,19 +6,20 @@ import { makeCharacter } from './models.ts';
 const cache = new Map<string, Promise<string>>();
 let queue: Promise<unknown> = Promise.resolve(); // one portrait at a time: one extra GL context, briefly
 
-export function portrait(cls: number, look: string, team: number): Promise<string> {
-  const key = `${look}_${team}`;
+export function portrait(cls: number, look: string, team: number, nth = 0): Promise<string> {
+  const key = `${look}_${team}_${nth}`;
   let p = cache.get(key);
   if (!p) {
-    p = queue.then(() => render(cls, look, team));
+    p = queue.then(() => render(cls, look, team, nth));
     queue = p.catch(() => undefined);
     cache.set(key, p);
   }
   return p;
 }
 
-async function render(cls: number, look: string, team: number): Promise<string> {
-  const ch = await makeCharacter(cls, look, team);
+async function render(cls: number, look: string, team: number, nth: number): Promise<string> {
+  const ch = await makeCharacter(cls, look, team, nth);
+  ch.rim.k.value = 0; // the frame shows the team; a rim would tint the face
   ch.mixer.setTime(0);
   const scene = new THREE.Scene();
   scene.add(new THREE.HemisphereLight(0xdfefff, 0x445533, 2.2));
