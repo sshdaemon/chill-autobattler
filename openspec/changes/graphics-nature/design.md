@@ -71,3 +71,15 @@ On High: about 18,000 blades (54k triangles); obstacles ~5k triangles each, at m
 - Only Blue's deployment zone is shown, and only while deploying.
 - The overall tone is darker: the sun, the sky light and the environment light are dimmed, and the ground, grass, rocks and pine needles are toned down to match.
 - Leaves sway in the wind (a vertex shader on the leaf materials).
+
+## Detailed trees (EZ-Tree)
+
+- **Source:** the Quaternius trees looked too primitive up close. Trees in and near the arena are now generated with EZ-Tree (MIT): oak ×2, ash, aspen and pine, plus a bush.
+- **Baking:** `web/scripts/bake-trees.mjs` bakes them offline into `trees.glb`.
+  - About 88k triangles over 6 variants.
+  - Materials are named by texture; the game applies the bark and leaf textures itself.
+  - EZ-Tree is a dev-only dependency.
+- **Leaf lighting:** leaf-card normals are bent upward when the game loads them, so canopies catch the sun instead of reading as dark blobs.
+- **Arena trees:** sized by canopy radius (about 1.8 m, at most 6.5 m tall), so they don't bury units.
+- **The ring around the arena:** EZ-Tree trees near the wall, Quaternius pines farther out (lighter). None of the scenery casts shadows; tall trees outside would shade half the field.
+- **Download:** the nature and trees assets are about 9 MB compressed, within the step's ≤ 10 MB.

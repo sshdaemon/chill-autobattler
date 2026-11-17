@@ -1,23 +1,30 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { useBattle } from '../store.ts';
 import { OBSTACLE, type Obstacle } from '../sim/snapshot.ts';
-import { NATURE_GLB, instances, natureTime, readModel, type Model, type Placement } from './nature.ts';
+import { NATURE_GLB, TREES_GLB, TREE_TEXTURES, dressTrees, instances, natureTime, readModel, type Model, type Placement } from './nature.ts';
 import { hash2, rng } from './natureShader.ts';
 
 const ROCKS = ['Rock_Medium_1', 'Rock_Medium_2', 'Rock_Medium_3'];
-const TREES = ['CommonTree_1', 'CommonTree_2', 'CommonTree_3', 'Pine_1', 'Pine_2', 'Pine_5'];
+// detailed trees baked with EZ-Tree (web/scripts/bake-trees.mjs) in and near the arena;
+// the light Quaternius pines for the far background
+const TREES = ['Oak_1', 'Oak_2', 'Ash_1', 'Aspen_1', 'Pine_1'];
+const FAR_TREES = ['Pine_1', 'Pine_2', 'Pine_5'];
+const CANOPY = 1.8; // arena trees' canopy radius in m: small enough not to bury units
 const HALF = 14, WALL = 14.4;
 
 function useModels() {
-  const gltf = useGLTF(NATURE_GLB);
+  const nature = useGLTF(NATURE_GLB), trees = useGLTF(TREES_GLB), tex = useTexture(TREE_TEXTURES);
   return useMemo(() => {
     const out: Record<string, Model> = {};
-    for (const child of gltf.scene.children) out[child.name] = readModel(child);
+    for (const child of nature.scene.children) out[child.name] = readModel(child);
+    dressTrees(trees.scene, tex);
+    // baked trees get an "ez" prefix where names clash (Pine_1)
+    for (const child of trees.scene.children) out['ez' + child.name] = readModel(child);
     return out;
-  }, [gltf]);
+  }, [nature, trees, tex]);
 }
 
 // Groups placements by model and builds the instanced meshes.
@@ -41,9 +48,9 @@ function obstaclePlacements(models: Record<string, Model>, obstacles: Obstacle[]
       const scale = (o.r * 1.05) / m.radius;
       items.push({ model, p: { x: o.x, z: o.z, rot: hash2(o.x, o.z, 1) * Math.PI * 2, scale, squash: 0.75 + 0.25 * hash2(o.x, o.z, 2), y: -0.05 } });
     } else if (o.kind === OBSTACLE.tree) {
-      const model = TREES[Math.floor(hash2(o.x, o.z) * TREES.length)], m = models[model];
+      const model = 'ez' + TREES[Math.floor(hash2(o.x, o.z) * TREES.length)], m = models[model];
       if (!m) continue;
-      const scale = (4.5 + 1.5 * hash2(o.x, o.z, 3)) / m.height;
+      const scale = Math.min((CANOPY * (0.9 + 0.25 * hash2(o.x, o.z, 3))) / m.radius, 6.5 / m.height);
       items.push({ model, p: { x: o.x, z: o.z, rot: hash2(o.x, o.z, 1) * Math.PI * 2, scale } });
     }
   }
@@ -72,8 +79,10 @@ function sceneryPlacements(models: Record<string, Model>) {
       items.push({ model, p: { x, z, rot: r() * 6.28, scale: byHeight ? size() / m.height : size() / m.radius } });
     }
   };
-  scatter(46, TREES, 17, 42, () => 5 + r() * 3, true, 30);
-  scatter(24, ['Bush_Common'], 16, 30, () => 0.9 + r() * 0.6, false);
+  scatter(18, TREES.map((t) => 'ez' + t), 17, 26, () => 6 + r() * 3, true, 30);
+  scatter(34, FAR_TREES, 26, 44, () => 6 + r() * 3, true, 30);
+  scatter(14, ['ezBush_1'], 16, 26, () => 1.1 + r() * 0.6, false);
+  scatter(12, ['Bush_Common'], 16, 30, () => 0.9 + r() * 0.6, false);
   scatter(18, ROCKS, 16, 34, () => 0.8 + r() * 1.2, false);
   scatter(40, ['Fern_1', 'Flower_3_Group', 'Pebble_Round_2'], 15.2, 22, () => 0.35 + r() * 0.3, false);
   return items;
@@ -83,7 +92,8 @@ export function Nature() {
   const models = useModels();
   const obstacles = useBattle((s) => s.obstacles);
   const rocksTrees = useMemo(() => build(models, obstaclePlacements(models, obstacles)), [models, obstacles]);
-  const scenery = useMemo(() => build(models, sceneryPlacements(models)), [models]);
+  // scenery casts no shadows: tall trees around the arena would shade half the field
+  const scenery = useMemo(() => build(models, sceneryPlacements(models), false), [models]);
   useFrame((_, dt) => { natureTime.value += dt; });
   return (
     <>

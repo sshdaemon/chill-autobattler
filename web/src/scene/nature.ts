@@ -4,6 +4,50 @@
 import * as THREE from 'three';
 
 export const NATURE_GLB = '/assets/nature/nature.glb';
+export const TREES_GLB = '/assets/trees/trees.glb';
+
+const TR = '/assets/trees/';
+export const TREE_TEXTURES = {
+  bark_oak: TR + 'bark_oak_color.jpg', bark_oak_n: TR + 'bark_oak_normal.jpg',
+  bark_birch: TR + 'bark_birch_color.jpg', bark_birch_n: TR + 'bark_birch_normal.jpg',
+  bark_pine: TR + 'bark_pine_color.jpg', bark_pine_n: TR + 'bark_pine_normal.jpg',
+  leaves_oak: TR + 'leaves_oak.png', leaves_ash: TR + 'leaves_ash.png',
+  leaves_aspen: TR + 'leaves_aspen.png', leaves_pine: TR + 'leaves_pine.png',
+};
+
+// The baked trees carry no textures: their material names (bark_<type>,
+// leaves_<type>) pick them, and the bake's extras give tint and bark repeat.
+export function dressTrees(root: THREE.Object3D, tex: Record<string, THREE.Texture>) {
+  root.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const m = mesh.material as THREE.MeshStandardMaterial;
+    if (m.userData.dressed) return;
+    m.userData.dressed = true;
+    const tint = m.userData.tint as number | undefined;
+    if (tint !== undefined) m.color.setHex(tint);
+    if (m.name.startsWith('bark_')) {
+      const map = tex[m.name].clone(), normal = tex[m.name + '_n'].clone();
+      const [rx, ry] = (m.userData.repeat as number[] | undefined) ?? [1, 1];
+      for (const t of [map, normal]) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); t.needsUpdate = true; }
+      map.colorSpace = THREE.SRGBColorSpace;
+      Object.assign(m, { map, normalMap: normal, roughness: 0.9, metalness: 0 });
+    } else if (m.name.startsWith('leaves_')) {
+      const map = tex[m.name];
+      map.colorSpace = THREE.SRGBColorSpace;
+      Object.assign(m, { map, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.8, metalness: 0 });
+      // leaf cards lit like a canopy: normals bent upward, so they catch the sun from above
+      const n = mesh.geometry.getAttribute('normal');
+      const v = new THREE.Vector3();
+      for (let i = 0; i < n.count; i++) {
+        v.fromBufferAttribute(n, i).multiplyScalar(0.35).add(new THREE.Vector3(0, 0.65, 0)).normalize();
+        n.setXYZ(i, v.x, v.y, v.z);
+      }
+      m.userData.baked = true; // keep its own colours (see readModel)
+    }
+    m.needsUpdate = true;
+  });
+}
 
 // Shared clock for leaves swaying in the wind (advanced by Nature's frame loop).
 export const natureTime = { value: 0 };
@@ -46,7 +90,7 @@ export function readModel(root: THREE.Object3D): Model {
       if (std.map && std.transparent) { std.transparent = false; std.alphaTest = 0.5; }
       if (/leaf|leaves|bush/i.test(std.name) && !std.userData.sway) { std.userData.sway = true; swayLeaves(std); }
       // match the darker battlefield: the pack's rocks and needles are bright
-      if (!std.userData.toned) { std.userData.toned = true; std.color?.multiplyScalar(/rock/i.test(std.name) ? 0.72 : /leaf|leaves/i.test(std.name) ? 0.82 : 1); }
+      if (!std.userData.toned) { std.userData.toned = true; std.color?.multiplyScalar(/rock/i.test(std.name) ? 0.72 : /leaf|leaves/i.test(std.name) && !std.userData.baked ? 0.82 : 1); }
     }
     parts.push({ geometry: m.geometry, material: Array.isArray(m.material) ? m.material[0] : m.material, local });
     m.geometry.computeBoundingBox();

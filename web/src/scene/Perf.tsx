@@ -35,9 +35,10 @@ export function Perf() {
     <>
       <FpsCounter />
       <PerformanceMonitor bounds={(refresh) => [refresh * 0.7, refresh]} flipflops={2}
-        onDecline={() => {
-          // not while warming up (shader compiles) or hidden (browsers throttle background pages)
-          if (performance.now() - mountedAt < 10_000 || document.visibilityState !== 'visible') return;
+        onDecline={({ fps: rate }) => {
+          // not while warming up (shader compiles) or hidden (browsers throttle background pages).
+          // A few fps means the page is throttled (a hidden pane that still says "visible"), not a slow GPU.
+          if (performance.now() - mountedAt < 10_000 || document.visibilityState !== 'visible' || rate < 5) return;
           const s = useBattle.getState();
           if (s.quality === 'high') s.setQuality('low', true);
         }} />

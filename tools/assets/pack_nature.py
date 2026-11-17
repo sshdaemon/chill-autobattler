@@ -25,7 +25,6 @@ import tempfile
 
 MODELS = [
     'Rock_Medium_1', 'Rock_Medium_2', 'Rock_Medium_3',
-    'CommonTree_1', 'CommonTree_2', 'CommonTree_3',
     'Pine_1', 'Pine_2', 'Pine_5',
     'Bush_Common', 'Fern_1', 'Flower_3_Group', 'Pebble_Round_2',
 ]

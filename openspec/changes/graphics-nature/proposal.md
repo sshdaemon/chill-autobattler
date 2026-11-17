@@ -17,7 +17,7 @@ After step 1 the light is right, but the battlefield is still a flat green squar
   - a darker centre and a soft shore;
   - moving ripples and a sky reflection with a sun glint;
   - a ripple ring around each unit that wades (the sim's wet flag).
-- **Obstacles.** Quaternius Stylized Nature MegaKit rocks and trees (CC0) replace the primitives:
+- **Obstacles.** Quaternius Stylized Nature MegaKit rocks (CC0) and EZ-Tree trees (MIT, baked offline) replace the primitives:
   - the variant and rotation are picked from the obstacle's position, so a map always looks the same;
   - each model is scaled so its footprint matches the sim's circle. What you see still matches what blocks.
 - **Arena dressing:**
