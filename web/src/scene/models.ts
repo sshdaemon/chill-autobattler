@@ -67,6 +67,22 @@ function makeStaff() {
   return g;
 }
 
+// The shared clips animate the full Quaternius rig, but the bake drops leaf
+// "*_end" bones; tracks for nodes a model lacks only make three.js warn (once
+// per unit and action). All looks share the rig, so the trimmed clips are
+// computed once and reused.
+let fitted: Record<string, THREE.AnimationClip> | undefined;
+function fitClips(clips: Record<string, THREE.AnimationClip>, root: THREE.Object3D) {
+  if (fitted) return fitted;
+  const names = new Set<string>();
+  root.traverse((o) => names.add(o.name));
+  fitted = Object.fromEntries(Object.entries(clips).map(([n, c]) => {
+    const tracks = c.tracks.filter((t) => names.has(t.name.slice(0, t.name.lastIndexOf('.'))));
+    return [n, new THREE.AnimationClip(c.name, c.duration, tracks)];
+  }));
+  return fitted;
+}
+
 export type Character = { root: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Record<string, THREE.AnimationAction>; clips: Record<string, THREE.AnimationClip> };
 
 const ONCE = ['Sword_Attack', 'Spell_Simple_Shoot', 'Hit_Chest', 'Death01'];
@@ -94,7 +110,7 @@ export async function makeCharacter(cls: number, look: string, team: number): Pr
   }
   const mixer = new THREE.AnimationMixer(root);
   const actions: Record<string, THREE.AnimationAction> = {};
-  for (const [name, clip] of Object.entries(clips)) {
+  for (const [name, clip] of Object.entries(fitClips(clips, root))) {
     const a = mixer.clipAction(clip);
     if (ONCE.includes(name)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
     actions[name] = a;
