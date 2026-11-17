@@ -8,11 +8,29 @@ import { BattleResult } from '../gen/chill/v1/battle_pb.ts';
 import { alpha, lerp } from './interp.ts';
 import { lookFor, makeCharacter, type Character } from './models.ts';
 import { FOGGED_FIGHT } from './Fog.tsx';
-import { feet, viewOf } from './effects.ts';
-import { Material, Mesh } from 'three';
+import { feet, flinches, viewOf } from './effects.ts';
+import { TEAM_RIM } from './models.ts';
+import { Euler, Quaternion, Vector3 } from 'three';
+
+const GOLD = TEAM_RIM[0].clone().setStyle('#ffd23f');
+const UP = new Vector3(0, 1, 0), tmpQ = new Quaternion(), tmpAxis = new Vector3(), tmpE = new Euler();
+const AIM_MAX = 0.96, FLINCH_FOR = 0.3, FLINCH_MAX = 0.21;
 
 const TEAM = ['#3a8cff', '#ff4040'];
 const FOGGED = ['starting', 'deploying', 'locking'];
+
+// A direction in the character's own frame (Y up) as seen from a bone's parent
+// space, so a rotation about it can be premultiplied onto the bone's pose.
+const tmpM = new Quaternion();
+function toBone(bone: import('three').Bone, dir: Vector3) {
+  const root = bone.parent ? bone.parent.getWorldQuaternion(tmpM) : tmpM.identity();
+  const charQ = new Quaternion();
+  let o: import('three').Object3D | null = bone;
+  while (o && !o.userData.isCharacterRoot && o.parent) o = o.parent;
+  if (o) o.getWorldQuaternion(charQ);
+  return dir.clone().applyQuaternion(charQ).applyQuaternion(root.invert()).normalize();
+}
+const localUp = (bone: import('three').Bone) => toBone(bone, UP);
 const FADE_AFTER = 1.2, FADE_FOR = 1.5; // a body lies, then fades into the ground
 
 // Which animation the sim state asks for, and at what speed.
@@ -41,13 +59,13 @@ function Unit({ index }: { index: number }) {
   const selected = useBattle((s) => s.selected === index);
   const draggable = useBattle((s) => info?.team === 0 && s.phase === 'deploying');
   const [ch, setCh] = useState<Character>();
-  const anim = useRef({ name: 'Sword_Idle', flags: 0, deadAt: 0, faded: [] as Material[] });
+  const anim = useRef({ name: 'Sword_Idle', flags: 0, deadAt: 0, faded: false, aim: 0 });
 
   const team = info?.team, cls = info?.cls;
   useEffect(() => {
     if (team === undefined || cls === undefined) return;
     let live = true;
-    makeCharacter(cls, lookFor(cls, nth), team).then((c) => { if (live) setCh(c); }); // capsule until loaded
+    makeCharacter(cls, lookFor(cls, nth), team, nth).then((c) => { if (live) setCh(c); }); // capsule until loaded
     return () => { live = false; };
   }, [team, cls, nth]);
 
@@ -71,21 +89,11 @@ function Unit({ index }: { index: number }) {
     if (b.flags & UF.dead) {
       st.deadAt ||= t;
       const p = Math.min(1, Math.max(0, (t - st.deadAt - FADE_AFTER) / FADE_FOR));
-      if (p > 0 && ch && !st.faded.length) {
-        // this body's own materials (looks share theirs), so only it fades
-        ch.root.traverse((o) => {
-          const m = o as Mesh;
-          if (!m.isMesh) return;
-          m.material = (Array.isArray(m.material) ? m.material : [m.material]).map((mat) => {
-            const c = mat.clone();
-            c.transparent = true;
-            st.faded.push(c);
-            return c;
-          }) as unknown as Material;
-          if (Array.isArray(m.material) && m.material.length === 1) m.material = m.material[0];
-        });
+      if (p > 0 && ch && !st.faded) { // the unit's own materials (models.ts), so only this body fades
+        for (const m of ch.mats) m.transparent = true;
+        st.faded = true;
       }
-      for (const m of st.faded) m.opacity = 1 - p;
+      if (ch && st.faded) for (const m of ch.mats) m.opacity = 1 - p;
       if (sink.current) { sink.current.position.y = -0.35 * p; sink.current.visible = p < 1; }
     } else {
       st.deadAt = 0;
@@ -101,17 +109,48 @@ function Unit({ index }: { index: number }) {
       next.reset();
       if (name === 'Yes') next.setLoop(LoopRepeat, Infinity);
       next.play();
-      if (cur && cur !== next) cur.crossFadeTo(next, name === 'Death01' ? 0.1 : 0.15, false);
+      // quick into attacks, hits and death; smooth between moving and standing
+      if (cur && cur !== next) cur.crossFadeTo(next, ['Death01', 'Hit_Chest', 'Sword_Attack', 'Spell_Simple_Shoot'].includes(name) ? 0.12 : 0.25, false);
       st.name = name;
     }
     if (name === 'Sword_Attack' || name === 'Spell_Simple_Shoot') {
       // stretch the attack to the sim's swing time, so the blow lines up with the hit
       next.timeScale = ch.clips[name].duration / (data?.classes[b.cls].swing ?? 1);
     } else {
-      next.timeScale = rate;
+      // kiting archers back away facing the threat: play the jog backwards
+      next.timeScale = name === 'Jog_Fwd_Loop' && b.flags & UF.kiting ? -rate : rate;
     }
     st.flags = b.flags;
     ch.mixer.update(delta * speed);
+
+    // team rim, gold when selected
+    const sel = bs.selected === index;
+    ch.rim.color.value.copy(sel ? GOLD : TEAM_RIM[b.team]);
+    ch.rim.k.value = sel ? 0.9 + 0.3 * Math.sin(t * 4) : 0.55;
+
+    if (b.flags & UF.dead) return;
+    // archers and mages turn their upper body toward the target (after the animation set the pose)
+    const tgt = b.target >= 0 ? curr?.units[b.target] : undefined;
+    let want = 0;
+    if (b.cls !== 0 && tgt && !(tgt.flags & UF.dead)) {
+      const face = Math.atan2(b.fx, b.fz), to = Math.atan2(tgt.x - b.x, tgt.z - b.z);
+      want = Math.max(-AIM_MAX, Math.min(AIM_MAX, Math.atan2(Math.sin(to - face), Math.cos(to - face))));
+    }
+    st.aim += (want - st.aim) * (1 - Math.exp(-8 * delta));
+    if (ch.spine2 && Math.abs(st.aim) > 0.01) ch.spine2.quaternion.premultiply(tmpQ.setFromAxisAngle(localUp(ch.spine2), st.aim));
+    // a short flinch away from the attacker
+    const f = flinches.get(index);
+    if (f && ch.spine1) {
+      const k = (performance.now() / 1000 - f.t) / FLINCH_FOR;
+      if (k >= 1) flinches.delete(index);
+      else if (k >= 0) {
+        const amt = FLINCH_MAX * Math.sin(Math.PI * Math.min(1, k * 1.6)) * (1 - k);
+        // tilt about the horizontal axis perpendicular to the hit, in the unit's own frame
+        const yaw = g.current.rotation.y;
+        tmpAxis.set(f.dz, 0, -f.dx).applyEuler(tmpE.set(0, -yaw, 0));
+        ch.spine1.quaternion.premultiply(tmpQ.setFromAxisAngle(toBone(ch.spine1, tmpAxis), amt));
+      }
+    }
   });
 
   if (!info) return null;

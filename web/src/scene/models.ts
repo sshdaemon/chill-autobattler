@@ -83,19 +83,119 @@ function fitClips(clips: Record<string, THREE.AnimationClip>, root: THREE.Object
   return fitted;
 }
 
-export type Character = { root: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Record<string, THREE.AnimationAction>; clips: Record<string, THREE.AnimationClip> };
+export type Character = {
+  root: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Record<string, THREE.AnimationAction>; clips: Record<string, THREE.AnimationClip>;
+  mats: THREE.MeshStandardMaterial[]; // this unit's own materials (rim, fade)
+  rim: { color: { value: THREE.Color }; k: { value: number } };
+  spine1?: THREE.Bone; spine2?: THREE.Bone;
+};
+
+export const TEAM_RIM = [new THREE.Color('#4f8dff'), new THREE.Color('#ff5a4a')];
+export const TEAM_TRIM = [new THREE.Color('#2f6fe8'), new THREE.Color('#d63a2e')];
+const HAIR = ['#2a1c12', '#4a3020', '#6b4325', '#8a5a2b', '#b08850', '#c8a165', '#7a3b1e', '#9a9690'].map((c) => new THREE.Color(c));
+
+// Stable per-unit randomness (team, class, nth in the army): same army, same looks.
+function seeded(team: number, cls: number, nth: number) {
+  let h = (team * 7919 + cls * 104729 + nth * 1299709 + 0x9e3779b9) >>> 0;
+  return () => {
+    h = Math.imul(h ^ (h >>> 15), 0x2c1b3c6d) >>> 0;
+    h = (h ^ (h >>> 12)) >>> 0;
+    return h / 4294967296;
+  };
+}
+
+// A soft team-coloured edge glow (Fresnel), added to the emissive term.
+function addRim(m: THREE.MeshStandardMaterial, rim: Character['rim']) {
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uRim = rim.color;
+    sh.uniforms.uRimK = rim.k;
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform vec3 uRim;\nuniform float uRimK;')
+      .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+float rimF = pow(1.0 - abs(dot(normalize(vNormal), normalize(vViewPosition))), 2.5);
+totalEmissiveRadiance += uRim * uRimK * rimF;`);
+  };
+  m.customProgramCacheKey = () => 'unit-rim';
+}
+
+function trimMat(team: number, metal: boolean) {
+  return new THREE.MeshStandardMaterial({ color: TEAM_TRIM[team], metalness: metal ? 0.6 : 0, roughness: metal ? 0.35 : 0.8 });
+}
+
+// Team trims, made in code and attached to bones like the weapons.
+function addTrims(cls: number, team: number, root: THREE.Object3D, bones: Record<string, THREE.Bone>) {
+  const at = (bone: THREE.Bone | undefined, mesh: THREE.Object3D, offset: THREE.Vector3) => {
+    if (!bone) return;
+    mesh.position.copy(bone.getWorldPosition(new THREE.Vector3())).add(offset);
+    mesh.traverse((o) => { if ((o as THREE.Mesh).isMesh) o.castShadow = true; });
+    root.add(mesh);
+    bone.attach(mesh);
+  };
+  root.updateMatrixWorld(true);
+  if (cls === 0) {
+    for (const [side, sx] of [['l', 1], ['r', -1]] as const) {
+      const p = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), trimMat(team, true));
+      p.scale.set(1, 0.7, 1.15);
+      p.rotation.z = -sx * 0.5;
+      at(bones[`upperarm_${side}`], p, new THREE.Vector3(sx * 0.03, 0.04, 0));
+    }
+  } else if (cls === 1) {
+    const q = new THREE.Group();
+    const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.5, 8), new THREE.MeshStandardMaterial({ color: 0x5a3a1e, roughness: 0.8 }));
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.06, 8), trimMat(team, false));
+    band.position.y = 0.12;
+    const feathers = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.12, 6), new THREE.MeshStandardMaterial({ color: 0xe8e2d0, roughness: 0.9 }));
+    feathers.position.y = 0.3;
+    q.add(tube, band, feathers);
+    q.rotation.set(-0.25, 0, 0.35);
+    at(bones.spine_03, q, new THREE.Vector3(0.05, 0.02, -0.16));
+    const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.035, 6, 14), trimMat(team, false));
+    scarf.rotation.x = Math.PI / 2;
+    scarf.scale.set(1, 1.1, 1);
+    at(bones.neck_01, scarf, new THREE.Vector3(0, -0.03, 0.01));
+  } else {
+    const mantle = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.22, 12, 1, true), trimMat(team, false));
+    (mantle.material as THREE.MeshStandardMaterial).side = THREE.DoubleSide;
+    at(bones.neck_01, mantle, new THREE.Vector3(0, -0.12, 0));
+  }
+}
+
 
 const ONCE = ['Sword_Attack', 'Spell_Simple_Shoot', 'Hit_Chest', 'Death01'];
 
 // A fresh, independently animated copy of a look, holding its class weapon.
-export async function makeCharacter(cls: number, look: string, team: number): Promise<Character> {
+export async function makeCharacter(cls: number, look: string, team: number, nth = 0): Promise<Character> {
   const [scene, clips] = await Promise.all([loadScene(look, team), loadClips()]);
   const root = cloneSkinned(scene);
   const bones: Record<string, THREE.Bone> = {};
+  const rnd = seeded(team, cls, nth);
+  const rim: Character['rim'] = { color: { value: TEAM_RIM[team].clone() }, k: { value: 0.55 } };
+  const hair = HAIR[Math.floor(rnd() * HAIR.length)], shade = 0.93 + rnd() * 0.14, hue = (rnd() - 0.5) * 0.08;
+  const mats: THREE.MeshStandardMaterial[] = [];
+  const own = new Map<THREE.Material, THREE.MeshStandardMaterial>();
   root.traverse((o) => {
     if ((o as THREE.Bone).isBone) bones[o.name] = o as THREE.Bone;
-    if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.frustumCulled = false; }
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    mesh.castShadow = true;
+    mesh.frustumCulled = false;
+    // this unit's own materials: rim colour, variety and the death fade are per unit
+    const swap = (m: THREE.Material) => {
+      let c = own.get(m);
+      if (!c) {
+        c = (m as THREE.MeshStandardMaterial).clone();
+        if (/^MI_Hair/.test(c.name)) c.color.copy(hair);
+        else if (/^MI_(Peasant|Ranger)/.test(c.name)) c.color.offsetHSL(hue, 0, 0).multiplyScalar(shade);
+        addRim(c, rim);
+        own.set(m, c);
+        mats.push(c);
+      }
+      return c;
+    };
+    mesh.material = Array.isArray(mesh.material) ? mesh.material.map(swap) : swap(mesh.material);
   });
+  root.scale.setScalar(0.96 + rnd() * 0.08);
+  root.userData.isCharacterRoot = true;
   // weapon in the right hand (sword, staff) or the left (bow), as in the prototype
   const weapon = cls === 1 ? makeBow() : cls === 2 ? makeStaff() : makeSword();
   const hand = cls === 1 ? bones.hand_l : bones.hand_r;
@@ -108,6 +208,7 @@ export async function makeCharacter(cls: number, look: string, team: number): Pr
     root.add(weapon);
     hand.attach(weapon);
   }
+  addTrims(cls, team, root, bones);
   const mixer = new THREE.AnimationMixer(root);
   const actions: Record<string, THREE.AnimationAction> = {};
   for (const [name, clip] of Object.entries(fitClips(clips, root))) {
@@ -117,5 +218,5 @@ export async function makeCharacter(cls: number, look: string, team: number): Pr
   }
   actions.Sword_Idle.play();
   mixer.setTime(Math.random() * 2); // idle out of step between units (presentation only)
-  return { root, mixer, actions, clips };
+  return { root, mixer, actions, clips, mats, rim, spine1: bones.spine_01, spine2: bones.spine_02 };
 }
