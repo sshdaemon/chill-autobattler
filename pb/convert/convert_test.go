@@ -14,14 +14,14 @@ func five() []*chillv1.UnitSpec {
 }
 
 func TestInput(t *testing.T) {
-	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 9, RedSkillCount: 2,
+	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 9, CombatSeed: 1 << 63, RedSkillCount: 2,
 		Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_3_2, Units: five()}}
 	got, err := Input(in)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if got.Blue.Formation != sim.F3x2 || got.Blue.Units[0].Class != sim.Warrior || got.Blue.Units[4].Class != sim.Mage ||
-		got.Blue.Units[0].Skills[0] != sim.SkillDash || got.RedSkills != 2 || len(got.Red.Units) != 0 {
+		got.Blue.Units[0].Skills[0] != sim.SkillDash || got.RedSkills != 2 || got.CombatSeed != 1<<63 || len(got.Red.Units) != 0 {
 		t.Errorf("converted %+v", got)
 	}
 	// enum numbering must line up with sim's

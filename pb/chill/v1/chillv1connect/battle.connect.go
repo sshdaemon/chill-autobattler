@@ -24,11 +24,30 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// BattleServiceStartBattleProcedure is the procedure name of the BattleService's StartBattle RPC.
+	BattleServiceStartBattleProcedure = "/chill.v1.BattleService/StartBattle"
+	// BattleServiceLockDeploymentProcedure is the procedure name of the BattleService's LockDeployment
+	// RPC.
+	BattleServiceLockDeploymentProcedure = "/chill.v1.BattleService/LockDeployment"
 	// BattleServiceVerifyBattleProcedure is the procedure name of the BattleService's VerifyBattle RPC.
 	BattleServiceVerifyBattleProcedure = "/chill.v1.BattleService/VerifyBattle"
 )
 
 var (
+	battleServiceStartBattleSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_chill_v1_battle_proto.Services().ByName("BattleService").Methods().ByName("StartBattle"),
+			Procedure:  BattleServiceStartBattleProcedure,
+		}
+	})
+	battleServiceLockDeploymentSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_chill_v1_battle_proto.Services().ByName("BattleService").Methods().ByName("LockDeployment"),
+			Procedure:  BattleServiceLockDeploymentProcedure,
+		}
+	})
 	battleServiceVerifyBattleSpec = sync.OnceValue(func() connect.Spec {
 		return connect.Spec{
 			StreamType: connect.StreamTypeUnary,
@@ -40,6 +59,11 @@ var (
 
 // BattleServiceClient is a client for the chill.v1.BattleService service.
 type BattleServiceClient interface {
+	// Creates a battle: returns its id and map seed (not the combat seed).
+	StartBattle(context.Context, *v1.StartBattleRequest) (*v1.StartBattleResponse, error)
+	// Commits Blue's army (once, before the deploy deadline) and reveals the combat seed.
+	LockDeployment(context.Context, *v1.LockDeploymentRequest) (*v1.LockDeploymentResponse, error)
+	// Re-runs the stored battle and judges the claim. The first verdict is final.
 	VerifyBattle(context.Context, *v1.VerifyBattleRequest) (*v1.VerifyBattleResponse, error)
 }
 
@@ -51,6 +75,11 @@ func NewBattleServiceClient(client *connect.Client) BattleServiceClient {
 
 // BattleServiceHandler is an implementation of the chill.v1.BattleService service.
 type BattleServiceHandler interface {
+	// Creates a battle: returns its id and map seed (not the combat seed).
+	StartBattle(context.Context, *v1.StartBattleRequest) (*v1.StartBattleResponse, error)
+	// Commits Blue's army (once, before the deploy deadline) and reveals the combat seed.
+	LockDeployment(context.Context, *v1.LockDeploymentRequest) (*v1.LockDeploymentResponse, error)
+	// Re-runs the stored battle and judges the claim. The first verdict is final.
 	VerifyBattle(context.Context, *v1.VerifyBattleRequest) (*v1.VerifyBattleResponse, error)
 }
 
@@ -59,6 +88,8 @@ type BattleServiceHandler interface {
 func RegisterBattleServiceHandler(server *connect.Server, svc BattleServiceHandler) {
 	adapter := battleServiceHandler{svc: svc}
 	server.Register(
+		connect.Method{Spec: battleServiceStartBattleSpec(), Handler: adapter.startBattle},
+		connect.Method{Spec: battleServiceLockDeploymentSpec(), Handler: adapter.lockDeployment},
 		connect.Method{Spec: battleServiceVerifyBattleSpec(), Handler: adapter.verifyBattle},
 	)
 }
@@ -66,12 +97,36 @@ func RegisterBattleServiceHandler(server *connect.Server, svc BattleServiceHandl
 // UnimplementedBattleServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedBattleServiceHandler struct{}
 
+func (UnimplementedBattleServiceHandler) StartBattle(context.Context, *v1.StartBattleRequest) (*v1.StartBattleResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "chill.v1.BattleService.StartBattle is not implemented")
+}
+
+func (UnimplementedBattleServiceHandler) LockDeployment(context.Context, *v1.LockDeploymentRequest) (*v1.LockDeploymentResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "chill.v1.BattleService.LockDeployment is not implemented")
+}
+
 func (UnimplementedBattleServiceHandler) VerifyBattle(context.Context, *v1.VerifyBattleRequest) (*v1.VerifyBattleResponse, error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, "chill.v1.BattleService.VerifyBattle is not implemented")
 }
 
 type battleServiceClient struct {
 	client *connect.Client
+}
+
+func (c *battleServiceClient) StartBattle(ctx context.Context, req *v1.StartBattleRequest) (*v1.StartBattleResponse, error) {
+	var res v1.StartBattleResponse
+	if err := c.client.CallUnary(ctx, battleServiceStartBattleSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *battleServiceClient) LockDeployment(ctx context.Context, req *v1.LockDeploymentRequest) (*v1.LockDeploymentResponse, error) {
+	var res v1.LockDeploymentResponse
+	if err := c.client.CallUnary(ctx, battleServiceLockDeploymentSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
 
 func (c *battleServiceClient) VerifyBattle(ctx context.Context, req *v1.VerifyBattleRequest) (*v1.VerifyBattleResponse, error) {
@@ -83,6 +138,30 @@ func (c *battleServiceClient) VerifyBattle(ctx context.Context, req *v1.VerifyBa
 }
 
 type battleServiceHandler struct{ svc BattleServiceHandler }
+
+func (h battleServiceHandler) startBattle(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.StartBattleRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.StartBattle(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h battleServiceHandler) lockDeployment(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.LockDeploymentRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.LockDeployment(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
 
 func (h battleServiceHandler) verifyBattle(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
 	var req v1.VerifyBattleRequest

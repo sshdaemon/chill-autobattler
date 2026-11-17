@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file chill/v1/battle.proto.
  */
 export const file_chill_v1_battle: GenFile = /*@__PURE__*/
-  fileDesc("ChVjaGlsbC92MS9iYXR0bGUucHJvdG8SCGNoaWxsLnYxIiUKBVBvaW50Eg0KBXhfcmF3GAEgASgSEg0KBXpfcmF3GAIgASgSIncKCFVuaXRTcGVjEicKCnVuaXRfY2xhc3MYASABKA4yEy5jaGlsbC52MS5Vbml0Q2xhc3MSHwoGc2tpbGxzGAIgAygOMg8uY2hpbGwudjEuU2tpbGwSIQoIcG9zaXRpb24YAyABKAsyDy5jaGlsbC52MS5Qb2ludCJRCgRBcm15EiYKCWZvcm1hdGlvbhgBIAEoDjITLmNoaWxsLnYxLkZvcm1hdGlvbhIhCgV1bml0cxgCIAMoCzISLmNoaWxsLnYxLlVuaXRTcGVjIoQBCgtCYXR0bGVJbnB1dBITCgtzaW1fdmVyc2lvbhgBIAEoCRIMCgRzZWVkGAIgASgEEhwKBGJsdWUYAyABKAsyDi5jaGlsbC52MS5Bcm15EhsKA3JlZBgEIAEoCzIOLmNoaWxsLnYxLkFybXkSFwoPcmVkX3NraWxsX2NvdW50GAUgASgNIikKCFN1cnZpdm9yEg0KBWluZGV4GAEgASgNEg4KBmhwX3JhdxgCIAEoEiJ/Cg1CYXR0bGVPdXRjb21lEiYKBnJlc3VsdBgBIAEoDjIWLmNoaWxsLnYxLkJhdHRsZVJlc3VsdBINCgV0aWNrcxgCIAEoDRIlCglzdXJ2aXZvcnMYAyADKAsyEi5jaGlsbC52MS5TdXJ2aXZvchIQCghjaGVja3N1bRgEIAEoBCJlChNWZXJpZnlCYXR0bGVSZXF1ZXN0EiQKBWlucHV0GAEgASgLMhUuY2hpbGwudjEuQmF0dGxlSW5wdXQSKAoHY2xhaW1lZBgCIAEoCzIXLmNoaWxsLnYxLkJhdHRsZU91dGNvbWUiXgoUVmVyaWZ5QmF0dGxlUmVzcG9uc2USDAoEZmFpchgBIAEoCBIOCgZyZWFzb24YAiABKAkSKAoHb3V0Y29tZRgDIAEoCzIXLmNoaWxsLnYxLkJhdHRsZU91dGNvbWUqawoJVW5pdENsYXNzEhoKFlVOSVRfQ0xBU1NfVU5TUEVDSUZJRUQQABIWChJVTklUX0NMQVNTX1dBUlJJT1IQARIVChFVTklUX0NMQVNTX0FSQ0hFUhACEhMKD1VOSVRfQ0xBU1NfTUFHRRADKskBCgVTa2lsbBIVChFTS0lMTF9VTlNQRUNJRklFRBAAEhAKDFNLSUxMX0hFQUxUSBABEg8KC1NLSUxMX1NQRUVEEAISEAoMU0tJTExfREFNQUdFEAMSDgoKU0tJTExfREFTSBAEEhEKDVNLSUxMX0VYRUNVVEUQBRIPCgtTS0lMTF9SQU5HRRAGEg0KCVNLSUxMX0xPQhAHEg8KC1NLSUxMX0ZST1NUEAgSDwoLU0tJTExfQkxJTksQCRIPCgtTS0lMTF9CTEFTVBAKKsQBCglGb3JtYXRpb24SGQoVRk9STUFUSU9OX1VOU1BFQ0lGSUVEEAASFAoQRk9STUFUSU9OX0NVU1RPTRABEhQKEEZPUk1BVElPTl9TUFJFQUQQAhIRCg1GT1JNQVRJT05fM18yEAMSEQoNRk9STUFUSU9OXzJfMxAEEhEKDUZPUk1BVElPTl80XzEQBRIRCg1GT1JNQVRJT05fMV80EAYSEQoNRk9STUFUSU9OXzBfNRAHEhEKDUZPUk1BVElPTl81XzAQCCp8CgxCYXR0bGVSZXN1bHQSHQoZQkFUVExFX1JFU1VMVF9VTlNQRUNJRklFRBAAEhoKFkJBVFRMRV9SRVNVTFRfQkxVRV9XSU4QARIZChVCQVRUTEVfUkVTVUxUX1JFRF9XSU4QAhIWChJCQVRUTEVfUkVTVUxUX0RSQVcQAzJeCg1CYXR0bGVTZXJ2aWNlEk0KDFZlcmlmeUJhdHRsZRIdLmNoaWxsLnYxLlZlcmlmeUJhdHRsZVJlcXVlc3QaHi5jaGlsbC52MS5WZXJpZnlCYXR0bGVSZXNwb25zZUJ3Cgxjb20uY2hpbGwudjFCC0JhdHRsZVByb3RvUAFaGWNoaWxsL3BiL2NoaWxsL3YxO2NoaWxsdjGiAgNDWFiqAghDaGlsbC5WMcoCCENoaWxsXFYx4gIUQ2hpbGxcVjFcR1BCTWV0YWRhdGHqAglDaGlsbDo6VjFiBnByb3RvMw");
+  fileDesc("ChVjaGlsbC92MS9iYXR0bGUucHJvdG8SCGNoaWxsLnYxIiUKBVBvaW50Eg0KBXhfcmF3GAEgASgSEg0KBXpfcmF3GAIgASgSIncKCFVuaXRTcGVjEicKCnVuaXRfY2xhc3MYASABKA4yEy5jaGlsbC52MS5Vbml0Q2xhc3MSHwoGc2tpbGxzGAIgAygOMg8uY2hpbGwudjEuU2tpbGwSIQoIcG9zaXRpb24YAyABKAsyDy5jaGlsbC52MS5Qb2ludCJRCgRBcm15EiYKCWZvcm1hdGlvbhgBIAEoDjITLmNoaWxsLnYxLkZvcm1hdGlvbhIhCgV1bml0cxgCIAMoCzISLmNoaWxsLnYxLlVuaXRTcGVjIpkBCgtCYXR0bGVJbnB1dBITCgtzaW1fdmVyc2lvbhgBIAEoCRIMCgRzZWVkGAIgASgEEhwKBGJsdWUYAyABKAsyDi5jaGlsbC52MS5Bcm15EhsKA3JlZBgEIAEoCzIOLmNoaWxsLnYxLkFybXkSFwoPcmVkX3NraWxsX2NvdW50GAUgASgNEhMKC2NvbWJhdF9zZWVkGAYgASgEIikKCFN1cnZpdm9yEg0KBWluZGV4GAEgASgNEg4KBmhwX3JhdxgCIAEoEiJ/Cg1CYXR0bGVPdXRjb21lEiYKBnJlc3VsdBgBIAEoDjIWLmNoaWxsLnYxLkJhdHRsZVJlc3VsdBINCgV0aWNrcxgCIAEoDRIlCglzdXJ2aXZvcnMYAyADKAsyEi5jaGlsbC52MS5TdXJ2aXZvchIQCghjaGVja3N1bRgEIAEoBCJCChJTdGFydEJhdHRsZVJlcXVlc3QSEwoLc2ltX3ZlcnNpb24YASABKAkSFwoPcmVkX3NraWxsX2NvdW50GAIgASgNImsKE1N0YXJ0QmF0dGxlUmVzcG9uc2USEQoJYmF0dGxlX2lkGAEgASgJEgwKBHNlZWQYAiABKAQSFwoPcmVkX3NraWxsX2NvdW50GAMgASgNEhoKEmRlcGxveV9kZWFkbGluZV9tcxgEIAEoAyJIChVMb2NrRGVwbG95bWVudFJlcXVlc3QSEQoJYmF0dGxlX2lkGAEgASgJEhwKBGJsdWUYAiABKAsyDi5jaGlsbC52MS5Bcm15IkkKFkxvY2tEZXBsb3ltZW50UmVzcG9uc2USEwoLY29tYmF0X3NlZWQYASABKAQSGgoSdmVyaWZ5X2RlYWRsaW5lX21zGAIgASgDIlIKE1ZlcmlmeUJhdHRsZVJlcXVlc3QSEQoJYmF0dGxlX2lkGAEgASgJEigKB2NsYWltZWQYAiABKAsyFy5jaGlsbC52MS5CYXR0bGVPdXRjb21lIl4KFFZlcmlmeUJhdHRsZVJlc3BvbnNlEgwKBGZhaXIYASABKAgSDgoGcmVhc29uGAIgASgJEigKB291dGNvbWUYAyABKAsyFy5jaGlsbC52MS5CYXR0bGVPdXRjb21lKmsKCVVuaXRDbGFzcxIaChZVTklUX0NMQVNTX1VOU1BFQ0lGSUVEEAASFgoSVU5JVF9DTEFTU19XQVJSSU9SEAESFQoRVU5JVF9DTEFTU19BUkNIRVIQAhITCg9VTklUX0NMQVNTX01BR0UQAyrJAQoFU2tpbGwSFQoRU0tJTExfVU5TUEVDSUZJRUQQABIQCgxTS0lMTF9IRUFMVEgQARIPCgtTS0lMTF9TUEVFRBACEhAKDFNLSUxMX0RBTUFHRRADEg4KClNLSUxMX0RBU0gQBBIRCg1TS0lMTF9FWEVDVVRFEAUSDwoLU0tJTExfUkFOR0UQBhINCglTS0lMTF9MT0IQBxIPCgtTS0lMTF9GUk9TVBAIEg8KC1NLSUxMX0JMSU5LEAkSDwoLU0tJTExfQkxBU1QQCirEAQoJRm9ybWF0aW9uEhkKFUZPUk1BVElPTl9VTlNQRUNJRklFRBAAEhQKEEZPUk1BVElPTl9DVVNUT00QARIUChBGT1JNQVRJT05fU1BSRUFEEAISEQoNRk9STUFUSU9OXzNfMhADEhEKDUZPUk1BVElPTl8yXzMQBBIRCg1GT1JNQVRJT05fNF8xEAUSEQoNRk9STUFUSU9OXzFfNBAGEhEKDUZPUk1BVElPTl8wXzUQBxIRCg1GT1JNQVRJT05fNV8wEAgqfAoMQmF0dGxlUmVzdWx0Eh0KGUJBVFRMRV9SRVNVTFRfVU5TUEVDSUZJRUQQABIaChZCQVRUTEVfUkVTVUxUX0JMVUVfV0lOEAESGQoVQkFUVExFX1JFU1VMVF9SRURfV0lOEAISFgoSQkFUVExFX1JFU1VMVF9EUkFXEAMy/wEKDUJhdHRsZVNlcnZpY2USSgoLU3RhcnRCYXR0bGUSHC5jaGlsbC52MS5TdGFydEJhdHRsZVJlcXVlc3QaHS5jaGlsbC52MS5TdGFydEJhdHRsZVJlc3BvbnNlElMKDkxvY2tEZXBsb3ltZW50Eh8uY2hpbGwudjEuTG9ja0RlcGxveW1lbnRSZXF1ZXN0GiAuY2hpbGwudjEuTG9ja0RlcGxveW1lbnRSZXNwb25zZRJNCgxWZXJpZnlCYXR0bGUSHS5jaGlsbC52MS5WZXJpZnlCYXR0bGVSZXF1ZXN0Gh4uY2hpbGwudjEuVmVyaWZ5QmF0dGxlUmVzcG9uc2VCdwoMY29tLmNoaWxsLnYxQgtCYXR0bGVQcm90b1ABWhljaGlsbC9wYi9jaGlsbC92MTtjaGlsbHYxogIDQ1hYqgIIQ2hpbGwuVjHKAghDaGlsbFxWMeICFENoaWxsXFYxXEdQQk1ldGFkYXRh6gIJQ2hpbGw6OlYxYgZwcm90bzM");
 
 /**
  * A point in raw Q48.16 fixed-point metres (value × 65536), so no float
@@ -89,7 +89,8 @@ export const ArmySchema: GenMessage<Army> = /*@__PURE__*/
   messageDesc(file_chill_v1_battle, 2);
 
 /**
- * Everything that decides a battle.
+ * Everything that decides a battle. The client assembles it from what the
+ * server issued; the server rebuilds it from what it stored.
  *
  * @generated from message chill.v1.BattleInput
  */
@@ -100,7 +101,7 @@ export type BattleInput = Message<"chill.v1.BattleInput"> & {
   simVersion: string;
 
   /**
-   * TODO(next change): issued by the server before the battle.
+   * Map seed: the map and a generated Red army. Public from StartBattle.
    *
    * @generated from field: uint64 seed = 2;
    */
@@ -122,6 +123,13 @@ export type BattleInput = Message<"chill.v1.BattleInput"> & {
    * @generated from field: uint32 red_skill_count = 5;
    */
   redSkillCount: number;
+
+  /**
+   * Every combat roll. Revealed by LockDeployment.
+   *
+   * @generated from field: uint64 combat_seed = 6;
+   */
+  combatSeed: bigint;
 };
 
 /**
@@ -188,13 +196,119 @@ export const BattleOutcomeSchema: GenMessage<BattleOutcome> = /*@__PURE__*/
   messageDesc(file_chill_v1_battle, 5);
 
 /**
+ * @generated from message chill.v1.StartBattleRequest
+ */
+export type StartBattleRequest = Message<"chill.v1.StartBattleRequest"> & {
+  /**
+   * @generated from field: string sim_version = 1;
+   */
+  simVersion: string;
+
+  /**
+   * Red's total skills. Client-chosen until runs exist.
+   *
+   * @generated from field: uint32 red_skill_count = 2;
+   */
+  redSkillCount: number;
+};
+
+/**
+ * Describes the message chill.v1.StartBattleRequest.
+ * Use `create(StartBattleRequestSchema)` to create a new message.
+ */
+export const StartBattleRequestSchema: GenMessage<StartBattleRequest> = /*@__PURE__*/
+  messageDesc(file_chill_v1_battle, 6);
+
+/**
+ * @generated from message chill.v1.StartBattleResponse
+ */
+export type StartBattleResponse = Message<"chill.v1.StartBattleResponse"> & {
+  /**
+   * @generated from field: string battle_id = 1;
+   */
+  battleId: string;
+
+  /**
+   * map seed
+   *
+   * @generated from field: uint64 seed = 2;
+   */
+  seed: bigint;
+
+  /**
+   * @generated from field: uint32 red_skill_count = 3;
+   */
+  redSkillCount: number;
+
+  /**
+   * Unix milliseconds.
+   *
+   * @generated from field: int64 deploy_deadline_ms = 4;
+   */
+  deployDeadlineMs: bigint;
+};
+
+/**
+ * Describes the message chill.v1.StartBattleResponse.
+ * Use `create(StartBattleResponseSchema)` to create a new message.
+ */
+export const StartBattleResponseSchema: GenMessage<StartBattleResponse> = /*@__PURE__*/
+  messageDesc(file_chill_v1_battle, 7);
+
+/**
+ * @generated from message chill.v1.LockDeploymentRequest
+ */
+export type LockDeploymentRequest = Message<"chill.v1.LockDeploymentRequest"> & {
+  /**
+   * @generated from field: string battle_id = 1;
+   */
+  battleId: string;
+
+  /**
+   * @generated from field: chill.v1.Army blue = 2;
+   */
+  blue?: Army | undefined;
+};
+
+/**
+ * Describes the message chill.v1.LockDeploymentRequest.
+ * Use `create(LockDeploymentRequestSchema)` to create a new message.
+ */
+export const LockDeploymentRequestSchema: GenMessage<LockDeploymentRequest> = /*@__PURE__*/
+  messageDesc(file_chill_v1_battle, 8);
+
+/**
+ * @generated from message chill.v1.LockDeploymentResponse
+ */
+export type LockDeploymentResponse = Message<"chill.v1.LockDeploymentResponse"> & {
+  /**
+   * @generated from field: uint64 combat_seed = 1;
+   */
+  combatSeed: bigint;
+
+  /**
+   * Unix milliseconds.
+   *
+   * @generated from field: int64 verify_deadline_ms = 2;
+   */
+  verifyDeadlineMs: bigint;
+};
+
+/**
+ * Describes the message chill.v1.LockDeploymentResponse.
+ * Use `create(LockDeploymentResponseSchema)` to create a new message.
+ */
+export const LockDeploymentResponseSchema: GenMessage<LockDeploymentResponse> = /*@__PURE__*/
+  messageDesc(file_chill_v1_battle, 9);
+
+/**
  * @generated from message chill.v1.VerifyBattleRequest
  */
 export type VerifyBattleRequest = Message<"chill.v1.VerifyBattleRequest"> & {
   /**
-   * @generated from field: chill.v1.BattleInput input = 1;
+   * @generated from field: string battle_id = 1;
    */
-  input?: BattleInput | undefined;
+  battleId: string;
 
   /**
    * What the client says happened.
@@ -209,7 +323,7 @@ export type VerifyBattleRequest = Message<"chill.v1.VerifyBattleRequest"> & {
  * Use `create(VerifyBattleRequestSchema)` to create a new message.
  */
 export const VerifyBattleRequestSchema: GenMessage<VerifyBattleRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 6);
+  messageDesc(file_chill_v1_battle, 10);
 
 /**
  * @generated from message chill.v1.VerifyBattleResponse
@@ -238,7 +352,7 @@ export type VerifyBattleResponse = Message<"chill.v1.VerifyBattleResponse"> & {
  * Use `create(VerifyBattleResponseSchema)` to create a new message.
  */
 export const VerifyBattleResponseSchema: GenMessage<VerifyBattleResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_battle, 7);
+  messageDesc(file_chill_v1_battle, 11);
 
 /**
  * @generated from enum chill.v1.UnitClass
@@ -443,13 +557,36 @@ export const BattleResultSchema: GenEnum<BattleResult> = /*@__PURE__*/
   enumDesc(file_chill_v1_battle, 3);
 
 /**
- * The server never drives a battle. The client plays it locally (sim in WASM)
- * and the server re-runs it afterwards to check the claimed outcome.
+ * The server never drives a battle. It issues one (seeds), takes the player's
+ * army before revealing the combat seed, and afterwards re-runs the battle to
+ * check the outcome the client claims. The client plays it locally (sim in WASM).
  *
  * @generated from service chill.v1.BattleService
  */
 export const BattleService: GenService<{
   /**
+   * Creates a battle: returns its id and map seed (not the combat seed).
+   *
+   * @generated from rpc chill.v1.BattleService.StartBattle
+   */
+  startBattle: {
+    methodKind: "unary";
+    input: typeof StartBattleRequestSchema;
+    output: typeof StartBattleResponseSchema;
+  },
+  /**
+   * Commits Blue's army (once, before the deploy deadline) and reveals the combat seed.
+   *
+   * @generated from rpc chill.v1.BattleService.LockDeployment
+   */
+  lockDeployment: {
+    methodKind: "unary";
+    input: typeof LockDeploymentRequestSchema;
+    output: typeof LockDeploymentResponseSchema;
+  },
+  /**
+   * Re-runs the stored battle and judges the claim. The first verdict is final.
+   *
    * @generated from rpc chill.v1.BattleService.VerifyBattle
    */
   verifyBattle: {

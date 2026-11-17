@@ -48,13 +48,16 @@ type Army struct {
 	Units     []UnitSpec
 }
 
-// Input is everything that decides a battle. Red may be left empty: then its
-// army, formation and RedSkills skills come from the seed.
+// Input is everything that decides a battle. Seed (the map seed) decides the
+// map and, when Red is left empty, Red's army, formation and RedSkills skills.
+// CombatSeed decides every combat roll; the server reveals it only after the
+// player has locked Blue's army.
 type Input struct {
-	Version   string
-	Seed      uint64
-	Blue, Red Army
-	RedSkills int
+	Version    string
+	Seed       uint64
+	CombatSeed uint64
+	Blue, Red  Army
+	RedSkills  int
 }
 
 var ErrInvalid = errors.New("invalid battle input")

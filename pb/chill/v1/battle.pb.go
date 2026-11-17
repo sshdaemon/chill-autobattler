@@ -434,16 +434,19 @@ func (x *Army) GetUnits() []*UnitSpec {
 	return nil
 }
 
-// Everything that decides a battle.
+// Everything that decides a battle. The client assembles it from what the
+// server issued; the server rebuilds it from what it stored.
 type BattleInput struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
 	SimVersion string                 `protobuf:"bytes,1,opt,name=sim_version,json=simVersion,proto3" json:"sim_version,omitempty"`
-	// TODO(next change): issued by the server before the battle.
+	// Map seed: the map and a generated Red army. Public from StartBattle.
 	Seed uint64 `protobuf:"varint,2,opt,name=seed,proto3" json:"seed,omitempty"`
 	Blue *Army  `protobuf:"bytes,3,opt,name=blue,proto3" json:"blue,omitempty"`
 	// Empty: Red's army, formation and red_skill_count skills come from the seed.
 	Red           *Army  `protobuf:"bytes,4,opt,name=red,proto3" json:"red,omitempty"`
 	RedSkillCount uint32 `protobuf:"varint,5,opt,name=red_skill_count,json=redSkillCount,proto3" json:"red_skill_count,omitempty"`
+	// Every combat roll. Revealed by LockDeployment.
+	CombatSeed    uint64 `protobuf:"varint,6,opt,name=combat_seed,json=combatSeed,proto3" json:"combat_seed,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -509,6 +512,13 @@ func (x *BattleInput) GetRed() *Army {
 func (x *BattleInput) GetRedSkillCount() uint32 {
 	if x != nil {
 		return x.RedSkillCount
+	}
+	return 0
+}
+
+func (x *BattleInput) GetCombatSeed() uint64 {
+	if x != nil {
+		return x.CombatSeed
 	}
 	return 0
 }
@@ -634,9 +644,236 @@ func (x *BattleOutcome) GetChecksum() uint64 {
 	return 0
 }
 
+type StartBattleRequest struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	SimVersion string                 `protobuf:"bytes,1,opt,name=sim_version,json=simVersion,proto3" json:"sim_version,omitempty"`
+	// Red's total skills. Client-chosen until runs exist.
+	RedSkillCount uint32 `protobuf:"varint,2,opt,name=red_skill_count,json=redSkillCount,proto3" json:"red_skill_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartBattleRequest) Reset() {
+	*x = StartBattleRequest{}
+	mi := &file_chill_v1_battle_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartBattleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartBattleRequest) ProtoMessage() {}
+
+func (x *StartBattleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_battle_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartBattleRequest.ProtoReflect.Descriptor instead.
+func (*StartBattleRequest) Descriptor() ([]byte, []int) {
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *StartBattleRequest) GetSimVersion() string {
+	if x != nil {
+		return x.SimVersion
+	}
+	return ""
+}
+
+func (x *StartBattleRequest) GetRedSkillCount() uint32 {
+	if x != nil {
+		return x.RedSkillCount
+	}
+	return 0
+}
+
+type StartBattleResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
+	Seed          uint64                 `protobuf:"varint,2,opt,name=seed,proto3" json:"seed,omitempty"` // map seed
+	RedSkillCount uint32                 `protobuf:"varint,3,opt,name=red_skill_count,json=redSkillCount,proto3" json:"red_skill_count,omitempty"`
+	// Unix milliseconds.
+	DeployDeadlineMs int64 `protobuf:"varint,4,opt,name=deploy_deadline_ms,json=deployDeadlineMs,proto3" json:"deploy_deadline_ms,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *StartBattleResponse) Reset() {
+	*x = StartBattleResponse{}
+	mi := &file_chill_v1_battle_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartBattleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartBattleResponse) ProtoMessage() {}
+
+func (x *StartBattleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_battle_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartBattleResponse.ProtoReflect.Descriptor instead.
+func (*StartBattleResponse) Descriptor() ([]byte, []int) {
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *StartBattleResponse) GetBattleId() string {
+	if x != nil {
+		return x.BattleId
+	}
+	return ""
+}
+
+func (x *StartBattleResponse) GetSeed() uint64 {
+	if x != nil {
+		return x.Seed
+	}
+	return 0
+}
+
+func (x *StartBattleResponse) GetRedSkillCount() uint32 {
+	if x != nil {
+		return x.RedSkillCount
+	}
+	return 0
+}
+
+func (x *StartBattleResponse) GetDeployDeadlineMs() int64 {
+	if x != nil {
+		return x.DeployDeadlineMs
+	}
+	return 0
+}
+
+type LockDeploymentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
+	Blue          *Army                  `protobuf:"bytes,2,opt,name=blue,proto3" json:"blue,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LockDeploymentRequest) Reset() {
+	*x = LockDeploymentRequest{}
+	mi := &file_chill_v1_battle_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LockDeploymentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LockDeploymentRequest) ProtoMessage() {}
+
+func (x *LockDeploymentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_battle_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LockDeploymentRequest.ProtoReflect.Descriptor instead.
+func (*LockDeploymentRequest) Descriptor() ([]byte, []int) {
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *LockDeploymentRequest) GetBattleId() string {
+	if x != nil {
+		return x.BattleId
+	}
+	return ""
+}
+
+func (x *LockDeploymentRequest) GetBlue() *Army {
+	if x != nil {
+		return x.Blue
+	}
+	return nil
+}
+
+type LockDeploymentResponse struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	CombatSeed uint64                 `protobuf:"varint,1,opt,name=combat_seed,json=combatSeed,proto3" json:"combat_seed,omitempty"`
+	// Unix milliseconds.
+	VerifyDeadlineMs int64 `protobuf:"varint,2,opt,name=verify_deadline_ms,json=verifyDeadlineMs,proto3" json:"verify_deadline_ms,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LockDeploymentResponse) Reset() {
+	*x = LockDeploymentResponse{}
+	mi := &file_chill_v1_battle_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LockDeploymentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LockDeploymentResponse) ProtoMessage() {}
+
+func (x *LockDeploymentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_battle_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LockDeploymentResponse.ProtoReflect.Descriptor instead.
+func (*LockDeploymentResponse) Descriptor() ([]byte, []int) {
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *LockDeploymentResponse) GetCombatSeed() uint64 {
+	if x != nil {
+		return x.CombatSeed
+	}
+	return 0
+}
+
+func (x *LockDeploymentResponse) GetVerifyDeadlineMs() int64 {
+	if x != nil {
+		return x.VerifyDeadlineMs
+	}
+	return 0
+}
+
 type VerifyBattleRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	Input *BattleInput           `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	BattleId string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`
 	// What the client says happened.
 	Claimed       *BattleOutcome `protobuf:"bytes,2,opt,name=claimed,proto3" json:"claimed,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -645,7 +882,7 @@ type VerifyBattleRequest struct {
 
 func (x *VerifyBattleRequest) Reset() {
 	*x = VerifyBattleRequest{}
-	mi := &file_chill_v1_battle_proto_msgTypes[6]
+	mi := &file_chill_v1_battle_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -657,7 +894,7 @@ func (x *VerifyBattleRequest) String() string {
 func (*VerifyBattleRequest) ProtoMessage() {}
 
 func (x *VerifyBattleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[6]
+	mi := &file_chill_v1_battle_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -670,14 +907,14 @@ func (x *VerifyBattleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VerifyBattleRequest.ProtoReflect.Descriptor instead.
 func (*VerifyBattleRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{6}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *VerifyBattleRequest) GetInput() *BattleInput {
+func (x *VerifyBattleRequest) GetBattleId() string {
 	if x != nil {
-		return x.Input
+		return x.BattleId
 	}
-	return nil
+	return ""
 }
 
 func (x *VerifyBattleRequest) GetClaimed() *BattleOutcome {
@@ -699,7 +936,7 @@ type VerifyBattleResponse struct {
 
 func (x *VerifyBattleResponse) Reset() {
 	*x = VerifyBattleResponse{}
-	mi := &file_chill_v1_battle_proto_msgTypes[7]
+	mi := &file_chill_v1_battle_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -711,7 +948,7 @@ func (x *VerifyBattleResponse) String() string {
 func (*VerifyBattleResponse) ProtoMessage() {}
 
 func (x *VerifyBattleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_battle_proto_msgTypes[7]
+	mi := &file_chill_v1_battle_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -724,7 +961,7 @@ func (x *VerifyBattleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VerifyBattleResponse.ProtoReflect.Descriptor instead.
 func (*VerifyBattleResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_battle_proto_rawDescGZIP(), []int{7}
+	return file_chill_v1_battle_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *VerifyBattleResponse) GetFair() bool {
@@ -763,14 +1000,16 @@ const file_chill_v1_battle_proto_rawDesc = "" +
 	"\bposition\x18\x03 \x01(\v2\x0f.chill.v1.PointR\bposition\"c\n" +
 	"\x04Army\x121\n" +
 	"\tformation\x18\x01 \x01(\x0e2\x13.chill.v1.FormationR\tformation\x12(\n" +
-	"\x05units\x18\x02 \x03(\v2\x12.chill.v1.UnitSpecR\x05units\"\xb0\x01\n" +
+	"\x05units\x18\x02 \x03(\v2\x12.chill.v1.UnitSpecR\x05units\"\xd1\x01\n" +
 	"\vBattleInput\x12\x1f\n" +
 	"\vsim_version\x18\x01 \x01(\tR\n" +
 	"simVersion\x12\x12\n" +
 	"\x04seed\x18\x02 \x01(\x04R\x04seed\x12\"\n" +
 	"\x04blue\x18\x03 \x01(\v2\x0e.chill.v1.ArmyR\x04blue\x12 \n" +
 	"\x03red\x18\x04 \x01(\v2\x0e.chill.v1.ArmyR\x03red\x12&\n" +
-	"\x0fred_skill_count\x18\x05 \x01(\rR\rredSkillCount\"7\n" +
+	"\x0fred_skill_count\x18\x05 \x01(\rR\rredSkillCount\x12\x1f\n" +
+	"\vcombat_seed\x18\x06 \x01(\x04R\n" +
+	"combatSeed\"7\n" +
 	"\bSurvivor\x12\x14\n" +
 	"\x05index\x18\x01 \x01(\rR\x05index\x12\x15\n" +
 	"\x06hp_raw\x18\x02 \x01(\x12R\x05hpRaw\"\xa3\x01\n" +
@@ -778,9 +1017,25 @@ const file_chill_v1_battle_proto_rawDesc = "" +
 	"\x06result\x18\x01 \x01(\x0e2\x16.chill.v1.BattleResultR\x06result\x12\x14\n" +
 	"\x05ticks\x18\x02 \x01(\rR\x05ticks\x120\n" +
 	"\tsurvivors\x18\x03 \x03(\v2\x12.chill.v1.SurvivorR\tsurvivors\x12\x1a\n" +
-	"\bchecksum\x18\x04 \x01(\x04R\bchecksum\"u\n" +
-	"\x13VerifyBattleRequest\x12+\n" +
-	"\x05input\x18\x01 \x01(\v2\x15.chill.v1.BattleInputR\x05input\x121\n" +
+	"\bchecksum\x18\x04 \x01(\x04R\bchecksum\"]\n" +
+	"\x12StartBattleRequest\x12\x1f\n" +
+	"\vsim_version\x18\x01 \x01(\tR\n" +
+	"simVersion\x12&\n" +
+	"\x0fred_skill_count\x18\x02 \x01(\rR\rredSkillCount\"\x9c\x01\n" +
+	"\x13StartBattleResponse\x12\x1b\n" +
+	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x12\n" +
+	"\x04seed\x18\x02 \x01(\x04R\x04seed\x12&\n" +
+	"\x0fred_skill_count\x18\x03 \x01(\rR\rredSkillCount\x12,\n" +
+	"\x12deploy_deadline_ms\x18\x04 \x01(\x03R\x10deployDeadlineMs\"X\n" +
+	"\x15LockDeploymentRequest\x12\x1b\n" +
+	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\"\n" +
+	"\x04blue\x18\x02 \x01(\v2\x0e.chill.v1.ArmyR\x04blue\"g\n" +
+	"\x16LockDeploymentResponse\x12\x1f\n" +
+	"\vcombat_seed\x18\x01 \x01(\x04R\n" +
+	"combatSeed\x12,\n" +
+	"\x12verify_deadline_ms\x18\x02 \x01(\x03R\x10verifyDeadlineMs\"e\n" +
+	"\x13VerifyBattleRequest\x12\x1b\n" +
+	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x121\n" +
 	"\aclaimed\x18\x02 \x01(\v2\x17.chill.v1.BattleOutcomeR\aclaimed\"u\n" +
 	"\x14VerifyBattleResponse\x12\x12\n" +
 	"\x04fair\x18\x01 \x01(\bR\x04fair\x12\x16\n" +
@@ -819,8 +1074,10 @@ const file_chill_v1_battle_proto_rawDesc = "" +
 	"\x19BATTLE_RESULT_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16BATTLE_RESULT_BLUE_WIN\x10\x01\x12\x19\n" +
 	"\x15BATTLE_RESULT_RED_WIN\x10\x02\x12\x16\n" +
-	"\x12BATTLE_RESULT_DRAW\x10\x032^\n" +
-	"\rBattleService\x12M\n" +
+	"\x12BATTLE_RESULT_DRAW\x10\x032\xff\x01\n" +
+	"\rBattleService\x12J\n" +
+	"\vStartBattle\x12\x1c.chill.v1.StartBattleRequest\x1a\x1d.chill.v1.StartBattleResponse\x12S\n" +
+	"\x0eLockDeployment\x12\x1f.chill.v1.LockDeploymentRequest\x1a .chill.v1.LockDeploymentResponse\x12M\n" +
 	"\fVerifyBattle\x12\x1d.chill.v1.VerifyBattleRequest\x1a\x1e.chill.v1.VerifyBattleResponseBw\n" +
 	"\fcom.chill.v1B\vBattleProtoP\x01Z\x19chill/pb/chill/v1;chillv1\xa2\x02\x03CXX\xaa\x02\bChill.V1\xca\x02\bChill\\V1\xe2\x02\x14Chill\\V1\\GPBMetadata\xea\x02\tChill::V1b\x06proto3"
 
@@ -837,20 +1094,24 @@ func file_chill_v1_battle_proto_rawDescGZIP() []byte {
 }
 
 var file_chill_v1_battle_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_chill_v1_battle_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_chill_v1_battle_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_chill_v1_battle_proto_goTypes = []any{
-	(UnitClass)(0),               // 0: chill.v1.UnitClass
-	(Skill)(0),                   // 1: chill.v1.Skill
-	(Formation)(0),               // 2: chill.v1.Formation
-	(BattleResult)(0),            // 3: chill.v1.BattleResult
-	(*Point)(nil),                // 4: chill.v1.Point
-	(*UnitSpec)(nil),             // 5: chill.v1.UnitSpec
-	(*Army)(nil),                 // 6: chill.v1.Army
-	(*BattleInput)(nil),          // 7: chill.v1.BattleInput
-	(*Survivor)(nil),             // 8: chill.v1.Survivor
-	(*BattleOutcome)(nil),        // 9: chill.v1.BattleOutcome
-	(*VerifyBattleRequest)(nil),  // 10: chill.v1.VerifyBattleRequest
-	(*VerifyBattleResponse)(nil), // 11: chill.v1.VerifyBattleResponse
+	(UnitClass)(0),                 // 0: chill.v1.UnitClass
+	(Skill)(0),                     // 1: chill.v1.Skill
+	(Formation)(0),                 // 2: chill.v1.Formation
+	(BattleResult)(0),              // 3: chill.v1.BattleResult
+	(*Point)(nil),                  // 4: chill.v1.Point
+	(*UnitSpec)(nil),               // 5: chill.v1.UnitSpec
+	(*Army)(nil),                   // 6: chill.v1.Army
+	(*BattleInput)(nil),            // 7: chill.v1.BattleInput
+	(*Survivor)(nil),               // 8: chill.v1.Survivor
+	(*BattleOutcome)(nil),          // 9: chill.v1.BattleOutcome
+	(*StartBattleRequest)(nil),     // 10: chill.v1.StartBattleRequest
+	(*StartBattleResponse)(nil),    // 11: chill.v1.StartBattleResponse
+	(*LockDeploymentRequest)(nil),  // 12: chill.v1.LockDeploymentRequest
+	(*LockDeploymentResponse)(nil), // 13: chill.v1.LockDeploymentResponse
+	(*VerifyBattleRequest)(nil),    // 14: chill.v1.VerifyBattleRequest
+	(*VerifyBattleResponse)(nil),   // 15: chill.v1.VerifyBattleResponse
 }
 var file_chill_v1_battle_proto_depIdxs = []int32{
 	0,  // 0: chill.v1.UnitSpec.unit_class:type_name -> chill.v1.UnitClass
@@ -862,13 +1123,17 @@ var file_chill_v1_battle_proto_depIdxs = []int32{
 	6,  // 6: chill.v1.BattleInput.red:type_name -> chill.v1.Army
 	3,  // 7: chill.v1.BattleOutcome.result:type_name -> chill.v1.BattleResult
 	8,  // 8: chill.v1.BattleOutcome.survivors:type_name -> chill.v1.Survivor
-	7,  // 9: chill.v1.VerifyBattleRequest.input:type_name -> chill.v1.BattleInput
+	6,  // 9: chill.v1.LockDeploymentRequest.blue:type_name -> chill.v1.Army
 	9,  // 10: chill.v1.VerifyBattleRequest.claimed:type_name -> chill.v1.BattleOutcome
 	9,  // 11: chill.v1.VerifyBattleResponse.outcome:type_name -> chill.v1.BattleOutcome
-	10, // 12: chill.v1.BattleService.VerifyBattle:input_type -> chill.v1.VerifyBattleRequest
-	11, // 13: chill.v1.BattleService.VerifyBattle:output_type -> chill.v1.VerifyBattleResponse
-	13, // [13:14] is the sub-list for method output_type
-	12, // [12:13] is the sub-list for method input_type
+	10, // 12: chill.v1.BattleService.StartBattle:input_type -> chill.v1.StartBattleRequest
+	12, // 13: chill.v1.BattleService.LockDeployment:input_type -> chill.v1.LockDeploymentRequest
+	14, // 14: chill.v1.BattleService.VerifyBattle:input_type -> chill.v1.VerifyBattleRequest
+	11, // 15: chill.v1.BattleService.StartBattle:output_type -> chill.v1.StartBattleResponse
+	13, // 16: chill.v1.BattleService.LockDeployment:output_type -> chill.v1.LockDeploymentResponse
+	15, // 17: chill.v1.BattleService.VerifyBattle:output_type -> chill.v1.VerifyBattleResponse
+	15, // [15:18] is the sub-list for method output_type
+	12, // [12:15] is the sub-list for method input_type
 	12, // [12:12] is the sub-list for extension type_name
 	12, // [12:12] is the sub-list for extension extendee
 	0,  // [0:12] is the sub-list for field type_name
@@ -885,7 +1150,7 @@ func file_chill_v1_battle_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_chill_v1_battle_proto_rawDesc), len(file_chill_v1_battle_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   8,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

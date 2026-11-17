@@ -55,7 +55,7 @@ func goldenCases() []struct {
 	in   Input
 } {
 	in := func(seed uint64, blue Army, redSkills int) Input {
-		return Input{Version: Version, Seed: seed, Blue: blue, RedSkills: redSkills}
+		return Input{Version: Version, Seed: seed, CombatSeed: seed*7919 + 1, Blue: blue, RedSkills: redSkills}
 	}
 	cases := []struct {
 		name string
@@ -88,7 +88,7 @@ func goldenCases() []struct {
 	pvp.Red = Army{Formation: F1x4, Units: allSkills(Mage, 2)}
 	add("explicit red army", pvp)
 	add("wet map", in(121, Army{Formation: Spread, Units: mix()}, 0))
-	for _, s := range []uint64{334, 921} { // these end with both armies dying on the same tick
+	for _, s := range []uint64{74, 427} { // these end with both armies dying on the same tick
 		add("mutual wipe", in(s, Army{Formation: Presets[s%7], Units: mix()}, int(s%6)))
 		cases[len(cases)-1].name += " " + itoa(int(s))
 	}
@@ -108,6 +108,28 @@ func itoa(n int) string {
 		s = string(rune('0'+n%10)) + s
 	}
 	return s
+}
+
+// The combat seed changes only the fight: same map, same start, different battle.
+func TestCombatSeedChangesOnlyTheFight(t *testing.T) {
+	base := Input{Version: Version, Seed: 5, CombatSeed: 1, RedSkills: 2, Blue: Army{Formation: F3x2, Units: mix()}}
+	other := base
+	other.CombatSeed = 2
+	a, _ := New(base)
+	b, _ := New(other)
+	if !reflect.DeepEqual(a.Map.Obstacles, b.Map.Obstacles) {
+		t.Fatal("combat seed changed the map")
+	}
+	for i := range a.Units {
+		if a.Units[i].Pos != b.Units[i].Pos || a.Units[i].Class != b.Units[i].Class || !reflect.DeepEqual(a.Units[i].Skills, b.Units[i].Skills) {
+			t.Fatalf("combat seed changed unit %d's start", i)
+		}
+	}
+	oa, _ := Run(base)
+	ob, _ := Run(other)
+	if oa.Checksum == ob.Checksum {
+		t.Error("different combat seeds should play out differently")
+	}
 }
 
 func toGolden(o Outcome) goldenOutcome {
@@ -185,7 +207,7 @@ func FuzzDeterminism(f *testing.F) {
 	f.Add(uint64(1), uint8(0), uint8(0), uint8(0))
 	f.Add(uint64(90), uint8(3), uint8(4), uint8(5))
 	f.Fuzz(func(t *testing.T, seed uint64, formation, classes, redSkills uint8) {
-		in := Input{Version: Version, Seed: seed, RedSkills: int(redSkills) % (ArmySize*MaxSkills + 1),
+		in := Input{Version: Version, Seed: seed, CombatSeed: ^seed, RedSkills: int(redSkills) % (ArmySize*MaxSkills + 1),
 			Blue: Army{Formation: Presets[int(formation)%len(Presets)]}}
 		for i := 0; i < ArmySize; i++ {
 			c := Class((int(classes) >> i) % int(numClasses))

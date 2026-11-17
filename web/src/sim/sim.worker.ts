@@ -8,7 +8,8 @@ type SimApi = {
   step(n: number): Uint8Array;
   outcome(): Uint8Array;
 };
-export type ToWorker = { type: 'start'; input: Uint8Array } | { type: 'speed'; speed: number } | { type: 'stop' };
+// preview: set the battle up and show tick 0 (deployment) without playing it
+export type ToWorker = { type: 'start' | 'preview'; input: Uint8Array } | { type: 'speed'; speed: number } | { type: 'stop' };
 export type FromWorker =
   | { type: 'ready'; version: string }
   | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer }
@@ -50,13 +51,14 @@ function loop(sim: SimApi) {
 self.onmessage = async (e: MessageEvent<ToWorker>) => {
   const sim = await ready;
   const msg = e.data;
-  if (msg.type === 'start') {
+  if (msg.type === 'start' || msg.type === 'preview') {
     clearInterval(timer);
+    timer = undefined;
     const err = sim.create(msg.input);
     if (err) return post({ type: 'error', message: err });
     const map = buf(sim.map()), snapshot = buf(sim.step(0));
     post({ type: 'started', map, snapshot }, [map, snapshot]);
-    loop(sim);
+    if (msg.type === 'start') loop(sim);
   } else if (msg.type === 'speed') {
     speed = msg.speed;
     if (timer !== undefined) loop(sim);

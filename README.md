@@ -16,7 +16,11 @@ pnpm dev        # builds sim.wasm, then the web app on http://localhost:5173
 pnpm test       # Go tests natively and under WASM, TS typecheck
 ```
 
-In the debug viewer you pick a seed, Blue's classes and formation, and Red's skill count, then press **▶ Fight**. When the battle ends, **Verify on server** asks the server to re-run it.
+The debug viewer needs the server running.
+1. Pick Red's skill count and press **🗺 New map**. The server issues a battle, and you see its map and both armies deployed.
+2. Change Blue's classes or formation while deploying.
+3. Press **▶ Fight**. Your deployment is locked, the server reveals the combat seed, and the battle plays.
+4. When it ends, press **Verify on server**.
 
 ## Architecture
 
@@ -28,28 +32,34 @@ flowchart LR
     subgraph Worker["Web Worker"]
       WASM["sim.wasm<br/>(Go sim + pb/convert)"]
     end
-    UI -- "BattleInput (protobuf bytes)" --> Worker
+    UI -- "BattleInput (protobuf bytes)<br/>built from the issued seeds" --> Worker
     Worker -- "snapshot every tick (Int32Array)" --> Scene
     Worker -- "BattleOutcome (protobuf)" --> UI
   end
   subgraph Server["Go server"]
-    Verify["server/verify<br/>(Connect RPC)"]
+    Svc["server/battle<br/>(Connect RPC)"]
+    DB[("SQLite<br/>battles")]
     Sim2["same Go sim, native"]
-    Verify --> Sim2
+    Svc --> DB
+    Svc --> Sim2
   end
-  UI -- "VerifyBattle(input, claimed outcome)" --> Verify
-  Verify -- "fair? + server's own outcome" --> UI
+  UI -- "1 StartBattle → id, map seed" --> Svc
+  UI -- "2 LockDeployment(army) → combat seed" --> Svc
+  UI -- "3 VerifyBattle(id, claimed outcome)" --> Svc
+  Svc -- "fair? + server's own outcome" --> UI
 ```
 
 ### How a battle flows
 
-1. **Input.** The UI builds a `BattleInput`: sim version, seed, Blue's units (class, skills, formation or positions) and Red's skill count. It is encoded as protobuf.
-2. **Play.** The Web Worker passes the bytes to `chillSim.create()` in the WASM build. It then calls `step(1)` every 50 ms, divided by the speed setting, and posts each snapshot to the main thread. The sim never sees the frame rate.
-3. **Render.** The scene keeps the last two snapshots and interpolates between them every frame. Events in the snapshots (hits, skills, deaths) drive the floating numbers. The renderer only draws state; it never decides anything.
-4. **Outcome.** When the battle ends, the worker returns a `BattleOutcome`: the result, tick count, survivors with their HP, and a checksum of the final state.
-5. **Verify.** The UI sends the input and its claimed outcome to `BattleService.VerifyBattle`. The server re-runs the input natively. It answers fair only if the result, tick count and checksum all match, and it always returns its own outcome.
+1. **Start.** `StartBattle` creates a battle on the server with two fresh random seeds and stores it. The client gets the battle id and the **map seed**, which decides the map and Red's army, formation and skills. It does not get the **combat seed**, which decides every damage roll, crit, frost proc and cooldown jitter.
+2. **Deploy.** The client builds a preview `BattleInput` (combat seed 0) to show the map and both armies, and the player rearranges Blue.
+3. **Lock.** `LockDeployment` sends Blue's army. The server validates and stores it once, before the deploy deadline (2 min), and only then reveals the combat seed. The client can't test deployments against the real rolls.
+4. **Play.** The Web Worker passes the bytes to `chillSim.create()` in the WASM build. It then calls `step(1)` every 50 ms, divided by the speed setting, and posts each snapshot to the main thread. The sim never sees the frame rate.
+5. **Render.** The scene keeps the last two snapshots and interpolates between them every frame. Events in the snapshots (hits, skills, deaths) drive the floating numbers. The renderer only draws state; it never decides anything.
+6. **Outcome.** When the battle ends, the worker returns a `BattleOutcome`: the result, tick count, survivors with their HP, and a checksum of the final state.
+7. **Verify.** `VerifyBattle` sends only the battle id and the claimed outcome. The server rebuilds the input from what it stored (never from the client), re-runs it natively and answers fair only if the result, tick count and checksum all match. The first verdict is stored and final, and the deadline is 10 minutes after locking.
 
-The server never drives a battle tick by tick. It only re-runs finished battles, so a battle costs it about 3 ms of CPU and needs no live connection.
+The server never drives a battle tick by tick. It only issues seeds, stores the army and re-runs finished battles, so a battle costs it about 3 ms of CPU and needs no live connection.
 
 ### Determinism: the core guarantee
 
@@ -69,10 +79,18 @@ These rules are enforced by tests:
 - **Lint test.** `TestNoNondeterministicImports` fails if `sim/` imports `math`, `math/rand`, `time`, `sync` or `os`, or uses floats, goroutines or map ranges.
 - **Fuzz test.** `FuzzDeterminism` plays random inputs twice and requires identical outcomes.
 
-### Anti-cheat model (current and planned)
+### Anti-cheat model
 
-- **Done:** the server re-runs every claimed battle, so a client can't fake a result or change an army after the fact. Invalid inputs (more than 5 units, a skill twice, a unit outside its zone, an unknown version) are rejected.
-- **Next change:** the server issues the seed before the battle starts and records it. Without that, a client could simulate many seeds locally and submit only a good one.
+| Attack | Defence |
+|---|---|
+| Claim a win that didn't happen | The server re-runs the stored battle; the result, ticks and checksum must match. |
+| Re-roll the seed until a winning map turns up | Seeds come from the server (`crypto/rand`), and only issued battles can be verified. |
+| Try many deployments against the real combat rolls | The combat seed is revealed only after the army is locked, once. |
+| Change the army after seeing how the fight goes | The server verifies with the army it stored at lock time, not one the client sends. |
+| Verify again until it passes | The first verdict is final. |
+| Invalid armies (6 units, a skill twice, outside the zone) | Rejected at lock time by the same validation the sim uses. |
+
+Known limits: the client can read Red's army and the map, because the browser sim needs them, so fog of war is presentation only. A client can still search deployments against *estimated* rolls. Red's skill count is client-chosen until runs exist.
 
 ## Repository layout
 
@@ -92,7 +110,9 @@ sim/            Go: deterministic battle rules (no I/O, no dependencies outside 
   testdata/       golden replays
 pb/             Go module: code generated from proto/, plus pb/convert (wire ⇄ sim types)
 wasm/           Go → WASM bridge: globalThis.chillSim.{create,map,step,outcome}
-server/         Go Connect server; server/verify re-runs and checks battles
+server/         Go Connect server
+  battle/         StartBattle / LockDeployment / VerifyBattle (state machine, deadlines)
+  store/          SQLite store: schema.sql, queries.sql → sqlc-generated Go
 proto/          protobuf schema (chill.v1): BattleInput, BattleOutcome, BattleService
 web/            Vite + React + react-three-fiber debug viewer
   src/sim/        Web Worker loop and snapshot decoder
@@ -114,6 +134,8 @@ tools/blender/  Blender script that bakes the unit models (from the prototype)
 | Go standard library only | `sim/` | Deliberately dependency-free: `container/heap` for A*, `hash/fnv` for checksums, `errors`, `fmt` and `strconv`. |
 | [`google.golang.org/protobuf`](https://pkg.go.dev/google.golang.org/protobuf) | `pb/`, `wasm/`, `server/` | Protobuf runtime: decoding `BattleInput` and encoding `BattleOutcome`. Most of the size of `sim.wasm` (about 6.6 MB, 1.7 MB gzipped). |
 | [`connectrpc.com/connect/v2`](https://connectrpc.com) | `pb/`, `server/` | Connect RPC server. It speaks Connect, gRPC and gRPC-Web over plain `net/http`, and its handlers are generated from `proto/`. |
+| [`modernc.org/sqlite`](https://pkg.go.dev/modernc.org/sqlite) | `server/store` | Pure-Go SQLite driver (no cgo) for issued battles. The file is `CHILL_DB`, default `server/chill.db`, in WAL mode. |
+| [sqlc](https://sqlc.dev) (as a `go tool`) | `server/store` | Generates typed Go from `schema.sql` + `queries.sql`. Run `go generate ./server/store`; it's only used at generation time, not linked into the server. |
 | `syscall/js` (std) | `wasm/` | Exposes Go functions to JavaScript. |
 
 Pathfinding, steering, spatial queries and the RNG are written by hand in `sim/` rather than taken from libraries. Each is small, and owning them is what makes determinism and tie-breaking controllable.
@@ -152,4 +174,5 @@ Characters and animations come from [Quaternius](https://quaternius.com)'s CC0 m
 - **One PR per change.** Every change lands as a pull request.
 - **Changing a rule** means changing `sim/data.go` or the logic, bumping `sim.Version`, then running `go test ./sim -run TestGoldenReplays -update` and reviewing the outcome changes in the diff.
 - **Changing the wire format** means editing `proto/chill/v1/battle.proto`, then running `pnpm gen && pnpm lint:proto`.
+- **Changing the database** means editing `server/store/schema.sql` or `queries.sql`, then running `go generate ./server/store`. The schema is applied at startup with `CREATE TABLE IF NOT EXISTS`, and real migrations come with the first schema change.
 - **Snapshot layout** is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync.
