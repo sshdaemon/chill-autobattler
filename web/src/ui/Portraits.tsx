@@ -29,7 +29,7 @@ function Card({ index }: { index: number }) {
   const dead = !!(u.flags & UF.dead);
   const { select, center } = useBattle.getState();
   return (
-    <div className={`card ${dead ? 'dead' : ''} ${selected ? 'sel' : ''} t${u.team}`} title={lookFor(u.cls, nth)}
+    <div className={`pcard ${dead ? 'dead' : ''} ${selected ? 'sel' : ''} t${u.team}`} title={lookFor(u.cls, nth)}
       onClick={() => select(index)} onDoubleClick={() => center(index)}>
       {u.skills > 0 && <span className="vet">{'★'.repeat(u.skills)}</span>}
       {img ? <img src={img} alt="" /> : <div className="ph">{CLASS_ICON[u.cls]}</div>}
