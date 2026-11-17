@@ -1,12 +1,15 @@
 package battle
 
 import (
+	"slices"
 	"testing"
 	"time"
 
 	"connectrpc.com/connect/v2"
+	"google.golang.org/protobuf/proto"
 
 	chillv1 "chill/pb/chill/v1"
+	"chill/server/run"
 	"chill/server/store"
 	"chill/sim"
 )
@@ -130,21 +133,44 @@ func TestWinPicksAndNextMatch(t *testing.T) {
 
 func TestLosingEndsTheRun(t *testing.T) {
 	e := newEnv(t)
-	for i := 0; i < 40; i++ {
-		r := e.startRun(e.ctx)
-		_, res := e.playMatch(r.Id, army(nil, M, M, M, M, M))
-		if res.Outcome.Result == chillv1.BattleResult_BATTLE_RESULT_BLUE_WIN {
-			continue
+	r := e.startRun(e.ctx)
+	// play the run through (picking skills after wins) until it ends: the
+	// eased first matches are usually won, full-strength ones eventually lost
+	for m := 1; m <= 60; m++ {
+		var recruits []chillv1.UnitClass
+		for i := len(r.Veterans); i < 5; i++ {
+			recruits = append(recruits, M)
 		}
-		if res.Run.State != chillv1.RunState_RUN_STATE_OVER || (res.Run.EndReason != "defeat" && res.Run.EndReason != "draw") {
-			t.Fatalf("a lost match must end the run: %v", res.Run)
+		_, res := e.playMatch(r.Id, army(r.Veterans, recruits...))
+		r = res.Run
+		if res.Outcome.Result != chillv1.BattleResult_BATTLE_RESULT_BLUE_WIN {
+			if r.State != chillv1.RunState_RUN_STATE_OVER || (r.EndReason != "defeat" && r.EndReason != "draw") {
+				t.Fatalf("a lost match must end the run: %v", r)
+			}
+			if _, err := e.start(r.Id); code(err) != connect.CodeFailedPrecondition {
+				t.Errorf("battle in a finished run: %v", err)
+			}
+			return
 		}
-		if _, err := e.start(r.Id); code(err) != connect.CodeFailedPrecondition {
-			t.Errorf("battle in a finished run: %v", err)
+		if r.State == chillv1.RunState_RUN_STATE_PICKING {
+			var picks []*chillv1.SkillPick
+			for _, i := range r.OwedPicks {
+				cls := sim.Class(r.Veterans[i].UnitClass - 1)
+				for _, d := range sim.SkillsOf[cls] {
+					if !slices.Contains(r.Veterans[i].Skills, chillv1.Skill(d.Skill)) {
+						picks = append(picks, &chillv1.SkillPick{Veteran: i, Skill: chillv1.Skill(d.Skill)})
+						break
+					}
+				}
+			}
+			pr, err := e.runs.PickSkills(e.ctx, &chillv1.PickSkillsRequest{RunId: r.Id, Picks: picks})
+			if err != nil {
+				t.Fatal(err)
+			}
+			r = pr.Run
 		}
-		return
 	}
-	t.Fatal("no loss in 40 tries")
+	t.Fatal("no loss in 60 matches")
 }
 
 func TestAbandonedBattleIsALoss(t *testing.T) {
@@ -194,5 +220,34 @@ func TestScoreboard(t *testing.T) {
 	}
 	if mine != 1 || sb.MyBestRank != 2 {
 		t.Errorf("our abandoned run should be listed and ranked 2nd: %v rank %d", sb.Top, sb.MyBestRank)
+	}
+}
+
+func TestEarlyMatchesAreEased(t *testing.T) {
+	e := newEnv(t)
+	r := e.startRun(e.ctx)
+	st := e.mustStart(r.Id)
+	if st.RedHealthPct != 85 {
+		t.Fatalf("match 1 red health %d%%, want 85", st.RedHealthPct)
+	}
+	if got := e.getRun().Battle.RedHealthPct; got != 85 {
+		t.Errorf("GetRun must carry the red health for a reload: %d", got)
+	}
+	lr, _ := e.lock(st.BattleId, mix())
+	// a client that ignores the easing (plays Red at full health) doesn't match the server's re-run
+	full := proto.Clone(st).(*chillv1.StartBattleResponse)
+	full.RedHealthPct = 0
+	claim := play(t, full, lr.CombatSeed, mix())
+	honest := play(t, st, lr.CombatSeed, mix())
+	if claim.Checksum == honest.Checksum {
+		t.Skip("this seed plays out identically at 85% and full health; pick another")
+	}
+	if res, err := e.verify(st.BattleId, claim); err != nil || res.Fair {
+		t.Errorf("a full-health claim for an eased battle must not be fair: %v %v", err, res)
+	}
+	for m, want := range map[int64]int64{1: 85, 2: 90, 3: 95, 4: 0, 9: 0} {
+		if got := run.RedHealthFor(m); got != want {
+			t.Errorf("match %d: %d%%, want %d", m, got, want)
+		}
 	}
 }

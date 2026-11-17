@@ -2,6 +2,27 @@
 
 The current numbers are in [`balance-report.md`](balance-report.md) (generated with `pnpm balance`). This file says what they mean.
 
+## Run balance (sim 0.4.0, change run-balance)
+
+The lab now plays whole runs the way the server does: veterans first, then recruits; one new skill per survivor after each win; Red gets as many skills as the veterans have. See [Runs](balance-report.md#runs) in the report.
+
+**1. No snowballing ✅.** Before the easing, the win rate per match stayed flat, about 55–64% from match 1 to match 7+, for every player policy tried. Red's skill matching cancels the veterans' growth. Picking the strongest skills helps a little (1.44 against 1.33 average wins). **Counter-picking Red** (half its units countering yours) only shortened runs (3.10 to 2.72 average wins, about 12%), so it was rejected.
+
+**2. Runs ended almost at once ❌ → fixed.** At about 55–60% per match, runs averaged 1.3 wins (median 1), and only 11% reached match 5. Ways tried to ease the start:
+
+| Lever | Matches 1 / 2 / 3 won | Average wins | Reach match 5 |
+|---|---|---|---|
+| None | 54 / 55 / 63% | 1.33 | 11.5% |
+| Red 3 units, then 4 | 100 / 100 / 67% | 3.9 | 43% |
+| Red 4 units in matches 1–2 | 100 / 100 / 66% | 3.7 | 40% |
+| **Red health 85 / 90 / 95%** (chosen) | **88 / 82 / 72%** | **3.05** | **33%** |
+| Red health 80 / 85 / 90 / 95% | 93 / 88 / 81% | 3.7 | 49% |
+
+- **Fewer units makes early matches free wins.** One unit fewer decides a 5-unit fight outright.
+- **Health is a smooth lever.** 85/90/95% gives a gentle ramp into the normal ~64% from match 4, and it's set and verified by the server per battle (`sim.RunRedHealth`).
+
+---
+
 ## Balance pass 1: sim 0.3.0 → 0.4.0
 
 | Measure | 0.3.0 | 0.4.0 | Target |

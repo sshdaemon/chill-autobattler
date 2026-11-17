@@ -115,7 +115,7 @@ func (e *env) lock(id string, blue *chillv1.Army) (*chillv1.LockDeploymentRespon
 
 // play is the honest client: it plays what it was given, as the browser does.
 func play(t *testing.T, st *chillv1.StartBattleResponse, combat uint64, blue *chillv1.Army) *chillv1.BattleOutcome {
-	in, err := convert.Input(&chillv1.BattleInput{SimVersion: sim.Version, Seed: st.Seed, CombatSeed: combat, RedSkillCount: st.RedSkillCount, Blue: blue})
+	in, err := convert.Input(&chillv1.BattleInput{SimVersion: sim.Version, Seed: st.Seed, CombatSeed: combat, RedSkillCount: st.RedSkillCount, RedHealthPct: st.RedHealthPct, Blue: blue})
 	if err != nil {
 		t.Fatal(err)
 	}

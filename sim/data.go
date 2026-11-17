@@ -223,3 +223,16 @@ type Zone struct{ XMin, XMax, ZMin, ZMax Fx }
 func (z Zone) Contains(p Vec) bool {
 	return p.X >= z.XMin && p.X <= z.XMax && p.Z >= z.ZMin && p.Z <= z.ZMax
 }
+
+// RunRedHealth is Red's health % for match m of a run (0 = full). The first
+// matches are eased so a run doesn't hinge on a coin flip; tuned with
+// tools/balance (docs/balance-findings.md). The server sets it per battle and
+// stores it, so changing the curve never changes already issued battles.
+func RunRedHealth(match int) int {
+	if match >= 1 && match <= len(runRedHealth) {
+		return runRedHealth[match-1]
+	}
+	return 0
+}
+
+var runRedHealth = []int{85, 90, 95}

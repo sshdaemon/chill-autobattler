@@ -16,8 +16,8 @@ import (
 //
 //	go test ./sim -run TestGolden -update
 //
-// Updating without a version bump fails, because old replays would then be
-// verified with different rules.
+// Changing a recorded outcome without a version bump fails, because old
+// replays would then be verified with different rules. Adding cases is fine.
 var update = flag.Bool("update", false, "rewrite testdata/golden.json")
 
 const goldenFile = "testdata/golden.json"
@@ -88,6 +88,9 @@ func goldenCases() []struct {
 	pvp.Red = Army{Formation: F1x4, Units: allSkills(Mage, 2)}
 	add("explicit red army", pvp)
 	add("wet map", in(121, Army{Formation: Spread, Units: mix()}, 0))
+	eased := in(31, Army{Formation: F3x2, Units: mix()}, 1)
+	eased.RedHealthPct = 85 // a run's first match
+	add("red at 85% health", eased)
 	for _, s := range []uint64{1069, 1710} { // these end with both armies dying on the same tick
 		add("mutual wipe", in(s, Army{Formation: Presets[s%7], Units: mix()}, int(s%6)))
 		cases[len(cases)-1].name += " " + itoa(int(s))
@@ -164,8 +167,12 @@ func TestGoldenReplays(t *testing.T) {
 		err = json.Unmarshal(raw, &file)
 	}
 	if *update {
-		if err == nil && file.Version == Version && !reflect.DeepEqual(file.Outcomes, got) {
-			t.Fatalf("outcomes changed but sim.Version is still %q: bump it before updating the golden file", Version)
+		if err == nil && file.Version == Version { // new cases may be added; recorded ones must not change
+			for name, want := range file.Outcomes {
+				if g, ok := got[name]; ok && !reflect.DeepEqual(g, want) {
+					t.Fatalf("%s: outcome changed but sim.Version is still %q: bump it before updating the golden file", name, Version)
+				}
+			}
 		}
 		out, _ := json.MarshalIndent(goldenFileData{Version: Version, Outcomes: got}, "", "  ")
 		if err := os.WriteFile(goldenFile, append(out, '\n'), 0o644); err != nil {

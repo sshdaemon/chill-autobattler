@@ -25,6 +25,7 @@ type Battle struct {
 	Outcome        []byte
 	RunID          sql.NullString
 	MatchNo        sql.NullInt64
+	RedHealthPct   int64
 }
 
 type Player struct {

@@ -204,6 +204,25 @@
         }
       ]
     },
+    "red at 85% health": {
+      "result": 1,
+      "ticks": 335,
+      "checksum": "16225679658552824922",
+      "survivors": [
+        {
+          "Index": 0,
+          "HP": 569768
+        },
+        {
+          "Index": 1,
+          "HP": 2268236
+        },
+        {
+          "Index": 3,
+          "HP": 403961
+        }
+      ]
+    },
     "veterans 5 stars": {
       "result": 2,
       "ticks": 207,

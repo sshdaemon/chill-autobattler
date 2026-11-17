@@ -81,5 +81,5 @@ SELECT COUNT(*) FROM runs WHERE state = 'over' AND score > @score;
 -- ---------- battles in runs ----------
 
 -- name: CreateRunBattle :exec
-INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no)
-VALUES (@id, @sim_version, @map_seed, @combat_seed, @red_skill_count, @created_at, @deploy_deadline, @run_id, @match_no);
+INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no, red_health_pct)
+VALUES (@id, @sim_version, @map_seed, @combat_seed, @red_skill_count, @created_at, @deploy_deadline, @run_id, @match_no, @red_health_pct);

@@ -23,7 +23,7 @@ type Pt = { x: number; z: number };
 export type { Run, ScoreRow };
 
 // The battle being deployed or played: what the server issued (+ the locked army).
-type Battle = { id: string; seed: bigint; redSkillCount: number; combatSeed?: bigint; lockedBlue?: Army };
+type Battle = { id: string; seed: bigint; redSkillCount: number; redHealthPct: number; combatSeed?: bigint; lockedBlue?: Army };
 
 type State = {
   version?: string;
@@ -121,7 +121,7 @@ function blueArmy(s: State): Army {
 function inputBytes(s: State, combatSeed: bigint) {
   const b = s.battle!;
   return toBinary(BattleInputSchema, createMsg(BattleInputSchema, {
-    simVersion: s.version, seed: b.seed, redSkillCount: b.redSkillCount, combatSeed, blue: blueArmy(s),
+    simVersion: s.version, seed: b.seed, redSkillCount: b.redSkillCount, redHealthPct: b.redHealthPct, combatSeed, blue: blueArmy(s),
   }));
 }
 
@@ -167,7 +167,7 @@ export const useBattle = create<State>((set, get) => {
     if (run.state === RunState.OVER) return showRunOver(run);
     if (run.state === RunState.PICKING) return set({ run, phase: 'done', picks: {} });
     if (!b) return toPicker(run);
-    const battle: Battle = { id: b.battleId, seed: b.seed, redSkillCount: b.redSkillCount };
+    const battle: Battle = { id: b.battleId, seed: b.seed, redSkillCount: b.redSkillCount, redHealthPct: b.redHealthPct };
     if (b.locked) { // replay the locked battle from tick 0, then verify it
       set({ run, battle: { ...battle, combatSeed: b.combatSeed, lockedBlue: b.blue }, fog: undefined, selected: undefined });
       return fight(b.combatSeed);
@@ -225,7 +225,7 @@ export const useBattle = create<State>((set, get) => {
         formation: get().formation === CUSTOM ? 2 : get().formation, curr: undefined, prev: undefined });
       try {
         const st = await authed(() => battleApi.startBattle({ simVersion: version, runId: run.id }));
-        set({ battle: { id: st.battleId, seed: st.seed, redSkillCount: st.redSkillCount }, phase: 'deploying' });
+        set({ battle: { id: st.battleId, seed: st.seed, redSkillCount: st.redSkillCount, redHealthPct: st.redHealthPct }, phase: 'deploying' });
         preview();
         startDeployTimer();
       } catch (e) {

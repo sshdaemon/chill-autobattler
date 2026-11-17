@@ -606,3 +606,25 @@ func setPos(units []UnitSpec, v Vec) {
 		units[i].Pos = &p
 	}
 }
+
+func TestRedHealthPct(t *testing.T) {
+	in := Input{Version: Version, Seed: 3, RedSkills: 5, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Warrior}}}}
+	full, _ := New(in)
+	in.RedHealthPct = 85
+	eased, _ := New(in)
+	for i, u := range eased.Units {
+		want := full.Units[i].MaxHP
+		if u.Team == 1 {
+			want = want.MulDiv(85, 100)
+		}
+		if u.MaxHP != want || u.HP != want {
+			t.Errorf("unit %d (team %d): max %v hp %v, want %v", i, u.Team, u.MaxHP, u.HP, want)
+		}
+	}
+	for _, bad := range []int{-1, 101} {
+		in.RedHealthPct = bad
+		if in.Validate() == nil {
+			t.Errorf("red health %d%% accepted", bad)
+		}
+	}
+}

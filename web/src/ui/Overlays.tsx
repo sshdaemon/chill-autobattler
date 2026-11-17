@@ -14,11 +14,14 @@ export function Banner() {
 // Run name · match · wins · points · Red's skills.
 export function RunBar() {
   const run = useBattle((s) => s.run);
+  // the server eases a run's first matches; shown only while that battle is on
+  const eased = useBattle((s) => (['deploying', 'locking', 'countdown', 'fighting'].includes(s.phase) ? s.battle?.redHealthPct ?? 0 : 0));
   if (!run) return null;
   return (
     <div className="runbar">
       <b>{run.name}</b> · match {run.match} · {run.wins} win{run.wins === 1 ? '' : 's'} · <b>{run.score}</b> pts
       {run.redSkills > 0 && <span className="r"> · Red ★×{run.redSkills}</span>}
+      {eased > 0 && <span className="dim" title="Red is weaker in a run's first matches"> · Red at {eased}% strength</span>}
     </div>
   );
 }

@@ -29,6 +29,8 @@ message BattleInput {
   uint32 red_skill_count = 5;
   // Every combat roll. Revealed by LockDeployment.
   uint64 combat_seed = 6;
+  // Red's health in percent (0 = full). The server eases a run's first matches.
+  uint32 red_health_pct = 7;
 }
 
 enum BattleResult {
@@ -66,6 +68,8 @@ message StartBattleResponse {
   uint32 red_skill_count = 3;
   // Unix milliseconds.
   int64 deploy_deadline_ms = 4;
+  // Red's health in percent for this battle (0 = full).
+  uint32 red_health_pct = 5;
 }
 
 message LockDeploymentRequest {
