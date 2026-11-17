@@ -42,7 +42,7 @@ type Stats struct {
 var ClassStats = [numClasses]Stats{
 	Warrior: {HP: I(100), DmgLo: I(10), DmgHi: I(16), Cooldown: sec(13), Range: Ratio(15, 10), Speed: Ratio(32, 10), Sight: I(7),
 		SwingTicks: sec(9)}, // min(cooldown*0.9, ~0.9 s clip)
-	Archer: {HP: I(45), DmgLo: I(9), DmgHi: I(14), Cooldown: sec(17), Range: I(9), Speed: Ratio(34, 10), Sight: I(11),
+	Archer: {HP: I(55), DmgLo: I(9), DmgHi: I(14), Cooldown: sec(17), Range: I(9), Speed: Ratio(36, 10), Sight: I(11),
 		Ranged: true, Kite: true, SwingTicks: sec(6), ShotSpeed: I(18)},
 	Mage: {HP: I(55), DmgLo: I(14), DmgHi: I(20), Cooldown: sec(22), Range: I(7), Speed: I(3), Sight: I(9),
 		Ranged: true, SwingTicks: sec(8), ShotSpeed: I(14)},
@@ -50,9 +50,9 @@ var ClassStats = [numClasses]Stats{
 
 // Matchup[attacker][victim] damage multiplier (rock-paper-scissors).
 var Matchup = [numClasses][numClasses]Fx{
-	Warrior: {One, Ratio(3, 2), One},
-	Archer:  {Ratio(3, 4), One, Ratio(5, 4)},
-	Mage:    {Ratio(5, 4), Ratio(3, 4), One},
+	Warrior: {One, Ratio(145, 100), Ratio(95, 100)},
+	Archer:  {One, One, One},
+	Mage:    {Ratio(135, 100), One, One},
 }
 
 // Skill identifies an effect; each class has 5 of them (SkillsOf).
@@ -81,24 +81,24 @@ type SkillDef struct {
 // SkillsOf lists each class's skills in the order Red's random picks use.
 var SkillsOf = [numClasses][MaxSkills]SkillDef{
 	Warrior: {
-		{SkillHealth, "Toughness", 15, 0},
-		{SkillSpeed, "Swift", 25, 0},
-		{SkillDamage, "Strength", 10, 0},
+		{SkillHealth, "Toughness", 10, 0},
+		{SkillSpeed, "Swift", 40, 0},
+		{SkillDamage, "Strength", 15, 0},
 		{SkillDash, "Dash", 0, I(10)}, // reach in metres
-		{SkillExecute, "Executioner", 25, 0},
+		{SkillExecute, "Executioner", 35, 0},
 	},
 	Archer: {
-		{SkillRange, "Long shot", 10, 0},
-		{SkillDamage, "Sharp arrows", 15, 0},
-		{SkillLob, "Arcing shot", 0, 0},
-		{SkillExecute, "Headshot", 15, 0},
+		{SkillRange, "Long shot", 25, 0},
+		{SkillDamage, "Sharp arrows", 10, 0},
+		{SkillLob, "Arcing shot", 10, 0},
+		{SkillExecute, "Headshot", 25, 0},
 		{SkillHealth, "Toughness", 20, 0},
 	},
 	Mage: {
-		{SkillFrost, "Frost", 50, 0}, // chance
-		{SkillDamage, "Power", 15, 0},
-		{SkillBlink, "Blink", 0, I(15)}, // cooldown seconds
-		{SkillBlast, "Blast", 50, 0},    // splash damage %
+		{SkillFrost, "Frost", 100, 0}, // chance
+		{SkillDamage, "Power", 10, 0},
+		{SkillBlink, "Blink", 0, I(8)}, // cooldown seconds
+		{SkillBlast, "Blast", 35, 0},   // splash damage %
 		{SkillHealth, "Toughness", 20, 0},
 	},
 }
@@ -123,8 +123,10 @@ var (
 	WaterSpeed      = Ratio(7, 10)
 	FrostSpeed      = Ratio(6, 10)
 	SlowTurnSpeed   = Ratio(3, 10) // speed factor while turning sharply
+	SwiftAttackPct  = 80           // Swift also attacks faster: cooldown and swing ×80%
+	BackpedalSpeed  = One          // kiting archers step back without turning round
 
-	KitePanic = Ratio(35, 10)
+	KitePanic = Ratio(45, 10)
 	KiteStep  = Ratio(25, 10)
 
 	DashSpeed   = I(16)
@@ -140,10 +142,11 @@ var (
 
 const (
 	HitAtPct        = 45 // % into the swing where the blow lands / the shot leaves
+	ExecuteBelowPct = 40 // Executioner / Headshot only work on victims below this % of max health
 	RetargetTicks   = 10 // 0.5 s; also how often paths are recomputed
 	StaggerTicks    = 6  // 0.3 s
-	KiteMaxTicks    = 24 // 1.2 s
-	KiteRestTicks   = 40 // 2 s
+	KiteMaxTicks    = 40 // 1.2 s
+	KiteRestTicks   = 24 // 2 s
 	DashCooldown    = 200
 	FrostTicks      = 60 // 3 s
 	MinShotTicks    = 4  // 0.2 s minimum projectile flight

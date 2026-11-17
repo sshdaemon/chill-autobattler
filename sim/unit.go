@@ -56,6 +56,14 @@ func newUnit(index, team int, spec UnitSpec, pos Vec) *Unit {
 	st.DmgHi = st.DmgHi.MulDiv(pct(SkillDamage), 100)
 	st.Range = st.Range.MulDiv(pct(SkillRange), 100)
 	st.Speed = st.Speed.MulDiv(pct(SkillSpeed), 100)
+	if hasSkill(spec.Skills, SkillSpeed) { // Swift: faster feet and faster blows
+		st.Cooldown = st.Cooldown * SwiftAttackPct / 100
+		st.SwingTicks = st.SwingTicks * SwiftAttackPct / 100
+	}
+	if hasSkill(spec.Skills, SkillLob) { // Arcing shot: over cover, and harder hits
+		st.DmgLo = st.DmgLo.MulDiv(pct(SkillLob), 100)
+		st.DmgHi = st.DmgHi.MulDiv(pct(SkillLob), 100)
+	}
 	face := V(0, -One) // Blue faces up the field (-z), Red down
 	if team == 1 {
 		face = V(0, One)
@@ -333,17 +341,20 @@ func (b *Battle) move(u *Unit) {
 		return
 	}
 	want := d.Norm()
-	sharp := u.Face.Dot(want) < CosSlowTurn
-	u.Face = TurnToward(u.Face, want, TurnPerTick)
 	speed := perTick(u.Stats.Speed)
+	if u.Kiting { // archers back away facing their attackers, a little slower
+		speed = speed.Mul(BackpedalSpeed)
+	} else {
+		if u.Face.Dot(want) < CosSlowTurn {
+			speed = speed.Mul(SlowTurnSpeed)
+		}
+		u.Face = TurnToward(u.Face, want, TurnPerTick)
+	}
 	if u.Wet {
 		speed = speed.Mul(WaterSpeed)
 	}
 	if u.Slowed {
 		speed = speed.Mul(FrostSpeed)
-	}
-	if sharp {
-		speed = speed.Mul(SlowTurnSpeed)
 	}
 	u.Pos = u.Pos.Add(want.Scale(Min(dist, speed)))
 }

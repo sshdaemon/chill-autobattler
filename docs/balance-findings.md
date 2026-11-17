@@ -1,14 +1,47 @@
-# Balance findings (sim 0.3.0)
+# Balance findings
 
-The numbers are from [`balance-report.md`](balance-report.md), generated with `pnpm balance`. This file says what they mean and lists the candidate fixes; nothing here has been changed in the game yet.
+The current numbers are in [`balance-report.md`](balance-report.md) (generated with `pnpm balance`). This file says what they mean.
+
+## Balance pass 1: sim 0.3.0 → 0.4.0
+
+| Measure | 0.3.0 | 0.4.0 | Target |
+|---|---|---|---|
+| Warriors vs archers | 100.0% | **63.4%** | 65–75% |
+| Archers vs mages | 100.0% | **67.5%** | 65–75% |
+| Mages vs warriors | 46.3% | **66.0%** | 65–75% |
+| Best composition (average vs random Red) | 5W 82.8% | 2W 3M **56.2%** | no runaway mix |
+| Worst composition | 5A 16.4% | 3W 2A **37.0%** | nothing hopeless |
+| Mixes without warriors | ≤ 23.8% | **48.8–52.3%** | viable |
+| Strongest skill | Headshot +17.8 | Arcing shot **+9.6** | ≤ ~10 |
+| Weakest skill | Arcing shot +0.7 | Long shot **+3.1** | ≥ ~3 |
+| Side bias (Blue wins with identical armies) | 49.2% | 47.8% ± 2.2% | ~50% |
+| Average battle length | 14.9 s | 17.1 s | — |
+
+**What changed** (details in `openspec/changes/archive/*-balance-pass-1/`):
+- **Archers kite properly.** They back away facing the threat at full speed, start at 4.5 m, and retreat in 2 s bursts with 1.2 s rests. They also have 55 health and 3.6 m/s speed.
+- **Softer matchup table.**
+- **Instant kills only finish off the wounded** (victims below 40% health).
+- **Weak skills buffed:** Swift also attacks faster, Arcing shot also hits harder, Frost always slows, Blink has an 8 s cooldown, and Long shot gives +25%.
+- **Strong skills trimmed.**
+
+**Still to watch:**
+- **Side bias:** 47.8% is just inside its margin. It was 49.2% before, and no rule treats the sides differently, so it is likely noise. Re-check it with a larger sample in the next pass.
+- **Compositions:** warrior-heavy mixes without mages are now the weakest (3W 2A 37%). That's the counter system working (warriors lose to mages), but keep an eye on it.
+- **Runs:** veteran snowballing hasn't been measured yet; it's the next lab experiment.
+
+---
+
+## Baseline: sim 0.3.0 (before pass 1)
+
+The sections below describe sim 0.3.0, the state that led to pass 1 (its report is kept as [`balance-report-0.3.0.md`](balance-report-0.3.0.md)).
 
 ## 1. The sim is fair between sides ✅
 
-With identical armies and formations, Blue wins 49.2% ± 2.2% and Red 50.6% ([Side bias](balance-report.md#side-bias)). There's no first-mover or side advantage.
+With identical armies and formations, Blue wins 49.2% ± 2.2% and Red 50.6% ([Side bias](balance-report-0.3.0.md#side-bias)). There's no first-mover or side advantage.
 
 ## 2. The rock-paper-scissors is broken ❌
 
-The concept intends warriors to beat archers, archers to beat mages, and mages to beat warriors (concept §4.2). Five against five, in a Spread formation ([Class matchups](balance-report.md#class-matchups)):
+The concept intends warriors to beat archers, archers to beat mages, and mages to beat warriors (concept §4.2). Five against five, in a Spread formation ([Class matchups](balance-report-0.3.0.md#class-matchups)):
 
 | | vs Warrior | vs Archer | vs Mage |
 |---|---|---|---|
@@ -21,7 +54,7 @@ The concept intends warriors to beat archers, archers to beat mages, and mages t
 
 ## 3. Warriors dominate compositions ❌
 
-Against the game's random Red army, more warriors is simply better ([Compositions](balance-report.md#compositions)):
+Against the game's random Red army, more warriors is simply better ([Compositions](balance-report-0.3.0.md#compositions)):
 
 - **The top 4 mixes are warrior-heavy:** 5W wins 83%, 4W 1M 81%, 3W 2M 77% and 4W 1A 76%.
 - **No warriors is a losing army:** every mix without warriors wins at most 24% on average (5A only 16%).
@@ -33,7 +66,7 @@ There are two likely reasons, both visible in the matchups:
 
 ## 4. Two skills are far stronger than the rest ❌
 
-Each figure is the change in win rate when one unit learns the skill, measured on the same seeds ([Skill impact](balance-report.md#skill-impact)):
+Each figure is the change in win rate when one unit learns the skill, measured on the same seeds ([Skill impact](balance-report-0.3.0.md#skill-impact)):
 
 | Strong | Δ | Weak (≈ noise, < 2 pts) | Δ |
 |---|---|---|---|

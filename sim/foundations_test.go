@@ -22,7 +22,7 @@ func TestDataMatchesConcept(t *testing.T) {
 	}
 	want := [numClasses]row{
 		Warrior: {100, 10, 16, 13, 15, 32, 7, false, false},
-		Archer:  {45, 9, 14, 17, 90, 34, 11, true, true},
+		Archer:  {55, 9, 14, 17, 90, 36, 11, true, true},
 		Mage:    {55, 14, 20, 22, 70, 30, 9, true, false},
 	}
 	for c, w := range want {
@@ -34,7 +34,7 @@ func TestDataMatchesConcept(t *testing.T) {
 		}
 	}
 	pct := map[[2]Class]int{
-		{Warrior, Archer}: 150, {Archer, Warrior}: 75, {Archer, Mage}: 125, {Mage, Warrior}: 125, {Mage, Archer}: 75,
+		{Warrior, Archer}: 145, {Warrior, Mage}: 95, {Mage, Warrior}: 135,
 	}
 	for a := Class(0); a < numClasses; a++ {
 		for v := Class(0); v < numClasses; v++ {
@@ -65,10 +65,10 @@ func TestDataMatchesConcept(t *testing.T) {
 			t.Errorf("%v skills = %v, want %v", c, got, names)
 		}
 	}
-	if d, _ := SkillDefOf(Warrior, SkillExecute); d.Pct != 25 {
+	if d, _ := SkillDefOf(Warrior, SkillExecute); d.Pct != 35 {
 		t.Errorf("executioner chance %v", d.Pct)
 	}
-	if d, _ := SkillDefOf(Archer, SkillExecute); d.Pct != 15 {
+	if d, _ := SkillDefOf(Archer, SkillExecute); d.Pct != 25 {
 		t.Errorf("headshot chance %v", d.Pct)
 	}
 }
