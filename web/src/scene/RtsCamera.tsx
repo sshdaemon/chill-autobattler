@@ -7,6 +7,9 @@ import { useBattle } from '../store.ts';
 // F follows the selected unit, Space jumps to it.
 const PITCH = (56 * Math.PI) / 180, MIN = 10, MAX = 45, PAN = 28, EDGE = 14, LIM = 16;
 
+// Where the camera looks (read by the minimap without re-rendering React).
+export const camView = { x: 0, z: 4, dist: 30, aspect: 1.5 };
+
 export function RtsCamera() {
   const { camera, gl } = useThree();
   const st = useRef({ tx: 0, tz: 4, dist: 30, keys: new Set<string>(), mouse: null as null | { x: number; y: number }, lastCenter: 0 });
@@ -61,8 +64,9 @@ export function RtsCamera() {
     const unit = b.selected !== undefined ? b.curr?.units[b.selected] : undefined;
     if (b.centerOn && b.centerOn.n !== s.lastCenter) {
       s.lastCenter = b.centerOn.n;
-      const u = b.curr?.units[b.centerOn.index];
+      const u = b.centerOn.index !== undefined ? b.curr?.units[b.centerOn.index] : undefined;
       if (u) { s.tx = u.x; s.tz = u.z; }
+      else if (b.centerOn.x !== undefined && b.centerOn.z !== undefined) { s.tx = b.centerOn.x; s.tz = b.centerOn.z; }
     }
     if (b.follow && unit) {
       const t = 1 - Math.exp(-6 * dt);
@@ -74,6 +78,8 @@ export function RtsCamera() {
     // the camera sits south (+z) of the target, raised by the pitch angle
     camera.position.set(s.tx, Math.sin(PITCH) * s.dist, s.tz + Math.cos(PITCH) * s.dist);
     camera.lookAt(s.tx, 0, s.tz);
+    camView.x = s.tx; camView.z = s.tz; camView.dist = s.dist;
+    camView.aspect = gl.domElement.clientWidth / Math.max(1, gl.domElement.clientHeight);
   });
   return null;
 }

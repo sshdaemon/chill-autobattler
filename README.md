@@ -34,7 +34,8 @@ A **run** is a chain of matches. You keep playing while you keep winning, and th
 3. **Fight.** Your deployment is locked with the server, which only then reveals the combat seed. After a "Fight!" banner, the armies fight on their own.
    - **Fog of war:** you only see what your units see. The sight rules come from the sim, so rocks and trees block your view.
    - **Portraits** run along the bottom: yours on the left, Red's on the right, with "?" for enemies out of sight. Click one (or a unit) for its info panel, which shows status, kills, damage and skills.
-   - The dev panel (top right) sets 1×/2×/4× speed.
+   - The **minimap** (top right) shows the field under the same fog; click it to move the camera.
+   - **Sound effects** are synthesized in the browser. The dev panel (top right) has mute, volume, and 1×/2×/4× speed.
 
    | Key | Does |
    |---|---|
@@ -163,7 +164,7 @@ tools/blender/  Blender script that bakes the unit models (from the prototype)
 | Library | Used in | What for |
 |---|---|---|
 | Go standard library only | `sim/` | Deliberately dependency-free: `container/heap` for A*, `hash/fnv` for checksums, `errors`, `fmt` and `strconv`. |
-| [`google.golang.org/protobuf`](https://pkg.go.dev/google.golang.org/protobuf) | `pb/`, `wasm/`, `server/` | Protobuf runtime: decoding `BattleInput` and encoding `BattleOutcome`. Most of the size of `sim.wasm` (about 6.6 MB, 1.7 MB gzipped). |
+| [`google.golang.org/protobuf`](https://pkg.go.dev/google.golang.org/protobuf) | `pb/`, `server/` | Protobuf runtime on the server. The browser build uses only its tiny `protowire` package through `pb/wire`, a hand-written decoder kept identical to `pb/convert` by an equivalence test. That keeps `sim.wasm` at 4.6 MB (1.3 MB gzipped), down from 8.0 MB. |
 | [`connectrpc.com/connect/v2`](https://connectrpc.com) | `pb/`, `server/` | Connect RPC server. It speaks Connect, gRPC and gRPC-Web over plain `net/http`, and its handlers are generated from `proto/`. |
 | [`modernc.org/sqlite`](https://pkg.go.dev/modernc.org/sqlite) | `server/store` | Pure-Go SQLite driver (no cgo) for issued battles. The file is `CHILL_DB`, default `server/chill.db`, in WAL mode. |
 | [sqlc](https://sqlc.dev) (as a `go tool`) | `server/store` | Generates typed Go from `schema.sql` + `queries.sql`. Run `go generate ./server/store`; it's only used at generation time, not linked into the server. |

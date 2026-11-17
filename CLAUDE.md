@@ -2,7 +2,9 @@
 
 Monorepo:
 - `sim/`: Go, the deterministic battle rules (map, pathfinding, combat, skills, armies).
-- `pb/`: generated protobuf/Connect Go code plus `pb/convert` (wire ⇄ sim types). Shared by `wasm/` and `server/`.
+- `pb/`: generated protobuf/Connect Go code, `pb/convert` (generated types ⇄ sim, used by the server) and `pb/wire` (the same mapping straight from bytes with `protowire`, used by `wasm/`, so the browser doesn't link the protobuf runtime).
+  - `pb/wire` must match `pb/convert`; `TestDecodeMatchesConvert` checks it.
+  - After any `proto/` change, update `pb/wire` too.
 - `wasm/`: the browser build of the sim, exposed as `globalThis.chillSim` (create / map / step / outcome).
 - `server/`: Go, Connect RPC.
   - `server/auth`: anonymous player tokens. Every RPC except `CreatePlayer` needs `Authorization: Bearer`.

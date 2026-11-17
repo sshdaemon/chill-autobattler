@@ -8,6 +8,7 @@ import { Fog } from './scene/Fog.tsx';
 import { RtsCamera } from './scene/RtsCamera.tsx';
 import { Portraits } from './ui/Portraits.tsx';
 import { InfoPanel } from './ui/InfoPanel.tsx';
+import { Minimap } from './ui/Minimap.tsx';
 import { Picker } from './ui/Picker.tsx';
 import { DeployBar } from './ui/DeployBar.tsx';
 import { Banner, DevPanel, Result, RunBar, Status } from './ui/Overlays.tsx';
@@ -35,6 +36,7 @@ export function App() {
       {(phase === 'deploying' || phase === 'locking') && <DeployBar />}
       {phase === 'done' && <Result />}
       <Portraits />
+      <Minimap />
       <InfoPanel />
       <DevPanel />
     </>

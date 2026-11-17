@@ -2,6 +2,8 @@ import { useBattle, resultText } from '../store.ts';
 import { UF } from '../sim/snapshot.ts';
 import { CLASS_ICON, CLASS_LABEL } from '../gamedata.ts';
 import { RunState } from '../gen/chill/v1/runstate_pb.ts';
+import { useState } from 'react';
+import { setSound, soundPrefs } from '../sound.ts';
 
 export function Banner() {
   const phase = useBattle((s) => s.phase);
@@ -128,13 +130,18 @@ export function Result() {
   );
 }
 
-// Debug controls: playback speed.
+// Playback speed and sound.
 export function DevPanel() {
   const { speed, setSpeed, version } = useBattle();
+  const [snd, setSnd] = useState(soundPrefs());
+  const change = (p: Partial<typeof snd>) => { setSound(p); setSnd(soundPrefs()); };
   return (
     <div className="dev">
       <span className="dim">dev · sim {version ?? '…'}</span>
       {[1, 2, 4].map((s) => <button key={s} className={speed === s ? 'on' : ''} onClick={() => setSpeed(s)}>{s}×</button>)}
+      <button aria-label={snd.muted ? 'unmute' : 'mute'} title={snd.muted ? 'Sound off' : 'Sound on'} onClick={() => change({ muted: !snd.muted })}>{snd.muted ? '🔇' : '🔊'}</button>
+      <input type="range" min={0} max={1} step={0.05} value={snd.volume} aria-label="volume" style={{ width: 60 }}
+        onChange={(e) => change({ volume: +e.target.value, muted: false })} />
     </div>
   );
 }

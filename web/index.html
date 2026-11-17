@@ -35,7 +35,7 @@
       .deployside .timer b { font-size: 22px; } .deployside .bar { width: 100%; height: 4px; background: #ffffff30; border-radius: 2px; }
       .deployside .bar i { display: block; height: 100%; background: #ffd23f; border-radius: 2px; transition: width .25s linear; }
       .deployside .hint { font-size: 11px; opacity: .7; }
-      .status { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); background: #fffe; padding: 6px 14px; border-radius: 20px; box-shadow: 0 2px 10px #0002; z-index: 4; }
+      .status { position: fixed; top: 48px; left: 50%; transform: translateX(-50%); background: #fffe; padding: 6px 14px; border-radius: 20px; box-shadow: 0 2px 10px #0002; z-index: 4; }
       .banner { position: fixed; top: 35%; left: 0; right: 0; text-align: center; font: 900 64px system-ui; color: #fff; text-shadow: 0 4px 16px #000a; pointer-events: none; z-index: 6; }
       .banner.small { font-size: 28px; }
       .result h1 { margin: 0; font-size: 44px; } .result.victory h1 { color: #2a6fd0; } .result.defeat h1 { color: #d83a3a; }
@@ -62,14 +62,14 @@
       .stars { color: #ffd23f; font: 700 13px system-ui; text-shadow: 0 0 3px #000, 0 0 3px #000; letter-spacing: -1px; white-space: nowrap; }
       .portraits { position: fixed; bottom: 10px; display: flex; gap: 4px; z-index: 6; }
       .portraits.blue { left: 10px; } .portraits.red { right: 10px; flex-direction: row-reverse; }
-      .card { position: relative; width: 62px; background: #0b1420cc; border: 2px solid #3a8cff; border-radius: 8px; padding: 3px; color: #fff; cursor: pointer; text-align: center; }
-      .card.t1 { border-color: #ff4040; } .card.sel { box-shadow: 0 0 0 2px #ffd23f; }
-      .card img, .card .ph { width: 56px; height: 56px; border-radius: 5px; display: grid; place-items: center; font-size: 28px; background: #233; object-fit: cover; }
-      .card.dead img, .card.dead .ph { filter: grayscale(1) brightness(.5); }
-      .card .cross { position: absolute; top: 18px; left: 0; right: 0; font-size: 26px; color: #ddd; text-shadow: 0 0 4px #000; }
-      .card .vet { position: absolute; top: -9px; left: 0; right: 0; color: #ffd23f; font-size: 11px; text-shadow: 0 0 3px #000; letter-spacing: -1px; }
-      .card .bar { height: 5px; background: #222; border-radius: 3px; margin-top: 3px; overflow: hidden; } .card .bar i { display: block; height: 100%; background: #3a8cff; }
-      .card.t1 .bar i { background: #ff4040; } .card .num { font-size: 11px; font-variant-numeric: tabular-nums; }
+      .pcard { position: relative; width: 62px; background: #0b1420cc; border: 2px solid #3a8cff; border-radius: 8px; padding: 3px; color: #fff; cursor: pointer; text-align: center; }
+      .pcard.t1 { border-color: #ff4040; } .pcard.sel { box-shadow: 0 0 0 2px #ffd23f; }
+      .pcard img, .pcard .ph { width: 56px; height: 56px; border-radius: 5px; display: grid; place-items: center; font-size: 28px; background: #233; object-fit: cover; }
+      .pcard.dead img, .pcard.dead .ph { filter: grayscale(1) brightness(.5); }
+      .pcard .cross { position: absolute; top: 18px; left: 0; right: 0; font-size: 26px; color: #ddd; text-shadow: 0 0 4px #000; }
+      .pcard .vet { position: absolute; top: -9px; left: 0; right: 0; color: #ffd23f; font-size: 11px; text-shadow: 0 0 3px #000; letter-spacing: -1px; }
+      .pcard .bar { height: 5px; background: #222; border-radius: 3px; margin-top: 3px; overflow: hidden; } .pcard .bar i { display: block; height: 100%; background: #3a8cff; }
+      .pcard.t1 .bar i { background: #ff4040; } .pcard .num { font-size: 11px; font-variant-numeric: tabular-nums; }
       .info { position: fixed; left: 10px; bottom: 112px; width: 280px; background: #fffe; border-radius: 10px; padding: 10px 12px; box-shadow: 0 4px 16px #0003; z-index: 6; font-size: 12px; }
       .info .x { position: absolute; top: 4px; right: 6px; border: 0; background: none; font-size: 18px; }
       .info .title { font-size: 15px; font-weight: 700; } .info .vetstars { color: #c99a1e; }
@@ -77,6 +77,7 @@
       .info .hp i { display: block; height: 100%; background: #4caf50; } .info .hp span { position: absolute; inset: 0; text-align: center; font-size: 10px; line-height: 14px; }
       .info .st { font-weight: 600; margin-bottom: 4px; } .info table { width: 100%; border-collapse: collapse; } .info td:nth-child(2n) { text-align: right; padding-right: 8px; font-variant-numeric: tabular-nums; }
       .info .takes, .info .skills { margin-top: 4px; } .info .keys { margin-top: 6px; font-size: 10px; }
+      .minimap { position: fixed; right: 10px; top: 52px; width: 160px; height: 160px; border-radius: 8px; box-shadow: 0 2px 10px #0004; cursor: crosshair; z-index: 6; image-rendering: auto; }
       .float { font: bold 16px system-ui; text-shadow: 0 0 3px #000, 0 0 3px #000; white-space: nowrap; animation: rise 1s linear forwards; }
       @keyframes rise { from { transform: translateY(0); opacity: 1 } to { transform: translateY(-28px); opacity: 0 } }
     </style>

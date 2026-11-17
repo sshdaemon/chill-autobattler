@@ -20,10 +20,7 @@ import (
 	"math"
 	"syscall/js"
 
-	"google.golang.org/protobuf/proto"
-
-	chillv1 "chill/pb/chill/v1"
-	"chill/pb/convert"
+	"chill/pb/wire" // lean decoder: keeps the protobuf runtime out of the browser build
 	"chill/sim"
 )
 
@@ -46,11 +43,7 @@ func int32sToJS(v []int32) js.Value {
 func create(_ js.Value, args []js.Value) any {
 	raw := make([]byte, args[0].Get("length").Int())
 	js.CopyBytesToGo(raw, args[0])
-	var in chillv1.BattleInput
-	if err := proto.Unmarshal(raw, &in); err != nil {
-		return "bad input bytes: " + err.Error()
-	}
-	si, err := convert.Input(&in)
+	si, err := wire.DecodeInput(raw)
 	if err != nil {
 		return err.Error()
 	}
@@ -76,8 +69,7 @@ func outcome(js.Value, []js.Value) any {
 	if battle == nil {
 		return js.Null()
 	}
-	raw, _ := proto.Marshal(convert.Outcome(battle.Outcome()))
-	return bytesToJS(raw)
+	return bytesToJS(wire.EncodeOutcome(battle.Outcome()))
 }
 
 // Display copies of the balance tables, so the UI never duplicates numbers
