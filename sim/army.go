@@ -58,6 +58,9 @@ type Input struct {
 	CombatSeed uint64
 	Blue, Red  Army
 	RedSkills  int
+	// RedHealthPct scales Red's health (0 means 100). The server sets it from
+	// the run's match number to ease the first matches.
+	RedHealthPct int
 }
 
 var ErrInvalid = errors.New("invalid battle input")
@@ -77,6 +80,9 @@ func (in Input) Validate() error {
 	}
 	if len(in.Red.Units) > 0 && in.RedSkills != 0 {
 		return invalid("red skill count is only used for a generated red army")
+	}
+	if in.RedHealthPct < 0 || in.RedHealthPct > 100 {
+		return invalid("red health %d%% out of range", in.RedHealthPct)
 	}
 	if in.RedSkills < 0 || in.RedSkills > ArmySize*MaxSkills {
 		return invalid("red skill count %d out of range", in.RedSkills)

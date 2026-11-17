@@ -33,6 +33,10 @@ func main() {
 			case "skills":
 				s, _ := Skills(*n * 2)
 				fmt.Print(s)
+			case "runs":
+				fmt.Print(Runs(*n, redModes))
+			case "curves":
+				fmt.Print(RunCurves(*n))
 			}
 		}
 		fmt.Fprintf(os.Stderr, "done in %s\n", time.Since(start).Round(time.Second))
@@ -49,5 +53,7 @@ func main() {
 	fmt.Fprintf(w, "## Class matchups\n\n%s\n", match)
 	fmt.Fprintf(w, "## Compositions\n\n%s\n%s\n", comp, Lengths(rows))
 	fmt.Fprintf(w, "## Skill impact\n\n%s\n", skills)
+	fmt.Fprintf(w, "## Runs\n\nWhole runs played like the server does: veterans first, then recruits; one new skill per survivor after each win; Red gets as many skills as the veterans have, and the game's early-match health easing applies, except to the \"ramp\" modes, which are alternatives to it. Red modes other than \"random\" are experiments, not the game.\n\n%s\n", Runs(*n/5, redModes))
+	fmt.Fprintf(w, "### Early-match easing\n\n%s\n", RunCurves(*n/2))
 	fmt.Fprintf(os.Stderr, "done in %s\n", time.Since(start).Round(time.Second))
 }

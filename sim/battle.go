@@ -62,7 +62,12 @@ func New(in Input) (*Battle, error) {
 			if !b.Map.FreeAt(pos) { // nudge off rocks and trees
 				pos = b.Map.FreeSpot(pos)
 			}
-			b.Units = append(b.Units, newUnit(len(b.Units), team, s, pos))
+			u := newUnit(len(b.Units), team, s, pos)
+			if team == 1 && in.RedHealthPct > 0 && in.RedHealthPct < 100 {
+				u.MaxHP = u.MaxHP.MulDiv(in.RedHealthPct, 100)
+				u.HP = u.MaxHP
+			}
+			b.Units = append(b.Units, u)
 		}
 	}
 	for _, u := range b.Units { // stagger first decisions so units don't act in lockstep

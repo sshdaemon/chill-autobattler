@@ -180,11 +180,14 @@ How to read it:
 - **Red matches you:** in each match, Red gets **as many skills in total as your army has**.
 - **Spread:** each skill goes to a random Red unit, as a random skill it doesn't have yet, seeded by the map. Your one ★★ veteran might face one ★★ enemy or two ★ enemies.
 - **Fresh start:** if all your veterans die, Red is back to having no skills.
+- **Easier first matches:** Red's units start at **85% health in match 1, 90% in match 2 and 95% in match 3**, then at full health. Without this, a run was about a coin flip from the first match (1.3 wins on average); with it, about 88/82/72% of those matches are won, then about 64% from match 4 on (3 wins on average).
+- **No counter-picking:** Red's army stays seeded-random. The lab found no snowballing (the win rate per match is flat), so counter-picking would only shorten runs.
 - **Why:** the run stays tense without a flat difficulty curve. The edge comes from *which* skills you chose and *keeping* units alive.
 
 Earlier versions tried and dropped:
 1. Every veteran got +10% HP and damage per match survived, and Red got nothing. Too easy.
 2. Every Red unit got +10% per win. Too blunt.
+3. Fewer Red units in the first matches (3 or 4 against your 5). That turned those matches into free wins (about 100%).
 
 ## 11. Scoring and scoreboard
 
@@ -229,8 +232,8 @@ Earlier versions tried and dropped:
 
 **Balance**
 - ~~Executioner and Headshot are very strong.~~ Done in balance pass 1: they now only finish off victims below 40% health.
-- Snowballing: a full ★★★★★ army versus random Red skills. Do the classes and skills stay balanced as runs get longer?
-- Red's skills are fully random. Should they counter your army instead (for example more Frost against a warrior-heavy army)?
+- ~~Snowballing: do runs get easier as veterans gain skills?~~ Measured: no, the win rate per match stays flat.
+- ~~Red's skills are fully random. Should they counter your army instead?~~ Measured in the run lab: no snowballing, so no (Red stays random).
 - Should healing between matches stay full (as now) or be partial?
 
 **Content**

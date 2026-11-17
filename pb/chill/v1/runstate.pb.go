@@ -85,8 +85,10 @@ type CurrentBattle struct {
 	CombatSeed       uint64 `protobuf:"varint,6,opt,name=combat_seed,json=combatSeed,proto3" json:"combat_seed,omitempty"`
 	Blue             *Army  `protobuf:"bytes,7,opt,name=blue,proto3" json:"blue,omitempty"`
 	VerifyDeadlineMs int64  `protobuf:"varint,8,opt,name=verify_deadline_ms,json=verifyDeadlineMs,proto3" json:"verify_deadline_ms,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Red's health in percent for this battle (0 = full).
+	RedHealthPct  uint32 `protobuf:"varint,9,opt,name=red_health_pct,json=redHealthPct,proto3" json:"red_health_pct,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CurrentBattle) Reset() {
@@ -171,6 +173,13 @@ func (x *CurrentBattle) GetBlue() *Army {
 func (x *CurrentBattle) GetVerifyDeadlineMs() int64 {
 	if x != nil {
 		return x.VerifyDeadlineMs
+	}
+	return 0
+}
+
+func (x *CurrentBattle) GetRedHealthPct() uint32 {
+	if x != nil {
+		return x.RedHealthPct
 	}
 	return 0
 }
@@ -307,7 +316,7 @@ var File_chill_v1_runstate_proto protoreflect.FileDescriptor
 
 const file_chill_v1_runstate_proto_rawDesc = "" +
 	"\n" +
-	"\x17chill/v1/runstate.proto\x12\bchill.v1\x1a\x14chill/v1/units.proto\"\xa1\x02\n" +
+	"\x17chill/v1/runstate.proto\x12\bchill.v1\x1a\x14chill/v1/units.proto\"\xc7\x02\n" +
 	"\rCurrentBattle\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x12\n" +
 	"\x04seed\x18\x02 \x01(\x04R\x04seed\x12&\n" +
@@ -317,7 +326,8 @@ const file_chill_v1_runstate_proto_rawDesc = "" +
 	"\vcombat_seed\x18\x06 \x01(\x04R\n" +
 	"combatSeed\x12\"\n" +
 	"\x04blue\x18\a \x01(\v2\x0e.chill.v1.ArmyR\x04blue\x12,\n" +
-	"\x12verify_deadline_ms\x18\b \x01(\x03R\x10verifyDeadlineMs\"\xd1\x02\n" +
+	"\x12verify_deadline_ms\x18\b \x01(\x03R\x10verifyDeadlineMs\x12$\n" +
+	"\x0ered_health_pct\x18\t \x01(\rR\fredHealthPct\"\xd1\x02\n" +
 	"\x03Run\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +

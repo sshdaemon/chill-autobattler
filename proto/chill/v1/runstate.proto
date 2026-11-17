@@ -24,6 +24,8 @@ message CurrentBattle {
   uint64 combat_seed = 6;
   Army blue = 7;
   int64 verify_deadline_ms = 8;
+  // Red's health in percent for this battle (0 = full).
+  uint32 red_health_pct = 9;
 }
 
 message Run {

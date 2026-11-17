@@ -90,6 +90,10 @@ func encodeVeterans(v []*chillv1.UnitSpec) []byte {
 	return b
 }
 
+// RedHealthFor is Red's health % for a run's match (0 = full); the curve
+// lives in sim.RunRedHealth.
+func RedHealthFor(match int64) int64 { return int64(sim.RunRedHealth(int(match))) }
+
 // SkillTotal is Red's skill count for a run's next match.
 func SkillTotal(v []*chillv1.UnitSpec) int {
 	n := 0
@@ -168,7 +172,7 @@ func (s *Service) Proto(ctx context.Context, r store.Run) (*chillv1.Run, error) 
 			return nil, err
 		}
 		cb := &chillv1.CurrentBattle{BattleId: b.ID, Seed: uint64(b.MapSeed), RedSkillCount: uint32(b.RedSkillCount),
-			DeployDeadlineMs: b.DeployDeadline, Locked: b.LockedAt.Valid}
+			DeployDeadlineMs: b.DeployDeadline, Locked: b.LockedAt.Valid, RedHealthPct: uint32(b.RedHealthPct)}
 		if b.LockedAt.Valid {
 			cb.CombatSeed, cb.VerifyDeadlineMs = uint64(b.CombatSeed), b.VerifyDeadline.Int64
 			cb.Blue = &chillv1.Army{}

@@ -103,8 +103,8 @@ func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) error {
 
 const createRunBattle = `-- name: CreateRunBattle :exec
 
-INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no, red_health_pct)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
 `
 
 type CreateRunBattleParams struct {
@@ -117,6 +117,7 @@ type CreateRunBattleParams struct {
 	DeployDeadline int64
 	RunID          sql.NullString
 	MatchNo        sql.NullInt64
+	RedHealthPct   int64
 }
 
 // ---------- battles in runs ----------
@@ -131,6 +132,7 @@ func (q *Queries) CreateRunBattle(ctx context.Context, arg CreateRunBattleParams
 		arg.DeployDeadline,
 		arg.RunID,
 		arg.MatchNo,
+		arg.RedHealthPct,
 	)
 	return err
 }
@@ -185,7 +187,7 @@ func (q *Queries) FinishPicks(ctx context.Context, arg FinishPicksParams) (int64
 }
 
 const getBattle = `-- name: GetBattle :one
-SELECT id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, blue_army, locked_at, verify_deadline, verified_at, fair, reason, outcome, run_id, match_no FROM battles WHERE id = ?1
+SELECT id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, blue_army, locked_at, verify_deadline, verified_at, fair, reason, outcome, run_id, match_no, red_health_pct FROM battles WHERE id = ?1
 `
 
 func (q *Queries) GetBattle(ctx context.Context, id string) (Battle, error) {
@@ -208,6 +210,7 @@ func (q *Queries) GetBattle(ctx context.Context, id string) (Battle, error) {
 		&i.Outcome,
 		&i.RunID,
 		&i.MatchNo,
+		&i.RedHealthPct,
 	)
 	return i, err
 }

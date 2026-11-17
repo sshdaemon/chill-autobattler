@@ -80,3 +80,59 @@ Baseline: 2W 2A 1M in 3-2 against the seeded Red army, **52.9%** win rate (4000 
 
 Paired seeds make Δ much tighter than ±1.5%; treat |Δ| < 2 pts as noise.
 
+## Runs
+
+Whole runs played like the server does: veterans first, then recruits; one new skill per survivor after each win; Red gets as many skills as the veterans have, and the game's early-match health easing applies, except to the "ramp" modes, which are alternatives to it. Red modes other than "random" are experiments, not the game.
+
+### Red: counter-picks (50% of units)
+
+| Player policy | Avg wins | Median | Reach match 5 | Reach 10 | Win% m1 | m2 | m3 | m4–6 | m7+ | Avg ★ at m5 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 2W 2A 1M, random picks | 2.57 | 2 | 27.8% | 1.2% | 86.5% | 76.3% | 69.3% | 55.7% | 59.0% | 5.1 |
+| 2W 2A 1M, best picks | 2.72 | 2 | 26.8% | 2.0% | 86.5% | 81.2% | 69.8% | 56.5% | 61.5% | 5.8 |
+| 1W 2A 2M, best picks | 3.02 | 3 | 33.2% | 2.5% | 87.5% | 82.9% | 75.5% | 63.7% | 53.9% | 5.8 |
+| 3W 0A 2M, best picks | 2.50 | 2 | 23.0% | 0.8% | 85.0% | 75.3% | 65.2% | 59.7% | 55.2% | 5.7 |
+
+### Red: ramp: 3 units m1, 4 m2, then 5
+
+| Player policy | Avg wins | Median | Reach match 5 | Reach 10 | Win% m1 | m2 | m3 | m4–6 | m7+ | Avg ★ at m5 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 2W 2A 1M, random picks | 3.30 | 3 | 30.0% | 2.5% | 100.0% | 99.5% | 54.8% | 59.1% | 55.4% | 6.3 |
+| 2W 2A 1M, best picks | 3.86 | 3 | 43.2% | 5.8% | 100.0% | 100.0% | 67.0% | 64.1% | 63.8% | 6.9 |
+| 1W 2A 2M, best picks | 3.89 | 3 | 40.0% | 5.5% | 100.0% | 99.8% | 62.7% | 67.0% | 66.8% | 6.6 |
+| 3W 0A 2M, best picks | 3.42 | 3 | 33.8% | 3.2% | 100.0% | 100.0% | 57.8% | 57.9% | 64.3% | 6.1 |
+
+### Red: ramp: 4 units m1–2, then 5
+
+| Player policy | Avg wins | Median | Reach match 5 | Reach 10 | Win% m1 | m2 | m3 | m4–6 | m7+ | Avg ★ at m5 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 2W 2A 1M, random picks | 3.39 | 3 | 31.8% | 3.0% | 99.8% | 99.7% | 56.3% | 58.9% | 63.5% | 6.4 |
+| 2W 2A 1M, best picks | 3.74 | 3 | 39.5% | 5.2% | 99.8% | 100.0% | 66.2% | 60.4% | 66.8% | 7.1 |
+| 1W 2A 2M, best picks | 3.84 | 3 | 39.8% | 5.0% | 100.0% | 99.8% | 62.9% | 64.8% | 68.3% | 6.3 |
+| 3W 0A 2M, best picks | 3.72 | 3 | 41.8% | 4.8% | 99.5% | 99.7% | 62.7% | 64.4% | 62.9% | 6.2 |
+
+### Red: random (the game)
+
+| Player policy | Avg wins | Median | Reach match 5 | Reach 10 | Win% m1 | m2 | m3 | m4–6 | m7+ | Avg ★ at m5 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 2W 2A 1M, random picks | 2.62 | 2 | 27.3% | 2.2% | 88.8% | 74.9% | 66.5% | 59.8% | 52.5% | 5.4 |
+| 2W 2A 1M, best picks | 3.10 | 3 | 33.0% | 5.0% | 88.8% | 81.4% | 75.8% | 61.1% | 68.9% | 6.3 |
+| 1W 2A 2M, best picks | 2.88 | 2 | 30.5% | 2.5% | 88.8% | 77.7% | 71.7% | 62.3% | 60.7% | 5.7 |
+| 3W 0A 2M, best picks | 2.88 | 3 | 30.2% | 3.8% | 88.2% | 80.7% | 71.2% | 58.9% | 66.1% | 5.1 |
+
+400 runs per row; a run ends at its first loss (cap 40 matches). "Win% mX" is the win rate of match X among runs that reached it.
+
+### Early-match easing
+
+Player: 2W 2A 1M, best picks; Red: the game's random army with its health scaled in the first matches.
+
+| Red health curve | Avg wins | Median | Reach match 5 | Reach 10 | Win% m1 | m2 | m3 | m4–6 | m7+ | Avg ★ at m5 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| none (0.4.0 before run-balance) | 1.33 | 1 | 11.5% | 0.8% | 53.7% | 55.1% | 63.2% | 61.9% | 63.9% | 5.6 |
+| 90/95% | 2.33 | 2 | 22.8% | 1.9% | 78.6% | 72.9% | 64.4% | 60.4% | 66.4% | 5.7 |
+| 85/90/95% (the game now) | 3.05 | 3 | 33.4% | 3.3% | 87.9% | 82.0% | 71.8% | 63.5% | 66.3% | 6.0 |
+| 80/88/94% | 3.29 | 3 | 36.4% | 3.1% | 93.0% | 84.6% | 73.4% | 63.1% | 64.2% | 6.0 |
+| 80/85/90/95% | 3.67 | 3 | 48.7% | 3.5% | 93.0% | 88.1% | 81.4% | 65.9% | 63.5% | 6.4 |
+
+1000 runs per row.
+

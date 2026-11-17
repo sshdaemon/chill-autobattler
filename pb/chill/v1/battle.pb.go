@@ -85,7 +85,9 @@ type BattleInput struct {
 	Red           *Army  `protobuf:"bytes,4,opt,name=red,proto3" json:"red,omitempty"`
 	RedSkillCount uint32 `protobuf:"varint,5,opt,name=red_skill_count,json=redSkillCount,proto3" json:"red_skill_count,omitempty"`
 	// Every combat roll. Revealed by LockDeployment.
-	CombatSeed    uint64 `protobuf:"varint,6,opt,name=combat_seed,json=combatSeed,proto3" json:"combat_seed,omitempty"`
+	CombatSeed uint64 `protobuf:"varint,6,opt,name=combat_seed,json=combatSeed,proto3" json:"combat_seed,omitempty"`
+	// Red's health in percent (0 = full). The server eases a run's first matches.
+	RedHealthPct  uint32 `protobuf:"varint,7,opt,name=red_health_pct,json=redHealthPct,proto3" json:"red_health_pct,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -158,6 +160,13 @@ func (x *BattleInput) GetRedSkillCount() uint32 {
 func (x *BattleInput) GetCombatSeed() uint64 {
 	if x != nil {
 		return x.CombatSeed
+	}
+	return 0
+}
+
+func (x *BattleInput) GetRedHealthPct() uint32 {
+	if x != nil {
+		return x.RedHealthPct
 	}
 	return 0
 }
@@ -344,8 +353,10 @@ type StartBattleResponse struct {
 	RedSkillCount uint32 `protobuf:"varint,3,opt,name=red_skill_count,json=redSkillCount,proto3" json:"red_skill_count,omitempty"`
 	// Unix milliseconds.
 	DeployDeadlineMs int64 `protobuf:"varint,4,opt,name=deploy_deadline_ms,json=deployDeadlineMs,proto3" json:"deploy_deadline_ms,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Red's health in percent for this battle (0 = full).
+	RedHealthPct  uint32 `protobuf:"varint,5,opt,name=red_health_pct,json=redHealthPct,proto3" json:"red_health_pct,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StartBattleResponse) Reset() {
@@ -402,6 +413,13 @@ func (x *StartBattleResponse) GetRedSkillCount() uint32 {
 func (x *StartBattleResponse) GetDeployDeadlineMs() int64 {
 	if x != nil {
 		return x.DeployDeadlineMs
+	}
+	return 0
+}
+
+func (x *StartBattleResponse) GetRedHealthPct() uint32 {
+	if x != nil {
+		return x.RedHealthPct
 	}
 	return 0
 }
@@ -638,7 +656,7 @@ var File_chill_v1_battle_proto protoreflect.FileDescriptor
 
 const file_chill_v1_battle_proto_rawDesc = "" +
 	"\n" +
-	"\x15chill/v1/battle.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\x1a\x14chill/v1/units.proto\"\xd1\x01\n" +
+	"\x15chill/v1/battle.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\x1a\x14chill/v1/units.proto\"\xf7\x01\n" +
 	"\vBattleInput\x12\x1f\n" +
 	"\vsim_version\x18\x01 \x01(\tR\n" +
 	"simVersion\x12\x12\n" +
@@ -647,7 +665,8 @@ const file_chill_v1_battle_proto_rawDesc = "" +
 	"\x03red\x18\x04 \x01(\v2\x0e.chill.v1.ArmyR\x03red\x12&\n" +
 	"\x0fred_skill_count\x18\x05 \x01(\rR\rredSkillCount\x12\x1f\n" +
 	"\vcombat_seed\x18\x06 \x01(\x04R\n" +
-	"combatSeed\"7\n" +
+	"combatSeed\x12$\n" +
+	"\x0ered_health_pct\x18\a \x01(\rR\fredHealthPct\"7\n" +
 	"\bSurvivor\x12\x14\n" +
 	"\x05index\x18\x01 \x01(\rR\x05index\x12\x15\n" +
 	"\x06hp_raw\x18\x02 \x01(\x12R\x05hpRaw\"\xa3\x01\n" +
@@ -659,12 +678,13 @@ const file_chill_v1_battle_proto_rawDesc = "" +
 	"\x12StartBattleRequest\x12\x1f\n" +
 	"\vsim_version\x18\x01 \x01(\tR\n" +
 	"simVersion\x12\x15\n" +
-	"\x06run_id\x18\x03 \x01(\tR\x05runIdJ\x04\b\x02\x10\x03R\x0fred_skill_count\"\x9c\x01\n" +
+	"\x06run_id\x18\x03 \x01(\tR\x05runIdJ\x04\b\x02\x10\x03R\x0fred_skill_count\"\xc2\x01\n" +
 	"\x13StartBattleResponse\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x12\n" +
 	"\x04seed\x18\x02 \x01(\x04R\x04seed\x12&\n" +
 	"\x0fred_skill_count\x18\x03 \x01(\rR\rredSkillCount\x12,\n" +
-	"\x12deploy_deadline_ms\x18\x04 \x01(\x03R\x10deployDeadlineMs\"X\n" +
+	"\x12deploy_deadline_ms\x18\x04 \x01(\x03R\x10deployDeadlineMs\x12$\n" +
+	"\x0ered_health_pct\x18\x05 \x01(\rR\fredHealthPct\"X\n" +
 	"\x15LockDeploymentRequest\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\"\n" +
 	"\x04blue\x18\x02 \x01(\v2\x0e.chill.v1.ArmyR\x04blue\"g\n" +
