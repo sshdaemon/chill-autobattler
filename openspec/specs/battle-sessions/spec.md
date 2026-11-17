@@ -6,11 +6,11 @@ Server-issued battles: the server fixes a battle's randomness before it is playe
 ## Requirements
 
 ### Requirement: Start a battle
-On request, the server SHALL create a battle with a new random map seed and a new random combat seed, store it, and return the battle id, the map seed and the deploy deadline. The combat seed SHALL NOT be returned at this point.
+On request for an active run with no picks owed and no unfinished battle, the server SHALL create the run's next battle with a new random map seed and a new random combat seed. Red's skill count SHALL be the total skills of the run's veterans. The server SHALL store the battle and return the battle id, the map seed, Red's skill count and the deploy deadline. The combat seed SHALL NOT be returned at this point.
 
 #### Scenario: New battle
-- **WHEN** a client starts a battle for the current sim version with a Red skill count of 2
-- **THEN** it receives a battle id, a map seed and a deploy deadline, but no combat seed
+- **WHEN** a client starts a battle for its active run whose veterans have 2 skills in total
+- **THEN** it receives a battle id, a map seed, a Red skill count of 2 and a deploy deadline, but no combat seed
 
 #### Scenario: Unknown sim version
 - **WHEN** a client starts a battle for a sim version the server doesn't have
@@ -20,11 +20,15 @@ On request, the server SHALL create a battle with a new random map seed and a ne
 - **WHEN** two battles are started
 - **THEN** they have different ids, map seeds and combat seeds
 
+#### Scenario: Run not ready
+- **WHEN** a client starts a battle for a run that is over, owes skill picks, or has an unfinished battle
+- **THEN** the server refuses
+
 ### Requirement: Lock a deployment once
-The server SHALL accept Blue's army for a battle once, before its deploy deadline (default 2 minutes after start). It SHALL validate the army against the battle rules, store it, and only then reveal the combat seed.
+The server SHALL accept Blue's army for a battle once, before its deploy deadline (default 2 minutes after start). It SHALL validate the army against the battle rules and the run's veterans, store it, and only then reveal the combat seed.
 
 #### Scenario: Lock and reveal
-- **WHEN** a client locks a valid army before the deadline
+- **WHEN** a client locks a valid army with the run's veterans before the deadline
 - **THEN** the server stores it and returns the combat seed
 
 #### Scenario: Second lock
@@ -36,7 +40,7 @@ The server SHALL accept Blue's army for a battle once, before its deploy deadlin
 - **THEN** the server refuses because the battle has expired
 
 #### Scenario: Invalid army
-- **WHEN** a client locks an army with six units or a unit outside its deployment zone
+- **WHEN** a client locks an army with six units, a unit outside its deployment zone, or without the run's veterans
 - **THEN** the server rejects it as invalid, and the battle stays unlocked
 
 ### Requirement: Verify by battle id
