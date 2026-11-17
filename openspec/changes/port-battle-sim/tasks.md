@@ -43,9 +43,9 @@
 ## 7. Server and browser
 
 - [x] 7.1 Change `VerifyBattle` to take `BattleInput` plus the claimed outcome; verify server tests for honest, tampered-claim, tampered-input and unknown-version cases
-- [ ] 7.2 WASM API: `create(bytes)`, `step(n)` returning snapshots and events, `outcome()`; verify a WASM test steps a golden input to the golden outcome
-- [ ] 7.3 Worker loop at 20 Hz with 1×/2×/4× speed, and interpolated R3F debug viewer (obstacles, capsules, projectiles, health bars); verify in the browser that a battle plays to the end and "Verify on server" says fair
-- [ ] 7.4 Update CLAUDE.md and README for the new API and golden workflow; verify `pnpm test` passes
+- [x] 7.2 WASM API: `create(bytes)`, `step(n)` returning snapshots and events, `outcome()`; verify a WASM test steps a golden input to the golden outcome
+- [x] 7.3 Worker loop at 20 Hz with 1×/2×/4× speed, and interpolated R3F debug viewer (obstacles, capsules, projectiles, health bars); verify in the browser that a battle plays to the end and "Verify on server" says fair
+- [x] 7.4 Update CLAUDE.md and README for the new API and golden workflow; verify `pnpm test` passes
 
 ## Workflow follow-up
 

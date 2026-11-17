@@ -9,7 +9,7 @@
     "server": "cd server && go run ./cmd/server",
     "test": "pnpm test:go && pnpm test:wasm && pnpm --filter web typecheck",
     "test:go": "go test ./sim/... ./pb/... ./server/...",
-    "test:wasm": "cd sim && GOOS=js GOARCH=wasm go test -exec=\"$(go env GOROOT)/lib/wasm/go_js_wasm_exec\" ./...",
+    "test:wasm": "for m in sim wasm; do (cd $m && GOOS=js GOARCH=wasm go test -exec=\"$(go env GOROOT)/lib/wasm/go_js_wasm_exec\" ./...) || exit 1; done",
     "lint:proto": "buf lint"
   },
   "devDependencies": {
