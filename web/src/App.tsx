@@ -1,66 +1,84 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useState } from 'react';
-import { runBattle, type SimResult } from './sim/client.ts';
-import { battleApi } from './api.ts';
+import { Formation, UnitClass } from './gen/chill/v1/battle_pb.ts';
+import { useBattle } from './store.ts';
+import { RESULT, UF } from './sim/snapshot.ts';
+import { Arena } from './scene/Arena.tsx';
+import { Units } from './scene/Units.tsx';
+import { Shots } from './scene/Shots.tsx';
+import { Floats } from './scene/Floats.tsx';
 
-// Placeholder scene: the six toy units at their start positions.
-function Units() {
+const FORMATIONS: [Formation, string][] = [
+  [Formation.FORMATION_SPREAD, 'Spread'], [Formation.FORMATION_3_2, '3-2'], [Formation.FORMATION_2_3, '2-3'],
+  [Formation.FORMATION_4_1, '4-1'], [Formation.FORMATION_1_4, '1-4'], [Formation.FORMATION_0_5, '0-5'], [Formation.FORMATION_5_0, '5-0'],
+];
+const CLASSES: [UnitClass, string][] = [[UnitClass.WARRIOR, '⚔️'], [UnitClass.ARCHER, '🏹'], [UnitClass.MAGE, '✨']];
+const RESULT_TEXT = { [RESULT.blue]: 'Blue wins', [RESULT.red]: 'Red wins', [RESULT.draw]: 'Draw' } as Record<number, string>;
+
+function Hud() {
+  const { version, curr, outcome, verdict, error, speed, start, setSpeed, verify } = useBattle();
+  const [seed, setSeed] = useState(() => String(Math.floor(Math.random() * 1e6)));
+  const [formation, setFormation] = useState(Formation.FORMATION_3_2);
+  const [classes, setClasses] = useState([UnitClass.WARRIOR, UnitClass.WARRIOR, UnitClass.ARCHER, UnitClass.ARCHER, UnitClass.MAGE]);
+  const [redSkills, setRedSkills] = useState(0);
+  const alive = (team: number) => curr?.units.filter((u) => u.team === team && !(u.flags & UF.dead)).length ?? 0;
+  const go = () => start({ seed: BigInt(seed || '0'), formation, classes, redSkills });
+
   return (
-    <>
-      {[0, 1].flatMap((team) => [-3, 0, 3].map((x) => (
-        <mesh key={`${team}${x}`} position={[x, 0.9, team ? 10 : -10]} castShadow>
-          <capsuleGeometry args={[0.4, 1]} />
-          <meshStandardMaterial color={team ? '#e0524a' : '#3a8cff'} />
-        </mesh>
-      )))}
-    </>
+    <div className="hud">
+      <b>Chill Autobattler</b> <span className="dim">sim {version ?? 'loading…'} · debug viewer</span>
+      <div className="row">
+        <label>Seed <input value={seed} onChange={(e) => setSeed(e.target.value.replace(/\D/g, ''))} size={8} /></label>
+        <button onClick={() => setSeed(String(Math.floor(Math.random() * 1e6)))}>🎲</button>
+        <label>Red ★ <input type="number" min={0} max={25} value={redSkills} onChange={(e) => setRedSkills(+e.target.value)} style={{ width: 44 }} /></label>
+      </div>
+      <div className="row">
+        Blue {classes.map((c, i) => (
+          <button key={i} title="click to change class" onClick={() => setClasses(classes.map((x, j) => (j === i ? ((x % 3) + 1) as UnitClass : x)))}>
+            {CLASSES.find(([k]) => k === c)?.[1]}
+          </button>
+        ))}
+        <select value={formation} onChange={(e) => setFormation(+e.target.value)}>
+          {FORMATIONS.map(([f, n]) => <option key={f} value={f}>{n}</option>)}
+        </select>
+      </div>
+      <div className="row">
+        <button className="primary" disabled={!version} onClick={go}>▶ Fight</button>
+        {[1, 2, 4].map((s) => <button key={s} className={speed === s ? 'on' : ''} onClick={() => setSpeed(s)}>{s}×</button>)}
+      </div>
+      {curr && (
+        <div className="row" data-testid="status">
+          tick {curr.tick} ({(curr.tick / 20).toFixed(1)} s) · <span style={{ color: '#3a8cff' }}>Blue {alive(0)}</span> vs <span style={{ color: '#ff4040' }}>{alive(1)} Red</span>
+        </div>
+      )}
+      {outcome && (
+        <div className="row" data-testid="outcome">
+          <b>{RESULT_TEXT[outcome.result]}</b> after {outcome.ticks} ticks
+          <button onClick={verify}>Verify on server</button>
+        </div>
+      )}
+      {verdict && <div data-testid="verdict">{verdict}</div>}
+      {error && <div className="err">{error}</div>}
+    </div>
   );
 }
 
 export function App() {
-  const [run, setRun] = useState<{ seed: bigint; version: string; result: SimResult }>();
-  const [verdict, setVerdict] = useState<string>();
-
-  const play = async () => {
-    const seed = BigInt(Math.floor(Math.random() * 2 ** 48)); // TODO: the server issues seeds
-    setVerdict(undefined);
-    setRun({ seed, ...(await runBattle(seed)) });
-  };
-  const verify = async () => {
-    if (!run) return;
-    try {
-      const r = await battleApi.verifyBattle({
-        simVersion: run.version, seed: run.seed, maxTicks: 4000,
-        claimedWinner: run.result.winner, claimedChecksum: BigInt(run.result.checksum),
-      });
-      setVerdict(r.fair ? `✅ fair (server got ${r.checksum})` : `❌ ${r.reason}`);
-    } catch (e) {
-      setVerdict(`⚠️ server unreachable: ${(e as Error).message}`);
-    }
-  };
-
   return (
     <>
-      <Canvas shadows camera={{ position: [14, 16, 22], fov: 45 }}>
+      <Canvas shadows camera={{ position: [0, 26, 22], fov: 45 }}>
+        <color attach="background" args={['#8fb6d8']} />
         <hemisphereLight args={['#dfefff', '#445533', 1.5]} />
-        <directionalLight position={[10, 20, 8]} intensity={2.6} castShadow />
-        <mesh rotation-x={-Math.PI / 2} receiveShadow>
-          <planeGeometry args={[40, 40]} />
-          <meshStandardMaterial color="#7a9a5a" />
-        </mesh>
+        <directionalLight position={[10, 25, 8]} intensity={2.4} castShadow shadow-mapSize={[2048, 2048]}
+          shadow-camera-left={-18} shadow-camera-right={18} shadow-camera-top={18} shadow-camera-bottom={-18} />
+        <Arena />
         <Units />
-        <OrbitControls />
+        <Shots />
+        <Floats />
+        <OrbitControls maxPolarAngle={1.35} target={[0, 0, 2]} />
       </Canvas>
-      <div style={{ position: 'fixed', top: 12, left: 12, background: '#fffd', padding: 12, borderRadius: 8, maxWidth: 360 }}>
-        <b>Chill Autobattler</b> — pipeline check
-        <div style={{ display: 'flex', gap: 8, margin: '8px 0' }}>
-          <button onClick={play}>Run battle (WASM)</button>
-          <button onClick={verify} disabled={!run}>Verify on server</button>
-        </div>
-        {run && <div data-testid="result">sim {run.version} · seed {run.seed.toString()}<br />winner {run.result.winner ? 'Red' : 'Blue'} after {run.result.ticks} ticks · checksum {run.result.checksum}</div>}
-        {verdict && <div data-testid="verdict">{verdict}</div>}
-      </div>
+      <Hud />
     </>
   );
 }

@@ -3,26 +3,105 @@ syntax = "proto3";
 package chill.v1;
 
 // The server never drives a battle. The client plays it locally (sim in WASM)
-// and the server re-runs it afterwards to check the claimed result.
+// and the server re-runs it afterwards to check the claimed outcome.
 service BattleService {
   rpc VerifyBattle(VerifyBattleRequest) returns (VerifyBattleResponse);
 }
 
-message VerifyBattleRequest {
+enum UnitClass {
+  UNIT_CLASS_UNSPECIFIED = 0;
+  UNIT_CLASS_WARRIOR = 1;
+  UNIT_CLASS_ARCHER = 2;
+  UNIT_CLASS_MAGE = 3;
+}
+
+// Skills by effect; which ones a class can learn is in docs/GAME_CONCEPT.md §10.1.
+enum Skill {
+  SKILL_UNSPECIFIED = 0;
+  SKILL_HEALTH = 1; // Toughness
+  SKILL_SPEED = 2; // Swift
+  SKILL_DAMAGE = 3; // Strength / Sharp arrows / Power
+  SKILL_DASH = 4;
+  SKILL_EXECUTE = 5; // Executioner / Headshot
+  SKILL_RANGE = 6; // Long shot
+  SKILL_LOB = 7; // Arcing shot
+  SKILL_FROST = 8;
+  SKILL_BLINK = 9;
+  SKILL_BLAST = 10;
+}
+
+// FORMATION_CUSTOM means every unit carries its own position.
+enum Formation {
+  FORMATION_UNSPECIFIED = 0; // rejected
+  FORMATION_CUSTOM = 1;
+  FORMATION_SPREAD = 2;
+  FORMATION_3_2 = 3;
+  FORMATION_2_3 = 4;
+  FORMATION_4_1 = 5;
+  FORMATION_1_4 = 6;
+  FORMATION_0_5 = 7;
+  FORMATION_5_0 = 8;
+}
+
+// A point in raw Q48.16 fixed-point metres (value × 65536), so no float
+// rounding ever happens on the wire.
+message Point {
+  sint64 x_raw = 1;
+  sint64 z_raw = 2;
+}
+
+message UnitSpec {
+  UnitClass unit_class = 1;
+  repeated Skill skills = 2;
+  // Required with FORMATION_CUSTOM, absent otherwise.
+  Point position = 3;
+}
+
+message Army {
+  Formation formation = 1;
+  repeated UnitSpec units = 2;
+}
+
+// Everything that decides a battle.
+message BattleInput {
   string sim_version = 1;
-  // TODO(port-battle-sim): the seed must be issued by the server before the
-  // battle, plus both armies and timed player commands.
+  // TODO(next change): issued by the server before the battle.
   uint64 seed = 2;
-  uint32 max_ticks = 3;
+  Army blue = 3;
+  // Empty: Red's army, formation and red_skill_count skills come from the seed.
+  Army red = 4;
+  uint32 red_skill_count = 5;
+}
+
+enum BattleResult {
+  BATTLE_RESULT_UNSPECIFIED = 0;
+  BATTLE_RESULT_BLUE_WIN = 1;
+  BATTLE_RESULT_RED_WIN = 2;
+  BATTLE_RESULT_DRAW = 3;
+}
+
+message Survivor {
+  // Unit index: Blue's units in input order, then Red's.
+  uint32 index = 1;
+  sint64 hp_raw = 2;
+}
+
+message BattleOutcome {
+  BattleResult result = 1;
+  uint32 ticks = 2;
+  repeated Survivor survivors = 3;
+  uint64 checksum = 4;
+}
+
+message VerifyBattleRequest {
+  BattleInput input = 1;
   // What the client says happened.
-  int32 claimed_winner = 4;
-  uint64 claimed_checksum = 5;
+  BattleOutcome claimed = 2;
 }
 
 message VerifyBattleResponse {
   bool fair = 1;
   string reason = 2;
-  int32 winner = 3;
-  uint32 ticks = 4;
-  uint64 checksum = 5;
+  // The server's own outcome (absent if the input was rejected).
+  BattleOutcome outcome = 3;
 }

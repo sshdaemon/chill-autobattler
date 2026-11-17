@@ -1,7 +1,27 @@
 # chill-autobattler
 
-Monorepo: `sim/` (Go, deterministic battle logic) → `wasm/` (browser build) and `server/` (Go, Connect RPC, re-runs battles to check fairness); `web/` (Vite + React + react-three-fiber); `proto/` (buf). Specs and changes live in `openspec/` — plan with the openspec skills before larger work. Game design: `docs/GAME_CONCEPT.md`.
+Monorepo:
+- `sim/`: Go, the deterministic battle rules (map, pathfinding, combat, skills, armies).
+- `pb/`: generated protobuf/Connect Go code plus `pb/convert` (wire ⇄ sim types). Shared by `wasm/` and `server/`.
+- `wasm/`: the browser build of the sim, exposed as `globalThis.chillSim` (create / map / step / outcome).
+- `server/`: Go, Connect RPC. `server/verify` re-runs a battle and checks the claimed outcome.
+- `web/`: Vite, React and react-three-fiber. The sim runs in a Web Worker at 20 Hz; the scene interpolates snapshots.
+- `proto/`: buf schema. Run `pnpm gen` to write `pb/` and `web/src/gen/`.
 
-- Go is installed at `~/sdk/go/bin` (not on PATH by default): `export PATH=$HOME/sdk/go/bin:$PATH`.
-- `pnpm dev` (builds WASM, starts Vite on :5173), `pnpm server` (:8080), `pnpm gen` (buf), `pnpm test` (Go native + Go under WASM + TS typecheck).
-- sim/ rules: fixed-point `sim.Fx` only, no floats/maps-order/time/goroutines, randomness only from the battle RNG. Any rule change bumps `sim.Version` and the golden table in `sim/sim_test.go`.
+Specs and changes live in `openspec/`; plan with the openspec skills before larger work. Game design: `docs/GAME_CONCEPT.md`.
+
+Commands:
+- `pnpm dev`: builds the WASM, then starts Vite on :5173.
+- `pnpm server`: the Go server on :8080.
+- `pnpm test`: Go tests natively, sim and bridge tests under WASM, and a TS typecheck.
+
+sim/ rules (enforced by `TestNoNondeterministicImports`):
+- Fixed-point `sim.Fx` only.
+- No floats, map iteration, time, goroutines, `math` or `math/rand`.
+- Randomness only from the battle's `Sub(seed, tag)` streams.
+
+Golden replays (`sim/testdata/golden.json`):
+- Any rule change that alters outcomes needs `sim.Version` bumped, then `go test ./sim -run TestGoldenReplays -update`.
+- The update refuses to run without the version bump.
+
+The snapshot layout is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync.

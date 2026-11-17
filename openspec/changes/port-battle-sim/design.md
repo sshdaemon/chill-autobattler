@@ -52,6 +52,8 @@ The scaffold has a toy deterministic sim (`sim/`), its WASM bridge (`wasm/`), a 
 
 **Data, not code.** `STATS`, `MATCHUP`, `SKILLS` and terrain constants live in one `sim/data.go` table set. The proposal keeps the prototype numbers.
 
+**Line of fire uses the sight test (deliberate change from the prototype).** The prototype checked shots against walkable cells, including the target's own cell. A unit standing in a rock's padded no-walk cells could then never be shot, and on seeds 90 and 657 two archers walked into each other until the tick limit. Shots now use the same test as sight: rocks and trees block, padding and water don't.
+
 **Draw rules (deliberate change from the prototype).** A mutual wipe, or reaching the tick limit (3 minutes, 3,600 ticks), is a draw. The prototype calls a mutual wipe a Red win and has no limit. A server-checked game needs a guaranteed end.
 
 **Wire formats.**
