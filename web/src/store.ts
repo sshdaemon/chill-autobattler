@@ -9,6 +9,7 @@ import type { FromWorker, ToWorker } from './sim/sim.worker.ts';
 import { battleApi, runApi } from './api.ts';
 import { authed, ensurePlayer } from './session.ts';
 import { CUSTOM, type GameData } from './gamedata.ts';
+import { play as playSound } from './sound.ts';
 
 export const TICK_MS = 50;
 export const DEPLOY_SECONDS = 15;
@@ -50,10 +51,11 @@ type State = {
   fogOn: boolean;
   selected?: number; // unit index
   follow: boolean; // camera follows the selected unit
-  centerOn?: { index: number; n: number }; // a request for the camera to jump to a unit
+  centerOn?: { index?: number; x?: number; z?: number; n: number }; // a request for the camera to jump to a unit or point
   init(): Promise<void>;
   select(i?: number): void;
   center(i: number): void;
+  centerAt(x: number, z: number): void;
   toggleFog(): void;
   toggleFollow(): void;
   newRun(): Promise<void>;
@@ -147,6 +149,7 @@ export const useBattle = create<State>((set, get) => {
   };
   const fight = (combatSeed: bigint) => {
     set({ phase: 'countdown' });
+    playSound('fight');
     setTimeout(() => {
       set({ phase: 'fighting' });
       send({ type: 'start', input: inputBytes(get(), combatSeed) });
@@ -184,6 +187,7 @@ export const useBattle = create<State>((set, get) => {
 
     select(selected) { set({ selected, follow: selected === undefined ? false : get().follow }); },
     center(index) { set({ selected: index, centerOn: { index, n: (get().centerOn?.n ?? 0) + 1 } }); },
+    centerAt(x, z) { set({ centerOn: { x, z, n: (get().centerOn?.n ?? 0) + 1 } }); },
     toggleFog() { set({ fogOn: !get().fogOn }); },
     toggleFollow() { if (get().selected !== undefined) set({ follow: !get().follow }); },
 
@@ -314,12 +318,27 @@ export const useBattle = create<State>((set, get) => {
 export const resultText = (r?: BattleResult) =>
   r === BattleResult.BLUE_WIN ? 'Victory' : r === BattleResult.RED_WIN ? 'Defeat' : r === BattleResult.DRAW ? 'Draw' : '';
 
+// Sound for one sim event (presentation only).
+function sound(snap: Snapshot, e: SimEvent) {
+  const by = snap.units[e.other]?.cls; // attacker / shooter class
+  switch (e.kind) {
+    case 1: playSound(by === 0 ? 'sword' : by === 1 ? 'arrowHit' : 'boltHit'); break;
+    case 2: playSound('death'); break;
+    case 3: playSound('dash'); break;
+    case 4: playSound('blink'); break;
+    case 5: playSound('frost'); break;
+    case 7: playSound('execute'); break;
+    case 8: playSound(snap.units[e.unit]?.cls === 2 ? 'cast' : 'bow'); break;
+  }
+}
+
 function addFloats(snap: Snapshot, events: SimEvent[]) {
   const now = performance.now();
   const floats = useBattle.getState().floats.filter((f) => now - f.born < 1000);
   for (const e of events) {
     const u = snap.units[e.unit];
     if (!u) continue;
+    sound(snap, e);
     const label = ({ 3: ['💨 Dash', '#fff'], 4: ['🌀 Blink', '#c9a8ff'], 5: ['❄️ Slowed', '#9fd8ff'], 7: ['💀 Execute', '#ff5050'] } as Record<number, [string, string]>)[e.kind];
     if (e.kind === 1) {
       const flank = e.flags & 1, strong = e.flags & 2, weak = e.flags & 4;
@@ -352,11 +371,14 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
       useBattle.setState((st) => ({ prev: st.curr, curr: s, currAt: performance.now(), floats: addFloats(s, s.events) }));
       break;
     }
-    case 'done':
-      useBattle.setState({ outcome: fromBinary(BattleOutcomeSchema, m.outcome), phase: 'done' });
+    case 'done': {
+      const outcome = fromBinary(BattleOutcomeSchema, m.outcome);
+      playSound(outcome.result === BattleResult.BLUE_WIN ? 'victory' : 'defeat');
+      useBattle.setState({ outcome, phase: 'done' });
       setTimeout(() => useBattle.setState({ floats: [] }), 1200); // let the last numbers fade
       void useBattle.getState().verify();
       break;
+    }
   }
 };
 
