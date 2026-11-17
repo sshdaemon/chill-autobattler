@@ -117,10 +117,10 @@ Battle events SHALL play short sound effects: hits (melee, arrow, bolt), deaths,
 
 ### Requirement: Graphics quality
 The game SHALL offer a High and a Low graphics quality, remembered by the browser.
-- **High** adds image-based lighting, soft shadows near the camera, bloom on magical effects, colour grading, anti-aliasing and swaying grass.
-- **Low** SHALL keep the scene readable with simpler lighting, no grass and no post-processing.
+- **High** adds environment lighting, soft shadows, bloom, a colour grade, anti-aliasing and grass.
+- **Low** SHALL stay readable without grass or post-processing.
 
-If High runs well below the display's own refresh rate (under 70% of it), the game SHALL first render fewer pixels, and if that is still too slow, switch to Low by itself and tell the player. Quality SHALL NOT affect the battle.
+If High runs under 70% of the display's refresh rate, the game SHALL first render fewer pixels, then switch to Low and tell the player. Quality SHALL NOT affect the battle.
 
 #### Scenario: Slow machine
 - **WHEN** the frame rate stays under 70% of the display's refresh rate on High, even at reduced pixel density
