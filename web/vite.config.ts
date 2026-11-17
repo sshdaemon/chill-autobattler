@@ -10,6 +10,11 @@ const CHUNKS: [string, RegExp][] = [
 
 export default defineConfig({
   plugins: [react()],
+  // Pre-bundle the 3D stack together at startup: if Vite discovers one of these
+  // mid-session it re-optimises, and the page ends up with two copies of React.
+  optimizeDeps: {
+    include: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing', 'postprocessing', 'react', 'react-dom', 'zustand'],
+  },
   server: {
     port: 5173,
     // Connect RPCs go to the Go server (pnpm server)
