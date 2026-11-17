@@ -100,6 +100,7 @@ func dataJSON() string {
 		Range    float64   `json:"range"`
 		Speed    float64   `json:"speed"`
 		Sight    float64   `json:"sight"`
+		Swing    float64   `json:"swing"` // attack animation seconds (the blow lands at 45%)
 		Ranged   bool      `json:"ranged"`
 		Kite     bool      `json:"kite"`
 		Matchup  []float64 `json:"matchup"` // damage multiplier vs each class
@@ -117,7 +118,7 @@ func dataJSON() string {
 		st := sim.ClassStats[c]
 		cl := class{Name: c.String(), HP: fx(st.HP), DmgLo: fx(st.DmgLo), DmgHi: fx(st.DmgHi),
 			Cooldown: float64(st.Cooldown) / sim.TicksPerSecond, Range: fx(st.Range), Speed: fx(st.Speed), Sight: fx(st.Sight),
-			Ranged: st.Ranged, Kite: st.Kite}
+			Swing: float64(st.SwingTicks) / sim.TicksPerSecond, Ranged: st.Ranged, Kite: st.Kite}
 		for v := sim.Warrior; v <= sim.Mage; v++ {
 			cl.Matchup = append(cl.Matchup, fx(sim.Matchup[c][v]))
 		}

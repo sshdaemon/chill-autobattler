@@ -1,38 +1,61 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { InstancedMesh, Object3D } from 'three';
+import { CylinderGeometry, ConeGeometry, InstancedMesh, Object3D, Vector3 } from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { useBattle } from '../store.ts';
 import { alpha } from './interp.ts';
 
-const MAX = 64, dummy = new Object3D();
+const MAX = 64, dummy = new Object3D(), ahead = new Vector3();
 
-// Arrows (light) and bolts (purple), flying along an arc; drawn from the latest snapshot.
+// Where a shot is at fraction f of its flight: straight for bolts, an arc for arrows.
+function at(s: { sx: number; sz: number; ax: number; az: number; bolt: boolean; lob: boolean }, f: number, out: Vector3) {
+  const d = Math.hypot(s.ax - s.sx, s.az - s.sz);
+  const arc = s.bolt ? 0 : d * (s.lob ? 0.22 : 0.07);
+  return out.set(s.sx + (s.ax - s.sx) * f, 1.3 + arc * 4 * f * (1 - f), s.sz + (s.az - s.sz) * f);
+}
+
+// Arrows (shaft + tip, nose first along the arc) and magic bolts (glowing orbs).
 export function Shots() {
-  const arrows = useRef<InstancedMesh>(null), bolts = useRef<InstancedMesh>(null);
+  const arrows = useRef<InstancedMesh>(null), boltsOuter = useRef<InstancedMesh>(null), boltsInner = useRef<InstancedMesh>(null);
+  const arrowGeo = useMemo(() => {
+    const shaft = new CylinderGeometry(0.014, 0.014, 0.7, 5).rotateX(Math.PI / 2);
+    const tip = new ConeGeometry(0.035, 0.1, 5).rotateX(Math.PI / 2).translate(0, 0, 0.4);
+    return mergeGeometries([shaft.toNonIndexed(), tip.toNonIndexed()]);
+  }, []);
   useFrame(() => {
     const shots = useBattle.getState().curr?.shots ?? [];
     const k = alpha();
-    const counts = [0, 0];
+    let na = 0, nb = 0;
     for (const s of shots) {
       const f = Math.min(1, (s.t + k) / s.dur);
-      const d = Math.hypot(s.ax - s.sx, s.az - s.sz);
-      const arc = s.bolt ? 0 : d * (s.lob ? 0.22 : 0.07);
-      dummy.position.set(s.sx + (s.ax - s.sx) * f, 1.3 + arc * 4 * f * (1 - f), s.sz + (s.az - s.sz) * f);
-      dummy.scale.setScalar(s.bolt ? 1.6 : 1);
-      dummy.updateMatrix();
-      const m = s.bolt ? bolts.current : arrows.current, i = counts[s.bolt ? 1 : 0]++;
-      if (m && i < MAX) m.setMatrixAt(i, dummy.matrix);
+      at(s, f, dummy.position);
+      if (s.bolt) {
+        dummy.rotation.set(0, 0, 0);
+        dummy.updateMatrix();
+        if (nb < MAX) { boltsOuter.current?.setMatrixAt(nb, dummy.matrix); boltsInner.current?.setMatrixAt(nb, dummy.matrix); nb++; }
+      } else {
+        dummy.lookAt(at(s, Math.min(1, f + 0.02), ahead)); // +Z (the tip) faces along the flight
+        dummy.updateMatrix();
+        if (na < MAX) arrows.current?.setMatrixAt(na++, dummy.matrix);
+      }
     }
-    for (const [m, c] of [[arrows.current, counts[0]], [bolts.current, counts[1]]] as const) {
+    for (const [m, c] of [[arrows.current, na], [boltsOuter.current, nb], [boltsInner.current, nb]] as const) {
       if (!m) continue;
-      m.count = Math.min(MAX, c);
+      m.count = c;
       m.instanceMatrix.needsUpdate = true;
     }
   });
   return (
     <>
-      <instancedMesh ref={arrows} args={[undefined, undefined, MAX]}><sphereGeometry args={[0.08, 8, 6]} /><meshBasicMaterial color="#f5e3b0" /></instancedMesh>
-      <instancedMesh ref={bolts} args={[undefined, undefined, MAX]}><sphereGeometry args={[0.1, 10, 8]} /><meshBasicMaterial color="#c9a8ff" /></instancedMesh>
+      <instancedMesh ref={arrows} args={[arrowGeo, undefined, MAX]} castShadow><meshStandardMaterial color="#d8c08a" /></instancedMesh>
+      <instancedMesh ref={boltsOuter} args={[undefined, undefined, MAX]}>
+        <sphereGeometry args={[0.14, 12, 8]} />
+        <meshBasicMaterial color="#b48cff" transparent opacity={0.55} toneMapped={false} />
+      </instancedMesh>
+      <instancedMesh ref={boltsInner} args={[undefined, undefined, MAX]}>
+        <sphereGeometry args={[0.07, 10, 6]} />
+        <meshBasicMaterial color="#ffffff" toneMapped={false} />
+      </instancedMesh>
     </>
   );
 }

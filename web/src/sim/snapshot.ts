@@ -3,7 +3,7 @@ const FX = 65536;
 
 export type UnitSnap = {
   team: number; cls: number; x: number; z: number; fx: number; fz: number;
-  hp: number; maxHp: number; flags: number; target: number;
+  hp: number; maxHp: number; flags: number; target: number; skills: number;
 };
 export type ShotSnap = { bolt: boolean; lob: boolean; sx: number; sz: number; ax: number; az: number; t: number; dur: number; victim: number };
 export type SimEvent = { kind: number; unit: number; other: number; amount: number; flags: number };
@@ -23,9 +23,9 @@ export function decodeSnapshot(buf: ArrayBuffer): Snapshot {
   let p = 5;
   const [tick, result, nu, ns, ne] = a;
   const units: UnitSnap[] = [];
-  for (let i = 0; i < nu; i++, p += 10) {
+  for (let i = 0; i < nu; i++, p += 11) {
     units.push({ team: a[p], cls: a[p + 1], x: a[p + 2] / FX, z: a[p + 3] / FX, fx: a[p + 4] / FX, fz: a[p + 5] / FX,
-      hp: a[p + 6] / FX, maxHp: a[p + 7] / FX, flags: a[p + 8], target: a[p + 9] });
+      hp: a[p + 6] / FX, maxHp: a[p + 7] / FX, flags: a[p + 8], target: a[p + 9], skills: a[p + 10] });
   }
   const shots: ShotSnap[] = [];
   for (let i = 0; i < ns; i++, p += 8) {

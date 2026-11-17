@@ -4,12 +4,12 @@ package sim
 // The browser reads it as an Int32Array; keep web/src/sim/snapshot.ts in sync.
 //
 //	header: tick, result, nUnits, nShots, nEvents
-//	unit:   team, class, x, z, faceX, faceZ, hp, maxHp, flags, target
+//	unit:   team, class, x, z, faceX, faceZ, hp, maxHp, flags, target, skills
 //	shot:   flags, startX, startZ, aimX, aimZ, t, dur, victim
 //	event:  kind, unit, other, amount, flags
 const (
 	SnapHeader = 5
-	SnapUnit   = 10
+	SnapUnit   = 11
 	SnapShot   = 8
 	SnapEvent  = 5
 )
@@ -51,7 +51,7 @@ func (b *Battle) Snapshot() []int32 {
 			}
 		}
 		out = append(out, int32(u.Team), int32(u.Class), int32(u.Pos.X), int32(u.Pos.Z), int32(u.Face.X), int32(u.Face.Z),
-			int32(u.HP), int32(u.MaxHP), f, int32(u.Target))
+			int32(u.HP), int32(u.MaxHP), f, int32(u.Target), int32(len(u.Skills)))
 	}
 	for _, s := range b.Shots {
 		var f int32
