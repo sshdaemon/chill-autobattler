@@ -1,6 +1,6 @@
 // Balance data as exported by the sim (wasm data()). Never hard-code these numbers.
 export type ClassInfo = {
-  name: string; hp: number; dmgLo: number; dmgHi: number; cooldown: number; range: number; speed: number; sight: number;
+  name: string; hp: number; dmgLo: number; dmgHi: number; cooldown: number; range: number; speed: number; sight: number; swing: number;
   ranged: boolean; kite: boolean; matchup: number[]; skills: { id: number; name: string; pct: number; value: number }[];
 };
 export type GameData = { version: string; classes: ClassInfo[]; formations: string[]; armySize: number; deployZone: [number, number, number, number] };

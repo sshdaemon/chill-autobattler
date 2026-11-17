@@ -184,7 +184,19 @@ Pathfinding, steering, spatial queries and the RNG are written by hand in `sim/`
 
 ### Assets
 
-Characters and animations come from [Quaternius](https://quaternius.com)'s CC0 modular character and animation packs, baked with Blender. They aren't in this repo yet; the debug viewer uses capsules.
+Characters and animations come from [Quaternius](https://quaternius.com)'s CC0 modular character and animation packs (thank you!). They are baked with Blender into 8 looks × Blue/Red:
+- warriors: Mirko, Vesna, Radim;
+- archers: Bogdan, Lada;
+- mages: Zoran, Milena, Velimir, with purple robes and a hat.
+
+| Path | What |
+|---|---|
+| `web/public/assets/units/` | The packed models: one shared geometry file per look, Blue/Red `.gltf`, and JPEG textures (about 17 MB). |
+| `web/public/assets/clips.json` | The shared animations: idle, jog, sword attack, spell shot, hit, death, cheer. |
+| `tools/blender/bake_units.py` | Re-bakes from the Quaternius source packs, which aren't in this repo (`QUATERNIUS_DIR`, default `../web3d-demo/assets/quaternius`): `blender --background --python tools/blender/bake_units.py`. |
+| `tools/assets/pack_units.py` | Packs a bake for the web: shares Blue/Red geometry, converts PNGs to JPEG (macOS `sips`), and trims the clips. Run `python3 tools/assets/pack_units.py tools/blender/out`. |
+
+The renderer drives each character's animation purely from the sim's snapshot flags (walking, attacking, staggered, dashing, dead). An attack animation is stretched to the sim's swing time, so the blow lands when the sim says it does. Rendering never feeds back into the battle.
 
 ## How we work
 

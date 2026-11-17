@@ -12,3 +12,5 @@ npm-debug.log*
 web/public/sim.wasm
 web/public/wasm_exec.js
 *.tsbuildinfo
+tools/blender/out/
+tools/blender/previews/

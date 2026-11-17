@@ -1,14 +1,19 @@
 # Bakes the battle units into ready-to-load glTF files.
-#   blender --background --python tools/bake_units.py            -> assets/units/*.gltf
-#   blender --background --python tools/bake_units.py -- preview -> also renders previews
+#   blender --background --python tools/blender/bake_units.py            -> tools/blender/out/*.gltf
+#   blender --background --python tools/blender/bake_units.py -- preview -> also renders previews
+#   python3 tools/assets/pack_units.py tools/blender/out                -> web/public/assets/units
 # Each file = outfit + head (cut at the neck) + hair, all skinned to the outfit's
 # skeleton, hair tinted, team texture applied; mages get purple robes and the hat.
 # Weapons stay in code (battle.html) because they swap per class at spawn.
 import bpy, math, os, sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(ROOT, 'assets', 'quaternius')
-OUT = os.path.join(ROOT, 'assets', 'units')
+# Inputs: the Quaternius CC0 source packs (not in this repo; set QUATERNIUS_DIR,
+# default: the prototype's copy). Output: raw bake (BAKE_OUT), which
+# tools/assets/pack_units.py then packs into web/public/assets/units.
+HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = os.environ.get('QUATERNIUS_DIR', os.path.join(HERE, '..', '..', '..', 'web3d-demo', 'assets', 'quaternius'))
+OUT = os.environ.get('BAKE_OUT', os.path.join(HERE, 'out'))
+ROOT = HERE  # previews go to tools/blender/previews
 PREVIEW = 'preview' in sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else False
 
 ROSTER = [
@@ -211,5 +216,5 @@ for u in UNITS:
         restore_rest(os.path.join(OUT, name + '.gltf'), u['outfit'])
         if PREVIEW:
             build(u, team)  # export can leave the scene in a converted state; rebuild for the shot
-            render(os.path.join(ROOT, 'tools', 'previews', name + '.png'))
+            render(os.path.join(ROOT, 'previews', name + '.png'))
         print('BAKED', name)

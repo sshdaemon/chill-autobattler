@@ -32,4 +32,6 @@ Golden replays (`sim/testdata/golden.json`):
 - Any rule change that alters outcomes needs `sim.Version` bumped, then `go test ./sim -run TestGoldenReplays -update`.
 - The update refuses to run without the version bump.
 
-The snapshot layout is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync.
+The snapshot layout is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync; `TestSnapshotLayout` pins it.
+
+Units are rendered by `web/src/scene/models.ts` + `Units.tsx`: baked Quaternius looks per class and team, animated from snapshot flags. Re-bake with `tools/blender/bake_units.py`, then pack with `tools/assets/pack_units.py`.
