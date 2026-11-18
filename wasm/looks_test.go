@@ -74,17 +74,18 @@ type unitLook struct {
 	} `json:"ui"`
 	Recipes []recipe `json:"recipes"`
 	Anims   struct {
-		Idle, Move, Cheer  string
-		Attack, Hit, Death []string
+		Idle, Walk, Move, Sprint, Cheer string
+		Attack, Hit, Death              []string
 	} `json:"anims"`
 	Skills map[string]skillLook `json:"skills"`
 }
 
 type looksData struct {
 	Clips map[string]struct {
-		Loop bool     `json:"loop"`
-		Hit  float64  `json:"hit"`
-		From []string `json:"from"`
+		Loop  bool     `json:"loop"`
+		Hit   float64  `json:"hit"`
+		Speed float64  `json:"speed"` // move clips: m/s at 1×
+		From  []string `json:"from"`
 	} `json:"clips"`
 	Builds map[string]build    `json:"builds"`
 	Units  map[string]unitLook `json:"units"`
@@ -135,6 +136,15 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 		a := look.Anims
 		clip(d.Name+" idle", a.Idle, false)
 		clip(d.Name+" move", a.Move, false)
+		clip(d.Name+" walk", a.Walk, false)
+		if a.Sprint != "" {
+			clip(d.Name+" sprint", a.Sprint, false)
+		}
+		for _, m := range []string{a.Walk, a.Move, a.Sprint} {
+			if c, ok := l.Clips[m]; m != "" && ok && c.Speed <= 0 {
+				bad("%s: move clip %q has no speed", d.Name, m)
+			}
+		}
 		clip(d.Name+" cheer", a.Cheer, false)
 		for set, list := range map[string][]string{"attack": a.Attack, "hit": a.Hit, "death": a.Death} {
 			if len(list) == 0 {
@@ -415,6 +425,12 @@ func TestLooksCheckCatches(t *testing.T) {
 			return packed
 		},
 		"unknown preset": func(c *looksData) []string { c.Units["mage"].Skills["8"] = skillLook{Fx: "nope"}; return packed },
+		"move clip without speed": func(c *looksData) []string {
+			jog := c.Clips["Jog_Fwd_Loop"]
+			jog.Speed = 0
+			c.Clips["Jog_Fwd_Loop"] = jog
+			return packed
+		},
 		"no ui text": func(c *looksData) []string {
 			u := c.Units["archer"]
 			u.UI.Blurb = ""

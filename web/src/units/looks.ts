@@ -5,12 +5,14 @@
 import raw from './looks.json';
 import type { ClassInfo, SkillInfo } from '../gamedata.ts';
 
-export type ClipInfo = { loop?: boolean; hit?: number; from?: string[] };
+// speed: ground speed (m/s) a move clip covers at 1× (from the packs' root motion)
+export type ClipInfo = { loop?: boolean; hit?: number; speed?: number; from?: string[] };
 // action: played when the skill acts (gap-closer, escape); attack: replaces the
 // unit's attacks while it has the skill; pitch: upper body tilts back while
 // attacking (radians); rate: action playback speed; fx: effect preset name.
 export type SkillLook = { action?: string; rate?: number; attack?: string; pitch?: number; fx?: string };
-export type AnimSet = { idle: string; move: string; cheer: string; attack: string[]; hit: string[]; death: string[] };
+// walk and move (a jog) are blended by ground speed; sprint plays for dashes without a skill action
+export type AnimSet = { idle: string; walk: string; move: string; sprint?: string; cheer: string; attack: string[]; hit: string[]; death: string[] };
 // A character recipe (unit-looks): outfit parts (the first one's skeleton is the
 // unit's), head, hair, the outfit colour variant, items on bones, team-colour
 // strength on cloth, an optional cloth tint, and a body build.
