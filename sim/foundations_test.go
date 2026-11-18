@@ -29,7 +29,7 @@ func TestDataMatchesConcept(t *testing.T) {
 		s := Roster[c].Stats
 		if s.HP != I(w.hp) || s.DmgLo != I(w.lo) || s.DmgHi != I(w.hi) || s.Cooldown != sec(w.cdTenths) ||
 			s.Range != Ratio(w.rangeTenths, 10) || s.Speed != Ratio(w.speedTenths, 10) || s.Sight != I(w.sight) ||
-			s.Ranged != w.ranged || s.Kite != w.kite {
+			s.Ranged != w.ranged || Roster[c].Temper.Kite != w.kite {
 			t.Errorf("%v stats = %+v, want %+v", Class(c), s, w)
 		}
 	}

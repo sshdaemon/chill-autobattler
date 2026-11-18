@@ -15,6 +15,8 @@ type effectKind struct {
 	check func(e Effect, d *UnitDef) error
 	// overCover: the unit's shots need no clear line of fire.
 	overCover bool
+	// temper changes the unit's temperament at spawn (e.g. a hunter targets ranged units first).
+	temper func(t *Temperament, e Effect)
 	// beforeAct runs before the unit swings or moves; true ends its turn (escape).
 	beforeAct func(b *Battle, u *Unit, a *active) bool
 	// approach runs when the unit has a target at distance d; true ends its turn (gap-closer).

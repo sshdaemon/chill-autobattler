@@ -24,7 +24,7 @@ type Stats struct {
 	Range        Fx
 	Speed        Fx // metres per second
 	Sight        Fx
-	Ranged, Kite bool
+	Ranged       bool
 	SwingTicks   int // attack animation length; the blow lands at HitAtPct of it
 	ShotSpeed    Fx  // projectile metres per second (ranged only)
 }

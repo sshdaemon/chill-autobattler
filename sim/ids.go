@@ -31,3 +31,19 @@ const (
 	OverCover   EffectKind = 7 // shots need no clear line of fire
 	// next free: 8
 )
+
+// TargetRule is how a unit picks whom to fight (temperament.go); EngageRule is
+// what it does while it has no target. Ids are explicit for the same reason.
+type TargetRule uint8
+
+const (
+	TargetNearest TargetRule = 1 // the closest enemy the team sees
+	// next free: 2
+)
+
+type EngageRule uint8
+
+const (
+	EngageCharge EngageRule = 1 // advance on the enemy's side of the field
+	// next free: 2
+)

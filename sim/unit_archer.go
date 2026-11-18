@@ -15,7 +15,8 @@ func init() { register(archerDef) }
 var archerDef = UnitDef{
 	ID: Archer, Name: "archer",
 	Stats: Stats{HP: I(55), DmgLo: I(9), DmgHi: I(14), Cooldown: sec(17), Range: I(9), Speed: Ratio(36, 10), Sight: I(11),
-		Ranged: true, Kite: true, SwingTicks: sec(6), ShotSpeed: I(18)},
+		Ranged: true, SwingTicks: sec(6), ShotSpeed: I(18)},
+	Temper:     Temperament{Target: TargetNearest, Engage: EngageCharge, Kite: true},
 	Projectile: Arrow,
 	Tags:       TagRanged,
 	Skills: [MaxSkills]SkillDef{

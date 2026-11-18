@@ -6,7 +6,8 @@ type Unit struct {
 	Class  Class
 	Def    *UnitDef // roster entry
 	Skills []Skill
-	Stats  Stats // with skill bonuses applied
+	Stats  Stats       // with skill bonuses applied
+	Temper Temperament // with abilities applied
 
 	Pos      Vec
 	Face     Vec // unit vector
@@ -55,7 +56,7 @@ func newUnit(index, team int, spec UnitSpec, pos Vec) *Unit {
 		face = V(0, One)
 	}
 	return &Unit{
-		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st,
+		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st, Temper: temperOf(def, &kit),
 		Pos: pos, Face: face, MaxHP: st.HP, HP: st.HP, Target: -1, kit: kit,
 	}
 }
@@ -73,7 +74,7 @@ func (b *Battle) think(u *Unit) {
 
 	if u.Target < 0 || b.Units[u.Target].Dead || u.retarget <= 0 {
 		prev := u.Target
-		u.Target = b.nearestEnemy(u)
+		u.Target = targetRules[u.Temper.Target].pick(b, u)
 		u.retarget = RetargetTicks
 		if u.Target != prev {
 			u.path = nil
@@ -127,12 +128,12 @@ func (b *Battle) think(u *Unit) {
 	}
 	if u.Target < 0 {
 		u.Kiting = false
-		b.advance(u)
+		engageRules[u.Temper.Engage].idle(b, u)
 		return
 	}
 	t := b.Units[u.Target]
 
-	if u.Stats.Kite && b.kite(u) {
+	if u.Temper.Kite && b.kite(u) {
 		return
 	}
 

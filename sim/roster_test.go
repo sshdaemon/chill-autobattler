@@ -24,6 +24,8 @@ func TestRosterRejectsBadEntries(t *testing.T) {
 		"shot speed":   func(d *UnitDef) { d.Stats.ShotSpeed = 0 },
 		"projectile":   func(d *UnitDef) { d.Projectile = NoProjectile },
 		"tags":         func(d *UnitDef) { d.Tags = 0 },
+		"target rule":  func(d *UnitDef) { d.Temper.Target = 0 },
+		"engage rule":  func(d *UnitDef) { d.Temper.Engage = 99 },
 		"undeclared":   func(d *UnitDef) { d.Tags |= 1 << 6 },
 		"bonus":        func(d *UnitDef) { d.Bonus = []TagBonus{{1 << 7, One}} },
 		"skill twice":  func(d *UnitDef) { d.Skills[1].Skill = d.Skills[0].Skill },
@@ -87,6 +89,7 @@ var testRanger = UnitDef{
 	Name: "frost ranger", // ID set by withRoster
 	Stats: Stats{HP: I(70), DmgLo: I(8), DmgHi: I(12), Cooldown: sec(15), Range: I(6), Speed: I(3), Sight: I(10),
 		Ranged: true, SwingTicks: sec(6), ShotSpeed: I(16)},
+	Temper:     Temperament{Target: TargetNearest, Engage: EngageCharge},
 	Projectile: Arrow,
 	Tags:       TagRanged | TagCaster,
 	Bonus:      []TagBonus{{TagMelee, Ratio(120, 100)}},
