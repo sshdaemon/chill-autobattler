@@ -47,3 +47,11 @@ const (
 	EngageCharge EngageRule = 1 // advance on the enemy's side of the field
 	// next free: 2
 )
+
+// Faction is a faction id (faction.go): which units a side may field.
+type Faction uint8
+
+const (
+	FactionClassic Faction = 1 // the original warrior, archer and mage
+	// next free: 2 (planned: Rus, Varangians, Romans; design/ROSTER-PLAN.md)
+)

@@ -23,7 +23,7 @@ const FX = 65536;
 
 export type Float = { id: number; x: number; z: number; text: string; color: string; born: number };
 // loading → picker → starting → deploying → locking → countdown → fighting → done (result, picks or run over)
-export type Phase = 'loading' | 'picker' | 'starting' | 'deploying' | 'locking' | 'countdown' | 'fighting' | 'done';
+export type Phase = 'loading' | 'faction' | 'picker' | 'starting' | 'deploying' | 'locking' | 'countdown' | 'fighting' | 'done';
 export type Counts = number[]; // per roster entry (sim class), veterans included; missing entries are 0
 export const total = (c: Counts) => c.reduce((a, n) => a + (n ?? 0), 0);
 type Pt = { x: number; z: number };
@@ -72,7 +72,8 @@ type State = {
   setQuality(q: 'high' | 'low', auto?: boolean): void;
   toggleTiltShift(): void;
   toggleFollow(): void;
-  newRun(): Promise<void>;
+  newRun(): Promise<void>; // to the faction screen
+  startRun(faction: number): Promise<void>;
   setCount(cls: number, delta: number): void;
   toDeploy(): Promise<void>;
   setFormation(f: number): void;
@@ -153,6 +154,7 @@ function inputBytes(s: State, combatSeed: bigint) {
   const b = s.battle!;
   return toBinary(BattleInputSchema, createMsg(BattleInputSchema, {
     simVersion: s.version, seed: b.seed, redSkillCount: b.redSkillCount, redHealthPct: b.redHealthPct, combatSeed, blue: blueArmy(s),
+    blueFaction: s.run?.faction ?? 0,
   }));
 }
 
@@ -161,12 +163,20 @@ const preview = () => send({ type: 'preview', input: inputBytes(useBattle.getSta
 // Counts the picker should show: the remembered army, raised to cover the veterans.
 function pickerCounts(run?: Run): Counts {
   const c = savedCounts(), v = vetCounts(run);
-  // a remembered army may name unit types this build's roster lacks: those slots just open up
-  const types = useBattle.getState().data?.classes.length ?? Math.max(c.length, v.length);
-  const out: Counts = Array.from({ length: types }, (_, i) => Math.max(c[i] ?? 0, v[i] ?? 0));
+  // a remembered army may name unit types this build's roster or the run's faction lacks: those slots just open up
+  const data = useBattle.getState().data;
+  const types = data?.classes.length ?? Math.max(c.length, v.length);
+  const fields = factionUnits(data, run);
+  const out: Counts = Array.from({ length: types }, (_, i) => Math.max(fields(i) ? c[i] ?? 0 : 0, v[i] ?? 0));
   for (let i = out.length - 1; i >= 0; i--) while (out[i] > (v[i] ?? 0) && total(out) > 5) out[i]--; // trim newest types first
   return out;
 }
+
+// Whether the run's faction fields a unit type (any type while the data is loading).
+export const factionUnits = (data: GameData | undefined, run: Run | undefined) => {
+  const f = data?.factions.find((x) => x.id === run?.faction);
+  return (cls: number) => !f || f.units.includes(cls);
+};
 
 export const useBattle = create<State>((set, get) => {
   const startDeployTimer = () => {
@@ -233,7 +243,7 @@ export const useBattle = create<State>((set, get) => {
       try {
         await ensurePlayer();
         const { run } = await authed(() => runApi.getRun({}));
-        if (!run || run.state === RunState.OVER) return get().newRun();
+        if (!run || run.state === RunState.OVER) return set({ phase: 'faction' });
         await resume(run);
       } catch (e) {
         set({ phase: 'picker', error: `Couldn't reach the server: ${errMsg(e)}` });
@@ -241,8 +251,12 @@ export const useBattle = create<State>((set, get) => {
     },
 
     async newRun() {
+      set({ phase: 'faction', run: undefined, outcome: undefined, verdict: undefined, battle: undefined, board: undefined, error: undefined });
+    },
+
+    async startRun(faction) {
       try {
-        const { run } = await authed(() => runApi.startRun({}));
+        const { run } = await authed(() => runApi.startRun({ faction }));
         if (run) toPicker(run);
       } catch (e) {
         set({ error: `Couldn't start a run: ${errMsg(e)}` });

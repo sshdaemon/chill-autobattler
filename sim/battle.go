@@ -13,12 +13,18 @@ import (
 // RulesVersion must change whenever the rules code changes, so old replays
 // are checked with the logic that produced them. Changes to units' data need
 // no bump: Version carries a fingerprint of the roster.
-const RulesVersion = "0.6.0"
+const RulesVersion = "0.7.0"
 
-// Version is RulesVersion plus a fingerprint of the roster ("0.5.0+1a2b3c4d"),
-// so changing any unit's numbers changes it without editing a shared constant.
-// Set by register as unit files add themselves.
+// Version is RulesVersion plus a fingerprint of the roster and the factions
+// ("0.7.0+1a2b3c4d"), so changing any unit's numbers changes it without
+// editing a shared constant. Set as unit and faction files register.
 var Version = RulesVersion
+
+func refreshVersion() {
+	h := fnv.New32a()
+	fmt.Fprintf(h, "%s;%#v", Fingerprint(Roster...), Factions)
+	Version = fmt.Sprintf("%s+%08x", RulesVersion, h.Sum32())
+}
 
 // Fingerprint is a short hash of roster entries' data (stats, temperament,
 // tags, skills and their effects), in the order given.

@@ -103,6 +103,7 @@ func (x *CreatePlayerResponse) GetPlayerToken() string {
 
 type StartRunRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Faction       uint32                 `protobuf:"varint,1,opt,name=faction,proto3" json:"faction,omitempty"` // the faction to play (sim.Faction)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -135,6 +136,13 @@ func (x *StartRunRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use StartRunRequest.ProtoReflect.Descriptor instead.
 func (*StartRunRequest) Descriptor() ([]byte, []int) {
 	return file_chill_v1_run_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *StartRunRequest) GetFaction() uint32 {
+	if x != nil {
+		return x.Faction
+	}
+	return 0
 }
 
 type StartRunResponse struct {
@@ -589,8 +597,9 @@ const file_chill_v1_run_proto_rawDesc = "" +
 	"\x12chill/v1/run.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\"\x15\n" +
 	"\x13CreatePlayerRequest\"9\n" +
 	"\x14CreatePlayerResponse\x12!\n" +
-	"\fplayer_token\x18\x01 \x01(\tR\vplayerToken\"\x11\n" +
-	"\x0fStartRunRequest\"3\n" +
+	"\fplayer_token\x18\x01 \x01(\tR\vplayerToken\"+\n" +
+	"\x0fStartRunRequest\x12\x18\n" +
+	"\afaction\x18\x01 \x01(\rR\afaction\"3\n" +
 	"\x10StartRunResponse\x12\x1f\n" +
 	"\x03run\x18\x01 \x01(\v2\r.chill.v1.RunR\x03run\"\x0f\n" +
 	"\rGetRunRequest\"1\n" +

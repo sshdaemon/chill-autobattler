@@ -15,7 +15,7 @@ func five() []*chillv1.UnitSpec {
 }
 
 func TestInput(t *testing.T) {
-	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 9, CombatSeed: 1 << 63, RedSkillCount: 2,
+	in := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 9, CombatSeed: 1 << 63, RedSkillCount: 2,
 		Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_3_2, Units: five()}}
 	got, err := Input(in)
 	if err != nil {
@@ -35,7 +35,7 @@ func TestInput(t *testing.T) {
 		t.Error("formation numbering")
 	}
 
-	custom := &chillv1.BattleInput{SimVersion: sim.Version, Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_CUSTOM, Units: five()}}
+	custom := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_CUSTOM, Units: five()}}
 	for i, u := range custom.Blue.Units {
 		u.Position = &chillv1.Point{XRaw: int64(sim.I(i*2 - 4)), ZRaw: int64(sim.I(10))}
 	}
@@ -80,14 +80,15 @@ func TestNewUnitIDs(t *testing.T) {
 	in := func() *chillv1.BattleInput {
 		units := five()
 		units[4] = &chillv1.UnitSpec{UnitClass: newUnit, Skills: []uint32{newSkill}}
-		return &chillv1.BattleInput{SimVersion: sim.Version, Seed: 3, Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_SPREAD, Units: units}}
+		return &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 3, Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_SPREAD, Units: units}}
 	}
 	if _, err := Input(in()); !errors.Is(err, sim.ErrInvalid) { // Input validates against the roster
 		t.Errorf("unknown unit accepted: %v", err)
 	}
 
-	old := sim.Roster
-	t.Cleanup(func() { sim.Roster = old })
+	old, oldF := sim.Roster, sim.Factions
+	t.Cleanup(func() { sim.Roster, sim.Factions = old, oldF })
+	sim.Factions = []sim.FactionDef{{ID: sim.FactionClassic, Name: "classic", Units: []sim.Class{sim.Warrior, sim.Archer, sim.Mage, sim.Class(len(old))}}}
 	extra := old[sim.Warrior]
 	extra.ID, extra.Name, extra.InRedPool = sim.Class(len(old)), "test spearman", false
 	extra.Skills[0].Effects = []sim.Effect{{Kind: sim.StatBonus, Stat: sim.StatRange, Pct: 20}}

@@ -33,7 +33,7 @@ func randArmy(r *rand.Rand) *chillv1.Army {
 }
 
 func randInput(r *rand.Rand) *chillv1.BattleInput {
-	in := &chillv1.BattleInput{Seed: r.Uint64(), CombatSeed: r.Uint64(), Blue: randArmy(r), Red: randArmy(r)}
+	in := &chillv1.BattleInput{Seed: r.Uint64(), CombatSeed: r.Uint64(), BlueFaction: uint32(max(1, r.IntN(8)-5)), Blue: randArmy(r), Red: randArmy(r)} // faction: mostly classic, sometimes unknown
 	if r.IntN(5) > 0 {
 		in.SimVersion = sim.Version
 	}
@@ -70,9 +70,9 @@ func TestDecodeMatchesConvert(t *testing.T) {
 	}
 	// a typical valid input, and one per formation and class
 	for f := chillv1.Formation(1); f <= 8; f++ {
-		in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 7, CombatSeed: 9, RedHealthPct: 85, RedSkillCount: 3, Blue: &chillv1.Army{Formation: f}}
+		in := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 7, CombatSeed: 9, RedHealthPct: 85, RedSkillCount: 3, Blue: &chillv1.Army{Formation: f}}
 		for c := chillv1.UnitClass(1); c <= 3; c++ {
-			u := &chillv1.UnitSpec{UnitClass: c}
+			u := &chillv1.UnitSpec{UnitClass: c, Skills: []uint32{1}}
 			if f == chillv1.Formation_FORMATION_CUSTOM {
 				u.Position = &chillv1.Point{XRaw: int64(sim.I(int(c) * 2)), ZRaw: int64(sim.I(10))}
 			}
@@ -109,6 +109,8 @@ func TestUnpackedSkills(t *testing.T) {
 	in = protowire.AppendString(in, sim.Version)
 	in = protowire.AppendTag(in, 3, protowire.BytesType)
 	in = protowire.AppendBytes(in, army)
+	in = protowire.AppendTag(in, 8, protowire.VarintType)
+	in = protowire.AppendVarint(in, uint64(sim.FactionClassic))
 	got, err := DecodeInput(in)
 	var pm chillv1.BattleInput
 	if e := proto.Unmarshal(in, &pm); e != nil {

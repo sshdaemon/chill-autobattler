@@ -188,6 +188,15 @@ new rules; `pnpm balance` (the full report) has not been rerun yet.
 
 ### 1.2 Faction pick (at the start of a run)
 
+Done (OpenSpec `faction-pick`): factions are sim data (Classic for now);
+`BattleInput.blue_faction`, Blue's units checked against it; Red's faction is
+drawn from the map seed (mirrors allowed) and Red's army from it; runs and
+battles store the faction (migration 0006); a faction screen opens every new
+run, with Rus, Varangians and Romans shown as coming soon. `RulesVersion`
+0.7.0, outcomes unchanged. Since Red's army is fixed by the seed, the draft
+(1.3) can reveal Red's picks turn by turn in the client and the server only
+checks the locked army: no `DraftPick` RPC is needed in single player.
+
 - New first screen of a run: the three factions side by side, each with its
   lore (from `design/SETTING.md`), colours, and its units with their roles and
   abilities.

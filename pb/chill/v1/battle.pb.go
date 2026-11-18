@@ -87,7 +87,10 @@ type BattleInput struct {
 	// Every combat roll. Revealed by LockDeployment.
 	CombatSeed uint64 `protobuf:"varint,6,opt,name=combat_seed,json=combatSeed,proto3" json:"combat_seed,omitempty"`
 	// Red's health in percent (0 = full). The server eases a run's first matches.
-	RedHealthPct  uint32 `protobuf:"varint,7,opt,name=red_health_pct,json=redHealthPct,proto3" json:"red_health_pct,omitempty"`
+	RedHealthPct uint32 `protobuf:"varint,7,opt,name=red_health_pct,json=redHealthPct,proto3" json:"red_health_pct,omitempty"`
+	// Blue's faction (sim.Faction): its units must come from it. Red's faction
+	// comes from the map seed.
+	BlueFaction   uint32 `protobuf:"varint,8,opt,name=blue_faction,json=blueFaction,proto3" json:"blue_faction,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -167,6 +170,13 @@ func (x *BattleInput) GetCombatSeed() uint64 {
 func (x *BattleInput) GetRedHealthPct() uint32 {
 	if x != nil {
 		return x.RedHealthPct
+	}
+	return 0
+}
+
+func (x *BattleInput) GetBlueFaction() uint32 {
+	if x != nil {
+		return x.BlueFaction
 	}
 	return 0
 }
@@ -656,7 +666,7 @@ var File_chill_v1_battle_proto protoreflect.FileDescriptor
 
 const file_chill_v1_battle_proto_rawDesc = "" +
 	"\n" +
-	"\x15chill/v1/battle.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\x1a\x14chill/v1/units.proto\"\xf7\x01\n" +
+	"\x15chill/v1/battle.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\x1a\x14chill/v1/units.proto\"\x9a\x02\n" +
 	"\vBattleInput\x12\x1f\n" +
 	"\vsim_version\x18\x01 \x01(\tR\n" +
 	"simVersion\x12\x12\n" +
@@ -666,7 +676,8 @@ const file_chill_v1_battle_proto_rawDesc = "" +
 	"\x0fred_skill_count\x18\x05 \x01(\rR\rredSkillCount\x12\x1f\n" +
 	"\vcombat_seed\x18\x06 \x01(\x04R\n" +
 	"combatSeed\x12$\n" +
-	"\x0ered_health_pct\x18\a \x01(\rR\fredHealthPct\"7\n" +
+	"\x0ered_health_pct\x18\a \x01(\rR\fredHealthPct\x12!\n" +
+	"\fblue_faction\x18\b \x01(\rR\vblueFaction\"7\n" +
 	"\bSurvivor\x12\x14\n" +
 	"\x05index\x18\x01 \x01(\rR\x05index\x12\x15\n" +
 	"\x06hp_raw\x18\x02 \x01(\x12R\x05hpRaw\"\xa3\x01\n" +

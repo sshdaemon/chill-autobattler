@@ -1,0 +1,11 @@
+{
+  "order": 0,
+  "label": "Classic",
+  "icon": "⚔️",
+  "colour": "#3a8cff",
+  "blurb": "The original warband: a shield line, archers behind it, and mages who break charges.",
+  "lore": [
+    "Before the Dnipro road: soldiers of no particular land, fighting the way this game began.",
+    "Kept while the three historical factions are built, then retired."
+  ]
+}

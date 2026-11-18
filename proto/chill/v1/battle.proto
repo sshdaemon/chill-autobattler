@@ -31,6 +31,9 @@ message BattleInput {
   uint64 combat_seed = 6;
   // Red's health in percent (0 = full). The server eases a run's first matches.
   uint32 red_health_pct = 7;
+  // Blue's faction (sim.Faction): its units must come from it. Red's faction
+  // comes from the map seed.
+  uint32 blue_faction = 8;
 }
 
 enum BattleResult {

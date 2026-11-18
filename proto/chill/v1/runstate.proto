@@ -44,5 +44,7 @@ message Run {
   string end_reason = 10;
   // Total skills of the veterans: Red's skill count for the next match.
   uint32 red_skills = 11;
+  // The faction the run plays (sim.Faction), picked when it started.
+  uint32 faction = 12;
 }
 

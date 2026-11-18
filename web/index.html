@@ -19,6 +19,10 @@
       .card { flex: 1 1 160px; min-width: 160px; max-width: 220px; border: 1px solid #dde3ee; border-radius: 10px; padding: 12px; text-align: left; }
       .card .icon { font-size: 30px; } .card .name { font-weight: 700; font-size: 16px; } .card .blurb { color: #667; font-size: 12px; min-height: 30px; }
       .card table { width: 100%; font-size: 12px; margin: 6px 0; border-collapse: collapse; } .card td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+      .card.faction { max-width: 250px; border-top: 4px solid; display: flex; flex-direction: column; gap: 6px; }
+      .card.faction .lore { font-size: 12px; color: #445; margin: 0; }
+      .card.faction .units { font-size: 12px; margin: 0; padding-left: 16px; flex: 1; }
+      .card.faction .go { margin-top: 6px; } .card.faction.coming { opacity: .75; }
       .card .takes { font-size: 11px; color: #556; background: #f2f5fa; border-radius: 6px; padding: 4px 6px; }
       .card .count { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 8px; }
       .card .count button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #c5cedd; background: #fff; font-size: 18px; }

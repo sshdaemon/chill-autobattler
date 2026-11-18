@@ -80,7 +80,7 @@ func (s *Service) StartBattle(ctx context.Context, req *chillv1.StartBattleReque
 		ID: newID(), SimVersion: sim.Version, MapSeed: int64(random64()), CombatSeed: int64(random64()),
 		RedSkillCount: int64(run.SkillTotal(vets)), CreatedAt: now, DeployDeadline: now + s.DeployWindow.Milliseconds(),
 		RunID: sql.NullString{String: r.ID, Valid: true}, MatchNo: sql.NullInt64{Int64: r.MatchNo, Valid: true},
-		RedHealthPct: run.RedHealthFor(r.MatchNo),
+		RedHealthPct: run.RedHealthFor(r.MatchNo), BlueFaction: r.Faction,
 	}
 	err = s.DB.Tx(ctx, func(q *store.Queries) error {
 		if err := q.CreateRunBattle(ctx, p); err != nil {
@@ -144,7 +144,7 @@ func (s *Service) get(ctx context.Context, id string) (store.Battle, error) {
 func input(b store.Battle, blue *chillv1.Army) *chillv1.BattleInput {
 	return &chillv1.BattleInput{
 		SimVersion: b.SimVersion, Seed: uint64(b.MapSeed), CombatSeed: uint64(b.CombatSeed),
-		RedSkillCount: uint32(b.RedSkillCount), RedHealthPct: uint32(b.RedHealthPct), Blue: blue,
+		RedSkillCount: uint32(b.RedSkillCount), RedHealthPct: uint32(b.RedHealthPct), BlueFaction: uint32(b.BlueFaction), Blue: blue,
 	}
 }
 

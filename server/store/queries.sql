@@ -28,8 +28,8 @@ SELECT id FROM players WHERE token_hash = @token_hash;
 -- ---------- runs ----------
 
 -- name: CreateRun :exec
-INSERT INTO runs (id, player_id, name, state, match_no, wins, score, created_at)
-VALUES (@id, @player_id, @name, 'ready', 1, 0, 0, @created_at);
+INSERT INTO runs (id, player_id, name, state, match_no, wins, score, created_at, faction)
+VALUES (@id, @player_id, @name, 'ready', 1, 0, 0, @created_at, @faction);
 
 -- name: GetRun :one
 SELECT * FROM runs WHERE id = @id;
@@ -81,5 +81,5 @@ SELECT COUNT(*) FROM runs WHERE state = 'over' AND score > @score;
 -- ---------- battles in runs ----------
 
 -- name: CreateRunBattle :exec
-INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no, red_health_pct)
-VALUES (@id, @sim_version, @map_seed, @combat_seed, @red_skill_count, @created_at, @deploy_deadline, @run_id, @match_no, @red_health_pct);
+INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no, red_health_pct, blue_faction)
+VALUES (@id, @sim_version, @map_seed, @combat_seed, @red_skill_count, @created_at, @deploy_deadline, @run_id, @match_no, @red_health_pct, @blue_faction);

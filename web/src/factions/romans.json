@@ -1,0 +1,26 @@
+{
+  "order": 3,
+  "label": "Romans",
+  "icon": "🔥",
+  "colour": "#8a1f3d",
+  "coming": true,
+  "blurb": "The Eastern Roman army: disciplined, well armoured, with Greek fire.",
+  "lore": [
+    "Constantinople's soldiers, trained from written manuals; they called themselves Romans.",
+    "Long shields and spears, archers who shoot together, and the siphon that burned two Rus fleets."
+  ],
+  "units": [
+    {
+      "label": "Skoutatos",
+      "role": "Melee: holds the line, short chase"
+    },
+    {
+      "label": "Toxotes",
+      "role": "Ranged: focus fire from behind the shields"
+    },
+    {
+      "label": "Siphonarios",
+      "role": "Special: fire for bunched-up enemies"
+    }
+  ]
+}

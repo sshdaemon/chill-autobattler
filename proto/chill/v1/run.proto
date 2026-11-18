@@ -25,7 +25,9 @@ message CreatePlayerResponse {
   string player_token = 1;
 }
 
-message StartRunRequest {}
+message StartRunRequest {
+  uint32 faction = 1; // the faction to play (sim.Faction)
+}
 
 message StartRunResponse {
   Run run = 1;

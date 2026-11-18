@@ -113,7 +113,7 @@ func register(d UnitDef) {
 	Roster = append(Roster, UnitDef{})
 	copy(Roster[i+1:], Roster[i:])
 	Roster[i] = d
-	Version = RulesVersion + "+" + Fingerprint(Roster...)
+	refreshVersion()
 }
 
 // RosterOf returns the entry for a class, or nil if there is none.

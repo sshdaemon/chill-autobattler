@@ -156,7 +156,7 @@ func (s *Service) Proto(ctx context.Context, r store.Run) (*chillv1.Run, error) 
 	}
 	out := &chillv1.Run{
 		Id: r.ID, Name: r.Name, Match: uint32(r.MatchNo), Wins: uint32(r.Wins), Score: uint32(r.Score),
-		Veterans: vets, EndReason: r.EndReason.String, RedSkills: uint32(SkillTotal(vets)),
+		Veterans: vets, EndReason: r.EndReason.String, RedSkills: uint32(SkillTotal(vets)), Faction: uint32(r.Faction),
 	}
 	switch r.State {
 	case Ready:
@@ -194,10 +194,13 @@ func (s *Service) CreatePlayer(ctx context.Context, _ *chillv1.CreatePlayerReque
 	return &chillv1.CreatePlayerResponse{PlayerToken: token}, nil
 }
 
-func (s *Service) StartRun(ctx context.Context, _ *chillv1.StartRunRequest) (*chillv1.StartRunResponse, error) {
+func (s *Service) StartRun(ctx context.Context, req *chillv1.StartRunRequest) (*chillv1.StartRunResponse, error) {
 	player, err := Player(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if req.Faction > 255 || sim.FactionOf(sim.Faction(req.Faction)) == nil {
+		return nil, connect.Errorf(connect.CodeInvalidArgument, "unknown faction %d", req.Faction)
 	}
 	id := NewID()
 	now := s.nowMs()
@@ -205,7 +208,7 @@ func (s *Service) StartRun(ctx context.Context, _ *chillv1.StartRunRequest) (*ch
 		if err := q.EndActiveRuns(ctx, store.EndActiveRunsParams{PlayerID: player, EndReason: sql.NullString{String: "restarted", Valid: true}, Now: sql.NullInt64{Int64: now, Valid: true}}); err != nil {
 			return err
 		}
-		return q.CreateRun(ctx, store.CreateRunParams{ID: id, PlayerID: player, Name: NewName(), CreatedAt: now})
+		return q.CreateRun(ctx, store.CreateRunParams{ID: id, PlayerID: player, Name: NewName(), CreatedAt: now, Faction: int64(req.Faction)})
 	})
 	if err != nil {
 		return nil, err
