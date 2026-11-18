@@ -490,7 +490,55 @@ def model_items():
         o.data.materials.append(rimiron)
     export('Shield_Crimson', [board, edge, boss])
 
-    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap'):
+    # bowman: a long self bow of yew (the Hedeby bow), in the KayKit bow's frame
+    # like Composite_Bow (grip at the origin, length along Y here = glTF Z,
+    # string on -X). Braced: one smooth bend back toward the string, no recurve;
+    # pale sapwood, a leather grip, horn nocks.
+    from mathutils import Vector
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    yew = mat('MI_YewBow', lin(0xc79a5f), 0.55)
+    wrap = mat('MI_YewGrip', lin(0x4e3423), 0.9)
+    nock = mat('MI_YewNock', lin(0xd9c9a3), 0.45)
+    yarn = mat('MI_YewString', lin(0xd8ceb6), 0.9)
+
+    def stave(a, b, r, m, verts=6):
+        a, b = Vector(a), Vector(b)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=r, depth=(b - a).length, location=(a + b) / 2)
+        o = bpy.context.object
+        o.rotation_mode = 'QUATERNION'; o.rotation_quaternion = (b - a).to_track_quat('Z', 'Y')
+        o.data.materials.append(m)
+        return o
+    half, bend, segs = 0.8, 0.1, 6
+    pts = [(-bend * (k / segs) ** 2, half * k / segs) for k in range(segs + 1)]
+    longbow = [stave((0, -0.07, 0), (0, 0.07, 0), 0.02, wrap)]
+    for s in (1, -1):
+        for k, ((x0, y0), (x1, y1)) in enumerate(zip(pts, pts[1:])):
+            longbow.append(stave((x0, s * y0, 0), (x1, s * y1, 0), 0.017 - 0.0015 * k, yew))
+        longbow.append(stave((-bend, s * half, 0), (-bend - 0.004, s * (half + 0.035), 0), 0.009, nock))
+    longbow.append(stave((-bend, -half, 0), (-bend, half, 0), 0.004, yarn, 4))
+    export('Yew_Longbow', longbow)
+
+    # bowman: a bundle of three short throwing spears for the back, shafts
+    # along Z (glTF +Y, up the spine), heads up, the middle one at the origin
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    ash = mat('MI_JavelinShaft', lin(0x7a5634), 0.75)
+    iron = mat('MI_JavelinHead', lin(0xa9afb7), 0.35, 0.8)
+    strap = mat('MI_JavelinStrap', lin(0x3e2a1c), 0.9)
+    bundle = []
+    for dx, dz, tilt in ((-0.035, -0.03, -2), (0.0, 0.03, 0), (0.035, -0.01, 2)):
+        bpy.ops.mesh.primitive_cylinder_add(vertices=6, radius=0.013, depth=1.25, location=(dx, 0, dz), rotation=(0, math.radians(tilt), 0))
+        sh = bpy.context.object; sh.data.materials.append(ash)
+        tip = Vector((dx, 0, dz)) + Vector((math.sin(math.radians(tilt)), 0, math.cos(math.radians(tilt)))) * 0.7
+        bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.03, depth=0.17, location=tip, rotation=(0, math.radians(tilt), 0))
+        hd = bpy.context.object; hd.scale = (1, 0.4, 1); hd.data.materials.append(iron)
+        bundle += [sh, hd]
+    for z in (-0.25, 0.2):
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.07, minor_radius=0.01, major_segments=12, minor_segments=4, location=(0, 0, z))
+        band = bpy.context.object; band.scale = (1, 0.55, 1); band.data.materials.append(strap)
+        bundle.append(band)
+    export('Throwing_Spears', bundle)
+
+    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap', 'Yew_Longbow', 'Throwing_Spears'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
