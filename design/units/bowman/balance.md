@@ -1,6 +1,6 @@
 # Balance: bowman
 
-1000 battles per row, fixed seeds (sim 0.8.0+1d8f4dda). Bands: openspec unit-authoring.
+1000 battles per row, fixed seeds (sim 0.8.0+9c91961a). Bands: openspec unit-authoring.
 
 | Check | Result | Band | |
 |---|---|---|---|
@@ -10,8 +10,8 @@
 | 5× bowman vs 5× druzhynnyk | 39.0% | 25–75% | pass |
 | 5× bowman vs 5× strilets | 66.1% | 25–75% | pass |
 | 5× bowman vs 5× huslyar | 100.0% | 25–75% | **FAIL** |
-| 5× bowman vs 5× huskarl | 62.8% | 25–75% | pass |
-| 5× bowman vs 5× volva | 100.0% | 25–75% | **FAIL** |
+| 5× bowman vs 5× huskarl | 29.3% | 25–75% | pass |
+| 5× bowman vs 5× volva | 68.3% | 25–75% | pass |
 | 5× bowman vs 5× skoutatos | 100.0% | 25–75% | **FAIL** |
 | 5× bowman vs 5× toxotes | 100.0% | 25–75% | **FAIL** |
 | 5× bowman vs 5× siphonarios | 100.0% | 25–75% | **FAIL** |
@@ -28,12 +28,17 @@ The failures are all against units whose head-to-head is ~100% for every
 ranged unit, the plain archer and the strilets included (`design/units/strilets/balance.md`):
 
 - **Huslyar:** weak alone by design (roster plan).
-- **Völva, skoutatos, toxotes, siphonarios:** placeholders that their unit
+- **Skoutatos, toxotes, siphonarios:** placeholders that their unit
   sessions have not tuned yet.
 
 Re-run this once those units are balanced. Against the finished units
-(warrior, archer, mage, druzhynnyk, strilets) and the huskarl placeholder,
-every band passes, as do the swap and all five skills.
+(warrior, archer, mage, druzhynnyk, strilets, huskarl, völva) every band
+passes, as do the swap and all five skills.
+
+After rebasing on the huskarl (#72) and völva (#76) redesigns, only their two
+rows moved: huskarl 62.8% → 29.3% (the finished huskarl is a heavy melee line
+that walks through arrows), völva 100% → 68.3%. The bowman's own numbers are
+unchanged.
 
 ## Tuning rounds
 
