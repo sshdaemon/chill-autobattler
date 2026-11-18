@@ -1,0 +1,15 @@
+{
+  "version": "0.4.0",
+  "case": "mage skills",
+  "outcome": {
+    "result": 1,
+    "ticks": 305,
+    "checksum": "16904666407976534662",
+    "survivors": [
+      {
+        "Index": 4,
+        "HP": 2148980
+      }
+    ]
+  }
+}

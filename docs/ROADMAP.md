@@ -51,7 +51,17 @@ previews per unit.
 Each step is one PR. Steps 0.1–0.3 change no outcomes: the golden replays must
 stay identical, which is how the refactor is checked.
 
-**0.1 Split shared data files per unit** (no rule change)
+**0.1 Split shared data files per unit** (no rule change) — done
+- As built: looks in `web/src/units/looks/<unit>.json` + `_shared.json` (builds
+  and clips used by several units); clip bundles `web/public/assets/clips/<look
+  file>.json`, written by `ual_clips.py` byte for byte as before; presets in
+  `scene/fx/*.json`; items in `tools/blender/items/*.json` (the bake reproduces
+  `parts.json` exactly); golden replays one file per case, with a case per
+  roster entry generated automatically. `pnpm balance:unit` prints to the
+  terminal, so it never conflicted; the generated per-unit README was dropped
+  (the briefs and roster files cover it).
+
+Original plan:
 - Looks: `web/src/units/looks/<unit>.json` per unit, plus `looks/_clips.json` and
   `looks/_builds.json` for the shared parts; `looks.ts` merges them (Vite glob
   import). `wasm/looks_test.go` reads the folder.

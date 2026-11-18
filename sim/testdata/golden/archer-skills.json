@@ -1,0 +1,15 @@
+{
+  "version": "0.4.0",
+  "case": "archer skills",
+  "outcome": {
+    "result": 2,
+    "ticks": 476,
+    "checksum": "131335353915272236",
+    "survivors": [
+      {
+        "Index": 9,
+        "HP": 2756291
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "version": "0.4.0",
+  "case": "warriors executioner",
+  "outcome": {
+    "result": 1,
+    "ticks": 432,
+    "checksum": "13055079692919598485",
+    "survivors": [
+      {
+        "Index": 3,
+        "HP": 4873563
+      }
+    ]
+  }
+}

@@ -1,8 +1,9 @@
 // Unit looks: how each unit-roster entry looks and moves (presentation only).
-// looks.json is matched to the roster by name; `wasm/looks_test.go` checks the
-// two stay in sync. A missing look falls back to the warrior's (melee) or the
-// archer's (ranged) and warns once in dev.
-import raw from './looks.json';
+// One file per unit, looks/<unit>.json, matched to the roster by name, plus
+// looks/_shared.json (body builds and the clips several units use); each unit
+// file lists the clips only it uses. `wasm/looks_test.go` checks they stay in
+// sync with the roster. A missing look falls back to the warrior's (melee) or
+// the archer's (ranged) and warns once in dev.
 import type { ClassInfo, SkillInfo } from '../gamedata.ts';
 
 // speed: ground speed (m/s) a move clip covers at 1× (from the packs' root motion)
@@ -27,9 +28,24 @@ export type Build = { girth: Record<string, number>; shoulders: number; head: nu
 export type UnitUI = { label: string; icon: string; blurb: string };
 export type UnitLook = { ui: UnitUI; recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook> };
 
-export const CLIPS = raw.clips as Record<string, ClipInfo>;
-const LOOKS = raw.units as Record<string, UnitLook>;
-export const BUILDS = raw.builds as Record<string, Build>;
+type LookFile = UnitLook & { clips?: Record<string, ClipInfo> };
+type SharedFile = { clips: Record<string, ClipInfo>; builds: Record<string, Build> };
+const files = import.meta.glob<LookFile | SharedFile>('./looks/*.json', { eager: true, import: 'default' });
+const fileName = (path: string) => path.slice(path.lastIndexOf('/') + 1, -'.json'.length);
+const shared = files['./looks/_shared.json'] as SharedFile;
+const LOOKS: Record<string, UnitLook> = {};
+export const CLIPS: Record<string, ClipInfo> = { ...shared.clips };
+// clip bundles to load (web/public/assets/clips/<name>.json): shared, then one per unit
+export const CLIP_BUNDLES = ['_shared'];
+for (const [path, f] of Object.entries(files)) {
+  const name = fileName(path);
+  if (name === '_shared') continue;
+  const { clips, ...look } = f as LookFile;
+  LOOKS[name] = look;
+  CLIP_BUNDLES.push(name);
+  Object.assign(CLIPS, clips);
+}
+export const BUILDS = shared.builds;
 
 let roster: ClassInfo[] = [];
 const warned = new Set<string>();

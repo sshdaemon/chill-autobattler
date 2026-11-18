@@ -1,21 +1,22 @@
 // Sim events and unit states → particles, shockwaves and camera shake.
 // Presentation only: called with each snapshot (like sound and floating
 // numbers) and per unit per frame; nothing here feeds back into the battle.
-// Event cues are named presets (fx.json); a skill's look can name its own
-// preset for the events it causes (units/looks.json).
+// Event cues are named presets (fx/*.json: _shared.json, plus a file per unit
+// for its own presets); a skill's look can name its own preset for the events
+// it causes (units/looks/<unit>.json).
 import { EF, EV, UF, type SimEvent, type Snapshot, type UnitSnap } from '../sim/snapshot.ts';
 import type { UnitLoadout } from '../gamedata.ts';
 import { skillWith } from '../units/looks.ts';
 import { shockwave, spawn, type PoolKind, type Spawn } from './Particles.tsx';
 import { addShake } from './shake.ts';
-import presetsJson from './fx.json';
 
 type Emitter = {
   type: 'sparks' | 'burst' | 'dust' | 'ring' | 'shake';
   pool?: PoolKind; n?: number; y?: number; forward?: number; color?: [number, number, number];
   speed?: number; size?: number; life?: number; grav?: number; up?: number; amount?: number;
 };
-export const PRESETS = presetsJson as unknown as Record<string, Emitter[]>;
+export const PRESETS: Record<string, Emitter[]> = Object.assign({}, ...Object.values(
+  import.meta.glob<Record<string, Emitter[]>>('./fx/*.json', { eager: true, import: 'default' })));
 
 // Skill actions started by an event this tick (dash, blink), for Units to play.
 export const skillActions = new Map<number, { clip: string; rate: number }>();

@@ -3,13 +3,15 @@ package sim
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
 // Golden replays: fixed inputs with their recorded outcomes in
-// testdata/golden.json. `pnpm test:go` runs them natively and `pnpm test:wasm`
+// testdata/golden/, one file per case. `pnpm test:go` runs them natively and `pnpm test:wasm`
 // under WASM, so both builds must reproduce every outcome bit for bit.
 //
 // After a deliberate rule change: bump sim.Version, then
@@ -18,13 +20,41 @@ import (
 //
 // Changing a recorded outcome without a version bump fails, because old
 // replays would then be verified with different rules. Adding cases is fine.
-var update = flag.Bool("update", false, "rewrite testdata/golden.json")
+var update = flag.Bool("update", false, "rewrite the golden files (testdata/golden/)")
 
-const goldenFile = "testdata/golden.json"
+// One file per case (testdata/golden/<case>.json), so changes to different
+// units touch different files.
+const goldenDir = "testdata/golden"
 
 type goldenFileData struct {
-	Version  string                   `json:"version"`
-	Outcomes map[string]goldenOutcome `json:"outcomes"`
+	Version string        `json:"version"`
+	Case    string        `json:"case"`
+	Outcome goldenOutcome `json:"outcome"`
+}
+
+func goldenPath(name string) string {
+	return goldenDir + "/" + strings.ReplaceAll(name, " ", "-") + ".json"
+}
+
+// readGolden returns the recorded outcomes by case name and the versions they were recorded with.
+func readGolden() (map[string]goldenOutcome, map[string]string, error) {
+	outs, vers := map[string]goldenOutcome{}, map[string]string{}
+	entries, err := os.ReadDir(goldenDir)
+	if err != nil {
+		return nil, nil, err
+	}
+	for _, e := range entries {
+		raw, err := os.ReadFile(goldenDir + "/" + e.Name())
+		if err != nil {
+			return nil, nil, err
+		}
+		var f goldenFileData
+		if err := json.Unmarshal(raw, &f); err != nil {
+			return nil, nil, fmt.Errorf("%s: %v", e.Name(), err)
+		}
+		outs[f.Case], vers[f.Case] = f.Outcome, f.Version
+	}
+	return outs, vers, nil
 }
 
 type goldenOutcome struct {
@@ -70,9 +100,14 @@ func goldenCases() []struct {
 	for k, f := range Presets {
 		add("formation "+f.String(), in(uint64(k+1), Army{Formation: f, Units: mix()}, 0))
 	}
-	add("warrior skills", in(11, Army{Formation: F3x2, Units: allSkills(Warrior, 1)}, 2))
-	add("archer skills", in(12, Army{Formation: Spread, Units: allSkills(Archer, 1)}, 2))
-	add("mage skills", in(13, Army{Formation: F2x3, Units: allSkills(Mage, 1)}, 2))
+	// one case per roster entry, each in its own file, so new units add files rather than edit shared ones
+	for _, d := range Roster {
+		f := Presets[int(d.ID)%len(Presets)]
+		if int(d.ID) < 3 {
+			f = []Formation{F3x2, Spread, F2x3}[d.ID] // the original three's cases, as recorded
+		}
+		add(d.Name+" skills", in(11+uint64(d.ID), Army{Formation: f, Units: allSkills(d.ID, 1)}, 2))
+	}
 	add("veterans 5 stars", in(14, Army{Formation: F3x2, Units: []UnitSpec{
 		{Class: Warrior, Skills: []Skill{SkillHealth, SkillSpeed, SkillDamage, SkillDash, SkillExecute}},
 		{Class: Archer, Skills: []Skill{SkillRange, SkillDamage, SkillLob, SkillExecute, SkillHealth}},
@@ -178,40 +213,46 @@ func TestGoldenReplays(t *testing.T) {
 		}
 		got[c.name] = toGolden(o)
 	}
-	var file goldenFileData
-	raw, err := os.ReadFile(goldenFile)
-	if err == nil {
-		err = json.Unmarshal(raw, &file)
-	}
+	recorded, versions, err := readGolden()
 	if *update {
-		if err == nil && file.Version == Version { // new cases may be added; recorded ones must not change
-			for name, want := range file.Outcomes {
-				if g, ok := got[name]; ok && !reflect.DeepEqual(g, want) {
-					t.Fatalf("%s: outcome changed but sim.Version is still %q: bump it before updating the golden file", name, Version)
-				}
+		for name, want := range recorded { // new cases may be added; recorded ones must not change
+			if g, ok := got[name]; ok && versions[name] == Version && !reflect.DeepEqual(g, want) {
+				t.Fatalf("%s: outcome changed but sim.Version is still %q: bump it before updating the golden files", name, Version)
 			}
 		}
-		out, _ := json.MarshalIndent(goldenFileData{Version: Version, Outcomes: got}, "", "  ")
-		if err := os.WriteFile(goldenFile, append(out, '\n'), 0o644); err != nil {
-			t.Fatal(err)
+		os.MkdirAll(goldenDir, 0o755)
+		for name, o := range got {
+			if r, ok := recorded[name]; ok && versions[name] == Version && reflect.DeepEqual(r, o) {
+				continue // unchanged: leave the file alone
+			}
+			out, _ := json.MarshalIndent(goldenFileData{Version: Version, Case: name, Outcome: o}, "", "  ")
+			if err := os.WriteFile(goldenPath(name), append(out, '\n'), 0o644); err != nil {
+				t.Fatal(err)
+			}
+		}
+		for name := range recorded {
+			if _, ok := got[name]; !ok {
+				os.Remove(goldenPath(name))
+			}
 		}
 		return
 	}
 	if err != nil {
-		t.Fatalf("reading %s: %v (run with -update to create it)", goldenFile, err)
+		t.Fatalf("reading %s: %v (run with -update to create it)", goldenDir, err)
 	}
-	if file.Version != Version {
-		t.Fatalf("golden file is for sim %q, this is %q: run with -update", file.Version, Version)
-	}
-	for name, want := range file.Outcomes {
-		if g, ok := got[name]; !ok {
-			t.Errorf("%s: case missing", name)
+	for name, want := range recorded {
+		if versions[name] != Version {
+			t.Errorf("%s: recorded for sim %q, this is %q: run with -update", name, versions[name], Version)
+		} else if g, ok := got[name]; !ok {
+			t.Errorf("%s: case missing (delete its file, or run with -update)", name)
 		} else if !reflect.DeepEqual(g, want) {
 			t.Errorf("%s: got %+v\nwant %+v", name, g, want)
 		}
 	}
-	if len(got) != len(file.Outcomes) {
-		t.Errorf("%d cases, golden file has %d: run with -update", len(got), len(file.Outcomes))
+	for name := range got {
+		if _, ok := recorded[name]; !ok {
+			t.Errorf("%s: not recorded: run with -update", name)
+		}
 	}
 	// the set must keep covering the spec's interesting endings
 	draws := 0
@@ -264,20 +305,20 @@ func BenchmarkBattle(b *testing.B) {
 // battle still plays out the same, under the same version.
 func TestGoldenWithExtraUnit(t *testing.T) {
 	withRoster(t, testRanger)
-	var file goldenFileData
-	raw, err := os.ReadFile(goldenFile)
+	recorded, _, err := readGolden()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := json.Unmarshal(raw, &file); err != nil {
-		t.Fatal(err)
-	}
 	for _, c := range goldenCases() {
+		want, ok := recorded[c.name]
+		if !ok {
+			continue // the extra unit's own case
+		}
 		o, err := Run(c.in)
 		if err != nil {
 			t.Fatalf("%s: %v", c.name, err)
 		}
-		if g := toGolden(o); !reflect.DeepEqual(g, file.Outcomes[c.name]) {
+		if g := toGolden(o); !reflect.DeepEqual(g, want) {
 			t.Errorf("%s changed with an extra roster entry: %+v", c.name, g)
 		}
 	}

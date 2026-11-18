@@ -1,0 +1,100 @@
+{
+  "clips": {
+    "Sword_Idle": {
+      "loop": true
+    },
+    "Jog_Fwd_Loop": {
+      "loop": true,
+      "speed": 6.24
+    },
+    "Yes": {
+      "loop": true
+    },
+    "Hit_Chest": {},
+    "Hit_Head": {},
+    "Death01": {},
+    "Hit_Knockback": {},
+    "Spell_Simple_Shoot": {
+      "hit": 0.225
+    },
+    "Sword_Dash": {},
+    "Walk_Loop": {
+      "loop": true,
+      "speed": 1.04
+    },
+    "Sprint_Loop": {
+      "loop": true,
+      "speed": 9.57
+    }
+  },
+  "builds": {
+    "slim": {
+      "girth": {
+        "spine_02": -0.006,
+        "spine_03": -0.008,
+        "upperarm": -0.006,
+        "lowerarm": -0.004,
+        "thigh": -0.006,
+        "calf": -0.003
+      },
+      "shoulders": 0.95,
+      "head": 1.0,
+      "height": 1.02
+    },
+    "normal": {
+      "girth": {},
+      "shoulders": 1,
+      "head": 1,
+      "height": 1
+    },
+    "bulky": {
+      "girth": {
+        "spine_01": 0.014,
+        "spine_02": 0.024,
+        "spine_03": 0.03,
+        "clavicle": 0.02,
+        "neck_01": 0.01,
+        "upperarm": 0.024,
+        "lowerarm": 0.018,
+        "hand": 0.006,
+        "thigh": 0.018,
+        "calf": 0.01
+      },
+      "shoulders": 1.14,
+      "head": 0.97,
+      "height": 1.04
+    },
+    "stout": {
+      "girth": {
+        "pelvis": 0.03,
+        "spine_01": 0.03,
+        "spine_02": 0.03,
+        "spine_03": 0.02,
+        "upperarm": 0.014,
+        "lowerarm": 0.01,
+        "thigh": 0.02,
+        "calf": 0.012
+      },
+      "shoulders": 1.06,
+      "head": 1.04,
+      "height": 0.94
+    },
+    "heavy": {
+      "girth": {
+        "spine_01": 0.018,
+        "spine_02": 0.03,
+        "spine_03": 0.036,
+        "clavicle": 0.026,
+        "neck_01": 0.014,
+        "upperarm": 0.03,
+        "lowerarm": 0.022,
+        "hand": 0.008,
+        "thigh": 0.022,
+        "calf": 0.014
+      },
+      "shoulders": 1.18,
+      "head": 0.96,
+      "height": 1.05
+    }
+  }
+}
