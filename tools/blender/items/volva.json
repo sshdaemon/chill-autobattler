@@ -1,0 +1,16 @@
+{
+ "Iron_Staff": {
+  "modelled": true,
+  "bone": "hand_r",
+  "pos": [0, 0, 0],
+  "rot": [1.5707963267948966, 0, 0],
+  "scale": 1.0
+ },
+ "Volva_Beads": {
+  "modelled": true,
+  "bone": "spine_03",
+  "pos": [0, 0.1, 0],
+  "rot": [0, 0, 0],
+  "scale": 1.0
+ }
+}
