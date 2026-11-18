@@ -129,7 +129,7 @@ func (in Input) Validate() error {
 // RedArmy generates Red's army from the seed: 5 random units from Red's
 // pool (listed in roster order), a random preset, and `skills` skills spread
 // at random, never twice on one unit. Changing the pool changes every Red
-// army, so it needs a sim.Version bump.
+// army (and, through the roster fingerprint, sim.Version).
 func RedArmy(seed uint64, skills int) Army {
 	r := Sub(seed, StreamRedArmy)
 	pool := RedPool()

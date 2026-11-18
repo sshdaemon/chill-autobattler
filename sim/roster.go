@@ -95,7 +95,7 @@ type UnitDef struct {
 	Bonus      []TagBonus // first bonus whose tag the victim has wins
 	Skills     [MaxSkills]SkillDef
 	// InRedPool: Red's generated armies draw from these, in roster order.
-	// Changing the pool changes Red's armies, so it needs a sim.Version bump.
+	// Changing the pool changes Red's armies (and sim.Version, through the roster fingerprint).
 	InRedPool bool
 }
 
@@ -113,6 +113,7 @@ func register(d UnitDef) {
 	Roster = append(Roster, UnitDef{})
 	copy(Roster[i+1:], Roster[i:])
 	Roster[i] = d
+	Version = RulesVersion + "+" + Fingerprint(Roster...)
 }
 
 // RosterOf returns the entry for a class, or nil if there is none.

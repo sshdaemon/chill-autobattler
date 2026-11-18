@@ -14,12 +14,15 @@ import (
 // testdata/golden/, one file per case. `pnpm test:go` runs them natively and `pnpm test:wasm`
 // under WASM, so both builds must reproduce every outcome bit for bit.
 //
-// After a deliberate rule change: bump sim.Version, then
+// Each case records the version of what it depends on: RulesVersion plus the
+// fingerprint of the units it uses (VersionFor), so changing one unit's data
+// only touches its own cases. After a deliberate change (a unit's numbers, or
+// rules code with RulesVersion bumped), run
 //
 //	go test ./sim -run TestGolden -update
 //
-// Changing a recorded outcome without a version bump fails, because old
-// replays would then be verified with different rules. Adding cases is fine.
+// Changing a recorded outcome while its version stays the same fails, because
+// old replays would then be verified with different rules. Adding cases is fine.
 var update = flag.Bool("update", false, "rewrite the golden files (testdata/golden/)")
 
 // One file per case (testdata/golden/<case>.json), so changes to different
@@ -30,6 +33,21 @@ type goldenFileData struct {
 	Version string        `json:"version"`
 	Case    string        `json:"case"`
 	Outcome goldenOutcome `json:"outcome"`
+}
+
+// caseVersion is the version a case depends on: the rules and the units that
+// can appear in it (Blue's, Red's, or Red's pool when Red is generated).
+func caseVersion(in Input) string {
+	var cs []Class
+	for _, a := range []Army{in.Blue, in.Red} {
+		for _, u := range a.Units {
+			cs = append(cs, u.Class)
+		}
+	}
+	if len(in.Red.Units) == 0 {
+		cs = append(cs, RedPool()...)
+	}
+	return VersionFor(cs...)
 }
 
 func goldenPath(name string) string {
@@ -205,27 +223,27 @@ func utoa(v uint64) string {
 }
 
 func TestGoldenReplays(t *testing.T) {
-	got := map[string]goldenOutcome{}
+	got, want := map[string]goldenOutcome{}, map[string]string{} // outcomes and versions now
 	for _, c := range goldenCases() {
 		o, err := Run(c.in)
 		if err != nil {
 			t.Fatalf("%s: %v", c.name, err)
 		}
-		got[c.name] = toGolden(o)
+		got[c.name], want[c.name] = toGolden(o), caseVersion(c.in)
 	}
 	recorded, versions, err := readGolden()
 	if *update {
-		for name, want := range recorded { // new cases may be added; recorded ones must not change
-			if g, ok := got[name]; ok && versions[name] == Version && !reflect.DeepEqual(g, want) {
-				t.Fatalf("%s: outcome changed but sim.Version is still %q: bump it before updating the golden files", name, Version)
+		for name := range recorded { // new cases may be added; recorded ones must not change
+			if g, ok := got[name]; ok && versions[name] == want[name] && !reflect.DeepEqual(g, recorded[name]) {
+				t.Fatalf("%s: outcome changed but its version is still %q: bump sim.RulesVersion before updating the golden files", name, want[name])
 			}
 		}
 		os.MkdirAll(goldenDir, 0o755)
 		for name, o := range got {
-			if r, ok := recorded[name]; ok && versions[name] == Version && reflect.DeepEqual(r, o) {
+			if r, ok := recorded[name]; ok && versions[name] == want[name] && reflect.DeepEqual(r, o) {
 				continue // unchanged: leave the file alone
 			}
-			out, _ := json.MarshalIndent(goldenFileData{Version: Version, Case: name, Outcome: o}, "", "  ")
+			out, _ := json.MarshalIndent(goldenFileData{Version: want[name], Case: name, Outcome: o}, "", "  ")
 			if err := os.WriteFile(goldenPath(name), append(out, '\n'), 0o644); err != nil {
 				t.Fatal(err)
 			}
@@ -240,13 +258,13 @@ func TestGoldenReplays(t *testing.T) {
 	if err != nil {
 		t.Fatalf("reading %s: %v (run with -update to create it)", goldenDir, err)
 	}
-	for name, want := range recorded {
-		if versions[name] != Version {
-			t.Errorf("%s: recorded for sim %q, this is %q: run with -update", name, versions[name], Version)
-		} else if g, ok := got[name]; !ok {
+	for name, rec := range recorded {
+		if g, ok := got[name]; !ok {
 			t.Errorf("%s: case missing (delete its file, or run with -update)", name)
-		} else if !reflect.DeepEqual(g, want) {
-			t.Errorf("%s: got %+v\nwant %+v", name, g, want)
+		} else if versions[name] != want[name] {
+			t.Errorf("%s: recorded for %q, its units and rules are now %q: run with -update", name, versions[name], want[name])
+		} else if !reflect.DeepEqual(g, rec) {
+			t.Errorf("%s: got %+v\nwant %+v", name, g, rec)
 		}
 	}
 	for name := range got {
