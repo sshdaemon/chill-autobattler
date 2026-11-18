@@ -59,7 +59,7 @@ func TestNewRun(t *testing.T) {
 	if _, err := e.runs.StartRun(t.Context(), &chillv1.StartRunRequest{}); connect.CodeOf(err) != connect.CodeUnauthenticated {
 		t.Errorf("no token: %v", err)
 	}
-	for _, f := range []sim.Faction{0, sim.FactionRus, 200} { // missing, not playable yet, unknown
+	for _, f := range []sim.Faction{0, sim.FactionVarangians, 200} { // missing, not playable yet, unknown
 		if _, err := e.runs.StartRun(e.ctx, &chillv1.StartRunRequest{Faction: uint32(f)}); connect.CodeOf(err) != connect.CodeInvalidArgument {
 			t.Errorf("faction %d: %v", f, err)
 		}

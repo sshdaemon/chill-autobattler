@@ -1,7 +1,7 @@
 package sim
 
-// rus (design/SETTING.md). Not playable until its units are finished
-// (roadmap Phase 4): players can't pick it and Red never draws it.
+// Kyivan Rus (design/SETTING.md): druzhynnyk, strilets and huslyar, finished
+// in roadmap Phase 4. Playable: players can pick it and Red may draw it.
 func init() {
-	registerFaction(FactionDef{ID: FactionRus, Name: "rus", Units: []Class{Druzhynnyk, Strilets, Huslyar}})
+	registerFaction(FactionDef{ID: FactionRus, Name: "rus", Units: []Class{Druzhynnyk, Strilets, Huslyar}, Playable: true})
 }
