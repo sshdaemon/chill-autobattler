@@ -1,0 +1,62 @@
+{
+ "Dane_Axe": {
+  "modelled": true,
+  "bone": "hand_r",
+  "pos": [
+   0,
+   0,
+   0
+  ],
+  "rot": [
+   1.5707963267948966,
+   0,
+   0
+  ],
+  "scale": 1.0
+ },
+ "Shield_Gokstad": {
+  "modelled": true,
+  "bone": "lowerarm_l",
+  "pos": [
+   0.18,
+   0.125,
+   0
+  ],
+  "rot": [
+   -1.5707963267948966,
+   0,
+   0
+  ],
+  "scale": 1.0
+ },
+ "Shield_Gokstad_Back": {
+  "modelled": true,
+  "bone": "spine_03",
+  "pos": [
+   0.05,
+   0.0,
+   -0.2
+  ],
+  "rot": [
+   0,
+   0,
+   0
+  ],
+  "scale": 1.0
+ },
+ "Spangenhelm": {
+  "modelled": true,
+  "bone": "Head",
+  "pos": [
+   0,
+   0.12,
+   0.01
+  ],
+  "rot": [
+   0,
+   0,
+   0
+  ],
+  "scale": 1.0
+ }
+}
