@@ -83,6 +83,10 @@ Units SHALL apply the skills (abilities) of their roster entry, each made of eff
 - **WHEN** a melee enemy comes within 2.5 m of a mage with Blink off cooldown
 - **THEN** the mage teleports about 8 m away from the threats to a free spot, and Blink goes on an 8 s cooldown
 
+#### Scenario: Escape as a run
+- **WHEN** a unit's escape has a speed (the völva's Slip away) and a melee enemy comes within its threat range while it is off cooldown
+- **THEN** the unit runs in a straight dash at that speed to a free spot about its escape distance away from the threats, with a clear line to it, instead of teleporting, and the escape goes on cooldown
+
 #### Scenario: Levels
 - **WHEN** a battle input has a unit with no ability, or with four
 - **THEN** the input is rejected
