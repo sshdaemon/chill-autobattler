@@ -21,8 +21,8 @@ func randArmy(r *rand.Rand) *chillv1.Army {
 	a := &chillv1.Army{Formation: chillv1.Formation(r.IntN(11))}
 	for i, n := 0, r.IntN(7); i < n; i++ {
 		u := &chillv1.UnitSpec{UnitClass: chillv1.UnitClass(r.IntN(5))}
-		for k, m := 0, r.IntN(4); k < m; k++ {
-			u.Skills = append(u.Skills, uint32(r.IntN(13)))
+		for k, m := 0, 1+r.IntN(3); k < m; k++ { // mostly valid: 1..3 abilities, sometimes unknown or repeated
+			u.Skills = append(u.Skills, uint32(1+r.IntN(6)))
 		}
 		if r.IntN(2) == 0 {
 			u.Position = &chillv1.Point{XRaw: r.Int64N(int64(sim.I(30))) - int64(sim.I(15)), ZRaw: r.Int64N(int64(sim.I(30))) - int64(sim.I(15))}

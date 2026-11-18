@@ -95,7 +95,12 @@ func TestWinPicksAndNextMatch(t *testing.T) {
 	var picks []*chillv1.SkillPick
 	for _, i := range r.OwedPicks {
 		cls := sim.Class(r.Veterans[i].UnitClass - 1)
-		picks = append(picks, &chillv1.SkillPick{Veteran: i, Skill: uint32(sim.Roster[cls].Skills[0].Skill)})
+		for _, d := range sim.Roster[cls].Skills { // the first ability it doesn't know
+			if !slices.Contains(r.Veterans[i].Skills, uint32(d.Skill)) {
+				picks = append(picks, &chillv1.SkillPick{Veteran: i, Skill: uint32(d.Skill)})
+				break
+			}
+		}
 	}
 	pr, err := e.runs.PickSkills(e.ctx, &chillv1.PickSkillsRequest{RunId: r.Id, Picks: picks})
 	if err != nil || pr.Run.State != chillv1.RunState_RUN_STATE_READY || pr.Run.RedSkills != uint32(len(picks)) {

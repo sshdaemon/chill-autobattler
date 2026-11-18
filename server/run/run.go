@@ -94,20 +94,21 @@ func encodeVeterans(v []*chillv1.UnitSpec) []byte {
 // lives in sim.RunRedHealth.
 func RedHealthFor(match int64) int64 { return int64(sim.RunRedHealth(int(match))) }
 
-// SkillTotal is Red's skill count for a run's next match.
+// SkillTotal is Red's skill count for a run's next match: the abilities the
+// veterans learned above level 1 (every unit, Red's too, starts with one).
 func SkillTotal(v []*chillv1.UnitSpec) int {
 	n := 0
 	for _, u := range v {
-		n += len(u.Skills)
+		n += max(0, len(u.Skills)-1)
 	}
 	return n
 }
 
-// Owed lists the veterans that owe a skill pick (fewer than 5 skills).
+// Owed lists the veterans that owe a skill pick (below the top level).
 func Owed(v []*chillv1.UnitSpec) []uint32 {
 	var out []uint32
 	for i, u := range v {
-		if len(u.Skills) < sim.MaxSkills {
+		if len(u.Skills) < sim.MaxLevel {
 			out = append(out, uint32(i))
 		}
 	}
@@ -317,7 +318,7 @@ func (s *Service) GetScoreboard(ctx context.Context, _ *chillv1.GetScoreboardReq
 // ---------- used by the battle service ----------
 
 // CheckArmy enforces that Blue's army is the run's veterans (in order, exactly)
-// followed by skill-less recruits, 5 units in all.
+// followed by level-1 recruits (one ability each), 5 units in all.
 func CheckArmy(vets []*chillv1.UnitSpec, blue *chillv1.Army) error {
 	units := blue.GetUnits()
 	if len(units) != sim.ArmySize {
@@ -329,8 +330,8 @@ func CheckArmy(vets []*chillv1.UnitSpec, blue *chillv1.Army) error {
 			if u.UnitClass != v.UnitClass || !sameSkills(u.Skills, v.Skills) {
 				return fmt.Errorf("unit %d must be veteran %d (%v with %v)", i, i, v.UnitClass, v.Skills)
 			}
-		} else if len(u.Skills) > 0 {
-			return fmt.Errorf("unit %d is a recruit and can't have skills", i)
+		} else if len(u.Skills) != 1 {
+			return fmt.Errorf("unit %d is a recruit: it starts at level 1 with one ability, got %d", i, len(u.Skills))
 		}
 	}
 	return nil

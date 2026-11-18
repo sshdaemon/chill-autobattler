@@ -1,18 +1,18 @@
 {
-  "version": "0.5.0+d23fedf8",
+  "version": "0.6.0+d23fedf8",
   "case": "archers sharp arrows and lob",
   "outcome": {
-    "result": 2,
-    "ticks": 310,
-    "checksum": "7757656927710561824",
+    "result": 1,
+    "ticks": 289,
+    "checksum": "2874144532084747012",
     "survivors": [
       {
-        "Index": 7,
-        "HP": 921954
+        "Index": 0,
+        "HP": 798943
       },
       {
-        "Index": 8,
-        "HP": 666111
+        "Index": 1,
+        "HP": 642164
       }
     ]
   }

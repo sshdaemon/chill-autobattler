@@ -111,13 +111,24 @@ export const vetCounts = (run?: Run): Counts => {
   return Array.from(c, (n) => n ?? 0);
 };
 
+// A recruit's level-1 ability until the draft lets the player choose it:
+// picked at random but stable for the run, match and slot, so every view of
+// the army (deployment, lock, replay) agrees.
+function levelOne(run: Run | undefined, cls: number, nth: number): Skill {
+  let h = 2166136261;
+  for (const c of `${run?.id ?? ''}:${run?.match ?? 0}:${cls}:${nth}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  return ((h >>> 0) % ABILITIES) + 1;
+}
+const ABILITIES = 5; // abilities each unit type offers (sim MaxSkills)
+
 // The army in the order the server requires: veterans first (exactly as
-// stored), then recruits by class. cls is the sim class (roster index).
+// stored), then recruits by class (level 1: one ability each). cls is the sim
+// class (roster index).
 export function armySpecs(s: { run?: Run; counts: Counts }): { cls: number; skills: Skill[]; vet: boolean }[] {
   const vets = s.run?.veterans ?? [];
   const out = vets.map((v: UnitSpec) => ({ cls: v.unitClass - 1, skills: [...v.skills], vet: true }));
   const vc = vetCounts(s.run);
-  s.counts.forEach((n, cls) => { for (let i = vc[cls] ?? 0; i < (n ?? 0); i++) out.push({ cls, skills: [], vet: false }); });
+  s.counts.forEach((n, cls) => { for (let i = vc[cls] ?? 0; i < (n ?? 0); i++) out.push({ cls, skills: [levelOne(s.run, cls, i)], vet: false }); });
   return out;
 }
 export const armyClasses = (s: { run?: Run; counts: Counts }) => armySpecs(s).map((u) => u.cls);

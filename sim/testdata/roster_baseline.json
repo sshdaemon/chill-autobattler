@@ -12,7 +12,6 @@
     "Speed": 209715,
     "Sight": 458752,
     "Ranged": false,
-    "Kite": false,
     "SwingTicks": 18,
     "ShotSpeed": 0
    },
@@ -30,7 +29,6 @@
     "Speed": 209715,
     "Sight": 458752,
     "Ranged": false,
-    "Kite": false,
     "SwingTicks": 18,
     "ShotSpeed": 0
    },
@@ -48,7 +46,6 @@
     "Speed": 293601,
     "Sight": 458752,
     "Ranged": false,
-    "Kite": false,
     "SwingTicks": 14,
     "ShotSpeed": 0
    },
@@ -66,7 +63,6 @@
     "Speed": 209715,
     "Sight": 458752,
     "Ranged": false,
-    "Kite": false,
     "SwingTicks": 18,
     "ShotSpeed": 0
    },
@@ -84,7 +80,6 @@
     "Speed": 209715,
     "Sight": 458752,
     "Ranged": false,
-    "Kite": false,
     "SwingTicks": 18,
     "ShotSpeed": 0
    },
@@ -102,7 +97,6 @@
     "Speed": 209715,
     "Sight": 458752,
     "Ranged": false,
-    "Kite": false,
     "SwingTicks": 18,
     "ShotSpeed": 0
    },
@@ -120,7 +114,6 @@
     "Speed": 293601,
     "Sight": 458752,
     "Ranged": false,
-    "Kite": false,
     "SwingTicks": 14,
     "ShotSpeed": 0
    },
@@ -138,7 +131,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -156,7 +148,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -174,7 +165,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -192,7 +182,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -210,7 +199,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -228,7 +216,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -246,7 +233,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -264,7 +250,6 @@
     "Speed": 196608,
     "Sight": 589824,
     "Ranged": true,
-    "Kite": false,
     "SwingTicks": 16,
     "ShotSpeed": 917504
    },
@@ -282,7 +267,6 @@
     "Speed": 196608,
     "Sight": 589824,
     "Ranged": true,
-    "Kite": false,
     "SwingTicks": 16,
     "ShotSpeed": 917504
    },
@@ -300,7 +284,6 @@
     "Speed": 196608,
     "Sight": 589824,
     "Ranged": true,
-    "Kite": false,
     "SwingTicks": 16,
     "ShotSpeed": 917504
    },
@@ -318,7 +301,6 @@
     "Speed": 196608,
     "Sight": 589824,
     "Ranged": true,
-    "Kite": false,
     "SwingTicks": 16,
     "ShotSpeed": 917504
    },
@@ -336,7 +318,6 @@
     "Speed": 196608,
     "Sight": 589824,
     "Ranged": true,
-    "Kite": false,
     "SwingTicks": 16,
     "ShotSpeed": 917504
    },
@@ -354,7 +335,6 @@
     "Speed": 196608,
     "Sight": 589824,
     "Ranged": true,
-    "Kite": false,
     "SwingTicks": 16,
     "ShotSpeed": 917504
    },
@@ -372,7 +352,6 @@
     "Speed": 196608,
     "Sight": 589824,
     "Ranged": true,
-    "Kite": false,
     "SwingTicks": 16,
     "ShotSpeed": 917504
    },
@@ -390,7 +369,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -408,7 +386,6 @@
     "Speed": 235929,
     "Sight": 720896,
     "Ranged": true,
-    "Kite": true,
     "SwingTicks": 12,
     "ShotSpeed": 1179648
    },
@@ -426,7 +403,6 @@
     "Speed": 293601,
     "Sight": 458752,
     "Ranged": false,
-    "Kite": false,
     "SwingTicks": 14,
     "ShotSpeed": 0
    },
@@ -444,7 +420,6 @@
     "Speed": 196608,
     "Sight": 589824,
     "Ranged": true,
-    "Kite": false,
     "SwingTicks": 16,
     "ShotSpeed": 917504
    },
@@ -457,27 +432,27 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": null,
+     "Skills": "BQ==",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": null,
+     "Skills": "BQ==",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": null,
+     "Skills": "BQ==",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": null,
+     "Skills": "Aw==",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQ==",
+     "Skills": "AwI=",
      "Pos": null
     }
    ]
@@ -487,17 +462,17 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": null,
+     "Skills": "AgQ=",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "BQ==",
+     "Skills": "BQM=",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": null,
+     "Skills": "BA==",
      "Pos": null
     },
     {
@@ -507,7 +482,7 @@
     },
     {
      "Class": 2,
-     "Skills": null,
+     "Skills": "BA==",
      "Pos": null
     }
    ]
@@ -517,27 +492,27 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "Aw==",
+     "Skills": "BQQ=",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": null,
+     "Skills": "BA==",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": null,
+     "Skills": "BQE=",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": null,
+     "Skills": "AQ==",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BAU=",
+     "Skills": "AQI=",
      "Pos": null
     }
    ]
@@ -547,7 +522,102 @@
    "Units": [
     {
      "Class": 0,
+     "Skills": "AgQ=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQI=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
      "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Aw==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwE=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQM=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwI=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQQD",
      "Pos": null
     },
     {
@@ -557,42 +627,7 @@
     },
     {
      "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
+     "Skills": "AQM=",
      "Pos": null
     },
     {
@@ -603,51 +638,16 @@
    ]
   },
   {
-   "Formation": 6,
+   "Formation": 4,
    "Units": [
     {
      "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgE=",
+     "Skills": "BQQD",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
+     "Skills": "AwIF",
      "Pos": null
     },
     {
@@ -656,38 +656,13 @@
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
      "Class": 1,
-     "Skills": "BAM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
+     "Skills": "AgU=",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AwUB",
+     "Skills": "BQIE",
      "Pos": null
     }
    ]
@@ -697,12 +672,7 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwU=",
+     "Skills": "BQMB",
      "Pos": null
     },
     {
@@ -711,13 +681,18 @@
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": "BQ==",
+     "Class": 1,
+     "Skills": "AwIF",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BAUB",
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQB",
      "Pos": null
     }
    ]
@@ -727,28 +702,28 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "AgE=",
+     "Skills": "BQID",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
      "Skills": "BQQD",
      "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwEE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAIF",
+     "Pos": null
     }
    ]
   },
@@ -757,27 +732,27 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "Aw==",
+     "Skills": "BAEC",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AgU=",
+     "Skills": "AgMB",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BAUB",
+     "Skills": "AwIB",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AgU=",
+     "Skills": "BAMF",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BAID",
+     "Skills": "AQIF",
      "Pos": null
     }
    ]
@@ -787,7 +762,277 @@
    "Units": [
     {
      "Class": 0,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQEC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgMF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAIF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAMB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQEC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQQD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQQC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQEE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQUD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
      "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAUB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwUC",
      "Pos": null
     },
     {
@@ -797,17 +1042,47 @@
     },
     {
      "Class": 0,
-     "Skills": "BQ==",
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQMB",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AwI=",
+     "Skills": "AwQB",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQED",
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAIF",
      "Pos": null
     }
    ]
@@ -817,42 +1092,97 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "AQ==",
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAMB",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQQ=",
+     "Skills": "BQIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUB",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwEEBQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIEBQ==",
+     "Skills": "BAMF",
      "Pos": null
     }
    ]
   },
   {
-   "Formation": 4,
+   "Formation": 6,
    "Units": [
     {
      "Class": 0,
-     "Skills": "BQME",
+     "Skills": "AQUC",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AgEF",
+     "Skills": "BQQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgUB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwEE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AQ==",
      "Pos": null
     },
     {
@@ -861,13 +1191,18 @@
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": "AgUDBAE=",
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BQQ=",
+     "Skills": "Aw==",
      "Pos": null
     }
    ]
@@ -877,42 +1212,7 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "AQMC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwUEAg==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAIFAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAIFAQ==",
+     "Skills": "Aw==",
      "Pos": null
     },
     {
@@ -922,42 +1222,107 @@
     },
     {
      "Class": 0,
-     "Skills": "AgEEAwU=",
+     "Skills": "BAU=",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQQDAQI=",
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
      "Pos": null
     }
    ]
   },
   {
-   "Formation": 1,
+   "Formation": 3,
    "Units": [
     {
-     "Class": 0,
-     "Skills": "BAEDAgU=",
+     "Class": 1,
+     "Skills": "AgE=",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQIBBA==",
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
      "Pos": null
     },
     {
      "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQ=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQI=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
      "Skills": "Aw==",
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": "AwEEAgU=",
+     "Class": 0,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUC",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AgU=",
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQIE",
      "Pos": null
     }
    ]
@@ -967,27 +1332,57 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "BQIB",
+     "Skills": "BQE=",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "BQECBA==",
+     "Skills": "AgQ=",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AwQC",
+     "Skills": "AgM=",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQQFAwI=",
+     "Skills": "AwI=",
      "Pos": null
     },
+    {
+     "Class": 2,
+     "Skills": "AgM=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
     {
      "Class": 1,
      "Skills": "AgEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgU=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQU=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAUC",
      "Pos": null
     }
    ]
@@ -996,23 +1391,173 @@
    "Formation": 1,
    "Units": [
     {
-     "Class": 1,
-     "Skills": "AgQDBQ==",
+     "Class": 0,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "Ag==",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AwQFAQ==",
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAE=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgEF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQID",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwEE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwIF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQQC",
+     "Skills": "AQMF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQUCAwQ=",
+     "Skills": "AgED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAM=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwUE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgED",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgEF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQIF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIB",
      "Pos": null
     },
     {
@@ -1023,151 +1568,31 @@
    ]
   },
   {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BQMB",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAMFAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAIBBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIBBQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
    "Formation": 5,
    "Units": [
     {
      "Class": 0,
-     "Skills": "AgQF",
+     "Skills": "AgEF",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "BQMC",
+     "Skills": "AgED",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AgQFAQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAECAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwUBBAI=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQMCBQQ=",
+     "Skills": "BQMB",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AgEE",
+     "Skills": "AQMF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AwIEBQE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQCAw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwECBQQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwEFBAI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAIFAQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQFAgM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwUC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgQDBQE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQIDAQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwEFAg==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwQFAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMFAgE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAECBQM=",
+     "Skills": "AgUE",
      "Pos": null
     }
    ]
@@ -1177,27 +1602,57 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "AgMBBAU=",
+     "Skills": "BAUB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQED",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BQIBAwQ=",
+     "Skills": "BAED",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BAIBAwU=",
+     "Skills": "BQEC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQB",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AwUBBAI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwQCAQU=",
+     "Skills": "BAUC",
      "Pos": null
     }
    ]
@@ -1207,147 +1662,27 @@
    "Units": [
     {
      "Class": 1,
-     "Skills": null,
+     "Skills": "AwQF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
+     "Skills": "AgED",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
+     "Skills": "AgQD",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
+     "Skills": "AQIF",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwI=",
+     "Skills": "AQQC",
      "Pos": null
     }
    ]
@@ -1357,57 +1692,27 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQ==",
+     "Skills": "AgME",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQ==",
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQEE",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "Ag==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQUD",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
+     "Skills": "AQME",
      "Pos": null
     }
    ]
@@ -1417,7 +1722,312 @@
    "Units": [
     {
      "Class": 0,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQID",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQQC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQID",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAIB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAEC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgEE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAED",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQMB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQ==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
      "Skills": "BQE=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwE=",
      "Pos": null
     },
     {
@@ -1432,11 +2042,6 @@
     },
     {
      "Class": 2,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
      "Skills": "Aw==",
      "Pos": null
     }
@@ -1447,17 +2052,37 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": null,
+     "Skills": "AgU=",
      "Pos": null
     },
     {
-     "Class": 0,
-     "Skills": "BQQ=",
+     "Class": 1,
+     "Skills": "AgQ=",
      "Pos": null
     },
     {
+     "Class": 1,
+     "Skills": "BQI=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Ag==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
      "Class": 0,
-     "Skills": "AwU=",
+     "Skills": "BQ==",
      "Pos": null
     },
     {
@@ -1466,7 +2091,1547 @@
      "Pos": null
     },
     {
+     "Class": 1,
+     "Skills": "AgM=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQU=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
      "Class": 0,
+     "Skills": "AwQ=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQM=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQQ=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Aw==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgQD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwIF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQM=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BAIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQ=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQID",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQUE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQID",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAED",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AgMB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAIF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQEE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAED",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAIF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQUE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AgEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwIF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQUE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQIF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgQB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAIF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQU=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQ=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgM=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwE=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgM=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwE=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Aw==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgE=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQ=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQQC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwI=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAIF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQI=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgE=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQ==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQM=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAU=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAE=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Ag==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQMC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQIB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQ=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQMC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgEF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQIB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQQD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAIB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgMB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQMC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwUE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQIB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAUB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgM=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAI=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQ=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQE=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
      "Skills": "AQID",
      "Pos": null
     }
@@ -1477,57 +3642,57 @@
    "Units": [
     {
      "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAI=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
      "Skills": "AQI=",
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "BAE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwEEBQ==",
+     "Class": 2,
+     "Skills": "AgEE",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": null,
+     "Skills": "AQ==",
      "Pos": null
     }
    ]
   },
   {
-   "Formation": 4,
+   "Formation": 7,
    "Units": [
     {
      "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAU=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQE=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
      "Skills": "AgE=",
      "Pos": null
     },
     {
-     "Class": 0,
-     "Skills": "BAI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwIB",
+     "Class": 2,
+     "Skills": "AQIF",
      "Pos": null
     }
    ]
@@ -1536,863 +3701,53 @@
    "Formation": 1,
    "Units": [
     {
-     "Class": 0,
-     "Skills": "BAIF",
-     "Pos": null
-    },
-    {
      "Class": 1,
-     "Skills": "BAI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgMBBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQM=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQMC",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQID",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwUB",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgUBAwQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwUB",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQUC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwQBAg==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQIB",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAEF",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwIFAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAUBAg==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgUDAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AQME",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQUD",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgMFBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMF",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgQDBQE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQQCAw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAEFAw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQB",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwIBBA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQMCBAU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAIBAwU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQBAw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgEF",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQECAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgMBBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQIBBA==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwUCBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQQDAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIFBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEFBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwEFAgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQMCBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAMFAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwQBAg==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQIDBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwIEAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAMBAgU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwEC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQIEAwE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwIEBQE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQQCAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIEBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEEAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQUEAw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwUEAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgUDAQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQMEAgE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQMCBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwQCBQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAMBBQI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQQCAQM=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAUDAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgUEAQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIBBAU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAU=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQFAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQMC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
      "Skills": "AQM=",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AwU=",
+     "Skills": "BAU=",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BQQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAEFAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwEE",
+     "Skills": "AgE=",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BA==",
+     "Skills": "BQE=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEE",
      "Pos": null
     }
    ]
   },
   {
-   "Formation": 2,
+   "Formation": 6,
    "Units": [
     {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
      "Class": 1,
-     "Skills": "BAMCAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwQFAg==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQIEAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
      "Skills": "AwQ=",
      "Pos": null
     },
     {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
      "Class": 1,
-     "Skills": "Aw==",
+     "Skills": "BAI=",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AwUCBAE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQID",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAED",
+     "Skills": "AgU=",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BAE=",
+     "Skills": "AQIE",
      "Pos": null
     },
     {
@@ -2403,241 +3758,31 @@
    ]
   },
   {
-   "Formation": 7,
+   "Formation": 2,
    "Units": [
     {
      "Class": 0,
-     "Skills": "AwI=",
+     "Skills": "BAEC",
      "Pos": null
     },
     {
-     "Class": 1,
+     "Class": 0,
      "Skills": "BAE=",
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "AQU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIFAw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwUCAQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
      "Class": 0,
-     "Skills": "AwI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQED",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgQBBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQUEAw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwI=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgME",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMCBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQQDAg==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgQBAwU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgMBBAU=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAIB",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgQD",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMCBQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQUCBAM=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgQFAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQMFAg==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgQBBQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AQIEAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQUCBAM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQMEAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgUEAw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQIDBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQMB",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwQC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgMBBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwEFBAI=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgQDAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQMCAQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
      "Skills": "AQQ=",
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": "BQQBAwI=",
+     "Class": 0,
+     "Skills": "AwQF",
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": "AwEEAgU=",
+     "Class": 1,
+     "Skills": "AgUD",
      "Pos": null
     }
    ]
@@ -2647,462 +3792,12 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "AgEEAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQCAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIDBQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQIBBAM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQBAgM=",
+     "Skills": "AQMC",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "BAIBAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwQCAQU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgQBBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQMB",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgQDBQE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQUDBAI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQMEAgU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgMFBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQUEAwI=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgEEBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQQCAQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQMEAgE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgMEBQE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAUCAQM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQIE",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwI=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQU=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIE",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQMEAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQUE",
+     "Skills": "AgUD",
      "Pos": null
     },
     {
@@ -3111,589 +3806,19 @@
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "BA==",
+     "Class": 2,
+     "Skills": "AQIF",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AwE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQQDBQI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwUC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgUEAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwEF",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAEC",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwEC",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAMCAQU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAIDAQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAIDBQE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIFAQQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BQECBAM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIDBA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwUB",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMF",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwQC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAIDBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwIEAQU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQIE",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAEC",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwIFAQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwUCBA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIFBAM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQEE",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQQDAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwECBQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwQC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQQCAw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQEC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAMC",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQFAg==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQIEAwE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAUCAwE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQEC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQQCBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQIEAwE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMFAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQQCAwU=",
+     "Skills": "BAI=",
      "Pos": null
     }
    ]
   },
   {
    "Formation": 2,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AgED",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEDAg==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAUDAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgMFBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgUEAQM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwUBAgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwUBBAI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMFAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAUC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAIBBQM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgEEBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwUCBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgUEAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIBBAU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQMEBQI=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AQUEAwI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgEDBAU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIEBQE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQMBAgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwECBAU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQM=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
    "Units": [
     {
      "Class": 0,
@@ -3702,82 +3827,22 @@
     },
     {
      "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Ag==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BQ==",
+     "Skills": "AwIF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQME",
+     "Skills": "BQIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQB",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
+     "Skills": "AgUB",
      "Pos": null
     }
    ]
@@ -3787,27 +3852,27 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "AwU=",
+     "Skills": "BQMC",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQU=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAE=",
+     "Skills": "AwQB",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQ==",
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMC",
      "Pos": null
     }
    ]
@@ -3822,112 +3887,22 @@
     },
     {
      "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIFBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwE=",
+     "Skills": "AQUD",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "BQED",
+     "Skills": "AQIF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": null,
+     "Skills": "AgUE",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQMF",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgEF",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIFBAM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQMC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAUB",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwUCAQ==",
+     "Skills": "AgUD",
      "Pos": null
     }
    ]
@@ -3937,712 +3912,22 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "BQQDAg==",
+     "Skills": "BAEF",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AgEF",
+     "Skills": "BAMB",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": null,
+     "Skills": "AgQF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BAIBAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgUEAwE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQQCBQM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAEDAgU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQQBAgM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwUE",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AgMEAQU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwECBAU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwEFAg==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQQC",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEDAgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgEE",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AwEFAgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgEFBAM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQMFBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
      "Skills": "AgME",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAIB",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAUCAwE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQMEAgU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgMFBAE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAMFAgE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAIBAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQQDAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMBBQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAIFAQM=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwIBBQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwUEAgE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQUEAgM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AgUBAwQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQECBAM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQMEAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEFAwQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQUC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQIFAwQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAECBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQMFBAI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQIDBQQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQIEAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQUCAwQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQQCAwE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgMBBQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQUCBAM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQMBBAI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQMBAgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQCAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQECAwQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwEEBQI=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAM=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQQF",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwQC",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQMC",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BAM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAIF",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQQC",
      "Pos": null
     },
     {
@@ -4653,31 +3938,61 @@
    ]
   },
   {
-   "Formation": 7,
+   "Formation": 6,
    "Units": [
     {
      "Class": 0,
-     "Skills": "AQIE",
+     "Skills": "AgEF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQM=",
+     "Skills": "AgQD",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AwEEBQ==",
+     "Skills": "BAIB",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": null,
+     "Skills": "AgQF",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AQI=",
+     "Skills": "BQEE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAIF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQID",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgMF",
      "Pos": null
     }
    ]
@@ -4686,113 +4001,293 @@
    "Formation": 4,
    "Units": [
     {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgMFAQQ=",
+     "Class": 1,
+     "Skills": "AQIE",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQMF",
+     "Skills": "AgQD",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQUE",
+     "Skills": "AQIF",
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "Ag==",
+     "Class": 2,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwUC",
      "Pos": null
     }
    ]
   },
   {
-   "Formation": 7,
+   "Formation": 3,
    "Units": [
     {
      "Class": 0,
-     "Skills": "AgM=",
+     "Skills": "AwIB",
      "Pos": null
     },
     {
      "Class": 0,
+     "Skills": "BQID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQIE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
      "Skills": "AwQB",
      "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQIE",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQMBAg==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
     }
    ]
   },
   {
-   "Formation": 4,
+   "Formation": 5,
    "Units": [
     {
      "Class": 0,
-     "Skills": "BQIBAw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
      "Skills": "AwEC",
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "BQQBAg==",
+     "Class": 0,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAID",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BA==",
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQID",
      "Pos": null
     }
    ]
   },
   {
-   "Formation": 7,
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BAIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAID",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
    "Units": [
     {
      "Class": 0,
-     "Skills": "AQIEAwU=",
+     "Skills": "BQEE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQUD",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQE=",
+     "Skills": "AQQC",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BQE=",
+     "Skills": "AQQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQED",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQQD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQIE",
      "Pos": null
     },
     {
      "Class": 2,
      "Skills": "AQQF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAIF",
      "Pos": null
     },
     {
@@ -4803,16 +4298,141 @@
    ]
   },
   {
-   "Formation": 3,
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQ==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQ=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
    "Units": [
     {
      "Class": 1,
-     "Skills": "AQUCAwQ=",
+     "Skills": "AQQD",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AwUC",
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQI=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgE=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQ==",
      "Pos": null
     },
     {
@@ -4822,42 +4442,7 @@
     },
     {
      "Class": 2,
-     "Skills": "AgEDBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEEAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEEAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAUDAgE=",
+     "Skills": "BAU=",
      "Pos": null
     }
    ]
@@ -4867,237 +4452,57 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "AgMF",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAUDAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEDAgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQMB",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQQC",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQ==",
+     "Skills": "BA==",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AgMEAQU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwQFAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQME",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAUBAgM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQQFAw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAECBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwEE",
-     "Pos": null
-    },
-    {
-     "Class": 1,
      "Skills": "AwEF",
      "Pos": null
     },
     {
+     "Class": 1,
+     "Skills": "AQQ=",
+     "Pos": null
+    },
+    {
      "Class": 2,
-     "Skills": "BAEFAwI=",
+     "Skills": "BAIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQ==",
      "Pos": null
     }
    ]
   },
   {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BAMB",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQMEAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQCBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwQC",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMBBQI=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
+   "Formation": 1,
    "Units": [
     {
      "Class": 0,
-     "Skills": "AwQFAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgMEBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwQFAQI=",
+     "Skills": "BQ==",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "BAIBBQM=",
+     "Skills": "AwIB",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AQQC",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BQMBBAI=",
+     "Skills": "AwIF",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AgMBBAU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQED",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQQFAwI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQIFBAM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwIBBQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwIBBQQ=",
+     "Skills": "BQI=",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AgQFAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEEAgM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwECBAU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAMCBQE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEEAwI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAIDAQU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQMEAgU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAIBAwU=",
+     "Skills": "AQI=",
      "Pos": null
     }
    ]
@@ -5107,172 +4512,22 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": null,
+     "Skills": "AQI=",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
      "Skills": "AQ==",
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
      "Class": 1,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
+     "Skills": "AQQF",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEF",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
+     "Skills": "AQIE",
      "Pos": null
     },
     {
@@ -5287,27 +4542,27 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgME",
+     "Skills": "AQU=",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": null,
+     "Skills": "AwIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQM=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQID",
      "Pos": null
     }
    ]
@@ -5316,28 +4571,28 @@
    "Formation": 2,
    "Units": [
     {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQ==",
+     "Class": 1,
+     "Skills": "BQE=",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "Ag==",
+     "Skills": "AQUE",
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "AgEE",
+     "Class": 2,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQD",
      "Pos": null
     }
    ]
@@ -5347,22 +4602,502 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "BQID",
+     "Skills": "AwIF",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AwI=",
+     "Skills": "AQQC",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "AgE=",
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQMB",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": null,
+     "Skills": "BAEF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwEC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgEE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgQB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwQC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAMB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAMB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BQME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQQD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAIB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwEE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgEE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQID",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgQD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BQIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQIF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQUD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgEE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAID",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgMB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
      "Pos": null
     },
     {
@@ -5373,61 +5108,91 @@
    ]
   },
   {
-   "Formation": 3,
+   "Formation": 4,
    "Units": [
     {
      "Class": 0,
-     "Skills": "BQQ=",
+     "Skills": "Aw==",
      "Pos": null
     },
     {
      "Class": 1,
-     "Skills": "Ag==",
+     "Skills": "AQ==",
      "Pos": null
     },
     {
-     "Class": 1,
+     "Class": 2,
      "Skills": "AQM=",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BAI=",
+     "Skills": "Aw==",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BQQ=",
+     "Skills": "AQ==",
      "Pos": null
     }
    ]
   },
   {
-   "Formation": 5,
+   "Formation": 6,
    "Units": [
     {
      "Class": 0,
-     "Skills": "AwUEAg==",
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgU=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAU=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "Aw==",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "BA==",
+     "Skills": "BQI=",
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "BAM=",
+     "Class": 0,
+     "Skills": "BAI=",
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "AQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
+     "Class": 2,
      "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQ=",
      "Pos": null
     }
    ]
@@ -5437,12 +5202,257 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "BQEDAgQ=",
+     "Skills": "BAEF",
      "Pos": null
     },
     {
      "Class": 0,
-     "Skills": "AwI=",
+     "Skills": "AgQ=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQ=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQ=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgE=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgUE",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAI=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQID",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAI=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAE=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgE=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgQ=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwU=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQ=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwEC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAMB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgQD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQED",
      "Pos": null
     },
     {
@@ -5452,42 +5462,7 @@
     },
     {
      "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgQF",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgEDBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwE=",
+     "Skills": "AwUC",
      "Pos": null
     }
    ]
@@ -5497,882 +5472,12 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "AgM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAUBAg==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgUBAwQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQMC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQIEBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEE",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwQC",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQME",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAUCAwE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEEAwI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAIBBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEF",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQB",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AwUB",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAED",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgQFAQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEF",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQUCBAM=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQQFAgM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgMFAQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQE=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgEEBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwQB",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQECAw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQQCBQM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQQBAgM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQIDBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAUBAw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwUBAgQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AQMEBQI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgUE",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAECAwU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQQDAg==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQIDBA==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AgUE",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgEEBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQUCBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAMBBQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgUDAQQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwUEAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQQBAgM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwQBBQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEDBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwUEAg==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwUCAQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQQDAgE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQIFAw==",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQIBAwQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIBBAU=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AwEFAgQ=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQQFAwI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgMFBAE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAECBQM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQEEAgM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 3,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BA==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAU=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BAM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Ag==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQ==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AwI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQM=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgEF",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BAU=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AgM=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 6,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwUE",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgE=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAMC",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "Aw==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAI=",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQI=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQQ=",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AQM=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 7,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQME",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQECBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "Aw==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BQQ=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 4,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQIDBQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQQB",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": null,
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AgMFBA==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "AQIF",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BQEE",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwE=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
      "Skills": "AQIE",
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": "AwE=",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 2,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BQ==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AgMB",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "AQUCAw==",
-     "Pos": null
-    },
-    {
-     "Class": 0,
-     "Skills": "BQMEAQI=",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "BA==",
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 1,
-   "Units": [
-    {
-     "Class": 0,
-     "Skills": "BAEDBQ==",
-     "Pos": null
-    },
-    {
      "Class": 1,
-     "Skills": "AQUE",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "BAIFAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": "AwIEAQ==",
-     "Pos": null
-    },
-    {
-     "Class": 2,
-     "Skills": null,
-     "Pos": null
-    }
-   ]
-  },
-  {
-   "Formation": 5,
-   "Units": [
-    {
-     "Class": 1,
-     "Skills": "AgUE",
-     "Pos": null
-    },
-    {
-     "Class": 1,
-     "Skills": "AwQC",
+     "Skills": "AgUB",
      "Pos": null
     },
     {
@@ -6381,13 +5486,13 @@
      "Pos": null
     },
     {
-     "Class": 1,
-     "Skills": "AwEFBAI=",
+     "Class": 2,
+     "Skills": "BQMB",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AgQ=",
+     "Skills": "BQMB",
      "Pos": null
     }
    ]
@@ -6402,22 +5507,112 @@
     },
     {
      "Class": 0,
-     "Skills": "BAMBAgU=",
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQME",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BQECAw==",
+     "Skills": "AQMF",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "Ag==",
+     "Skills": "AwEF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQID",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQID",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "AgMFAQ==",
+     "Skills": "AwQF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwUB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgED",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQIE",
      "Pos": null
     }
    ]
@@ -6427,7 +5622,427 @@
    "Units": [
     {
      "Class": 0,
-     "Skills": "BAECAw==",
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQIF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQUD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQID",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgQB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAEC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQUE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQUD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AwEC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQEC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgUB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgEF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQIB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQIB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQQF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQD",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQEC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQ==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 3,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwQ=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwE=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "Ag==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "Aw==",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwI=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BA==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAI=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BA==",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQU=",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAU=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BQ==",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQI=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAI=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQIF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAU=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwQ=",
      "Pos": null
     },
     {
@@ -6436,18 +6051,378 @@
      "Pos": null
     },
     {
-     "Class": 2,
-     "Skills": "AgEFBAM=",
+     "Class": 0,
+     "Skills": "BA==",
      "Pos": null
     },
     {
      "Class": 2,
-     "Skills": "BAIDBQ==",
+     "Skills": "AwE=",
      "Pos": null
     },
     {
      "Class": 2,
+     "Skills": "AQUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BQED",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgM=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQI=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQ=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAU=",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgUE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgEF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQI=",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 6,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "BQID",
+     "Pos": null
+    },
+    {
+     "Class": 1,
      "Skills": "AwI=",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAUD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAIB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AQUC",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 7,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgMF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "BAED",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgUD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQID",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgME",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQME",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AQQC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQMC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAMF",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 2,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AgQB",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AgQF",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AQQD",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BQIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwUE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AwUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAUC",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAUB",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 5,
+   "Units": [
+    {
+     "Class": 1,
+     "Skills": "AQQD",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AgQB",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "BAEF",
+     "Pos": null
+    },
+    {
+     "Class": 1,
+     "Skills": "AwUE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BAUD",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 1,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQUC",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "AwIE",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQMB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgED",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AgEE",
+     "Pos": null
+    }
+   ]
+  },
+  {
+   "Formation": 4,
+   "Units": [
+    {
+     "Class": 0,
+     "Skills": "AQME",
+     "Pos": null
+    },
+    {
+     "Class": 0,
+     "Skills": "BAUB",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "BQME",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwEC",
+     "Pos": null
+    },
+    {
+     "Class": 2,
+     "Skills": "AwQC",
      "Pos": null
     }
    ]

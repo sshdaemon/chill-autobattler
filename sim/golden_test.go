@@ -83,7 +83,8 @@ type goldenOutcome struct {
 }
 
 func mix() []UnitSpec {
-	return []UnitSpec{{Class: Warrior}, {Class: Archer}, {Class: Mage}, {Class: Archer}, {Class: Warrior}}
+	l1 := []Skill{1} // recruits: level 1, their first ability
+	return []UnitSpec{{Class: Warrior, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Mage, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Warrior, Skills: l1}}
 }
 
 func allSkills(c Class, perUnit int) []UnitSpec {
@@ -126,11 +127,11 @@ func goldenCases() []struct {
 		}
 		add(d.Name+" skills", in(11+uint64(d.ID), Army{Formation: f, Units: allSkills(d.ID, 1)}, 2))
 	}
-	add("veterans 5 stars", in(14, Army{Formation: F3x2, Units: []UnitSpec{
-		{Class: Warrior, Skills: []Skill{WarriorToughness, WarriorSwift, WarriorStrength, WarriorDash, WarriorExecutioner}},
-		{Class: Archer, Skills: []Skill{ArcherLongShot, ArcherSharpArrows, ArcherArcingShot, ArcherHeadshot, ArcherToughness}},
-		{Class: Mage, Skills: []Skill{MageFrost, MagePower, MageBlink, MageBlast, MageToughness}},
-	}}, 15))
+	add("veterans 3 stars", in(14, Army{Formation: F3x2, Units: []UnitSpec{
+		{Class: Warrior, Skills: []Skill{WarriorSwift, WarriorDash, WarriorExecutioner}},
+		{Class: Archer, Skills: []Skill{ArcherLongShot, ArcherArcingShot, ArcherHeadshot}},
+		{Class: Mage, Skills: []Skill{MageFrost, MageBlink, MageBlast}},
+	}}, 10))
 	// every skill and the combinations whose order matters (data-driven-units)
 	with := func(c Class, skills ...Skill) []UnitSpec {
 		out := make([]UnitSpec, ArmySize)
@@ -145,7 +146,7 @@ func goldenCases() []struct {
 	add("archers long shot and headshot", in(44, Army{Formation: F1x4, Units: with(Archer, ArcherLongShot, ArcherHeadshot, ArcherToughness)}, 5))
 	add("warriors swift and dash", in(45, Army{Formation: F4x1, Units: with(Warrior, WarriorDash, WarriorSwift)}, 5))
 	add("warriors executioner", in(46, Army{Formation: F5x0, Units: with(Warrior, WarriorExecutioner, WarriorStrength, WarriorToughness)}, 5))
-	for _, n := range []int{0, 3, 25} {
+	for _, n := range []int{0, 3, 10} {
 		add("red with "+itoa(n)+" skills", in(uint64(50+n), Army{Formation: Spread, Units: mix()}, n))
 	}
 	custom := mix()
@@ -161,7 +162,7 @@ func goldenCases() []struct {
 	eased := in(31, Army{Formation: F3x2, Units: mix()}, 1)
 	eased.RedHealthPct = 85 // a run's first match
 	add("red at 85% health", eased)
-	for _, s := range []uint64{1069, 1710} { // these end with both armies dying on the same tick
+	for _, s := range []uint64{1332, 1419} { // these end with both armies dying on the same tick
 		add("mutual wipe", in(s, Army{Formation: Presets[s%7], Units: mix()}, int(s%6)))
 		cases[len(cases)-1].name += " " + itoa(int(s))
 	}
@@ -290,7 +291,7 @@ func FuzzDeterminism(f *testing.F) {
 	f.Add(uint64(1), uint8(0), uint8(0), uint8(0))
 	f.Add(uint64(90), uint8(3), uint8(4), uint8(5))
 	f.Fuzz(func(t *testing.T, seed uint64, formation, classes, redSkills uint8) {
-		in := Input{Version: Version, Seed: seed, CombatSeed: ^seed, RedSkills: int(redSkills) % (ArmySize*MaxSkills + 1),
+		in := Input{Version: Version, Seed: seed, CombatSeed: ^seed, RedSkills: int(redSkills) % (ArmySize*(MaxLevel-1) + 1),
 			Blue: Army{Formation: Presets[int(formation)%len(Presets)]}}
 		for i := 0; i < ArmySize; i++ {
 			c := Class((int(classes) >> i) % 3)

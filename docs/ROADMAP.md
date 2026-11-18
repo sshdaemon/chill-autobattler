@@ -168,6 +168,13 @@ Original plan:
 
 ### 1.1 Levels: three abilities at most (rule change)
 
+Done (OpenSpec `unit-levels`): `sim.MaxLevel` = 3, inputs need 1 to 3
+abilities per unit, Red's units start with one random ability and its count
+means abilities above level 1, picks stop at level 3, `RulesVersion` 0.6.0.
+Until the draft (1.3), the client gives each recruit a random level-1 ability
+that stays the same for the run, match and slot. The balance lab follows the
+new rules; `pnpm balance` (the full report) has not been rerun yet.
+
 - Each unit type has a pool of **five abilities**. A unit knows at most **three**.
 - **Level 1** (a new recruit): one ability, picked during the draft (random if
   the timer runs out).

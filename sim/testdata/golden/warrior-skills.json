@@ -1,18 +1,22 @@
 {
-  "version": "0.5.0+d23fedf8",
+  "version": "0.6.0+d23fedf8",
   "case": "warrior skills",
   "outcome": {
     "result": 1,
-    "ticks": 340,
-    "checksum": "15975035994232064881",
+    "ticks": 297,
+    "checksum": "14532395731693404672",
     "survivors": [
       {
         "Index": 1,
-        "HP": 426473
+        "HP": 1369305
       },
       {
         "Index": 3,
-        "HP": 1680421
+        "HP": 343936
+      },
+      {
+        "Index": 4,
+        "HP": 1947362
       }
     ]
   }

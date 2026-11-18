@@ -75,12 +75,21 @@ func input(seed uint64) sim.Input {
 	return sim.Input{Version: sim.Version, Seed: seed, CombatSeed: seed*7919 + 1}
 }
 
+// army builds recruits (level 1): unit i of a class gets that class's ability
+// i, so an army of one class covers its abilities evenly.
 func army(f sim.Formation, classes ...sim.Class) sim.Army {
 	a := sim.Army{Formation: f}
+	nth := map[sim.Class]int{}
 	for _, c := range classes {
-		a.Units = append(a.Units, sim.UnitSpec{Class: c})
+		a.Units = append(a.Units, recruit(c, nth[c]))
+		nth[c]++
 	}
 	return a
+}
+
+// recruit is a level-1 unit with its class's (k mod 5)+1-th ability.
+func recruit(c sim.Class, k int) sim.UnitSpec {
+	return sim.UnitSpec{Class: c, Skills: []sim.Skill{sim.Roster[c].Skills[k%sim.MaxSkills].Skill}}
 }
 
 func mix(w, a, m int) []sim.Class {
@@ -226,8 +235,9 @@ type skillRow struct {
 	base, with tally
 }
 
-// Skills: baseline 2W 2A 1M (3-2) vs seeded Red; variant: the first unit of
-// the skill's class has it. Same seeds, so the difference is the skill.
+// Skills: baseline 2W 2A 1M (3-2) of recruits vs seeded Red; variant: the
+// first unit of the skill's class takes it as its level-1 ability instead.
+// Same seeds, so the difference is the choice of ability.
 func Skills(n int) (string, []skillRow) {
 	base := func(i int) sim.Input {
 		in := input(400_000 + uint64(i))
@@ -255,7 +265,7 @@ func Skills(n int) (string, []skillRow) {
 	}
 	sort.SliceStable(rows, func(i, j int) bool { return rows[i].with.win() > rows[j].with.win() })
 	var b strings.Builder
-	fmt.Fprintf(&b, "Baseline: 2W 2A 1M in 3-2 against the seeded Red army, **%s** win rate (%d battles). One unit of the skill's class learns the skill; same seeds and armies, so Δ is the skill's effect.\n\n", pct(baseT.win()), baseT.n)
+	fmt.Fprintf(&b, "Baseline: 2W 2A 1M in 3-2 against the seeded Red army, **%s** win rate (%d battles). Every unit is a recruit with one ability; in each row one unit of the skill's class takes that skill as its ability instead of its default. Same seeds and armies, so Δ is the choice of ability.\n\n", pct(baseT.win()), baseT.n)
 	b.WriteString("| Skill | Class | Win rate | Δ vs baseline |\n|---|---|---|---|\n")
 	for _, r := range rows {
 		fmt.Fprintf(&b, "| %s | %s | %s | %+.1f pts |\n", r.name, title(r.class), pct(r.with.win()), 100*(r.with.win()-r.base.win()))

@@ -139,11 +139,11 @@ How to read it:
 
 ## 10. Progression: veterans and skills
 
-- **Learning:** after a **won** match, every surviving unit learns **one new skill** for its class. The player picks it on the Victory screen, and Next match stays locked until every survivor has one.
-- **Limit:** each skill can be learned once, so a unit maxes out at **5 skills**.
-- **★ count:** a unit's ★ equals its number of skills. Stars show over its health bar, on its portrait and in its info panel.
-- **Death:** a veteran who dies is gone for good, with all their skills.
-- **Recruits:** new units always start with no skills.
+- **Levels:** each unit type offers **five** abilities; a unit knows at most **three**, one per level.
+- **Recruits:** a new unit is **level 1** with one ability (chosen in the draft, roadmap Phase 1; until then picked at random).
+- **Learning:** after a **won** match, every surviving unit below level 3 learns **one more ability** of its class (levels 2 and 3). The player picks it on the Victory screen, and Next match stays locked until every owed pick is made.
+- **★ count:** a unit's ★ equals its level (number of abilities). Stars show over its health bar, on its portrait and in its info panel.
+- **Death:** a veteran who dies is gone for good, with all their abilities.
 
 ### 10.1 Skill list
 
@@ -181,9 +181,9 @@ In the code each skill is a list of effects (stat bonus, finisher, slow on hit, 
 
 ### 10.2 Enemy scaling
 
-- **Red matches you:** in each match, Red gets **as many skills in total as your army has**.
-- **Spread:** each skill goes to a random Red unit, as a random skill it doesn't have yet, seeded by the map. Your one ★★ veteran might face one ★★ enemy or two ★ enemies.
-- **Fresh start:** if all your veterans die, Red is back to having no skills.
+- **Red matches you:** Red's units start at level 1 too (one random ability each), and in each match Red gets **as many abilities above level 1 as your army has**.
+- **Spread:** each extra ability goes to a random Red unit below level 3, as a random ability it doesn't have yet, seeded by the map. Your one ★★★ veteran might face one ★★★ enemy or two ★★ enemies.
+- **Fresh start:** if all your veterans die, Red is back to level 1.
 - **Easier first matches:** Red's units start at **85% health in match 1, 90% in match 2 and 95% in match 3**, then at full health. Without this, a run was about a coin flip from the first match (1.3 wins on average); with it, about 88/82/72% of those matches are won, then about 64% from match 4 on (3 wins on average).
 - **No counter-picking:** Red's army stays seeded-random. The lab found no snowballing (the win rate per match is flat), so counter-picking would only shorten runs.
 - **Why:** the run stays tense without a flat difficulty curve. The edge comes from *which* skills you chose and *keeping* units alive.

@@ -9,8 +9,9 @@ import (
 )
 
 func five() []*chillv1.UnitSpec {
+	l1 := []uint32{1}
 	w, a, m := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER, chillv1.UnitClass_UNIT_CLASS_MAGE
-	return []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.WarriorDash)}}, {UnitClass: w}, {UnitClass: a}, {UnitClass: a}, {UnitClass: m}}
+	return []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.WarriorDash)}}, {UnitClass: w, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: m, Skills: l1}}
 }
 
 func TestInput(t *testing.T) {
