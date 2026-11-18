@@ -229,4 +229,4 @@ Decided (November 2026):
 Open:
 5. Is the second drafter always Red (single player)? The draft is built so a
    human could take Red's seat later (PvP), but nothing is planned for that.
-6. The questions at the end of `design/ROSTER-PLAN.md` (Phase 2 review).
+6. ~~The review questions in `design/ROSTER-PLAN.md`~~: answered there (three types per faction for now, the huslyar weak alone, no effect cut, abilities may change temperament).

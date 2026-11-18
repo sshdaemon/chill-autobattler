@@ -207,13 +207,14 @@ Plus the temperament fields (roadmap step 0.4). New visual work per unit: looks,
 clips (singing and strumming, curse gesture, siphon jet, spear throw), effect
 presets (fire jet, burning ground, smoke, song notes or ripples).
 
-## Questions for the review
+## Review answers (November 2026)
 
-1. Are three unit types per faction enough for a draft of five picks, or should
-   each faction get a fourth (for example Rus spearmen, Varangian berserkir,
-   Roman kataphraktoi on foot)?
-2. Is the huslyar's support role right (weak alone), or should he deal real damage?
-3. Too many new effect kinds (about fifteen)? Candidates to cut or simplify:
-   Guard, Shoot while moving, Burning ground, Cone attack.
-4. Should temperament be changeable by an ability (for example the bowman's
-   Hunter switching target priority), or fixed per unit type?
+1. Three unit types per faction are enough for now.
+2. The huslyar stays weak alone: try it and see in the balance lab.
+3. Keep all the new effect kinds; none are cut.
+4. Abilities may change a unit's temperament (for example Hunter makes the
+   bowman target ranged units first). Temperament fields are therefore part
+   of what an ability's effects can set.
+
+The plan's units, numbers and abilities still get a final look before Phase 3
+starts.
