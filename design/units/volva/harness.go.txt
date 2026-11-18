@@ -1,0 +1,76 @@
+package main
+
+// Völva's bands (design/units/volva/balance.md). A local harness, kept as
+// design/units/volva/harness.go.txt; not part of tools/balance.
+// Run: cp design/units/volva/harness.go.txt tools/balance/zz_volva_bands_test.go
+//      go test ./tools/balance -run TestVolvaBands -count=1 -v ; rm tools/balance/zz_volva_bands_test.go
+
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"testing"
+
+	"chill/sim"
+)
+
+func TestVolvaBands(t *testing.T) {
+	n := 2000
+	if s := os.Getenv("N"); s != "" {
+		n, _ = strconv.Atoi(s)
+	}
+	V := sim.Volva
+	const mage, archer = 4, 2 // the standard army's special slot and its first archer
+	army := func(f func(i int, in *sim.Input)) float64 {
+		var ins []sim.Input
+		for i := 0; i < n; i++ {
+			in := standard(i)
+			f(i, &in)
+			ins = append(ins, in)
+		}
+		return count(play(ins)).win()
+	}
+	type row struct {
+		what, result, band string
+		ok                 bool
+	}
+	var rows []row
+	m := n / 2
+	for _, dd := range sim.Roster {
+		if dd.ID == V {
+			continue
+		}
+		blue, red := headToHead(V, dd.ID, m), headToHead(dd.ID, V, m)
+		w := (blue.win() + 1 - red.win() - float64(red.draw)/float64(red.n)) / 2
+		if dd.Tags&sim.TagMelee != 0 {
+			rows = append(rows, row{"5× volva vs 5× " + dd.Name + " (melee)", pct(w), "25–75%", w >= 0.25 && w <= 0.75})
+		} else {
+			rows = append(rows, row{"5× volva vs 5× " + dd.Name, pct(w), "none (ranged and casters may beat her)", true})
+		}
+	}
+	base := army(func(int, *sim.Input) {})
+	swap := army(func(i int, in *sim.Input) { in.Blue.Units[mage] = recruit(V, i) })
+	d := swap - base
+	rows = append(rows, row{"standard army with its Mage swapped for volva", fmt.Sprintf("%s (base %s, %+.1f pts)", pct(swap), pct(base), 100*d), "±10 pts", d >= -0.10 && d <= 0.10})
+	var rates [sim.MaxSkills]float64
+	avg := 0.0
+	for k, sd := range sim.Roster[V].Skills {
+		rates[k] = army(func(i int, in *sim.Input) { in.Blue.Units[mage] = sim.UnitSpec{Class: V, Skills: []sim.Skill{sd.Skill}} })
+		avg += rates[k] / sim.MaxSkills
+	}
+	for k, sd := range sim.Roster[V].Skills {
+		d := rates[k] - avg
+		rows = append(rows, row{"level-1 pick " + sd.Name, fmt.Sprintf("%s (%+.1f pts vs its average)", pct(rates[k]), 100*d), "±10 pts", d >= -0.10 && d <= 0.10})
+	}
+	as := army(func(i int, in *sim.Input) { in.Blue.Units[archer] = recruit(V, i) })
+	rows = append(rows, row{"(info) standard army with an Archer swapped for volva", fmt.Sprintf("%s (%+.1f pts)", pct(as), 100*(as-base)), "none", true})
+
+	fmt.Printf("%d battles per army row, %d per head-to-head side, fixed seeds (sim %s).\n\n| Check | Result | Band | |\n|---|---|---|---|\n", n, m, sim.Version)
+	for _, r := range rows {
+		mark := "pass"
+		if !r.ok {
+			mark = "**FAIL**"
+		}
+		fmt.Printf("| %s | %s | %s | %s |\n", r.what, r.result, r.band, mark)
+	}
+}
