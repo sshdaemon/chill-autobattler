@@ -379,6 +379,20 @@
    ],
    "scale": 0.42
   },
+  "Quiver_Belt": {
+   "bone": "pelvis",
+   "pos": [
+    -0.22,
+    0.05,
+    -0.08
+   ],
+   "rot": [
+    0.25,
+    0,
+    -0.2
+   ],
+   "scale": 0.55
+  },
   "Wizard_Hat": {
    "bone": "Head",
    "pos": [
@@ -486,6 +500,34 @@
     -0.35
    ],
    "scale": 0.85
+  },
+  "Composite_Bow": {
+   "bone": "hand_l",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 1.0
+  },
+  "Fur_Cap": {
+   "bone": "Head",
+   "pos": [
+    0,
+    0.155,
+    0.0
+   ],
+   "rot": [
+    -0.08,
+    0,
+    0
+   ],
+   "scale": 1.0
   }
  },
  "materials": {

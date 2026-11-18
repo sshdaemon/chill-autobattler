@@ -341,6 +341,52 @@ def model_items():
         o.data.materials.append(plate)
     slit.data.materials.append(dark)
     export('Great_Helm', [barrel, top, slit, crest])
+    # strilets: composite recurved bow of steppe type, in the KayKit bow's frame
+    # (grip at the origin, length along Y here = glTF Z, string on -X), braced:
+    # limbs curve back toward the string, then the stiff horn ears (siyahs) turn forward
+    from mathutils import Vector
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    limb = mat('MI_BowLimb', lin(0x3b2a1d), 0.6)
+    grip = mat('MI_BowGrip', lin(0x7a5232), 0.85)
+    horn = mat('MI_BowEar', lin(0xcdb68c), 0.45)
+    cord = mat('MI_BowString', lin(0xd8ceb6), 0.9)
+
+    def rod(a, b, r, m, verts=6):
+        a, b = Vector(a), Vector(b)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=r, depth=(b - a).length, location=(a + b) / 2)
+        o = bpy.context.object
+        o.rotation_mode = 'QUATERNION'; o.rotation_quaternion = (b - a).to_track_quat('Z', 'Y')
+        o.data.materials.append(m)
+        return o
+
+    # one limb as (x, y) points from the grip out; the other mirrors it
+    arm = [(0.0, 0.07), (-0.02, 0.18), (-0.06, 0.29), (-0.105, 0.38), (-0.14, 0.45)]
+    ear = [(-0.14, 0.45), (-0.115, 0.51), (-0.075, 0.55)]
+    bow = [rod((0, -0.08, 0), (0, 0.08, 0), 0.02, grip)]
+    for s in (1, -1):
+        for pts, r, m in ((arm, 0.013, limb), (ear, 0.01, horn)):
+            for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+                bow.append(rod((x0, s * y0, 0), (x1, s * y1, 0), r, m))
+    bow.append(rod((-0.13, -0.47, 0), (-0.13, 0.47, 0), 0.004, cord, 4))
+    export('Composite_Bow', bow)
+    # strilets: a rounded wool cap with a fur band, sat like the helmet
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    wool = mat('MI_CapWool', lin(0x7d2e22), 0.95)
+    fur = mat('MI_CapFur', lin(0x4a3627), 1.0)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=20, ring_count=10, radius=0.122, location=(0, 0, 0))
+    crown = bpy.context.object
+    crown.scale = (1, 1, 1.2)
+    bpy.ops.object.mode_set(mode='EDIT')
+    bm = bmesh.from_edit_mesh(crown.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -0.01], context='VERTS')
+    bmesh.update_edit_mesh(crown.data); bpy.ops.object.mode_set(mode='OBJECT')
+    crown.data.materials.append(wool)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.128, minor_radius=0.03, major_segments=24, minor_segments=8, location=(0, 0, 0.0))
+    band = bpy.context.object
+    band.scale = (1, 1, 1.25)
+    band.data.materials.append(fur)
+    export('Fur_Cap', [crown, band])
+
 
     # husli (huslyar): a winged lap harp. A flat tapered soundbox, length
     # along X (wide, pegged end at -X), the soundboard facing glTF +Z
@@ -444,7 +490,7 @@ def model_items():
         o.data.materials.append(rimiron)
     export('Shield_Crimson', [board, edge, boss])
 
-    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli'):
+    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
