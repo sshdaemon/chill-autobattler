@@ -21,10 +21,10 @@ type Unit struct {
 	Slowed   bool
 	Swinging bool
 
-	cd, busy, retarget, dashCd, blinkCd, slow int // tick counters
-	slowFactor                                Fx  // speed factor while slow > 0
-	kit                                       loadout
-	kiteTime, kiteRest, pathTimer             int
+	cd, busy, retarget, slow      int // tick counters
+	slowFactor                    Fx  // speed factor while slow > 0
+	kit                           loadout
+	kiteTime, kiteRest, pathTimer int
 
 	swing       *swing
 	dash        *dash
@@ -45,71 +45,11 @@ type dash struct {
 	t, dur   int
 }
 
-// loadout is a unit's learned non-stat effects, folded once at spawn so the
-// battle reads fields instead of scanning skills every tick.
-type loadout struct {
-	finisherPct                     int
-	slow, splash, gapCloser, escape *Effect
-	overCover                       bool
-}
-
-// statOrder is the fixed order stat bonuses apply in. Within one stat they
-// apply in the roster's skill order, each as its own MulDiv, so roundings
-// (and replays) never depend on the order skills were learned.
-var statOrder = [...]StatKind{StatHP, StatDamage, StatRange, StatSpeed, StatAttackSpeed}
-
 func newUnit(index, team int, spec UnitSpec, pos Vec) *Unit {
 	def := RosterOf(spec.Class)
-	st := def.Stats
+	st := foldStats(def, spec.Skills)
 	var kit loadout
-	for _, stat := range statOrder {
-		for _, sd := range def.Skills {
-			if !hasSkill(spec.Skills, sd.Skill) {
-				continue
-			}
-			for _, e := range sd.Effects {
-				if e.Kind != StatBonus || e.Stat != stat {
-					continue
-				}
-				switch stat {
-				case StatHP:
-					st.HP = st.HP.MulDiv(100+e.Pct, 100)
-				case StatDamage:
-					st.DmgLo = st.DmgLo.MulDiv(100+e.Pct, 100)
-					st.DmgHi = st.DmgHi.MulDiv(100+e.Pct, 100)
-				case StatRange:
-					st.Range = st.Range.MulDiv(100+e.Pct, 100)
-				case StatSpeed:
-					st.Speed = st.Speed.MulDiv(100+e.Pct, 100)
-				case StatAttackSpeed: // faster blows: cooldown and swing ×Pct%
-					st.Cooldown = st.Cooldown * e.Pct / 100
-					st.SwingTicks = st.SwingTicks * e.Pct / 100
-				}
-			}
-		}
-	}
-	for _, sd := range def.Skills {
-		if !hasSkill(spec.Skills, sd.Skill) {
-			continue
-		}
-		for i := range sd.Effects {
-			e := &sd.Effects[i]
-			switch e.Kind {
-			case Finisher:
-				kit.finisherPct = e.Pct
-			case SlowOnHit:
-				kit.slow = e
-			case SplashOnHit:
-				kit.splash = e
-			case GapCloser:
-				kit.gapCloser = e
-			case Escape:
-				kit.escape = e
-			case OverCover:
-				kit.overCover = true
-			}
-		}
-	}
+	kit.learn(def, spec.Skills)
 	face := V(0, -One) // Blue faces up the field (-z), Red down
 	if team == 1 {
 		face = V(0, One)
@@ -127,8 +67,9 @@ func (b *Battle) think(u *Unit) {
 	u.cd--
 	u.busy--
 	u.retarget--
-	u.dashCd--
-	u.blinkCd--
+	for i := range u.kit.active {
+		u.kit.active[i].cd--
+	}
 
 	if u.Target < 0 || b.Units[u.Target].Dead || u.retarget <= 0 {
 		prev := u.Target
@@ -156,8 +97,10 @@ func (b *Battle) think(u *Unit) {
 		return
 	}
 
-	if u.kit.escape != nil && u.blinkCd <= 0 && b.tryBlink(u) {
-		return
+	for i := range u.kit.active {
+		if a := &u.kit.active[i]; a.kind.beforeAct != nil && a.kind.beforeAct(b, u, a) {
+			return
+		}
 	}
 
 	if u.swing != nil {
@@ -194,19 +137,10 @@ func (b *Battle) think(u *Unit) {
 	}
 
 	d := Dist(u.Pos, t.Pos)
-	if g := u.kit.gapCloser; g != nil && u.dashCd <= 0 && d > u.Stats.Range+DashMinGap && d <= g.Value && b.Map.LineOfSight(u.Pos, t.Pos) {
-		dir := t.Pos.Sub(u.Pos).Norm()
-		reach := d - u.Stats.Range.MulDiv(8, 10)
-		dur := reach.Div(perTick(g.Speed)).Ceil()
-		if dur < 1 {
-			dur = 1
+	for i := range u.kit.active {
+		if a := &u.kit.active[i]; a.kind.approach != nil && a.kind.approach(b, u, t, d, a) {
+			return
 		}
-		u.dash = &dash{from: u.Pos, to: u.Pos.Add(dir.Scale(reach)), dur: dur}
-		u.Face = dir
-		u.dashCd = g.Ticks
-		u.path = nil
-		b.emit(Event{Kind: EvDash, Unit: u.Index, Other: -1})
-		return
 	}
 
 	// ranged units need a clear line of fire (unless they lob over); otherwise they walk until they have one
@@ -224,40 +158,6 @@ func (b *Battle) think(u *Unit) {
 		jitter := 100 - CooldownJitter + b.rng.IntN(2*CooldownJitter+1)
 		u.cd = u.Stats.Cooldown * jitter / 100
 	}
-}
-
-// tryBlink (the Escape effect) teleports a unit away from nearby melee. It reports whether the
-// mage blinked (which ends its turn).
-func (b *Battle) tryBlink(u *Unit) bool {
-	esc := u.kit.escape
-	var sum Vec
-	n := 0
-	for _, e := range b.Units {
-		if !e.Dead && e.Team != u.Team && !e.Stats.Ranged && Within(u.Pos, e.Pos, esc.Radius) {
-			sum = sum.Add(e.Pos)
-			n++
-		}
-	}
-	if n == 0 {
-		return false
-	}
-	centre := V(sum.X/Fx(n), sum.Z/Fx(n))
-	base := u.Pos.Sub(centre).Norm()
-	if base.IsZero() {
-		base = V(0, One)
-	}
-	for _, turn := range BlinkTurns {
-		p := u.Pos.Add(base.Rot(turn).Scale(esc.Value))
-		if p.X.Abs() > EdgeLimit || p.Z.Abs() > EdgeLimit || !b.Map.FreeAt(p) {
-			continue
-		}
-		b.emit(Event{Kind: EvBlink, Unit: u.Index, Other: -1, Amount: 0})
-		u.Pos = p
-		u.moveTarget, u.path, u.swing = nil, nil, nil
-		u.blinkCd = esc.Ticks
-		return true
-	}
-	return false
 }
 
 // kite makes an archer back away from nearby melee, in bursts. It reports

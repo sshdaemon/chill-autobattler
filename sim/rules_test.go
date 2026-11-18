@@ -341,7 +341,7 @@ func TestDash(t *testing.T) {
 	if d := Dist(u.Pos, b.Units[1].Pos); d > u.Stats.Range+Half {
 		t.Errorf("dash should stop at sword range, %v away", d)
 	}
-	if u.dashCd <= 0 {
+	if u.effect(GapCloser).cd <= 0 {
 		t.Error("dash should go on cooldown")
 	}
 }
@@ -357,8 +357,8 @@ func TestBlink(t *testing.T) {
 	if m.Pos.Z <= 0 {
 		t.Errorf("blink should go away from the warrior, landed at %v", m.Pos)
 	}
-	if m.blinkCd != 8*TicksPerSecond {
-		t.Errorf("blink cooldown %d", m.blinkCd)
+	if cd := m.effect(Escape).cd; cd != 8*TicksPerSecond {
+		t.Errorf("blink cooldown %d", cd)
 	}
 }
 

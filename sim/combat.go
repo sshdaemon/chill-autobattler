@@ -42,17 +42,9 @@ func (b *Battle) updateShots() {
 		}
 		u := b.Units[s.Shooter]
 		b.damage(u, v, s.Start, One)
-		// on-hit effects in a fixed order: slow, then splash
-		if sl := u.kit.slow; !v.Dead && sl != nil && b.rng.IntN(100) < sl.Pct {
-			v.slow, v.slowFactor = sl.Ticks, sl.Factor
-			b.emit(Event{Kind: EvFrost, Unit: v.Index, Other: u.Index})
-		}
-		if sp := u.kit.splash; sp != nil {
-			b.emit(Event{Kind: EvBlast, Unit: v.Index, Other: u.Index})
-			for _, e := range b.Units {
-				if e != v && !e.Dead && e.Team == v.Team && Within(e.Pos, v.Pos, sp.Radius) {
-					b.damage(u, e, s.Start, Ratio(sp.Pct, 100))
-				}
+		for i := range u.kit.active { // on-hit effects, in kind order (slow, then splash)
+			if a := &u.kit.active[i]; a.kind.onShotLands != nil {
+				a.kind.onShotLands(b, u, v, s, a)
 			}
 		}
 	}
@@ -81,10 +73,10 @@ func (b *Battle) damage(att, v *Unit, from Vec, scale Fx) {
 	} else if m < One {
 		flags |= FlagWeak
 	}
-	// instant kills only finish off the wounded (below ExecuteBelowPct of max health)
-	if scale == One && att.kit.finisherPct > 0 && v.HP.MulDiv(100, ExecuteBelowPct) <= v.MaxHP && b.rng.IntN(100) < att.kit.finisherPct {
-		amount = Max(amount, v.HP)
-		b.emit(Event{Kind: EvExecute, Unit: v.Index, Other: att.Index})
+	for i := range att.kit.active { // effects that change a blow (finisher)
+		if a := &att.kit.active[i]; a.kind.onBlow != nil {
+			amount = a.kind.onBlow(b, att, v, scale, amount, a)
+		}
 	}
 	att.Dealt += Min(amount, v.HP)
 	v.HP -= amount

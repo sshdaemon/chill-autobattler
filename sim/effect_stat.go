@@ -1,0 +1,54 @@
+package sim
+
+import "fmt"
+
+// StatBonus: Stat +Pct% (AttackSpeed: cooldown and swing ×Pct%). Folded into
+// the unit's stats at spawn (foldStats), not a hook.
+func init() {
+	registerEffect(StatBonus, &effectKind{name: "statBonus", check: func(e Effect, _ *UnitDef) error {
+		if e.Stat == StatAttackSpeed {
+			return pctIn(e, 1, 100)
+		}
+		if e.Stat < StatHP || e.Stat > StatAttackSpeed {
+			return fmt.Errorf("stat bonus on unknown stat %d", e.Stat)
+		}
+		return pctIn(e, -90, 400)
+	}})
+}
+
+// statOrder is the fixed order stat bonuses apply in. Within one stat they
+// apply in the roster's skill order, each as its own MulDiv, so roundings
+// (and replays) never depend on the order skills were learned.
+var statOrder = [...]StatKind{StatHP, StatDamage, StatRange, StatSpeed, StatAttackSpeed}
+
+// foldStats applies the stat bonuses of the unit's skills to its base stats.
+func foldStats(def *UnitDef, skills []Skill) Stats {
+	st := def.Stats
+	for _, stat := range statOrder {
+		for _, sd := range def.Skills {
+			if !hasSkill(skills, sd.Skill) {
+				continue
+			}
+			for _, e := range sd.Effects {
+				if e.Kind != StatBonus || e.Stat != stat {
+					continue
+				}
+				switch stat {
+				case StatHP:
+					st.HP = st.HP.MulDiv(100+e.Pct, 100)
+				case StatDamage:
+					st.DmgLo = st.DmgLo.MulDiv(100+e.Pct, 100)
+					st.DmgHi = st.DmgHi.MulDiv(100+e.Pct, 100)
+				case StatRange:
+					st.Range = st.Range.MulDiv(100+e.Pct, 100)
+				case StatSpeed:
+					st.Speed = st.Speed.MulDiv(100+e.Pct, 100)
+				case StatAttackSpeed: // faster blows: cooldown and swing ×Pct%
+					st.Cooldown = st.Cooldown * e.Pct / 100
+					st.SwingTicks = st.SwingTicks * e.Pct / 100
+				}
+			}
+		}
+	}
+	return st
+}
