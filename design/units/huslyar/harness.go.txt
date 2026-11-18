@@ -1,0 +1,82 @@
+package main
+
+// Huslyar's army bands (design/units/huslyar/balance.md). A local harness,
+// kept as design/units/huslyar/harness.go.txt; not part of tools/balance.
+// Run: cp design/units/huslyar/harness.go.txt tools/balance/zz_huslyar_bands_test.go
+//      go test ./tools/balance -run TestHuslyarBands -count=1 -v ; rm tools/balance/zz_huslyar_bands_test.go
+
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"testing"
+
+	"chill/sim"
+)
+
+func TestHuslyarBands(t *testing.T) {
+	n := 2000
+	if s := os.Getenv("N"); s != "" {
+		n, _ = strconv.Atoi(s)
+	}
+	H := sim.Huslyar
+	const slot = 4 // the standard army's mage: the special slot
+	withH := func(f func(i int, in *sim.Input)) float64 {
+		var ins []sim.Input
+		for i := 0; i < n; i++ {
+			in := standard(i)
+			f(i, &in)
+			ins = append(ins, in)
+		}
+		return count(play(ins)).win()
+	}
+	type row struct {
+		what, result, band string
+		ok                 bool
+	}
+	var rows []row
+	base := withH(func(int, *sim.Input) {})
+	swap := withH(func(i int, in *sim.Input) { in.Blue.Units[slot] = recruit(H, i) })
+	d := swap - base
+	rows = append(rows, row{"standard army with its Mage swapped for huslyar", fmt.Sprintf("%s (base %s, %+.1f pts)", pct(swap), pct(base), 100*d), "±10 pts", d >= -0.10 && d <= 0.10})
+
+	orig := sim.Roster[H]
+	quiet := orig
+	quiet.Traits = nil
+	sim.Roster[H] = quiet
+	silent := withH(func(i int, in *sim.Input) { in.Blue.Units[slot] = recruit(H, i) })
+	sim.Roster[H] = orig
+	g := swap - silent
+	rows = append(rows, row{"his song (trait) on vs off, same army", fmt.Sprintf("%+.1f pts (%s without it)", 100*g, pct(silent)), "≥ +10 pts", g >= 0.10})
+
+	var rates [sim.MaxSkills]float64
+	avg := 0.0
+	for k, sd := range orig.Skills {
+		rates[k] = withH(func(i int, in *sim.Input) { in.Blue.Units[slot] = sim.UnitSpec{Class: H, Skills: []sim.Skill{sd.Skill}} })
+		avg += rates[k] / sim.MaxSkills
+	}
+	for k, sd := range orig.Skills {
+		d := rates[k] - avg
+		rows = append(rows, row{"level-1 pick " + sd.Name, fmt.Sprintf("%s (%+.1f pts vs its average)", pct(rates[k]), 100*d), "±10 pts", d >= -0.10 && d <= 0.10})
+	}
+	m := n / 4
+	for _, dd := range sim.Roster {
+		if dd.ID == H {
+			continue
+		}
+		blue, red := headToHead(H, dd.ID, m), headToHead(dd.ID, H, m)
+		w := (blue.win() + 1 - red.win() - float64(red.draw)/float64(red.n)) / 2
+		rows = append(rows, row{"5× huslyar vs 5× " + dd.Name, pct(w), "≤ 25% (weak alone)", w <= 0.25})
+	}
+	ws := withH(func(i int, in *sim.Input) { in.Blue.Units[0] = recruit(H, i) })
+	rows = append(rows, row{"(info) standard army with a Warrior swapped for huslyar", fmt.Sprintf("%s (%+.1f pts)", pct(ws), 100*(ws-base)), "none", true})
+
+	fmt.Printf("%d battles per army row, %d per head-to-head side, fixed seeds (sim %s).\n\n| Check | Result | Band | |\n|---|---|---|---|\n", n, m, sim.Version)
+	for _, r := range rows {
+		mark := "pass"
+		if !r.ok {
+			mark = "**FAIL**"
+		}
+		fmt.Printf("| %s | %s | %s | %s |\n", r.what, r.result, r.band, mark)
+	}
+}

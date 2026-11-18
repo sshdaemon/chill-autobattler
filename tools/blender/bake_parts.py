@@ -342,6 +342,53 @@ def model_items():
     slit.data.materials.append(dark)
     export('Great_Helm', [barrel, top, slit, crest])
 
+    # husli (huslyar): a winged lap harp. A flat tapered soundbox, length
+    # along X (wide, pegged end at -X), the soundboard facing glTF +Z
+    # (Blender -Y), strings fanning from the peg bar to the tail; centre at the origin.
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    side = mat('MI_HusliSide', lin(0x6e4626), 0.7)
+    board = mat('MI_HusliBoard', lin(0xc9a067), 0.6)
+    gut = mat('MI_HusliString', lin(0xe8dcc0), 0.4, 0.3)
+    dark = mat('MI_HusliHole', lin(0x24160c), 0.9)
+    import bmesh
+
+    def tapered(name, sx, sy, sz, y, narrow, m):
+        bpy.ops.mesh.primitive_cube_add(size=1, location=(0, y, 0), scale=(sx, sy, sz))
+        o = bpy.context.object
+        bpy.ops.object.transform_apply(scale=True)
+        bpy.ops.object.mode_set(mode='EDIT')
+        bm = bmesh.from_edit_mesh(o.data)
+        for v in bm.verts:
+            if v.co.x > 0:
+                v.co.z *= narrow
+        bmesh.update_edit_mesh(o.data); bpy.ops.object.mode_set(mode='OBJECT')
+        o.data.materials.append(m)
+        return o
+    box = tapered('box', 0.62, 0.05, 0.26, 0.0, 0.42, side)
+    top = tapered('top', 0.6, 0.006, 0.245, -0.026, 0.42, board)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.035, depth=0.004, location=(-0.08, -0.03, 0.0), rotation=(math.radians(90), 0, 0))
+    hole = bpy.context.object
+    hole.data.materials.append(dark)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(-0.25, -0.036, 0.0), scale=(0.025, 0.014, 0.23))
+    pegs = bpy.context.object
+    pegs.data.materials.append(side)
+    strings = []
+    for k in range(7):
+        f = (k - 3) / 3.0
+        a = (-0.24, -0.042, f * 0.1)   # at the peg bar
+        b = (0.27, -0.032, f * 0.045)  # at the tail
+        mid = tuple((p + q) / 2 for p, q in zip(a, b))
+        d = [q - p for p, q in zip(a, b)]
+        length = math.sqrt(sum(x * x for x in d))
+        bpy.ops.mesh.primitive_cylinder_add(vertices=4, radius=0.0022, depth=length, location=mid)
+        s = bpy.context.object
+        s.rotation_mode = 'XYZ'
+        s.rotation_euler = (0, math.atan2(d[0], d[2]), 0)
+        s.data.materials.append(gut)
+        strings.append(s)
+    export('Husli', [box, top, hole, pegs] + strings)
+
+
     def lathe(name, profile, segs=24, skip=None):
         """A surface of revolution about Z from (radius, z) points; skip(angle)
         leaves out the faces of a sector (an open front)."""
@@ -397,7 +444,7 @@ def model_items():
         o.data.materials.append(rimiron)
     export('Shield_Crimson', [board, edge, boss])
 
-    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson'):
+    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
