@@ -32,6 +32,10 @@ func TestRosterRejectsBadEntries(t *testing.T) {
 		"slow factor":  func(d *UnitDef) { d.Skills[3].Effects = []Effect{{Kind: SlowOnHit, Pct: 50, Ticks: 10, Factor: One}} },
 		"unknown kind": func(d *UnitDef) { d.Skills[3].Effects = []Effect{{Kind: 99}} },
 		"kind twice":   func(d *UnitDef) { d.Skills[0].Effects = []Effect{{Kind: Finisher, Pct: 10}} },
+		"id reused": func(d *UnitDef) {
+			d.Skills[4].Skill = SkillFrost
+			d.Skills[4].Effects = []Effect{{Kind: StatBonus, Stat: StatHP, Pct: 20}}
+		},
 	}
 	for name, breakIt := range cases {
 		r := cloneRoster()

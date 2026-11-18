@@ -9,8 +9,8 @@
 
 ## 2. Roster ids and versioning
 
-- [ ] 2.1 Extend `ValidateRoster` with the id rules (unit ids equal their position; skill ids unique per meaning, never reused), with tests. Add a comment to `proto/chill/v1/units.proto` that further ids come from the roster. Verify with `go test ./sim`.
-- [ ] 2.2 Test that a fourth unit outside Red's pool leaves every golden replay unchanged, and that the server accepts an army with its id and rejects an unknown id. Verify with `pnpm test:go`, using the test-only roster helper.
+- [x] 2.1 Extend `ValidateRoster` with the id rules (unit ids equal their position; skill ids unique per meaning, never reused), with tests. Add a comment to `proto/chill/v1/units.proto` that further ids come from the roster. Verify with `go test ./sim`.
+- [x] 2.2 Test that a fourth unit outside Red's pool leaves every golden replay unchanged, and that the server accepts an army with its id and rejects an unknown id. Verify with `pnpm test:go`, using the test-only roster helper.
 
 ## 3. Balance check
 

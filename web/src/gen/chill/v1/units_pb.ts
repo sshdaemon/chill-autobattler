@@ -89,6 +89,10 @@ export const ArmySchema: GenMessage<Army> = /*@__PURE__*/
   messageDesc(file_chill_v1_units, 2);
 
 /**
+ * Unit types: the first three of the sim's unit roster (sim/roster.go). The
+ * roster may add more; their ids (roster position + 1) need no new value here,
+ * since proto3 enums are open and the sim rejects ids its roster lacks.
+ *
  * @generated from enum chill.v1.UnitClass
  */
 export enum UnitClass {
@@ -120,7 +124,8 @@ export const UnitClassSchema: GenEnum<UnitClass> = /*@__PURE__*/
   enumDesc(file_chill_v1_units, 0);
 
 /**
- * Skills by effect; which ones a class can learn is in docs/GAME_CONCEPT.md §10.1.
+ * Skills by id; which ones a unit can learn is in its roster entry (sim/unit_*.go).
+ * New skills take the next free id from the roster, with no new value needed here.
  *
  * @generated from enum chill.v1.Skill
  */

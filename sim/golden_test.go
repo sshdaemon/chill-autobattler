@@ -259,3 +259,26 @@ func BenchmarkBattle(b *testing.B) {
 		}
 	}
 }
+
+// A new unit outside Red's pool is content, not a rule change: every recorded
+// battle still plays out the same, under the same version.
+func TestGoldenWithExtraUnit(t *testing.T) {
+	withRoster(t, testRanger)
+	var file goldenFileData
+	raw, err := os.ReadFile(goldenFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(raw, &file); err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range goldenCases() {
+		o, err := Run(c.in)
+		if err != nil {
+			t.Fatalf("%s: %v", c.name, err)
+		}
+		if g := toGolden(o); !reflect.DeepEqual(g, file.Outcomes[c.name]) {
+			t.Errorf("%s changed with an extra roster entry: %+v", c.name, g)
+		}
+	}
+}
