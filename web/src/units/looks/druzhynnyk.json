@@ -2,12 +2,11 @@
   "ui": {
     "label": "Druzhynnyk",
     "icon": "🛡️",
-    "blurb": "The prince's retainer: advances in line and guards the archers",
-    "placeholder": true
+    "blurb": "The prince's retainer: holds the line and shields the archers"
   },
   "recipes": [
     {
-      "name": "Druzhynnyk 1",
+      "name": "Dobrynia",
       "sex": "male",
       "head": "Head_Male",
       "build": "heavy",
@@ -26,14 +25,15 @@
       "variant": 1,
       "items": [
         "Sword",
-        "Shield_Round",
-        "Great_Helm",
+        "Shield_Crimson",
+        "Shelom",
         "Cape"
       ],
-      "team": 1.0
+      "team": 1.0,
+      "tint": "#e6d9bf"
     },
     {
-      "name": "Druzhynnyk 2",
+      "name": "Yanka",
       "sex": "female",
       "head": "Head_Female",
       "build": "heavy",
@@ -48,17 +48,17 @@
         "Hair_Buns",
         "Eyebrows_Female"
       ],
-      "variant": 1,
+      "variant": 0,
       "items": [
-        "Sword",
-        "Shield_Wooden",
-        "Helmet",
-        "Cape"
+        "Axe",
+        "Shield_Crimson",
+        "Shelom"
       ],
-      "team": 1.0
+      "team": 1.0,
+      "tint": "#d8c29a"
     },
     {
-      "name": "Druzhynnyk 3",
+      "name": "Putiata",
       "sex": "male",
       "head": "Head_Male",
       "build": "stout",
@@ -74,12 +74,14 @@
         "Hair_Beard",
         "Eyebrows_Regular"
       ],
-      "variant": 1,
+      "variant": 0,
       "items": [
-        "Sword_Long",
-        "Helmet"
+        "Spear",
+        "Shield_Crimson",
+        "Shelom"
       ],
-      "team": 1.0
+      "team": 1.0,
+      "tint": "#eadfc8"
     }
   ],
   "anims": {
@@ -89,9 +91,9 @@
     "sprint": "Sprint_Loop",
     "cheer": "Yes",
     "attack": [
-      "Sword_Attack",
       "Sword_Slash_A",
-      "Sword_Slash_B"
+      "Sword_Slash_B",
+      "Sword_Regular_C"
     ],
     "hit": [
       "Hit_Chest",
@@ -104,10 +106,21 @@
   },
   "skills": {
     "1": {},
-    "2": {},
-    "3": {},
+    "2": {
+      "fx": "druzhynnyk.guard"
+    },
+    "3": {
+      "action": "Shield_OneShot",
+      "rate": 1.4,
+      "fx": "druzhynnyk.brace"
+    },
     "4": {},
     "5": {}
   },
-  "clips": {}
+  "clips": {
+    "Sword_Regular_C": {
+      "hit": 0.68
+    },
+    "Shield_OneShot": {}
+  }
 }

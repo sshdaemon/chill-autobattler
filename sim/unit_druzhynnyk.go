@@ -11,13 +11,15 @@ const (
 
 func init() { register(druzhynnykDef) }
 
-// Druzhynnyk (Kyivan Rus, melee): the prince's retainer; balanced and armoured, guards the archers and the singer.
-// Numbers from design/ROSTER-PLAN.md; a placeholder until its unit session
-// (roadmap Phase 4) designs, balances and dresses it.
+// Druzhynnyk (Kyivan Rus, melee): the prince's retainer; balanced and armoured,
+// advances in line and guards the archers and the singer
+// (design/units/druzhynnyk/brief.md). The leash is 14 m, not the plan's 8: at
+// 8 m the wings of a spread line never got past their own centre to reach
+// archers (design/units/druzhynnyk/balance.md).
 var druzhynnykDef = UnitDef{
 	ID: Druzhynnyk, Name: "druzhynnyk",
 	Stats:  Stats{HP: I(100), DmgLo: I(10), DmgHi: I(16), Cooldown: sec(13), Range: Ratio(15, 10), Speed: Ratio(32, 10), Sight: I(7), SwingTicks: sec(9)},
-	Temper: Temperament{Target: TargetProtect, Engage: EngageLine, Leash: I(8), StayNear: TagRanged | TagCaster},
+	Temper: Temperament{Target: TargetProtect, Engage: EngageLine, Leash: I(14), StayNear: TagRanged | TagCaster},
 	Tags:   TagMelee,
 	Bonus:  []TagBonus{{TagRanged, Ratio(140, 100)}},
 	Skills: [MaxSkills]SkillDef{

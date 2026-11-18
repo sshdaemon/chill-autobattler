@@ -1,0 +1,16 @@
+{
+ "Shelom": {
+  "modelled": true,
+  "bone": "Head",
+  "pos": [0, 0.11, 0.01],
+  "rot": [0, 0, 0],
+  "scale": 1.0
+ },
+ "Shield_Crimson": {
+  "modelled": true,
+  "bone": "lowerarm_l",
+  "pos": [0.18, 0.125, 0],
+  "rot": [-1.5707963267948966, 0, 0],
+  "scale": 1.0
+ }
+}
