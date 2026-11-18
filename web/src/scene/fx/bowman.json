@@ -1,0 +1,20 @@
+{
+  "bowman.throw": [
+    {
+      "type": "dust",
+      "n": 6,
+      "size": 0.8,
+      "up": 0.5
+    },
+    {
+      "type": "sparks",
+      "n": 5,
+      "color": [
+        2.2,
+        2.0,
+        1.6
+      ],
+      "speed": 2.5
+    }
+  ]
+}

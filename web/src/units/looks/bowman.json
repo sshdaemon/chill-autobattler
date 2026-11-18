@@ -2,54 +2,79 @@
   "ui": {
     "label": "Bowman",
     "icon": "🏹",
-    "blurb": "Hunter with a yew bow and spears: goes after archers and specials",
-    "placeholder": true
+    "blurb": "Hunter with a yew longbow and throwing spears: walks in on archers and specials"
   },
   "recipes": [
     {
-      "name": "Bowman 1",
+      "name": "Ulf",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "normal",
+      "parts": [
+        "Male_Peasant_Body",
+        "Male_Ranger_Arms",
+        "Male_Peasant_Legs",
+        "Male_Peasant_Feet"
+      ],
+      "hair": [
+        "Hair_SimpleParted",
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 1,
+      "items": [
+        "Yew_Longbow",
+        "Throwing_Spears",
+        "Quiver_Belt"
+      ],
+      "team": 0.7
+    },
+    {
+      "name": "Thorstein",
       "sex": "male",
       "head": "Head_Male",
       "build": "slim",
       "parts": [
         "Male_Ranger_Body",
-        "Male_Ranger_Arms",
-        "Male_Ranger_Legs",
-        "Male_Ranger_Feet_Boots",
-        "Male_Ranger_Head_Hood"
+        "Male_Peasant_Arms",
+        "Male_Peasant_Legs",
+        "Male_Ranger_Feet_Boots"
       ],
       "hair": [
+        "Hair_Buzzed",
         "Hair_Beard",
         "Eyebrows_Regular"
       ],
       "variant": 0,
       "items": [
-        "Bow",
-        "Quiver"
+        "Yew_Longbow",
+        "Throwing_Spears",
+        "Quiver_Belt"
       ],
-      "team": 0.85
+      "team": 0.7
     },
     {
-      "name": "Bowman 2",
+      "name": "Gyda",
       "sex": "female",
       "head": "Head_Female",
       "build": "slim",
       "parts": [
-        "Female_Ranger_Body",
+        "Female_Peasant_Body",
         "Female_Ranger_Arms",
-        "Female_Ranger_Legs",
-        "Female_Ranger_Feet",
-        "Female_Ranger_Head_Hood"
+        "Female_Peasant_Legs",
+        "Female_Peasant_Feet"
       ],
       "hair": [
+        "Hair_Buns",
         "Eyebrows_Female"
       ],
-      "variant": 0,
+      "variant": 1,
       "items": [
-        "Bow",
-        "Quiver"
+        "Yew_Longbow",
+        "Throwing_Spears",
+        "Quiver_Belt"
       ],
-      "team": 0.85
+      "team": 0.7
     }
   ],
   "anims": {
@@ -71,10 +96,15 @@
     ]
   },
   "skills": {
-    "1": {},
+    "1": {
+      "action": "OverhandThrow",
+      "fx": "bowman.throw"
+    },
     "2": {},
     "3": {},
-    "4": {},
+    "4": {
+      "pitch": 0.45
+    },
     "5": {}
   },
   "clips": {}

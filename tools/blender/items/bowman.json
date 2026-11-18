@@ -1,0 +1,32 @@
+{
+ "Yew_Longbow": {
+  "modelled": true,
+  "bone": "hand_l",
+  "pos": [
+   0,
+   0,
+   0
+  ],
+  "rot": [
+   1.5707963267948966,
+   0,
+   0
+  ],
+  "scale": 1.0
+ },
+ "Throwing_Spears": {
+  "modelled": true,
+  "bone": "spine_03",
+  "pos": [
+   0.0,
+   -0.12,
+   -0.17
+  ],
+  "rot": [
+   0,
+   0,
+   0.55
+  ],
+  "scale": 1.0
+ }
+}
