@@ -430,6 +430,34 @@
     0.62
    ],
    "length": 0.95
+  },
+  "Shelom": {
+   "bone": "Head",
+   "pos": [
+    0,
+    0.11,
+    0.01
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0
+  },
+  "Shield_Crimson": {
+   "bone": "lowerarm_l",
+   "pos": [
+    0.18,
+    0.125,
+    0
+   ],
+   "rot": [
+    -1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 1.0
   }
  },
  "materials": {
