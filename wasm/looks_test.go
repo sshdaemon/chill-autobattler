@@ -31,7 +31,7 @@ const (
 	clipsMaxRaw  = 1_500_000 // all bundles together
 	clipsMaxGzip = 400_000
 	partsMax     = 10_000_000 // the whole parts library
-	armyMax      = 3_000_000  // the parts and textures of every class's first recipe
+	armyMax      = 4_500_000  // the parts and textures of every class's first recipe (the first woman among them loads the female head, body and textures, ~1 MB)
 
 	buildMaxGirth  = 0.04 // metres pushed out per bone
 	buildMaxHeight = 0.08 // ±, overall height

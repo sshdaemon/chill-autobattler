@@ -84,7 +84,7 @@ Main-hand weapons, off-hand items and back items SHALL be modelled parts attache
 - **THEN** the unit holds the sword in its right hand and the shield on its left arm through every animation
 
 ### Requirement: Parts stay within budget and are checked
-The parts library SHALL stay within 10 MB in total, and the parts a default army uses within 3 MB. The test suite SHALL fail if a recipe names a build, part, colour variant or item the parts manifest lacks, if a slot holds a part of another slot, or if the library exceeds its budget.
+The parts library SHALL stay within 10 MB in total, and the parts of every unit type's first recipe together within 4.5 MB. The test suite SHALL fail if a recipe names a build, part, colour variant or item the parts manifest lacks, if a slot holds a part of another slot, or if the library exceeds its budget.
 
 #### Scenario: Missing part
 - **WHEN** a recipe names a helmet the parts manifest lacks
