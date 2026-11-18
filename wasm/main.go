@@ -114,6 +114,8 @@ func dataJSON() string {
 		Swing      float64   `json:"swing"` // attack animation seconds (the blow lands at 45%)
 		Ranged     bool      `json:"ranged"`
 		Kite       bool      `json:"kite"`
+		Target     string    `json:"target"`               // temperament: how it picks targets ("nearest", ...)
+		Engage     string    `json:"engage"`               // and what it does without one ("charge", ...)
 		Projectile string    `json:"projectile,omitempty"` // "arrow" or "bolt"
 		Tags       []string  `json:"tags"`
 		Bonus      []bonus   `json:"bonus"`   // multiplier against tags; the first the victim has wins
@@ -143,7 +145,7 @@ func dataJSON() string {
 		st := d.Stats
 		cl := class{Name: d.Name, HP: fx(st.HP), DmgLo: fx(st.DmgLo), DmgHi: fx(st.DmgHi),
 			Cooldown: float64(st.Cooldown) / sim.TicksPerSecond, Range: fx(st.Range), Speed: fx(st.Speed), Sight: fx(st.Sight),
-			Swing: float64(st.SwingTicks) / sim.TicksPerSecond, Ranged: st.Ranged, Kite: st.Kite,
+			Swing: float64(st.SwingTicks) / sim.TicksPerSecond, Ranged: st.Ranged, Kite: d.Temper.Kite, Target: d.Temper.Target.String(), Engage: d.Temper.Engage.String(),
 			Projectile: [...]string{"", "arrow", "bolt"}[d.Projectile], Tags: tagNames(d.Tags), Bonus: []bonus{}}
 		for _, b := range d.Bonus {
 			cl.Bonus = append(cl.Bonus, bonus{strings.Join(tagNames(b.Tag), "|"), fx(b.Mult)})

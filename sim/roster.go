@@ -82,13 +82,14 @@ type SkillDef struct {
 // Main is the headline effect.
 func (d SkillDef) Main() Effect { return d.Effects[0] }
 
-// UnitDef is one roster entry. Stats.Ranged and Stats.Kite are its traits
-// (a unit that isn't ranged is melee); ranged units need a Projectile and
-// Stats.ShotSpeed.
+// UnitDef is one roster entry. Stats.Ranged is its trait (a unit that isn't
+// ranged is melee); ranged units need a Projectile and Stats.ShotSpeed.
+// Temper is how it fights on its own (temperament.go).
 type UnitDef struct {
 	ID         Class
 	Name       string
 	Stats      Stats
+	Temper     Temperament
 	Projectile Projectile
 	Tags       Tag
 	Bonus      []TagBonus // first bonus whose tag the victim has wins
@@ -193,8 +194,8 @@ func validateEntries(r []UnitDef) error {
 		if st.Ranged != (d.Projectile != NoProjectile) || st.Ranged != (st.ShotSpeed > 0) {
 			return fail("a ranged unit needs a projectile and a shot speed, a melee unit neither")
 		}
-		if st.Kite && !st.Ranged {
-			return fail("only ranged units kite")
+		if err := checkTemperament(&d); err != nil {
+			return fail("%v", err)
 		}
 		if d.Tags == 0 || d.Tags&^declared != 0 {
 			return fail("tags %b: need at least one, all declared", d.Tags)

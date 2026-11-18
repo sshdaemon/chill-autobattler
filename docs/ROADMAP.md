@@ -122,7 +122,18 @@ Original plan:
   of switches.
 - After this, a new kind of ability is one new file plus its id: no shared edits.
 
-**0.4 Behaviour as data** (no outcome change)
+**0.4 Behaviour as data** (no outcome change) — done
+- As built: `Temperament` in each roster entry (`sim/temperament.go`) with a
+  target rule and an engage rule, both plug-ins with ids in `ids.go`
+  (`target_nearest.go`, `engage_charge.go`), and `Kite` (moved from Stats).
+  Effects get a `temper` hook, so abilities can change temperament (review
+  answer 4). `wasm data()` publishes each unit's temperament. Today's three
+  units are nearest + charge (archer also kites); every golden replay is
+  unchanged. The other fields from the roster plan (leash, keep distance, fall
+  back, stay near) and the other rules (line, hold, wounded, ranged first,
+  strongest, focus, protect) are Phase 3 work, each a field or a rule file.
+
+Original plan:
 - A unit's temperament becomes data in its roster entry (see "Behaviour" in
   `design/ROSTER-PLAN.md`): how eagerly it engages, how far it chases, the
   distance it keeps, when it falls back, whom it targets.

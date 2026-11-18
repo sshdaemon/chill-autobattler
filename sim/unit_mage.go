@@ -16,6 +16,7 @@ var mageDef = UnitDef{
 	ID: Mage, Name: "mage",
 	Stats: Stats{HP: I(55), DmgLo: I(14), DmgHi: I(20), Cooldown: sec(22), Range: I(7), Speed: I(3), Sight: I(9),
 		Ranged: true, SwingTicks: sec(8), ShotSpeed: I(14)},
+	Temper:     Temperament{Target: TargetNearest, Engage: EngageCharge},
 	Projectile: Bolt,
 	Tags:       TagCaster,
 	Bonus:      []TagBonus{{TagMelee, Ratio(135, 100)}},

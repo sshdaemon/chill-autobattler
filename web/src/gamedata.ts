@@ -5,7 +5,7 @@ export type SkillInfo = { id: number; name: string; pct: number; value: number; 
 // A unit-roster entry (classes[i] is sim class i).
 export type ClassInfo = {
   name: string; hp: number; dmgLo: number; dmgHi: number; cooldown: number; range: number; speed: number; sight: number; swing: number;
-  ranged: boolean; kite: boolean; projectile?: 'arrow' | 'bolt'; tags: string[]; bonus: { tag: string; mult: number }[];
+  ranged: boolean; kite: boolean; target: string; engage: string; /* temperament */ projectile?: 'arrow' | 'bolt'; tags: string[]; bonus: { tag: string; mult: number }[];
   matchup: number[]; skills: SkillInfo[];
 };
 export type GameData = {
