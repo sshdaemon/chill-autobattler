@@ -48,7 +48,8 @@ ITEMS = [
     ('Wand', os.path.join(KAYKIT, 'wand.gltf'), 'hand_r'),
     ('Sword_Long', os.path.join(KAYKIT, 'sword_2handed_color.gltf'), 'hand_r'),
 ]
-MODELLED = [('Wizard_Hat', 'Head'), ('Helmet', 'Head'), ('Spear', 'hand_r')]
+MODELLED = [('Wizard_Hat', 'Head'), ('Helmet', 'Head'), ('Spear', 'hand_r'), ('Great_Helm', 'Head'), ('Cape', 'spine_03')]
+TEAM_ITEMS = {'Cape'}  # coloured fully in the team colour by the client
 # Mount poses in the character's own space at rest (Y up, facing +Z, its left
 # is +X): offset from the attach bone's origin (metres), rotation (radians, XYZ)
 # and scale. The client places the item there, then attaches it to the bone
@@ -67,6 +68,8 @@ ITEM_POSE = {
     'Helmet': {'pos': [0, 0.11, 0.01], 'rot': [0, 0, 0], 'scale': 1.0},
     'Wizard_Hat': {'pos': [0, 0.2, -0.01], 'rot': [0, 0, 0], 'scale': 1.0},
     'Spear': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 1.0},
+    'Great_Helm': {'pos': [0, 0.1, 0.01], 'rot': [0, 0, 0], 'scale': 1.0},
+    'Cape': {'pos': [0, 0.1, -0.11], 'rot': [0, 0, 0], 'scale': 1.0},
 }
 # team masks: outfit -> (variant base colours, rule); 'cloth' also drops pixels
 # that are brownish in every variant (leather and wood recolour between variants too)
@@ -328,7 +331,40 @@ def model_items():
     for o in (head, collar):
         o.data.materials.append(steel2)
     export('Spear', [shaft, head, collar])
-    for name in ('Wizard_Hat', 'Helmet', 'Spear'):
+    # great helm: a closed barrel helm with a flat top, an eye slit and a short crest
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    plate = mat('MI_GreatHelm', lin(0x8f969e), 0.32, 0.85)
+    dark = mat('MI_GreatHelmSlit', lin(0x15171a), 0.9)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.135, depth=0.26, location=(0, 0, 0.0))
+    barrel = bpy.context.object
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=20, ring_count=8, radius=0.135, location=(0, 0, 0.13))
+    top = bpy.context.object
+    top.scale = (1, 1, 0.45)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, -0.132, 0.03), scale=(0.2, 0.012, 0.022))
+    slit = bpy.context.object
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0.0, 0.2), scale=(0.018, 0.2, 0.06))
+    crest = bpy.context.object
+    for o in (barrel, top, crest):
+        o.data.materials.append(plate)
+    slit.data.materials.append(dark)
+    export('Great_Helm', [barrel, top, slit, crest])
+
+    # cape: a short, slightly curved cloth hanging from the shoulders (white:
+    # the client colours it in the team colour); top edge at the origin, behind
+    # the body is +Y here (-Z in the game)
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    cloth = mat('MI_Cape', (1, 1, 1), 0.85)
+    cloth.use_backface_culling = False
+    bpy.ops.mesh.primitive_grid_add(x_subdivisions=8, y_subdivisions=8, size=1, location=(0, 0, 0))
+    cape = bpy.context.object
+    for v in cape.data.vertices:
+        x, y = v.co.x, v.co.y          # grid in XY, -0.5..0.5
+        depth = -(y - 0.5)             # 0 at the top edge, 1 at the hem
+        width = 0.34 + 0.08 * depth    # widens a little towards the hem
+        v.co = (x * width * 2, 0.015 + 0.04 * depth ** 1.5 + 0.035 * (2 * x) ** 2, -0.36 * depth)  # short: a rigid cape mustn't flap
+    cape.data.materials.append(cloth)
+    export('Cape', [cape])
+    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Cape'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
@@ -421,7 +457,7 @@ def main():
         manifest['items'][name] = {'bone': bone, **ITEM_POSE.get(name, {})}
     model_items()
     for name, bone in MODELLED:
-        manifest['items'][name] = {'bone': bone, **ITEM_POSE.get(name, {})}
+        manifest['items'][name] = {'bone': bone, **ITEM_POSE.get(name, {}), **({'team': True} if name in TEAM_ITEMS else {})}
     bake_textures()
     bake_masks()
     for outfit, (variants, _) in MASKS.items():

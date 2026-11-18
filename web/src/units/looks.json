@@ -21,7 +21,9 @@
     "Spell_Simple_Shoot": { "hit": 0.225 },
     "OverhandThrow": { "hit": 0.42 },
     "Sword_Dash": {},
-    "NinjaJump_Land": {}
+    "NinjaJump_Land": {},
+    "Idle_Shield_Loop": { "loop": true },
+    "Shield_Dash": {}
   },
   "builds": {
     "slim": {
@@ -47,33 +49,39 @@
       "shoulders": 1.06,
       "head": 1.04,
       "height": 0.94
+    },
+    "heavy": {
+      "girth": { "spine_01": 0.018, "spine_02": 0.03, "spine_03": 0.036, "clavicle": 0.026, "neck_01": 0.014, "upperarm": 0.03, "lowerarm": 0.022, "hand": 0.008, "thigh": 0.022, "calf": 0.014 },
+      "shoulders": 1.18,
+      "head": 0.96,
+      "height": 1.05
     }
   },
   "units": {
     "warrior": {
-      "ui": { "label": "Warrior", "icon": "⚔️", "blurb": "Sturdy melee fighter" },
+      "ui": { "label": "Warrior", "icon": "🛡️", "blurb": "Armoured front line: charges in behind its shield" },
       "recipes": [
         {
           "name": "Mirko",
           "sex": "male",
           "head": "Head_Male",
-          "build": "bulky",
-          "parts": ["Male_Ranger_Body", "Male_Ranger_Arms", "Male_Peasant_Legs", "Male_Ranger_Feet_Boots", "Male_Ranger_Acc_Pauldron"],
+          "build": "heavy",
+          "parts": ["Male_Ranger_Body", "Male_Ranger_Arms", "Male_Ranger_Legs", "Male_Ranger_Feet_Boots", "Male_Ranger_Acc_Pauldron"],
           "hair": ["Hair_Buzzed", "Hair_Beard", "Eyebrows_Regular"],
           "variant": 1,
-          "items": ["Sword", "Shield_Wooden", "Helmet"],
-          "team": 0.9
+          "items": ["Sword", "Shield_Round", "Great_Helm", "Cape"],
+          "team": 1.0
         },
         {
           "name": "Vesna",
           "sex": "female",
           "head": "Head_Female",
-          "build": "bulky",
+          "build": "heavy",
           "parts": ["Female_Ranger_Body", "Female_Ranger_Arms", "Female_Ranger_Legs", "Female_Ranger_Feet", "Female_Ranger_Acc_Pauldrons"],
           "hair": ["Hair_Buns", "Eyebrows_Female"],
           "variant": 1,
-          "items": ["Sword", "Shield_Round", "Helmet"],
-          "team": 0.9
+          "items": ["Sword", "Shield_Wooden", "Helmet", "Cape"],
+          "team": 1.0
         },
         {
           "name": "Radim",
@@ -82,13 +90,13 @@
           "build": "stout",
           "parts": ["Male_Peasant_Body", "Male_Peasant_Arms", "Male_Peasant_Legs", "Male_Ranger_Feet_Boots", "Male_Ranger_Acc_Pauldron"],
           "hair": ["Hair_SimpleParted", "Hair_Beard", "Eyebrows_Regular"],
-          "variant": 0,
-          "items": ["Axe", "Shield_Round"],
-          "team": 0.9
+          "variant": 1,
+          "items": ["Sword_Long", "Helmet"],
+          "team": 1.0
         }
       ],
       "anims": {
-        "idle": "Sword_Idle",
+        "idle": "Idle_Shield_Loop",
         "move": "Jog_Fwd_Loop",
         "cheer": "Yes",
         "attack": ["Sword_Attack", "Sword_Slash_A", "Sword_Slash_B"],
@@ -99,7 +107,7 @@
         "1": {},
         "2": {},
         "3": {},
-        "4": { "action": "Sword_Dash", "rate": 2, "fx": "dash" },
+        "4": { "action": "Shield_Dash", "rate": 1.6, "fx": "dash" },
         "5": { "fx": "execute.heavy" }
       }
     },

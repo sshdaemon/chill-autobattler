@@ -23,7 +23,7 @@ const load = (name: string) => {
 
 type Manifest = {
   parts: Record<string, { slot: string; sex: string; materials: string[] }>;
-  items: Record<string, { bone: string; pos?: number[]; rot?: number[]; scale?: number }>;
+  items: Record<string, { bone: string; pos?: number[]; rot?: number[]; scale?: number; team?: boolean }>;
   materials: Record<string, { variants: string[]; mask: string }>;
 };
 let manifestP: Promise<Manifest> | undefined;
@@ -245,6 +245,7 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
       if (!mesh.isMesh) return;
       mesh.castShadow = true;
       const m = (mesh.material as THREE.MeshStandardMaterial).clone();
+      if (spec.team) m.color.copy(TEAM_CLOTH[team]); // e.g. a cape in the team colour
       addHooks(m, { rim, girth: { value: girth.value.map(() => 0) } });
       mats.push(m);
       mesh.material = m;
