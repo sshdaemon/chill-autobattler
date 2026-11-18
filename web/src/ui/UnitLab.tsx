@@ -28,13 +28,37 @@ type Live = { // what the frame loop reads, without re-rendering React every fra
   time: number; duration: number; blend: string; slide: string; floor: number; restart: number;
   wobble: boolean; clock: number; legSpeed: number; // speed changes like turns in battle; the legs' smoothed speed
   regime: Regime; // which gait the walk test is in: decides which tuning sliders matter
+  phase: number; cycle: number; // where the walk test is in its stride (0..1) and the stride's length (s)
+  walkScrub: number | null; // a stride phase to hold while paused
 };
 
 const ALL = '*';
 const snapOf = (x: number, z: number): UnitSnap => ({ team: 0, cls: 0, x, z, fx: 0, fz: 1, hp: 1, maxHp: 1, flags: 0, target: -1, skills: 0, kills: 0, dealt: 0 });
-const panel: React.CSSProperties = { position: 'absolute', top: 8, left: 8, bottom: 8, width: 300, overflow: 'auto', background: '#fffffff0', borderRadius: 10, padding: '10px 12px', font: '12px system-ui', boxShadow: '0 4px 20px #0003' };
-const row: React.CSSProperties = { display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', margin: '4px 0' };
-const h: React.CSSProperties = { margin: '10px 0 4px', fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.5, color: '#556' };
+type Tab = 'unit' | 'animate' | 'walk';
+const PANEL_W = 380;
+const panel: React.CSSProperties = { position: 'absolute', top: 8, left: 8, bottom: 8, width: PANEL_W, display: 'flex', flexDirection: 'column', background: '#fffffff2', borderRadius: 12, font: '14px system-ui', color: '#223', boxShadow: '0 4px 20px #0003' };
+const row: React.CSSProperties = { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', margin: '6px 0' };
+const h: React.CSSProperties = { margin: '14px 0 6px', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.6, color: '#667' };
+// bigger, easier controls (scoped to the lab)
+const LAB_CSS = `
+.lab button { font: inherit; padding: 6px 12px; min-height: 34px; border-radius: 8px; border: 1px solid #c8cfd9; background: #f4f6f9; color: #223; cursor: pointer; }
+.lab button:hover { background: #e8edf4; }
+.lab button.on { background: #2f6fe8; border-color: #2f6fe8; color: #fff; }
+.lab button.big { min-width: 44px; font-size: 18px; padding: 4px 10px; }
+.lab select { font: inherit; min-height: 34px; padding: 4px 8px; border-radius: 8px; border: 1px solid #c8cfd9; background: #fff; }
+.lab label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.lab input[type=checkbox] { width: 18px; height: 18px; margin: 0; accent-color: #2f6fe8; }
+.lab summary { cursor: pointer; padding: 6px 0; color: #445; }
+.lab .tabs { display: flex; gap: 4px; margin: 10px 0 6px; background: #eef1f5; padding: 4px; border-radius: 10px; }
+.lab .tabs button { flex: 1; border: none; background: transparent; font-weight: 600; }
+.lab .tabs button.on { background: #fff; color: #2f6fe8; box-shadow: 0 1px 3px #0002; }
+.lab .readout { color: #445; background: #f2f5fa; border-radius: 8px; padding: 8px 10px; margin: 8px 0; font-size: 13px; line-height: 1.5; }
+.lab input[type=range] { -webkit-appearance: none; appearance: none; height: 30px; background: transparent; cursor: pointer; min-width: 60px; }
+.lab input[type=range]::-webkit-slider-runnable-track { height: 6px; background: #d5dbe3; border-radius: 3px; }
+.lab input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -7px; border-radius: 50%; background: #2f6fe8; border: 2px solid #fff; box-shadow: 0 1px 3px #0006; }
+.lab input[type=range]::-moz-range-track { height: 6px; background: #d5dbe3; border-radius: 3px; }
+.lab input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #2f6fe8; border: 2px solid #fff; }
+`;
 
 export function UnitLab({ initial }: { initial: string }) {
   const [data, setData] = useState<GameData>();
@@ -58,7 +82,20 @@ export function UnitLab({ initial }: { initial: string }) {
   const [copied, setCopied] = useState('');
   const [allTuning, setAllTuning] = useState(false);
   const [terrain, setTerrain] = useState(true);
-  const live = useRef<Live>({ units: [], mode, playing, rate, scrub: null, speed, spin, time: 0, duration: 0, blend: '', slide: '', floor: 0, restart: 0, wobble, clock: 0, legSpeed: speed, regime: 'blend' });
+  const [tab, setTab] = useState<Tab>(() => { try { return (localStorage.getItem('lab.tab') as Tab) || 'unit'; } catch { return 'unit'; } });
+  const keys = useRef({ togglePlay: () => {}, stepFrame: (_d: number) => {} });
+  useEffect(() => { // space: play/pause; arrows: one frame (not while a control has focus)
+    const on = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA') return;
+      if (e.key === ' ') { e.preventDefault(); t.blur?.(); keys.current.togglePlay(); } // not a click on the focused button
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); keys.current.stepFrame(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); keys.current.stepFrame(1); }
+    };
+    window.addEventListener('keydown', on);
+    return () => window.removeEventListener('keydown', on);
+  }, []);
+  const live = useRef<Live>({ units: [], mode, playing, rate, scrub: null, speed, spin, time: 0, duration: 0, blend: '', slide: '', floor: 0, restart: 0, wobble, clock: 0, legSpeed: speed, regime: 'blend', phase: 0, cycle: 1, walkScrub: null });
 
   useEffect(() => { // the sim worker only for data(); no battle is created
     const w = new Worker(new URL('../sim/sim.worker.ts', import.meta.url), { type: 'module' });
@@ -77,7 +114,7 @@ export function UnitLab({ initial }: { initial: string }) {
 
   const look = data ? lookOf(cls) : undefined;
   const info = data?.classes[cls];
-  useEffect(() => { if (look) setMode({ kind: 'clip', clip: look.anims.idle, loop: true }); }, [look]);
+  useEffect(() => { if (look) setMode(tab === 'walk' ? { kind: 'walk' } : { kind: 'clip', clip: look.anims.idle, loop: true }); }, [look]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { // (re)assemble the characters
     if (!look) return;
@@ -111,11 +148,28 @@ export function UnitLab({ initial }: { initial: string }) {
     ...Object.values(look.skills).flatMap((s) => [s.action, s.attack])].filter(Boolean) as string[])];
   const clipBtn = (c: string) => (
     <button key={c} onClick={() => setMode({ kind: 'clip', clip: c, loop: !!CLIPS[c]?.loop || mode.kind !== 'clip' || mode.loop })}
-      style={{ fontWeight: mode.kind === 'clip' && mode.clip === c ? 700 : 400 }}>{c}</button>
+      className={mode.kind === 'clip' && mode.clip === c ? 'on' : ''}>{c}</button>
   );
+  const togglePlay = () => { if (!playing) { L.walkScrub = null; L.scrub = null; } setPlaying(!playing); };
+  const frames = Math.max(1, Math.round(L.cycle * 60));
+  const stepFrame = (d: number) => {
+    if (mode.kind === 'walk') L.walkScrub = (((L.walkScrub ?? L.phase) + d / frames) % 1 + 1) % 1;
+    else L.scrub = Math.min(L.duration, Math.max(0, (L.scrub ?? L.time) + d / 60));
+    setPlaying(false);
+  };
+  keys.current = { togglePlay, stepFrame };
+  const pickTab = (t: Tab) => {
+    setTab(t);
+    try { localStorage.setItem('lab.tab', t); } catch { /* storage blocked */ }
+    if (t === 'walk' && mode.kind !== 'walk') setMode({ kind: 'walk' });
+    if (t === 'animate' && mode.kind === 'walk') setMode({ kind: 'clip', clip: look.anims.idle, loop: true });
+  };
+  const frame = (f: string) => window.dispatchEvent(new CustomEvent('lab-frame', { detail: f }));
+  const walkPh = L.walkScrub ?? L.phase;
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#cfd8e0' }}>
-      <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 316 }}>
+    <div className="lab" style={{ position: 'fixed', inset: 0, background: '#cfd8e0' }}>
+      <style>{LAB_CSS}</style>
+      <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: PANEL_W + 16 }}>
       <Canvas shadows camera={{ position: [0, 1.6, 4.2], fov: 38 }}>
         <hemisphereLight args={['#ffffff', '#667766', 1.8]} />
         <directionalLight position={[3, 6, 4]} intensity={2.4} castShadow shadow-mapSize={[2048, 2048]} />
@@ -131,112 +185,149 @@ export function UnitLab({ initial }: { initial: string }) {
       </div>
 
       <div style={panel}>
-        <b style={{ fontSize: 14 }}>{uiOf(cls).icon} Unit lab</b> <span style={{ color: '#778' }}>· dev only · <a href="/">back to the game</a></span>
-        <div style={h}>Unit</div>
-        <div style={row}>
-          <select value={cls} onChange={(e) => { setCls(+e.target.value); setRecipe(ALL); setBuild(''); }}>
-            {data.classes.map((c, i) => <option key={c.name} value={i}>{uiOf(i).label}</option>)}
-          </select>
-          <select value={recipe} onChange={(e) => setRecipe(e.target.value)}>
-            <option value={ALL}>all recipes</option>
-            {look.recipes.map((r) => <option key={r.name} value={r.name}>{r.name} ({r.build})</option>)}
-          </select>
-        </div>
-        <div style={row}>
-          team <select value={team} onChange={(e) => setTeam(+e.target.value)}><option value={0}>Blue</option><option value={1}>Red</option><option value={2}>both</option></select>
-          build <select value={build} onChange={(e) => setBuild(e.target.value)}><option value="">recipe's</option>{Object.keys(BUILDS).map((b) => <option key={b}>{b}</option>)}</select>
-        </div>
-        <div style={row}>variety <input type="range" min={0} max={20} value={seed} onChange={(e) => setSeed(+e.target.value)} /> {seed}</div>
-        <div style={{ color: '#667' }}>{info.hp} HP · {info.dmgLo}–{info.dmgHi} dmg · {info.range} m · {info.speed} m/s · {info.ranged ? info.projectile : 'melee'}</div>
-
-        <div style={h}>View</div>
-        <div style={row}>
-          <label><input type="checkbox" checked={spin} onChange={(e) => setSpin(e.target.checked)} /> turntable</label>
-          <label title="grass, path, rocks and trees, or a measuring grid"><input type="checkbox" checked={terrain} onChange={(e) => setTerrain(e.target.checked)} /> terrain</label>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('lab-frame', { detail: 'close' }))}>close-up</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('lab-frame', { detail: 'face' }))}>face</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('lab-frame', { detail: 'battle' }))}>battle camera</button>
-        </div>
-        <div style={{ color: '#889' }}>drag to orbit · scroll to zoom · right-drag to pan</div>
-
-        <div style={h}>Animation</div>
-        <div style={row}>
-          <button onClick={() => setPlaying(!playing)}>{playing ? '⏸ pause' : '▶ play'}</button>
-          {mode.kind === 'clip' && <label><input type="checkbox" checked={mode.loop} onChange={(e) => setMode({ ...mode, loop: e.target.checked })} /> loop</label>}
-          speed <input type="range" min={0.05} max={2} step={0.05} value={rate} onChange={(e) => setRate(+e.target.value)} style={{ width: 70 }} /> {rate.toFixed(2)}×
-        </div>
-        {mode.kind === 'clip' && (
-          <div style={row}>
-            <input type="range" min={0} max={L.duration || 1} step={0.005} value={L.scrub ?? L.time} style={{ flex: 1 }}
-              onChange={(e) => { L.scrub = +e.target.value; setPlaying(false); }} />
-            {(L.scrub ?? L.time).toFixed(2)} / {L.duration.toFixed(2)} s
+        {/* always on top: title, tabs, playback */}
+        <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid #e2e6ec' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <b style={{ fontSize: 17 }}>{uiOf(cls).icon} Unit lab</b>
+            <span style={{ color: '#778', fontSize: 13 }}>dev only</span>
+            <a href="/" style={{ marginLeft: 'auto', fontSize: 13 }}>back to the game</a>
           </div>
-        )}
-        <div style={{ ...row, marginTop: 6 }}><i>this unit:</i>{unitClips.map(clipBtn)}</div>
-        <details><summary>all clips ({clipNames.length})</summary><div style={row}>{clipNames.map(clipBtn)}</div></details>
-
-        <div style={h}>Walking (battle blend)</div>
-        <div style={row}>
-          <button onClick={() => setMode({ kind: 'walk' })} style={{ fontWeight: mode.kind === 'walk' ? 700 : 400 }}>walk on the floor</button>
-          <input type="range" min={0} max={16} step={0.05} value={speed} onChange={(e) => { setSpeed(+e.target.value); if (mode.kind !== 'walk') setMode({ kind: 'walk' }); }} style={{ width: 90 }} /> {speed.toFixed(2)} m/s
+          <div className="tabs">
+            {(['unit', 'animate', 'walk'] as Tab[]).map((t) => (
+              <button key={t} className={tab === t ? 'on' : ''} onClick={() => pickTab(t)}>{{ unit: 'Unit', animate: 'Animate', walk: 'Walk & tune' }[t]}</button>
+            ))}
+          </div>
+          <div style={row}>
+            <button className="big" title="play / pause (space)" onClick={togglePlay}>{playing ? '⏸' : '▶'}</button>
+            <button className="big" title="one frame back (←)" onClick={() => stepFrame(-1)}>⏮</button>
+            {mode.kind === 'walk'
+              ? <input type="range" min={0} max={0.999} step={0.001} value={walkPh} style={{ flex: 1 }} title="scrub through one stride (pauses)"
+                  onChange={(e) => { L.walkScrub = +e.target.value; setPlaying(false); }} />
+              : <input type="range" min={0} max={L.duration || 1} step={0.005} value={L.scrub ?? L.time} style={{ flex: 1 }} title="scrub the clip (pauses)"
+                  onChange={(e) => { L.scrub = +e.target.value; setPlaying(false); }} />}
+            <button className="big" title="one frame forward (→)" onClick={() => stepFrame(1)}>⏭</button>
+          </div>
+          <div style={{ ...row, color: '#556', justifyContent: 'space-between' }}>
+            <span>{mode.kind === 'walk'
+              ? <>{mode.dash ? 'dash' : 'walk'} · stride {(walkPh * 100).toFixed(0)}% · frame {Math.floor(walkPh * frames) + 1}/{frames}</>
+              : <>{mode.clip} · {(L.scrub ?? L.time).toFixed(2)} / {L.duration.toFixed(2)} s</>}{playing ? '' : ' · paused'}</span>
+            {mode.kind === 'clip' && <label><input type="checkbox" checked={mode.loop} onChange={(e) => setMode({ ...mode, loop: e.target.checked })} /> loop</label>}
+          </div>
+          <div style={row}>
+            <span style={{ color: '#556' }}>speed</span>
+            {[0.1, 0.25, 0.5, 1].map((r) => <button key={r} className={rate === r ? 'on' : ''} onClick={() => setRate(r)}>{r}×</button>)}
+            <input type="range" min={0.05} max={2} step={0.05} value={rate} onChange={(e) => setRate(+e.target.value)} style={{ flex: 1, minWidth: 60 }} />
+            <span style={{ width: 40 }}>{rate.toFixed(2)}×</span>
+          </div>
         </div>
-        <div style={row}>{presetSpeeds.filter(([n]) => n !== 'sprint').map(([n, v]) => <button key={n} onClick={() => { setSpeed(+v.toFixed(2)); setMode({ kind: 'walk' }); }}>{n}</button>)}
-          <button title="the sprint clip, as dashes without a skill animation play it in battle (12–16 m/s)" style={{ fontWeight: mode.kind === 'walk' && mode.dash ? 700 : 400 }}
-            onClick={() => { setSpeed(Math.max(speed, 9)); setMode({ kind: 'walk', dash: true }); }}>dash</button></div>
-        {mode.kind === 'walk' && <div style={{ color: '#445' }}>{L.blend}<br />{L.slide}</div>}
 
-        <div style={h}>Tuning (walk & run)</div>
-        <div style={{ color: '#667' }}>Live; saved in this browser and used by battles too (dev only).</div>
-        {(() => {
-          const re = () => retune((n) => n + 1);
-          const walking = mode.kind === 'walk', g = L.regime, all = allTuning;
-          const show = (...rs: Regime[]) => all || (walking && rs.includes(g));
-          return <>
-            <div style={row}>
-              {walking ? <span>gait now: <b>{{ walk: 'walk only', blend: 'walk–jog blend', jog: 'jog only', sprint: 'sprint (dash)' }[g]}</b></span> : <span style={{ color: '#889' }}>tuning applies to walking and running: use the walk test above</span>}
-              <label style={{ marginLeft: 'auto' }}><input type="checkbox" checked={all} onChange={(e) => setAllTuning(e.target.checked)} /> show all</label>
-            </div>
-            {show('walk', 'blend') && <TuneSlider k="walkSpeed" label="walk clip speed" min={0.5} max={2} step={0.01} unit="m/s" onChange={re} />}
-            {show('walk') && <TuneSlider k="walkMin" label="slowest walk" min={0.2} max={1} step={0.05} unit="×" onChange={re} />}
-            {show('blend', 'jog') && <TuneSlider k="jogSpeed" label="jog clip speed" min={3} max={9} step={0.02} unit="m/s" onChange={re} />}
-            {show('blend') && <TuneSlider k="blendBias" label="walk ← mix → jog" min={-0.5} max={0.5} step={0.01} onChange={re} />}
-            {show('jog') && <TuneSlider k="jogMax" label="fastest jog" min={1} max={2.5} step={0.05} unit="×" onChange={re} />}
-            {show('sprint') && <TuneSlider k="sprintSpeed" label="sprint clip speed" min={5} max={13} step={0.05} unit="m/s" onChange={re} />}
-            {show('sprint') && <TuneSlider k="sprintMax" label="fastest sprint" min={1} max={3} step={0.05} unit="×" onChange={re} />}
-            {(all || walking) && <>
+        <div style={{ flex: 1, overflow: 'auto', padding: '4px 14px 12px' }}>
+        {tab === 'unit' && <>
+          <div style={h}>Unit</div>
+          <div style={row}>
+            <select value={cls} onChange={(e) => { setCls(+e.target.value); setRecipe(ALL); setBuild(''); }}>
+              {data.classes.map((c, i) => <option key={c.name} value={i}>{uiOf(i).label}</option>)}
+            </select>
+            <select value={recipe} onChange={(e) => setRecipe(e.target.value)} style={{ flex: 1 }}>
+              <option value={ALL}>all recipes</option>
+              {look.recipes.map((r) => <option key={r.name} value={r.name}>{r.name} ({r.build})</option>)}
+            </select>
+          </div>
+          <div style={row}>
+            <span style={{ width: 52 }}>team</span>
+            {['Blue', 'Red', 'both'].map((n, i) => <button key={n} className={team === i ? 'on' : ''} onClick={() => setTeam(i)}>{n}</button>)}
+          </div>
+          <div style={row}>
+            <span style={{ width: 52 }}>build</span>
+            <select value={build} onChange={(e) => setBuild(e.target.value)} style={{ flex: 1 }}><option value="">recipe's</option>{Object.keys(BUILDS).map((b) => <option key={b}>{b}</option>)}</select>
+          </div>
+          <div style={row}><span style={{ width: 52 }}>variety</span><input type="range" min={0} max={20} value={seed} onChange={(e) => setSeed(+e.target.value)} style={{ flex: 1 }} /> <span style={{ width: 24 }}>{seed}</span></div>
+          <div style={{ color: '#667' }}>{info.hp} HP · {info.dmgLo}–{info.dmgHi} dmg · {info.range} m · {info.speed} m/s · {info.ranged ? info.projectile : 'melee'}</div>
+          <div style={h}>Portrait</div>
+          {face && <img src={face} width={128} height={128} style={{ borderRadius: 8, border: `3px solid ${team === 1 ? '#d63a2e' : '#2f6fe8'}` }} alt="" />}
+        </>}
+
+        {tab === 'animate' && <>
+          <div style={h}>This unit's clips</div>
+          <div style={row}>{unitClips.map(clipBtn)}</div>
+          <details><summary>all clips ({clipNames.length})</summary><div style={row}>{clipNames.map(clipBtn)}</div></details>
+          <div style={h}>Skills</div>
+          <div style={row}>
+            {info.skills.map((s) => {
+              const sl = look.skills[String(s.id)] ?? {};
+              const clip = sl.action ?? sl.attack;
+              return <button key={s.id} title={[clip && `clip ${clip}`, sl.fx && `effect ${sl.fx}`, sl.pitch && `lean ${sl.pitch}`].filter(Boolean).join(', ') || 'stats only'}
+                onClick={() => { if (clip) setMode({ kind: 'clip', clip, loop: false }); if (sl.fx) setTimeout(() => fire(sl.fx!), 50); }}>{s.name}</button>;
+            })}
+          </div>
+          <div style={h}>Effects</div>
+          <div style={row}>
+            <select value={fx} onChange={(e) => setFx(e.target.value)} style={{ flex: 1 }}>{Object.keys(PRESETS).map((p) => <option key={p}>{p}</option>)}</select>
+            <button onClick={() => fire(fx)}>fire</button>
+          </div>
+        </>}
+
+        {tab === 'walk' && <>
+          <div style={h}>Ground speed</div>
+          <div style={row}>
+            <input type="range" min={0} max={16} step={0.05} value={speed} onChange={(e) => { setSpeed(+e.target.value); if (mode.kind !== 'walk' || mode.dash) setMode({ kind: 'walk' }); }} style={{ flex: 1 }} />
+            <b style={{ width: 76, textAlign: 'right' }}>{speed.toFixed(2)} m/s</b>
+          </div>
+          <div style={row}>{presetSpeeds.filter(([n]) => n !== 'sprint').map(([n, v]) => (
+            <button key={n} className={mode.kind === 'walk' && !mode.dash && Math.abs(speed - +v.toFixed(2)) < 0.001 ? 'on' : ''} onClick={() => { setSpeed(+v.toFixed(2)); setMode({ kind: 'walk' }); }}>{n}</button>))}
+            <button title="the sprint clip, as dashes without a skill animation play it in battle (12–16 m/s)" className={mode.kind === 'walk' && mode.dash ? 'on' : ''}
+              onClick={() => { setSpeed(Math.max(speed, 9)); setMode({ kind: 'walk', dash: true }); }}>dash</button></div>
+          {mode.kind === 'walk' && <div className="readout">{L.blend}<br />{L.slide}<br />{L.cycle.toFixed(2)} s per stride</div>}
+
+          <div style={h}>Tuning</div>
+          <div style={{ color: '#667' }}>Live; saved in this browser and used by battles too (dev only).</div>
+          {(() => {
+            const re = () => retune((n) => n + 1);
+            const walking = mode.kind === 'walk', g = L.regime, all = allTuning;
+            const show = (...rs: Regime[]) => all || (walking && rs.includes(g));
+            return <>
               <div style={row}>
-                <label title="speed drops to 55% and back every 0.6 s, like sharp turns in battle: shows what speed smoothing does"><input type="checkbox" checked={wobble} onChange={(e) => { setWobble(e.target.checked); if (mode.kind !== 'walk') setMode({ kind: 'walk' }); }} /> wobble speed (turns)</label>
+                <span>gait now: <b>{{ walk: 'walk only', blend: 'walk–jog blend', jog: 'jog only', sprint: 'sprint (dash)' }[g]}</b></span>
+                <label style={{ marginLeft: 'auto' }}><input type="checkbox" checked={all} onChange={(e) => setAllTuning(e.target.checked)} /> show all</label>
+              </div>
+              {show('walk', 'blend') && <TuneSlider k="walkSpeed" label="walk clip speed" min={0.5} max={2} step={0.01} unit="m/s" onChange={re} />}
+              {show('walk') && <TuneSlider k="walkMin" label="slowest walk" min={0.2} max={1} step={0.05} unit="×" onChange={re} />}
+              {show('blend', 'jog') && <TuneSlider k="jogSpeed" label="jog clip speed" min={3} max={9} step={0.02} unit="m/s" onChange={re} />}
+              {show('blend') && <TuneSlider k="blendBias" label="walk ← mix → jog" min={-0.5} max={0.5} step={0.01} onChange={re} />}
+              {show('jog') && <TuneSlider k="jogMax" label="fastest jog" min={1} max={2.5} step={0.05} unit="×" onChange={re} />}
+              {show('sprint') && <TuneSlider k="sprintSpeed" label="sprint clip speed" min={5} max={13} step={0.05} unit="m/s" onChange={re} />}
+              {show('sprint') && <TuneSlider k="sprintMax" label="fastest sprint" min={1} max={3} step={0.05} unit="×" onChange={re} />}
+              <div style={row}>
+                <label title="speed drops to 55% and back every 0.6 s, like sharp turns in battle: shows what speed smoothing does"><input type="checkbox" checked={wobble} onChange={(e) => setWobble(e.target.checked)} /> wobble speed (turns)</label>
               </div>
               {(all || wobble) && <TuneSlider k="speedSmooth" label="speed smoothing" min={0} max={0.5} step={0.01} unit="s" onChange={re} />}
               <div style={row}>
                 <label><input type="checkbox" checked={tuning.ground} onChange={(e) => { setTuning({ ground: e.target.checked }); re(); }} /> keep feet on the floor</label>
               </div>
               {tuning.ground && <TuneSlider k="groundSmooth" label="floor smoothing" min={0} max={0.2} step={0.005} unit="s" onChange={re} />}
-            </>}
-          </>;
-        })()}
-        <div style={row}>
-          <button onClick={() => { const txt = JSON.stringify(changedOnly()); void navigator.clipboard?.writeText(txt).catch(() => undefined); setCopied(txt === '{}' ? 'all defaults' : txt); }}>copy values</button>
-          <button onClick={() => { resetTuning(); retune((n) => n + 1); setCopied(''); }}>reset</button>
+            </>;
+          })()}
+          <div style={{ ...row, marginTop: 10 }}>
+            <button onClick={() => { const txt = JSON.stringify(changedOnly()); void navigator.clipboard?.writeText(txt).catch(() => undefined); setCopied(txt === '{}' ? 'all defaults' : txt); }}>copy values</button>
+            <button onClick={() => { resetTuning(); retune((n) => n + 1); setCopied(''); }}>reset all</button>
+          </div>
+          {copied && <div style={{ font: '12px ui-monospace, monospace', background: '#f2f5fa', padding: 6, borderRadius: 6, wordBreak: 'break-all' }}>{copied}</div>}
+        </>}
         </div>
-        {copied && <div style={{ font: '11px ui-monospace, monospace', background: '#f2f5fa', padding: 4, borderRadius: 4, wordBreak: 'break-all' }}>{copied}</div>}
 
-        <div style={h}>Skills</div>
-        <div style={row}>
-          {info.skills.map((s) => {
-            const sl = look.skills[String(s.id)] ?? {};
-            const clip = sl.action ?? sl.attack;
-            return <button key={s.id} title={[clip && `clip ${clip}`, sl.fx && `effect ${sl.fx}`, sl.pitch && `lean ${sl.pitch}`].filter(Boolean).join(', ') || 'stats only'}
-              onClick={() => { if (clip) setMode({ kind: 'clip', clip, loop: false }); if (sl.fx) setTimeout(() => fire(sl.fx!), 50); }}>{s.name}</button>;
-          })}
+        {/* always at the bottom: the camera */}
+        <div style={{ padding: '8px 14px 10px', borderTop: '1px solid #e2e6ec' }}>
+          <div style={row}>
+            <button onClick={() => frame('close')}>close-up</button>
+            <button onClick={() => frame('face')}>face</button>
+            <button onClick={() => frame('battle')}>battle cam</button>
+          </div>
+          <div style={row}>
+            <label><input type="checkbox" checked={spin} onChange={(e) => setSpin(e.target.checked)} /> turntable</label>
+            <label title="grass, path, rocks and trees, or a measuring grid"><input type="checkbox" checked={terrain} onChange={(e) => setTerrain(e.target.checked)} /> terrain</label>
+          </div>
+          <div style={{ color: '#889', fontSize: 12 }}>drag to orbit · scroll to zoom · right-drag to pan · space play/pause · ← → one frame</div>
         </div>
-        <div style={h}>Effects</div>
-        <div style={row}>
-          <select value={fx} onChange={(e) => setFx(e.target.value)}>{Object.keys(PRESETS).map((p) => <option key={p}>{p}</option>)}</select>
-          <button onClick={() => fire(fx)}>fire</button>
-        </div>
-        <div style={h}>Portrait</div>
-        {face && <img src={face} width={108} height={108} style={{ borderRadius: 8, border: `3px solid ${team === 1 ? '#d63a2e' : '#2f6fe8'}` }} alt="" />}
       </div>
     </div>
   );
@@ -246,17 +337,16 @@ export function UnitLab({ initial }: { initial: string }) {
 function TuneSlider({ k, label, min, max, step, unit = '', onChange }: { k: keyof Tuning; label: string; min: number; max: number; step: number; unit?: string; onChange: () => void }) {
   const v = tuning[k] as number, d = DEFAULTS[k] as number;
   return (
-    <div style={{ ...row, margin: '2px 0' }}>
-      <span style={{ width: 108 }}>{label}</span>
-      <input type="range" min={min} max={max} step={step} value={v} style={{ width: 90 }}
+    <div style={{ ...row, flexWrap: 'nowrap' }}>
+      <span style={{ width: 118, flexShrink: 0 }}>{label}</span>
+      <input type="range" min={min} max={max} step={step} value={v} style={{ flex: 1, minWidth: 0 }}
         onChange={(e) => { setTuning({ [k]: +e.target.value } as Partial<Tuning>); onChange(); }} />
-      <span style={{ width: 52, fontWeight: v !== d ? 700 : 400 }} title={`default ${d}`}>{v.toFixed(step < 0.01 ? 3 : 2)}{unit}</span>
-      {v !== d && <button style={{ padding: '0 4px' }} title={`back to ${d}`} onClick={() => { setTuning({ [k]: d } as Partial<Tuning>); onChange(); }}>↺</button>}
+      <span style={{ width: 62, textAlign: 'right', fontWeight: v !== d ? 700 : 400 }} title={`default ${d}`}>{v.toFixed(step < 0.01 ? 3 : 2)}{unit}</span>
+      <button style={{ visibility: v !== d ? 'visible' : 'hidden', padding: '0 8px' }} title={`back to ${d}`} onClick={() => { setTuning({ [k]: d } as Partial<Tuning>); onChange(); }}>↺</button>
     </div>
   );
 }
 
-// Moves the floor under walking units (they stay put; the ground slides back).
 function Floor({ live }: { live: React.MutableRefObject<Live> }) {
   const ref = useRef<THREE.Mesh>(null);
   const tex = useMemo(() => {
@@ -333,8 +423,10 @@ function Driver({ live }: { live: React.MutableRefObject<Live> }) {
         if (L.mode.kind === 'walk' && L.mode.dash && sp) { // as plain dashes in battle
           if (fresh) { ch.mixer.stopAllAction(); sp.reset().play(); }
           sp.timeScale = Math.min(tuning.sprintMax, L.legSpeed / (clipSpeed(sp.getClip().name, 'sprint') * ch.root.scale.x));
-          ch.mixer.update(step);
-          ch.ground(tuning.ground, step || 1 / 60);
+          const sc = sp.getClip();
+          if (L.walkScrub !== null) { sp.time = L.walkScrub * sc.duration; ch.mixer.update(0); } else ch.mixer.update(step);
+          if (u === L.units[0]) { L.phase = (sp.time % sc.duration) / sc.duration; L.cycle = sc.duration / Math.max(0.01, sp.timeScale); }
+          ch.ground(tuning.ground, L.walkScrub !== null ? 1 : step || 1 / 60); // scrubbing: settle on each frame at once
           const ry0 = ch.root.rotation.y;
           ch.tick?.(step, new THREE.Vector3(-Math.sin(ry0) * L.legSpeed, 0, -Math.cos(ry0) * L.legSpeed));
           L.regime = 'sprint';
@@ -345,9 +437,18 @@ function Driver({ live }: { live: React.MutableRefObject<Live> }) {
         const wc = w.getClip(), jc = j.getClip();
         const l = locomotion(L.legSpeed, ch.root.scale.x, { speed: clipSpeed(wc.name, 'walk'), duration: wc.duration }, { speed: clipSpeed(jc.name, 'jog'), duration: jc.duration });
         j.weight = l.k; w.weight = 1 - l.k; j.timeScale = l.jogRate; w.timeScale = l.walkRate;
-        ch.mixer.update(step);
-        if (l.k > 0 && l.k < 1) { w.time = (j.time / jc.duration) * wc.duration; ch.mixer.update(0); }
-        ch.ground(tuning.ground, step || 1 / 60); // as in battle: feet on the floor
+        if (L.walkScrub !== null) { // hold a phase of the stride: both clips at the same point
+          j.time = L.walkScrub * jc.duration; w.time = L.walkScrub * wc.duration;
+          ch.mixer.update(0);
+        } else {
+          ch.mixer.update(step);
+          if (l.k > 0 && l.k < 1) { w.time = (j.time / jc.duration) * wc.duration; ch.mixer.update(0); }
+        }
+        if (u === L.units[0]) {
+          L.phase = l.k > 0 ? (j.time % jc.duration) / jc.duration : (w.time % wc.duration) / wc.duration;
+          L.cycle = l.k > 0 ? jc.duration / Math.max(0.01, l.jogRate) : wc.duration / Math.max(0.01, l.walkRate);
+        }
+        ch.ground(tuning.ground, L.walkScrub !== null ? 1 : step || 1 / 60); // as in battle: feet on the floor (scrubbing: at once)
         // the unit stays put on a moving floor: the air streams past it instead
         const ry = ch.root.rotation.y;
         ch.tick?.(step, new THREE.Vector3(-Math.sin(ry) * L.legSpeed, 0, -Math.cos(ry) * L.legSpeed));
