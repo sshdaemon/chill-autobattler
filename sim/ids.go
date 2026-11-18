@@ -37,15 +37,22 @@ const (
 type TargetRule uint8
 
 const (
-	TargetNearest TargetRule = 1 // the closest enemy the team sees
-	// next free: 2
+	TargetNearest     TargetRule = 1 // the closest enemy the team sees
+	TargetWounded     TargetRule = 2 // the most wounded enemy close by, else the nearest
+	TargetRangedFirst TargetRule = 3 // the nearest ranged or caster enemy, else the nearest
+	TargetStrongest   TargetRule = 4 // the enemy that hits hardest, else the nearest
+	TargetFocus       TargetRule = 5 // the enemy most allies are already fighting, else the nearest
+	TargetProtect     TargetRule = 6 // the enemy closest to its own ranged and caster allies, else the nearest
+	// next free: 7
 )
 
 type EngageRule uint8
 
 const (
-	EngageCharge EngageRule = 1 // advance on the enemy's side of the field
-	// next free: 2
+	EngageCharge EngageRule = 1 // go for the enemy at once
+	EngageLine   EngageRule = 2 // advance at the pace of its allies
+	EngageHold   EngageRule = 3 // wait until an enemy is within Trigger or an ally is fighting
+	// next free: 4
 )
 
 // Faction is a faction id (faction.go): which units a side may field.
