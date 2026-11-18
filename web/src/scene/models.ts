@@ -8,6 +8,7 @@ import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { BUILDS, CLIPS, lookOf, recipeNamed, type Recipe } from '../units/looks.ts';
 import { makeCape } from './cloth.ts';
+import { tuning } from './tuning.ts';
 
 // Which recipe a unit wears comes from its look: the n-th unit of a class in a
 // team gets recipe n (mod the list), so an army looks the same after a reload.
@@ -329,7 +330,7 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
       root.updateMatrixWorld(true);
       want = shift - soleMin() / root.scale.y; // where the lowest sole would touch the floor
     }
-    shift += (want - shift) * (1 - Math.exp(-Math.max(0, dt) / 0.02));
+    shift += (want - shift) * (tuning.groundSmooth > 0 ? 1 - Math.exp(-Math.max(0, dt) / tuning.groundSmooth) : 1);
     armature.position.y = baseY + shift;
   };
   mixer.setTime(Math.random() * 2); // idle out of step between units (presentation only)

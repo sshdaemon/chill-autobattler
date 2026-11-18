@@ -10,6 +10,7 @@ import { lookFor, makeCharacter, type Character } from './models.ts';
 import { FOGGED_FIGHT } from './Fog.tsx';
 import { feet, flinches, skillActions, viewOf } from './effects.ts';
 import { CLIPS, lookOf, skillLooks, type UnitLook } from '../units/looks.ts';
+import { DEFAULTS, tuning } from './tuning.ts';
 import { TEAM_RIM } from './models.ts';
 import { Euler, Quaternion, Vector3 } from 'three';
 
@@ -72,18 +73,30 @@ type AnimState = {
 
 const TICK = 0.05; // sim seconds per tick
 
+// A move clip's ground speed (m/s at 1×): from looks.json, scaled by the dev
+// tuning for its role (walk, jog, sprint), so the lab's sliders apply to every look.
+export const clipSpeed = (clip: string, role: 'walk' | 'jog' | 'sprint') => {
+  const base = role === 'walk' ? DEFAULTS.walkSpeed : role === 'jog' ? DEFAULTS.jogSpeed : DEFAULTS.sprintSpeed;
+  const now = role === 'walk' ? tuning.walkSpeed : role === 'jog' ? tuning.jogSpeed : tuning.sprintSpeed;
+  return (CLIPS[clip]?.speed ?? base) * (now / base);
+};
+
 // Locomotion (battle-presentation "Animation follows the sim"): walk and jog
 // blended and kept in step so the stride covers the unit's ground speed v.
 // Each clip covers speed·duration metres per cycle at 1× (scaled by the
 // unit's size); a blend k mixes stride and cycle length linearly, and
-// S(k)/D(k) = v has a closed-form k. Below walking speed the walk slows down
-// (to 0.5×); above jogging speed the jog speeds up (to 1.4×).
+// S(k)/D(k) = v has a closed-form k. A bias shifts k towards walk or jog and
+// the cadence follows, so the stride still covers v. Below walking speed the
+// walk slows down (to walkMin×); above jogging speed the jog speeds up (to jogMax×).
 export function locomotion(v: number, size: number, walk: { speed: number; duration: number }, jog: { speed: number; duration: number }) {
   const Sw = walk.speed * walk.duration * size, Sj = jog.speed * jog.duration * size, Dw = walk.duration, Dj = jog.duration;
-  if (v <= Sw / Dw) return { k: 0, walkRate: Math.max(0.5, v / (Sw / Dw)), jogRate: 1 };
-  if (v >= Sj / Dj) return { k: 1, walkRate: 1, jogRate: Math.min(1.4, v / (Sj / Dj)) };
-  const k = (v * Dw - Sw) / ((Sj - Sw) - v * (Dj - Dw)), D = Dw + k * (Dj - Dw);
-  return { k, walkRate: Dw / D, jogRate: Dj / D };
+  if (v <= Sw / Dw && tuning.blendBias <= 0) return { k: 0, walkRate: Math.max(tuning.walkMin, v / (Sw / Dw)), jogRate: 1 };
+  if (v >= Sj / Dj && tuning.blendBias >= 0) return { k: 1, walkRate: 1, jogRate: Math.min(tuning.jogMax, v / (Sj / Dj)) };
+  let k = Math.min(1, Math.max(0, (v * Dw - Sw) / ((Sj - Sw) - v * (Dj - Dw))));
+  k = Math.min(1, Math.max(0, k + tuning.blendBias));
+  const D = Dw + k * (Dj - Dw), S = Sw + k * (Sj - Sw), f = (v * D) / S; // f = 1 unless biased
+  const clampF = Math.min(f, tuning.jogMax);
+  return { k, walkRate: Math.max(tuning.walkMin, (Dw / D) * clampF), jogRate: (Dj / D) * clampF };
 }
 
 function Unit({ index }: { index: number }) {
@@ -154,7 +167,7 @@ function Unit({ index }: { index: number }) {
     const ticks = (curr?.tick ?? 0) - (prev?.tick ?? 0);
     if (ticks > 0) {
       const raw = Math.hypot(b.x - a.x, b.z - a.z) / (ticks * TICK);
-      st.speed += (raw - st.speed) * (1 - Math.exp(-(delta * speed) / 0.12));
+      st.speed += (raw - st.speed) * (tuning.speedSmooth > 0 ? 1 - Math.exp(-(delta * speed) / tuning.speedSmooth) : 1);
     }
     const walkAct = ch.actions[look.anims.walk], jogAct = ch.actions[look.anims.move];
     const next = ch.actions[p.name] ?? ch.actions[look.anims.idle];
@@ -183,14 +196,14 @@ function Unit({ index }: { index: number }) {
     if (next && p.kind === 'move' && walkAct && jogAct) {
       const sz = ch.root.scale.x, back = b.flags & UF.kiting && !(b.flags & UF.dashing) ? -1 : 1; // kiting archers back away facing the threat
       const wc = walkAct.getClip(), jc = jogAct.getClip();
-      const l = locomotion(st.speed, sz, { speed: CLIPS[wc.name]?.speed ?? 1, duration: wc.duration }, { speed: CLIPS[jc.name]?.speed ?? 5, duration: jc.duration });
+      const l = locomotion(st.speed, sz, { speed: clipSpeed(wc.name, 'walk'), duration: wc.duration }, { speed: clipSpeed(jc.name, 'jog'), duration: jc.duration });
       jogAct.weight = l.k;
       walkAct.weight = 1 - l.k;
       jogAct.timeScale = back * l.jogRate;
       walkAct.timeScale = back * l.walkRate;
       if (l.k > 0 && l.k < 1) walkAct.time = (jogAct.time / jc.duration) * wc.duration; // same phase: feet land together
     } else if (next && p.kind === 'sprint') {
-      next.timeScale = Math.min(1.6, st.speed / ((CLIPS[next.getClip().name]?.speed ?? 8) * ch.root.scale.x));
+      next.timeScale = Math.min(tuning.sprintMax, st.speed / (clipSpeed(next.getClip().name, 'sprint') * ch.root.scale.x));
     } else if (next && p.kind !== 'attack') {
       next.timeScale = p.rate;
     }
@@ -200,7 +213,7 @@ function Unit({ index }: { index: number }) {
     st.pitch += (wantPitch - st.pitch) * (1 - Math.exp(-10 * delta * speed));
     st.flags = b.flags;
     ch.mixer.update(delta * speed);
-    ch.ground(p.kind === 'move' || p.kind === 'sprint', delta * speed); // feet on the floor while walking
+    ch.ground(tuning.ground && (p.kind === 'move' || p.kind === 'sprint'), delta * speed); // feet on the floor while walking
     ch.tick?.(delta * speed); // capes follow the posed body
 
     // team rim, gold when selected

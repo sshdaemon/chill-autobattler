@@ -5,6 +5,7 @@
 - [x] 1.2 Animation panel: the unit's clips and all clips; play, pause, loop, speed, timeline scrub. Verify in the browser.
 - [x] 1.3 Locomotion: ground-speed slider and presets, moving floor, the battle's walk–jog blend, live blend and foot-slide readout. Verify the readout matches the earlier offline check (under 10%).
 - [x] 1.4 Skills (action or attack, lean, effect) and any effect preset; portrait. Verify in the browser.
+- [x] 1.6 Tuning panel: live sliders for the walk/run numbers (shared `scene/tuning.ts`, saved in the browser, used by dev battles, 'tuned' marker), speed wobble, copy and reset. Verify the defaults reproduce the shipped behaviour and that a change shows in the walk test.
 - [x] 1.5 Dev-HUD link and CLAUDE.md. Verify the link opens the lab.
 
 ## 2. Checks
