@@ -11,7 +11,13 @@ Making a new look means editing a Blender script and re-baking, and each look sh
 
 ## What Changes
 
-- **Parts library.** Bake Quaternius's "Modular Character Outfits – Fantasy" (12 outfits, 62 parts, 3 colour variants each), the "Universal Base Characters" heads and hairstyles, and a set of CC0 weapon and shield models into a shared parts library. Every part is skinned to our rig (or attached to a hand bone) with a manifest, and textures are reduced to a download budget.
+- **Parts library.** Bake a shared parts library with a manifest, with textures reduced to a download budget. Its contents:
+  - the free edition of Quaternius's "Modular Character Outfits – Fantasy": Peasant and Ranger outfits (male and female) as separate parts, plus a hood and pauldrons, with 2 colour variants each. The other 10 outfits are only in the paid edition;
+  - heads and hairstyles from "Universal Base Characters";
+  - weapons and shields from Quaternius's "Fantasy Props MegaKit" and KayKit "Adventurers";
+  - a helmet and a wizard hat modelled in the bake.
+
+  Every part keeps our rig, and items attach to bones.
 - **Recipes instead of baked looks.** A look lists one or more recipes. A recipe gives:
   - a body build;
   - the outfit parts for each slot (head, hair, torso, arms, legs, feet, accessories);
@@ -20,13 +26,13 @@ Making a new look means editing a Blender script and re-baking, and each look sh
   - a team-colour strength.
   
   The client assembles each unit from the shared parts at runtime, so a new combination needs no re-bake.
-- **Body builds.** Recipes pick a build (`slim`, `normal`, `bulky`, `stout`) that shapes the skeleton: shoulder width, chest, arm and leg thickness, head size and height. It applies on top of animations, within limits that keep the unit inside the sim's footprint and its feet on the ground.
-- **Team colours from masks.** The bake step derives a mask for each outfit texture from where its three colour variants differ, which is the dyeable cloth. A shader recolours that area in the team colour. This replaces both the separate Red textures and the code-made trims.
+- **Body builds.** Recipes pick a build (`slim`, `normal`, `bulky`, `stout`) that shapes the body: chest, arm and leg thickness (pushed out along the surface, per bone), shoulder width, head size and height. It applies on top of animations, within limits that keep the unit inside the sim's footprint and its feet on the ground.
+- **Team colours from masks.** The bake step derives a mask for each outfit texture from where its colour variants differ, which is the dyeable cloth. A shader recolours that area in the team colour. This replaces both the separate Red textures and the code-made trims.
 - **Real weapons and shields.** These are modelled parts attached to hand bones, replacing the code-made sword, bow and staff. Recipes may add an off-hand shield or a back item.
 - **The current classes as recipes.**
-  - Warriors: a knight-like outfit on a bulky build, with sword and shield.
-  - Archers: a ranger outfit on a slim build, with a quiver.
-  - Mages: a wizard outfit with a robe and hat, holding a staff.
+  - Warriors: bulky or stout, with ranger armour pieces, a helmet, a sword or axe, and a shield.
+  - Archers: a slim ranger with hood, bow and quiver.
+  - Mages: a peasant outfit tinted as a robe, with a wizard hat and a staff.
   
   Each class gets two or three recipes for variety, and hair and tint variety stay seeded as today.
 - **Portraits** use the assembled characters.
@@ -54,10 +60,10 @@ None: recipes, parts and builds extend `unit-looks`.
 ## Impact
 
 - **Tools:**
-  - new `tools/blender/bake_parts.py`, which exports every part, head, hair and weapon skinned to our rig, writes `parts.json` and the team masks, and reduces textures;
+  - new `tools/blender/bake_parts.py`, which edits each glTF directly so the rest pose stays exact: it cuts base bodies to the head, quantises vertex data, reduces textures, writes the team masks and `parts.json`, and models the helmet and wizard hat;
   - `tools/assets/pack_units.py` and `bake_units.py` retire after the switch;
   - source packs go in `~/fun/assets-src`, outside the repo.
-- **Assets:** `web/public/assets/units/` (17 MB, 8 looks) is replaced by `web/public/assets/parts/` with a budget of 10 MB total and 3 MB on first load for the parts a default army uses.
+- **Assets:** `web/public/assets/units/` (17 MB, 8 looks) is replaced by `web/public/assets/parts/` (5.1 MB), with a budget of 10 MB total and 3 MB for the parts a default army uses (2.7 MB).
 - **`web/`:**
   - `scene/models.ts` (assembly from recipes, builds, mask shader, weapon attachment);
   - `scene/portraits.ts`;

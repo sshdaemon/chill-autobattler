@@ -11,10 +11,21 @@ export type ClipInfo = { loop?: boolean; hit?: number; from?: string[] };
 // attacking (radians); rate: action playback speed; fx: effect preset name.
 export type SkillLook = { action?: string; rate?: number; attack?: string; pitch?: number; fx?: string };
 export type AnimSet = { idle: string; move: string; cheer: string; attack: string[]; hit: string[]; death: string[] };
-export type UnitLook = { models: string[]; anims: AnimSet; skills: Record<string, SkillLook> };
+// A character recipe (unit-looks): outfit parts (the first one's skeleton is the
+// unit's), head, hair, the outfit colour variant, items on bones, team-colour
+// strength on cloth, an optional cloth tint, and a body build.
+export type Recipe = {
+  name: string; sex: 'male' | 'female'; build: string; parts: string[]; head: string; hair: string[];
+  variant: number; items: string[]; team: number; tint?: string;
+};
+// Body builds: girth in metres per bone (pushed out along the surface), shoulder
+// width, head size and height factors.
+export type Build = { girth: Record<string, number>; shoulders: number; head: number; height: number };
+export type UnitLook = { recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook> };
 
 export const CLIPS = raw.clips as Record<string, ClipInfo>;
 const LOOKS = raw.units as Record<string, UnitLook>;
+export const BUILDS = raw.builds as Record<string, Build>;
 
 let roster: ClassInfo[] = [];
 const warned = new Set<string>();
@@ -33,7 +44,10 @@ export function lookOf(cls: number): UnitLook {
   return fallback;
 }
 
-export const modelFor = (cls: number, nth: number) => { const m = lookOf(cls).models; return m[nth % m.length]; };
+const recipeFor = (cls: number, nth: number) => { const r = lookOf(cls).recipes; return r[nth % r.length]; };
+// the recipe's name doubles as the unit's display name
+export const modelFor = (cls: number, nth: number) => recipeFor(cls, nth).name;
+export const recipeNamed = (cls: number, name: string) => lookOf(cls).recipes.find((r) => r.name === name) ?? recipeFor(cls, 0);
 
 // The unit's learned skills, each with its sim definition and its look.
 export function skillLooks(cls: number, learned: number[]): { info: SkillInfo; look: SkillLook }[] {

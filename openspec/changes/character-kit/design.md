@@ -38,6 +38,12 @@ See proposal.md for the motivation. Today:
 ## Decisions
 
 ### 1. Assemble at runtime from a baked parts library
+**Sources (as found).** The free editions are smaller than their pages suggest:
+- the outfit pack has only Peasant and Ranger (male and female), with 2 colour variants each;
+- the base-character pack has only the Superhero bodies and 6 hairstyles.
+
+The user chose to go with the free parts plus pieces modelled in the bake (helmet, wizard hat), over buying the paid editions or switching to KayKit's style. Weapons and shields come from Quaternius's Fantasy Props and KayKit Adventurers, both CC0.
+
 `bake_parts.py` exports every outfit part, head, hairstyle and item once, as its own glTF, to `web/public/assets/parts/`. It also writes `parts.json`, which records for each part:
 - its slot;
 - its file;
@@ -48,9 +54,20 @@ See proposal.md for the motivation. Today:
 The client builds a unit by cloning one canonical skeleton, then binding each part's skinned mesh to it by bone name.
 
 - **Rejected: baking every recipe combination.** That means a Blender run and a new asset per recipe, the very thing step 4 needs to avoid.
-- **Canonical joint list:** every skinned part is exported with the same joint list in the same order, re-skinned to the canonical armature in Blender. `restore_rest()` from today's bake is kept for the rest-pose fix. With a shared joint list, binding is direct and parts that share a material can be merged (§6).
+- **Canonical joint list:** every source part already carries the same 65 joints in the same order. The bake edits the glTF JSON and buffers directly, without importing into Blender, so the rest pose is untouched and today's `restore_rest()` workaround is not needed.
+  - Same-sex parts share one rest pose; the spike verified this joint by joint.
+  - Each part is bound to the unit's skeleton (its torso part's) with that skeleton's inverse binds, as the old Blender re-skin did, so heads and hair stay where they were modelled.
+  - Base bodies are cut to the head: triangles more than 4 cm below the neck are dropped.
+  - Vertex data is quantised: weights and normals to bytes, UVs to 16 bits (`KHR_mesh_quantization`).
+  - Unused colour and UV sets are dropped.
 
-### 2. Builds: bone offsets and compensated uniform scales
+  With a shared joint list, parts that share a material can be merged (§6).
+
+### 2. Builds: girth in the vertex shader, plus a few bone offsets and scales
+
+**Changed after the spike.** Girth by bone scales was dropped: a non-uniform scale shears a limb once its child bone rotates, for example a bent elbow. Instead, girth is a per-bone amount in metres. The vertex shader pushes each vertex out along its bind-pose normal by the skin-weighted sum of its bones' amounts, before skinning, so no animation can distort it. Clothing layers move out together because they share bone weights. The other build changes stay as planned below: shoulder joints, head scale and root height.
+
+The original plan, kept for reference:
 Clips never write bone scale and only write the pelvis position, so a build can safely change the skeleton's bone positions and scales.
 
 | Build change | How |
@@ -84,7 +101,7 @@ The recipe's colour variant picks the base texture, and both teams share it. Thi
 - **Rejected: hand-painted masks.** That's 12 outfits of manual work, and it doesn't scale to new outfits.
 
 ### 4. Weapons and items
-Items are rigid parts with an attach bone and an offset in `parts.json`:
+Items are rigid parts with an attach bone and a mount pose in `parts.json`. The pose is given in the character's own space at rest (offset from the bone, rotation, scale). The client places the item there and then attaches it to the bone keeping that placement, as the old code-made weapons did, so poses don't depend on each bone's local axes. The bones:
 - main hand → `hand_r` (bow → `hand_l`);
 - off hand → `lowerarm_l` (shield);
 - back → `spine_03` (quiver, sheath).
@@ -108,7 +125,7 @@ The code-made sword, bow and staff, and `addTrims()`, are removed.
 `models: [...]` becomes `recipes: [...]`. The n-th unit of a class picks recipe n mod the list, as today's model choice does. Hair colour, tint and the height variety stay seeded per unit.
 
 ### 6. Draw calls and loading
-- **Merging:** after assembly, skinned parts that share a material (one texture set per outfit variant) are merged with `mergeGeometries`, which works because the joint list is shared. The result is about 3–4 draw calls per unit (outfit, head and skin, hair, items) instead of 8–10.
+- **Merging:** after assembly, skinned parts that share a material (one texture set per outfit variant) are merged with `mergeGeometries`, which works because the joint list is shared. Measured result: 7–11 draw calls per unit, covering outfit (1–2), arm skin, head, eyes, hair and items. The old baked looks drew 10–14 primitives each, plus their code-made weapon and trims.
 - **Loading:** parts load lazily through one cached GLTF loader, per recipe actually used. Until a unit's parts arrive, it renders as today's capsule.
 - **Portraits:** `portraits.ts` renders the assembled character, after assembly.
 

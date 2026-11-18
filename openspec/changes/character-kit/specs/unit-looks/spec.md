@@ -22,15 +22,15 @@ A recipe SHALL name a body build, a part for each body slot (head, hair, torso, 
 - **WHEN** Blue has two warriors and the warrior look has two recipes
 - **THEN** the two warriors are assembled from different recipes
 
-### Requirement: Body builds shape the skeleton
-A recipe's build (slim, normal, bulky or stout) SHALL scale the skeleton's shoulders, chest, limbs, head and height on top of every animation. A build SHALL keep the unit's overall height within ±8% of the base body, its width within the sim's unit footprint, and its feet on the ground in every clip.
+### Requirement: Body builds shape the body
+A recipe's build (slim, normal, bulky or stout) SHALL change chest and limb thickness, shoulder width, head size and height on top of every animation. A build SHALL keep the unit's overall height within ±8% of the base body, its width within the sim's unit footprint, and its feet on the ground in every clip.
 
 #### Scenario: Bulky warrior
 - **WHEN** a warrior uses the bulky build
 - **THEN** it is visibly broader in shoulders and arms than a slim archer, and its attack and death animations still play without feet sinking or floating
 
 ### Requirement: Team colours come from cloth masks
-Each outfit texture SHALL have a mask of its dyeable cloth, derived from where its colour variants differ. Units SHALL show their team colour on that cloth, at the strength the recipe gives, instead of separate team textures or code-made trims.
+Each outfit texture SHALL have a mask of its dyeable cloth, derived from where its colour variants differ (leaving out leather that recolours between variants). Units SHALL show their team colour on that cloth, at the strength the recipe gives, instead of separate team textures or code-made trims.
 
 #### Scenario: Same recipe, two teams
 - **WHEN** Blue and Red both field a warrior with the same recipe
