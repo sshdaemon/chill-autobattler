@@ -10,6 +10,8 @@
 //	chillSim.outcome(): Uint8Array         protobuf chill.v1.BattleOutcome
 //	chillSim.fog(): Uint8Array            Blue's visible grid cells (56×56, row = z cell), for fog of war
 //	chillSim.data(): string                balance data as JSON (stats, matchups, skills), for the UI
+//	chillSim.units(): string               after create: every unit's class and skill ids as JSON
+//	                                       ([{cls, skills}] in unit index order, Red's generated army too)
 //	chillSim.formationSlots(f, classes)    Blue's preset positions (Int32 LE x, z per unit, raw fixed-point);
 //	                                       f is a sim.Formation (1..7), classes are sim.Class values (0..2)
 package main
@@ -123,6 +125,7 @@ func dataJSON() string {
 		Classes    []class    `json:"classes"`    // the unit roster, index = sim.Class
 		Formations []string   `json:"formations"` // index = sim.Formation
 		ArmySize   int        `json:"armySize"`
+		HitAt      float64    `json:"hitAt"`      // share of a swing at which the blow lands or the shot leaves
 		DeployZone [4]float64 `json:"deployZone"` // Blue: xMin, xMax, zMin, zMax
 	}
 	tagNames := func(t sim.Tag) []string {
@@ -134,7 +137,7 @@ func dataJSON() string {
 		}
 		return names
 	}
-	out.Version, out.ArmySize = sim.Version, sim.ArmySize
+	out.Version, out.ArmySize, out.HitAt = sim.Version, sim.ArmySize, float64(sim.HitAtPct)/100
 	for i := range sim.Roster {
 		d := &sim.Roster[i]
 		st := d.Stats
@@ -171,6 +174,27 @@ func dataJSON() string {
 	return string(b)
 }
 
+// unitsJSON lists every unit of the current battle (class and learned skill
+// ids, in index order), so presentation can show skills for both teams.
+func unitsJSON() string {
+	type unit struct {
+		Cls    int   `json:"cls"`
+		Skills []int `json:"skills"`
+	}
+	out := []unit{}
+	if battle != nil {
+		for _, u := range battle.Units {
+			skills := []int{}
+			for _, s := range u.Skills {
+				skills = append(skills, int(s))
+			}
+			out = append(out, unit{int(u.Class), skills})
+		}
+	}
+	b, _ := json.Marshal(out)
+	return string(b)
+}
+
 func formationSlots(_ js.Value, args []js.Value) any {
 	f := sim.Formation(args[0].Int())
 	if f == sim.Custom || f > sim.F5x0 {
@@ -195,6 +219,7 @@ func register() {
 	api.Set("step", js.FuncOf(step))
 	api.Set("outcome", js.FuncOf(outcome))
 	api.Set("data", js.FuncOf(func(js.Value, []js.Value) any { return dataJSON() }))
+	api.Set("units", js.FuncOf(func(js.Value, []js.Value) any { return unitsJSON() }))
 	api.Set("fog", js.FuncOf(func(js.Value, []js.Value) any {
 		if battle == nil {
 			return js.Null()

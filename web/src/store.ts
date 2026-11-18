@@ -9,7 +9,8 @@ import { decodeMap, decodeSnapshot, type Obstacle, type SimEvent, type Snapshot 
 import type { FromWorker, ToWorker } from './sim/sim.worker.ts';
 import { battleApi, runApi } from './api.ts';
 import { authed, ensurePlayer } from './session.ts';
-import { CUSTOM, type GameData } from './gamedata.ts';
+import { CUSTOM, type GameData, type UnitLoadout } from './gamedata.ts';
+import { setRoster } from './units/looks.ts';
 import { play as playSound } from './sound.ts';
 
 export const TICK_MS = 50;
@@ -41,6 +42,7 @@ type State = {
   dragging?: { index: number; at: Pt };
   battle?: Battle;
   obstacles: Obstacle[];
+  units: UnitLoadout[]; // every unit's class and skills (Red's too), from the sim at battle start
   prev?: Snapshot; curr?: Snapshot; currAt: number; // two latest snapshots, for interpolation
   speed: number;
   outcome?: BattleOutcome;
@@ -195,7 +197,7 @@ export const useBattle = create<State>((set, get) => {
 
   return {
     phase: 'loading', counts: savedCounts(), formation: 2 /* 3-2 */, slots: {}, deployLeft: DEPLOY_SECONDS,
-    obstacles: [], currAt: 0, speed: 1, floats: [], picks: {}, fogOn: true, follow: false,
+    obstacles: [], units: [], currAt: 0, speed: 1, floats: [], picks: {}, fogOn: true, follow: false,
     quality: savedQuality(), autoLowered: false, lowDpr: false, qualityChosen: false, tiltShift: false,
     setQuality(quality, auto = false) {
       if (auto && (get().qualityChosen || get().autoLowered)) return; // once per session, never over a manual choice
@@ -375,6 +377,7 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
   switch (m.type) {
     case 'ready':
       useBattle.setState({ version: m.version, data: JSON.parse(m.data) as GameData });
+      setRoster(useBattle.getState().data!.classes);
       void useBattle.getState().init();
       break;
     case 'slots': useBattle.setState({ slots: m.slots }); break;
@@ -382,7 +385,7 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
     case 'error': useBattle.setState({ error: m.message }); break;
     case 'started': {
       const s = decodeSnapshot(m.snapshot);
-      useBattle.setState({ obstacles: decodeMap(m.map), prev: s, curr: s, currAt: performance.now() });
+      useBattle.setState({ obstacles: decodeMap(m.map), units: JSON.parse(m.units) as UnitLoadout[], prev: s, curr: s, currAt: performance.now() });
       break;
     }
     case 'snapshot': {

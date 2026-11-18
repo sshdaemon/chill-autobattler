@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """Packs baked units (tools/blender/bake_units.py output) for the web app.
 
-    python3 tools/assets/pack_units.py [BAKE_DIR] [CLIPS_JSON]
+    python3 tools/assets/pack_units.py [BAKE_DIR]
 
-Defaults: BAKE_DIR = the prototype's ../web3d-demo/assets/units,
-          CLIPS_JSON = $QUATERNIUS_DIR/clips.json (default: the prototype's copy).
-Output:   web/public/assets/units/ and web/public/assets/clips.json
+Default: BAKE_DIR = the prototype's ../web3d-demo/assets/units.
+Output:  web/public/assets/units/
+Animation clips are packed separately: tools/assets/ual_clips.py.
 
 - Blue and Red of a look have byte-identical geometry: one <Look>.bin is kept
   and both .gltf files point at it.
 - PNG textures (roughness maps) become JPEG via macOS `sips` (dev tool only).
-- clips.json keeps only the clips the game plays.
 """
 import hashlib
 import json
@@ -22,10 +21,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROTO = os.path.join(ROOT, '..', 'web3d-demo', 'assets')
 BAKE = sys.argv[1] if len(sys.argv) > 1 else os.path.join(PROTO, 'units')
-CLIPS = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.environ.get('QUATERNIUS_DIR', os.path.join(PROTO, 'quaternius')), 'clips.json')
 OUT = os.path.join(ROOT, 'web', 'public', 'assets', 'units')
-CLIPS_OUT = os.path.join(ROOT, 'web', 'public', 'assets', 'clips.json')
-KEEP_CLIPS = ['Sword_Idle', 'Jog_Fwd_Loop', 'Sword_Attack', 'Spell_Simple_Shoot', 'Hit_Chest', 'Death01', 'Yes']
 
 
 def sha(path):
@@ -59,13 +55,8 @@ def main():
             subprocess.run(['sips', '-s', 'format', 'jpeg', '-s', 'formatOptions', '85', src, '--out', dst], check=True, capture_output=True)
         else:
             shutil.copyfile(src, os.path.join(OUT, uri))
-    clips = [c for c in json.load(open(CLIPS)) if c['name'] in KEEP_CLIPS]
-    missing = set(KEEP_CLIPS) - {c['name'] for c in clips}
-    if missing:
-        sys.exit(f'clips missing: {missing}')
-    json.dump(clips, open(CLIPS_OUT, 'w'), separators=(',', ':'))
     size = sum(os.path.getsize(os.path.join(OUT, f)) for f in os.listdir(OUT))
-    print(f'packed {len(looks)} looks, {len(images)} textures, {len(clips)} clips: {size / 1e6:.1f} MB + clips {os.path.getsize(CLIPS_OUT) / 1e6:.1f} MB')
+    print(f'packed {len(looks)} looks, {len(images)} textures: {size / 1e6:.1f} MB')
 
 
 if __name__ == '__main__':

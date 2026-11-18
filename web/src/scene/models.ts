@@ -4,11 +4,12 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { CLIPS, lookOf } from '../units/looks.ts';
 
-// Looks per sim class (0 warrior, 1 archer, 2 mage); the n-th unit of a class
-// in a team gets look n (mod the list), so an army looks the same after a reload.
-export const LOOKS = [['Mirko', 'Vesna', 'Radim'], ['Bogdan', 'Lada'], ['Zoran', 'Milena', 'Velimir']];
-export const lookFor = (cls: number, nth: number) => LOOKS[cls][nth % LOOKS[cls].length];
+// Which model a unit wears comes from its look (units/looks.json): the n-th
+// unit of a class in a team gets model n (mod the list), so an army looks the
+// same after a reload.
+export { modelFor as lookFor } from '../units/looks.ts';
 
 const loader = new GLTFLoader();
 const scenes = new Map<string, Promise<THREE.Object3D>>();
@@ -161,8 +162,6 @@ function addTrims(cls: number, team: number, root: THREE.Object3D, bones: Record
 }
 
 
-const ONCE = ['Sword_Attack', 'Spell_Simple_Shoot', 'Hit_Chest', 'Death01'];
-
 // A fresh, independently animated copy of a look, holding its class weapon.
 export async function makeCharacter(cls: number, look: string, team: number, nth = 0): Promise<Character> {
   const [scene, clips] = await Promise.all([loadScene(look, team), loadClips()]);
@@ -213,10 +212,10 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
   const actions: Record<string, THREE.AnimationAction> = {};
   for (const [name, clip] of Object.entries(fitClips(clips, root))) {
     const a = mixer.clipAction(clip);
-    if (ONCE.includes(name)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
+    if (!CLIPS[name]?.loop) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
     actions[name] = a;
   }
-  actions.Sword_Idle.play();
+  actions[lookOf(cls).anims.idle]?.play();
   mixer.setTime(Math.random() * 2); // idle out of step between units (presentation only)
   return { root, mixer, actions, clips, mats, rim, spine1: bones.spine_01, spine2: bones.spine_02 };
 }

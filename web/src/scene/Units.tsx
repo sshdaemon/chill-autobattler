@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { Billboard, Html } from '@react-three/drei';
-import { LoopRepeat, type Group } from 'three';
+import type { Group } from 'three';
 import { useBattle } from '../store.ts';
 import { UF } from '../sim/snapshot.ts';
 import { BattleResult } from '../gen/chill/v1/battle_pb.ts';
 import { alpha, lerp } from './interp.ts';
 import { lookFor, makeCharacter, type Character } from './models.ts';
 import { FOGGED_FIGHT } from './Fog.tsx';
-import { feet, flinches, viewOf } from './effects.ts';
+import { feet, flinches, skillActions, viewOf } from './effects.ts';
+import { CLIPS, lookOf, skillLooks, type UnitLook } from '../units/looks.ts';
 import { TEAM_RIM } from './models.ts';
 import { Euler, Quaternion, Vector3 } from 'three';
 
 const GOLD = TEAM_RIM[0].clone().setStyle('#ffd23f');
-const UP = new Vector3(0, 1, 0), tmpQ = new Quaternion(), tmpAxis = new Vector3(), tmpE = new Euler();
+const UP = new Vector3(0, 1, 0), RIGHT = new Vector3(1, 0, 0), tmpQ = new Quaternion(), tmpAxis = new Vector3(), tmpE = new Euler();
 const AIM_MAX = 0.96, FLINCH_FOR = 0.3, FLINCH_MAX = 0.21;
 
 const TEAM = ['#3a8cff', '#ff4040'];
@@ -33,17 +34,40 @@ function toBone(bone: import('three').Bone, dir: Vector3) {
 const localUp = (bone: import('three').Bone) => toBone(bone, UP);
 const FADE_AFTER = 1.2, FADE_FOR = 1.5; // a body lies, then fades into the ground
 
-// Which animation the sim state asks for, and at what speed.
-function wanted(flags: number, cls: number, cheering: boolean): [string, number] {
-  if (flags & UF.dead) return ['Death01', 1];
-  if (flags & UF.staggered) return ['Hit_Chest', 1];
-  if (flags & UF.swinging) return [cls === 0 ? 'Sword_Attack' : 'Spell_Simple_Shoot', 1];
+// Stable per-unit pick among variants (attack, hit, death), so a replay looks the same.
+const variant = (list: string[], index: number, k: number) => list[((Math.imul(index + 1, 2654435761) + Math.imul(k, 40503)) >>> 16) % list.length];
+const QUICK = new Set(['death', 'hit', 'attack', 'action']); // fade into these fast
+
+type Pick = { name: string; kind: 'death' | 'hit' | 'attack' | 'action' | 'move' | 'cheer' | 'idle'; rate: number; restart: boolean };
+
+// Which clip the sim state asks for (see unit-looks): death, hit, attack
+// (the skill's attack if it has one, else a variant), a skill action started
+// by an event, move, cheer, idle.
+function choose(look: UnitLook, sk: ReturnType<typeof skillLooks>, flags: number, prevFlags: number, st: AnimState, cheering: boolean, index: number, action: { running: boolean }): Pick {
+  const started = (f: number) => !!(flags & f) && !(prevFlags & f);
+  const a = look.anims;
+  if (flags & UF.dead) return { name: variant(a.death, index, 0), kind: 'death', rate: 1, restart: false };
+  if (flags & UF.staggered) return { name: variant(a.hit, index, st.hits), kind: 'hit', rate: 1, restart: started(UF.staggered) };
+  if (flags & UF.swinging) {
+    const name = sk.find((s) => s.look.attack)?.look.attack ?? variant(a.attack, index, st.swings);
+    return { name, kind: 'attack', rate: 1, restart: started(UF.swinging) };
+  }
+  if (st.action && (st.actionNew || action.running)) return { name: st.action.clip, kind: 'action', rate: st.action.rate, restart: st.actionNew };
   const slow = (flags & UF.wet ? 0.7 : 1) * (flags & UF.slowed ? 0.6 : 1); // legs slow down too
-  if (flags & UF.dashing) return ['Jog_Fwd_Loop', 2.2];
-  if (flags & UF.moving) return ['Jog_Fwd_Loop', slow];
-  if (cheering) return ['Yes', 1];
-  return ['Sword_Idle', 1];
+  if (flags & UF.dashing) return { name: a.move, kind: 'move', rate: 2.2, restart: false };
+  if (flags & UF.moving) return { name: a.move, kind: 'move', rate: slow, restart: false };
+  if (cheering) return { name: a.cheer, kind: 'cheer', rate: 1, restart: false };
+  return { name: a.idle, kind: 'idle', rate: 1, restart: false };
 }
+
+// Dev only: every clip start (window.animLog), for checking choices and timing.
+const animLog: { tick: number; unit: number; clip: string; kind: string; rate: number; from: number }[] = [];
+if (import.meta.env.DEV) Object.assign(window, { animLog });
+
+type AnimState = {
+  name: string; flags: number; deadAt: number; faded: boolean; aim: number; pitch: number;
+  swings: number; hits: number; action?: { clip: string; rate: number }; actionNew: boolean;
+};
 
 function Unit({ index }: { index: number }) {
   const g = useRef<Group>(null), bar = useRef<Group>(null), sink = useRef<Group>(null);
@@ -59,7 +83,7 @@ function Unit({ index }: { index: number }) {
   const selected = useBattle((s) => s.selected === index);
   const draggable = useBattle((s) => info?.team === 0 && s.phase === 'deploying');
   const [ch, setCh] = useState<Character>();
-  const anim = useRef({ name: 'Sword_Idle', flags: 0, deadAt: 0, faded: false, aim: 0 });
+  const anim = useRef<AnimState>({ name: '', flags: 0, deadAt: 0, faded: false, aim: 0, pitch: 0, swings: 0, hits: 0, actionNew: false });
 
   const team = info?.team, cls = info?.cls;
   useEffect(() => {
@@ -101,25 +125,40 @@ function Unit({ index }: { index: number }) {
     }
     if (!ch) return;
     const won = phase === 'done' && ((outcome?.result === BattleResult.BLUE_WIN && b.team === 0) || (outcome?.result === BattleResult.RED_WIN && b.team === 1));
-    const [name, rate] = wanted(b.flags, b.cls, won);
-    const started = (flag: number) => (b.flags & flag) && !(st.flags & flag); // rising edge: replay a one-shot
-    const next = ch.actions[name];
-    if (name !== st.name || (name === 'Hit_Chest' && started(UF.staggered)) || (name !== 'Jog_Fwd_Loop' && name !== 'Sword_Idle' && started(UF.swinging))) {
+    const look = lookOf(b.cls), learned = bs.units[index]?.skills ?? [], sk = skillLooks(b.cls, learned);
+    if ((b.flags & UF.swinging) && !(st.flags & UF.swinging)) st.swings++;
+    if ((b.flags & UF.staggered) && !(st.flags & UF.staggered)) st.hits++;
+    const queued = skillActions.get(index); // a skill acted this tick (dash, blink): play its action
+    if (queued) { skillActions.delete(index); st.action = queued; st.actionNew = true; }
+    const p = choose(look, sk, b.flags, st.flags, st, won, index, { running: !!st.action && !!ch.actions[st.action.clip]?.isRunning() });
+    if (p.kind !== 'action') st.action = undefined;
+    st.actionNew = false;
+    const next = ch.actions[p.name] ?? ch.actions[look.anims.idle];
+    if (next && (p.name !== st.name || p.restart)) {
       const cur = ch.actions[st.name];
       next.reset();
-      if (name === 'Yes') next.setLoop(LoopRepeat, Infinity);
       next.play();
-      // quick into attacks, hits and death; smooth between moving and standing
-      if (cur && cur !== next) cur.crossFadeTo(next, ['Death01', 'Hit_Chest', 'Sword_Attack', 'Spell_Simple_Shoot'].includes(name) ? 0.12 : 0.25, false);
-      st.name = name;
+      if (cur && cur !== next) cur.crossFadeTo(next, QUICK.has(p.kind) ? 0.12 : 0.25, false);
+      st.name = p.name;
+      if (p.kind === 'attack') {
+        // time the clip so its blow lands with the sim's hit (unit-looks):
+        // swing S (after attack-speed skills), blow at hitAt·S
+        let swing = data?.classes[b.cls]?.swing ?? 1;
+        for (const s of sk) for (const e of s.info.effects) if (e.kind === 'statBonus' && e.stat === 'attackSpeed') swing *= (e.pct ?? 100) / 100;
+        const at = (data?.hitAt ?? 0.45) * swing, h = CLIPS[p.name]?.hit ?? next.getClip().duration * (data?.hitAt ?? 0.45);
+        const rate = Math.min(1.8, Math.max(0.6, h / at));
+        next.timeScale = rate;
+        next.time = Math.max(0, h - rate * at); // when clamped, start later so the blow still lands on time
+      }
+      if (import.meta.env.DEV) animLog.push({ tick: b.flags & UF.dead ? -1 : (bs.curr?.tick ?? 0), unit: index, clip: p.name, kind: p.kind, rate: next.timeScale, from: next.time });
     }
-    if (name === 'Sword_Attack' || name === 'Spell_Simple_Shoot') {
-      // stretch the attack to the sim's swing time, so the blow lines up with the hit
-      next.timeScale = ch.clips[name].duration / (data?.classes[b.cls].swing ?? 1);
-    } else {
+    if (next && p.kind !== 'attack') {
       // kiting archers back away facing the threat: play the jog backwards
-      next.timeScale = name === 'Jog_Fwd_Loop' && b.flags & UF.kiting ? -rate : rate;
+      next.timeScale = p.kind === 'move' && b.flags & UF.kiting && !(b.flags & UF.dashing) ? -p.rate : p.rate;
     }
+    // arcing shots: lean back while attacking
+    const wantPitch = p.kind === 'attack' ? sk.find((s) => s.look.pitch)?.look.pitch ?? 0 : 0;
+    st.pitch += (wantPitch - st.pitch) * (1 - Math.exp(-10 * delta * speed));
     st.flags = b.flags;
     ch.mixer.update(delta * speed);
 
@@ -138,6 +177,7 @@ function Unit({ index }: { index: number }) {
     }
     st.aim += (want - st.aim) * (1 - Math.exp(-8 * delta));
     if (ch.spine2 && Math.abs(st.aim) > 0.01) ch.spine2.quaternion.premultiply(tmpQ.setFromAxisAngle(localUp(ch.spine2), st.aim));
+    if (ch.spine2 && st.pitch > 0.01) ch.spine2.quaternion.premultiply(tmpQ.setFromAxisAngle(toBone(ch.spine2, RIGHT), -st.pitch));
     // a short flinch away from the attacker
     const f = flinches.get(index);
     if (f && ch.spine1) {

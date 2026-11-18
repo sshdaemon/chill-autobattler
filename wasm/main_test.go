@@ -128,3 +128,48 @@ func TestDataAndSlots(t *testing.T) {
 		}
 	}
 }
+
+// units() lists every unit's class and skills, Red's generated army included.
+func TestUnits(t *testing.T) {
+	register()
+	api := js.Global().Get("chillSim")
+	w, a := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER
+	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 77, RedSkillCount: 6, Blue: &chillv1.Army{
+		Formation: chillv1.Formation_FORMATION_SPREAD,
+		Units:     []*chillv1.UnitSpec{{UnitClass: w, Skills: []chillv1.Skill{chillv1.Skill_SKILL_DASH}}, {UnitClass: a}},
+	}}
+	raw, _ := proto.Marshal(in)
+	if msg := api.Call("create", bytesToJS(raw)).String(); msg != "" {
+		t.Fatal(msg)
+	}
+	var got []struct {
+		Cls    int
+		Skills []int
+	}
+	if err := json.Unmarshal([]byte(api.Call("units").String()), &got); err != nil {
+		t.Fatal(err)
+	}
+	si, _ := convert.Input(in)
+	b, _ := sim.New(si)
+	if len(got) != len(b.Units) {
+		t.Fatalf("%d units, battle has %d", len(got), len(b.Units))
+	}
+	red := 0
+	for i, u := range b.Units {
+		if got[i].Cls != int(u.Class) || len(got[i].Skills) != len(u.Skills) {
+			t.Errorf("unit %d: got %+v, want class %d skills %v", i, got[i], u.Class, u.Skills)
+			continue
+		}
+		for k, s := range u.Skills {
+			if got[i].Skills[k] != int(s) {
+				t.Errorf("unit %d skill %d: %d, want %d", i, k, got[i].Skills[k], s)
+			}
+		}
+		if u.Team == 1 {
+			red += len(u.Skills)
+		}
+	}
+	if red != 6 || got[0].Skills[0] != int(sim.SkillDash) {
+		t.Errorf("red skills %d (want 6), blue warrior %v", red, got[0].Skills)
+	}
+}
