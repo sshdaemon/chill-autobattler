@@ -2,8 +2,8 @@
 
 ## 1. Lock today's behaviour
 
-- [ ] 1.1 Add golden replay cases recorded with the current code that use every skill: each skill on its own, Frost + Blast on one mage, Sharp arrows + Lob on one archer, Swift + Dash, Executioner and Headshot near the 40% threshold, and Red with 0, 3 and 25 skills. Verify that `pnpm test:go` and `pnpm test:wasm` pass, with `sim.Version` still "0.4.0" and no existing outcome changed.
-- [ ] 1.2 Add a test that records today's spawn stats for every class with every single skill, plus the combinations from 1.1 (exact `Fx` values for HP, damage range, range, speed, cooldown and swing), and today's `RedArmy` output for seeds 1–200. Verify it passes on the current code.
+- [x] 1.1 Add golden replay cases recorded with the current code that use every skill: each skill on its own, Frost + Blast on one mage, Sharp arrows + Lob on one archer, Swift + Dash, Executioner and Headshot near the 40% threshold, and Red with 0, 3 and 25 skills. Verify that `pnpm test:go` and `pnpm test:wasm` pass, with `sim.Version` still "0.4.0" and no existing outcome changed.
+- [x] 1.2 Add a test that records today's spawn stats for every class with every single skill, plus the combinations from 1.1 (exact `Fx` values for HP, damage range, range, speed, cooldown and swing), and today's `RedArmy` output for seeds 1–200. Verify it passes on the current code.
 
 ## 2. Roster types and data
 

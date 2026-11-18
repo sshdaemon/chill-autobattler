@@ -78,6 +78,23 @@ func goldenCases() []struct {
 		{Class: Archer, Skills: []Skill{SkillRange, SkillDamage, SkillLob, SkillExecute, SkillHealth}},
 		{Class: Mage, Skills: []Skill{SkillFrost, SkillDamage, SkillBlink, SkillBlast, SkillHealth}},
 	}}, 15))
+	// every skill and the combinations whose order matters (data-driven-units)
+	with := func(c Class, skills ...Skill) []UnitSpec {
+		out := make([]UnitSpec, ArmySize)
+		for i := range out {
+			out[i] = UnitSpec{Class: c, Skills: skills}
+		}
+		return out
+	}
+	add("mages frost and blast", in(41, Army{Formation: F2x3, Units: with(Mage, SkillBlast, SkillFrost)}, 5))
+	add("mages blink and power", in(42, Army{Formation: Spread, Units: with(Mage, SkillBlink, SkillDamage, SkillHealth)}, 5))
+	add("archers sharp arrows and lob", in(43, Army{Formation: F3x2, Units: with(Archer, SkillLob, SkillDamage)}, 5))
+	add("archers long shot and headshot", in(44, Army{Formation: F1x4, Units: with(Archer, SkillRange, SkillExecute, SkillHealth)}, 5))
+	add("warriors swift and dash", in(45, Army{Formation: F4x1, Units: with(Warrior, SkillDash, SkillSpeed)}, 5))
+	add("warriors executioner", in(46, Army{Formation: F5x0, Units: with(Warrior, SkillExecute, SkillDamage, SkillHealth)}, 5))
+	for _, n := range []int{0, 3, 25} {
+		add("red with "+itoa(n)+" skills", in(uint64(50+n), Army{Formation: Spread, Units: mix()}, n))
+	}
 	custom := mix()
 	for i := range custom {
 		p := V(I(i*4-8), I(8+i%2*3))
