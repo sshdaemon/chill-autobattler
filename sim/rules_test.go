@@ -362,6 +362,31 @@ func TestBlink(t *testing.T) {
 	}
 }
 
+// An escape with a speed runs (a dash) instead of teleporting.
+func TestEscapeRun(t *testing.T) {
+	b := testBattle(nil, tu{0, Mage, p(0, 0), []Skill{MageBlink}}, tu{1, Warrior, p(0, -20), nil})
+	b.Units[1].cd = 1000
+	m := b.Units[0]
+	m.effect(Escape).e.Speed = I(6)
+	b.Step()
+	if m.dash == nil {
+		t.Fatal("an escape with a speed should start a run")
+	}
+	if d := Dist(m.Pos, p(0, 0)); d > I(1) {
+		t.Fatalf("a run shouldn't teleport, moved %v in one tick", d)
+	}
+	b.steps(m.dash.dur)
+	if d := Dist(m.Pos, p(0, 0)); d < I(7) {
+		t.Errorf("should run ~8 m away, moved %v", d)
+	}
+	if m.Pos.Z <= 0 {
+		t.Errorf("should run away from the warrior, ended at %v", m.Pos)
+	}
+	if cd := m.effect(Escape).cd; cd <= 0 {
+		t.Errorf("run cooldown %d", cd)
+	}
+}
+
 func TestLob(t *testing.T) {
 	rock := []Obstacle{{Kind: Rock, Pos: p(0, 40), R: I(1)}}
 	for _, lob := range []bool{false, true} {
