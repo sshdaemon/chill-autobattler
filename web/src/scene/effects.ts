@@ -18,7 +18,7 @@ type Emitter = {
 export const PRESETS: Record<string, Emitter[]> = Object.assign({}, ...Object.values(
   import.meta.glob<Record<string, Emitter[]>>('./fx/*.json', { eager: true, import: 'default' })));
 
-// Skill actions started by an event this tick (dash, blink), for Units to play.
+// Skill actions started by an event this tick (dash, blink, brace, burst), for Units to play.
 export const skillActions = new Map<number, { clip: string; rate: number }>();
 
 // Recent hits per unit (direction away from the attacker), for the flinch in Units.
@@ -106,7 +106,7 @@ function presetFor(units: UnitLoadout[], unit: number | undefined, kind: string,
 
 // Events that play the causing skill's action clip on the unit (by effect
 // kind); for fear the one acting is the event's other unit (who caused it).
-const ACTIONS: Record<number, string> = { [EV.dash]: 'gapCloser', [EV.blink]: 'escape', [EV.brace]: 'brace', [EV.fear]: 'fear' };
+const ACTIONS: Record<number, string> = { [EV.dash]: 'gapCloser', [EV.blink]: 'escape', [EV.brace]: 'brace', [EV.burst]: 'burst', [EV.fear]: 'fear' };
 const actorOf = (e: SimEvent) => (e.kind === EV.fear ? e.other : e.unit);
 
 export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
@@ -144,6 +144,7 @@ export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
       case EV.miss: play('miss', u, o); break; // u dodged o's blow
       case EV.guard: play(presetFor(v.units, e.unit, 'guard', 'guard'), u, o); break; // the guard takes part of a blow aimed at o
       case EV.brace: play(presetFor(v.units, e.unit, 'brace', 'brace'), u, o); break; // u stopped o's dash
+      case EV.burst: play(presetFor(v.units, e.unit, 'burst', 'burst'), u, o); break; // u throws at o
     }
   }
 }
@@ -191,11 +192,11 @@ if (import.meta.env.DEV) {
       const caster = Math.max(0, classes.findIndex((c) => c.projectile === 'bolt'));
       const v: View = { fogOn: false, fogged: false, speed: 1, high: true, units: [], bolt: (cls) => classes[cls]?.projectile === 'bolt' };
       const unit = (x: number, cls = 0): UnitSnap => ({ team: 0, cls, x, z: 4, fx: 0, fz: -1, hp: 1, maxHp: 1, flags: 0, target: -1, skills: 0, kills: 0, dealt: 0 });
-      const units = [-9, -6, -3, 0, 3, 6, 9].map((x) => unit(x)).concat([unit(-9, caster), unit(-6, caster), unit(3, caster), unit(-12), unit(12)]);
+      const units = [-9, -6, -3, 0, 3, 6, 9].map((x) => unit(x)).concat([unit(-9, caster), unit(-6, caster), unit(3, caster), unit(-12), unit(12), unit(15)]);
       const ev = (kind: number, u: number, other = -1, flags = 0): SimEvent => ({ kind, unit: u, other, amount: 10, flags });
       const snap = { tick: 0, result: 0, units, shots: [], events: [] } as Snapshot;
       units[7].z = units[8].z = units[9].z = 6;
-      onSnapshot(snap, [ev(EV.hit, 0, 7), ev(EV.hit, 1, 8, EF.flank), ev(EV.execute, 2, 0), ev(EV.blink, 3), ev(EV.frost, 4, 9), ev(EV.blast, 5, 9), ev(EV.death, 6), ev(EV.shot, 9), ev(EV.guard, 10, 7), ev(EV.brace, 11, 8),
+      onSnapshot(snap, [ev(EV.hit, 0, 7), ev(EV.hit, 1, 8, EF.flank), ev(EV.execute, 2, 0), ev(EV.blink, 3), ev(EV.frost, 4, 9), ev(EV.blast, 5, 9), ev(EV.death, 6), ev(EV.shot, 9), ev(EV.guard, 10, 7), ev(EV.brace, 11, 8), ev(EV.burst, 12, 0),
         ev(EV.curse, 0, 7), ev(EV.fear, 2, 10), ev(EV.miss, 4, 9)], v);
       for (let i = 0; i < 6; i++) { feet(100, -9, 8, UF.moving, 1, v, unit(-9)); feet(101, 0, 8, UF.moving | UF.wet, 1, v, unit(0)); feet(102, 9, 8, UF.dashing, 1, v, unit(9)); }
     },

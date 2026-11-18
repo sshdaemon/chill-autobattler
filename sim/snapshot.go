@@ -31,6 +31,7 @@ const (
 const (
 	SFBolt int32 = 1 << iota
 	SFLob
+	SFBurst // thrown by a Burst effect (spear, fire pot), not shot
 )
 
 // Snapshot encodes the current state plus the events since the last call.
@@ -62,6 +63,9 @@ func (b *Battle) Snapshot() []int32 {
 		}
 		if s.Lob {
 			f |= SFLob
+		}
+		if s.burst {
+			f |= SFBurst
 		}
 		out = append(out, f, int32(s.Start.X), int32(s.Start.Z), int32(s.Aim.X), int32(s.Aim.Z), int32(s.T), int32(s.Dur), int32(s.Victim), int32(s.Shooter))
 	}
