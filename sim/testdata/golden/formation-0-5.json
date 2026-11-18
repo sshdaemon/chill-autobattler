@@ -1,0 +1,19 @@
+{
+  "version": "0.4.0",
+  "case": "formation 0-5",
+  "outcome": {
+    "result": 2,
+    "ticks": 395,
+    "checksum": "14992012674666577577",
+    "survivors": [
+      {
+        "Index": 8,
+        "HP": 3604480
+      },
+      {
+        "Index": 9,
+        "HP": 1051268
+      }
+    ]
+  }
+}

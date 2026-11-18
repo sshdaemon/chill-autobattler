@@ -1,0 +1,27 @@
+{
+  "version": "0.4.0",
+  "case": "veterans 5 stars",
+  "outcome": {
+    "result": 2,
+    "ticks": 207,
+    "checksum": "12285950074602441531",
+    "survivors": [
+      {
+        "Index": 4,
+        "HP": 2409673
+      },
+      {
+        "Index": 5,
+        "HP": 3604480
+      },
+      {
+        "Index": 6,
+        "HP": 1834914
+      },
+      {
+        "Index": 7,
+        "HP": 2433465
+      }
+    ]
+  }
+}

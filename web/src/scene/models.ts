@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { BUILDS, CLIPS, lookOf, recipeNamed, type Recipe } from '../units/looks.ts';
+import { BUILDS, CLIP_BUNDLES, CLIPS, lookOf, recipeNamed, type Recipe } from '../units/looks.ts';
 import { makeCape } from './cloth.ts';
 import { tuning } from './tuning.ts';
 
@@ -48,9 +48,8 @@ function texture(file: string, color: boolean) {
 
 let clipsPromise: Promise<Record<string, THREE.AnimationClip>> | undefined;
 export function loadClips() {
-  clipsPromise ??= fetch('/assets/clips.json')
-    .then((r) => r.json())
-    .then((list: Parameters<typeof THREE.AnimationClip.parse>[0][]) => Object.fromEntries(list.map((c) => {
+  clipsPromise ??= Promise.all(CLIP_BUNDLES.map((b) => fetch(`/assets/clips/${b}.json`).then((r) => r.json())))
+    .then((bundles: Parameters<typeof THREE.AnimationClip.parse>[0][][]) => Object.fromEntries(bundles.flat().map((c) => {
       const clip = THREE.AnimationClip.parse(c);
       return [clip.name, clip];
     })));

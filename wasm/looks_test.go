@@ -9,23 +9,26 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"strings"
 	"testing"
 
 	"chill/sim"
 )
 
-// The unit looks (web/src/units/looks.json) are presentation data matched to
-// the sim's unit roster by name; this keeps the two, the effect presets
-// (web/src/scene/fx.json) and the packed clips (web/public/assets/clips.json)
-// in sync. Runs under node with GOOS=js (pnpm test:wasm), which can read files.
+// The unit looks (web/src/units/looks/<unit>.json, plus _shared.json) are
+// presentation data matched to the sim's unit roster by name; this keeps them,
+// the effect presets (web/src/scene/fx/*.json) and the packed clip bundles
+// (web/public/assets/clips/<look file>.json) in sync. Every unit has its own
+// files, so sessions working on different units don't touch the same ones.
+// Runs under node with GOOS=js (pnpm test:wasm), which can read files.
 
 const (
-	looksFile = "../web/src/units/looks.json"
-	fxFile    = "../web/src/scene/fx.json"
-	clipsFile = "../web/public/assets/clips.json"
-	partsDir  = "../web/public/assets/parts/"
+	looksDir = "../web/src/units/looks/"
+	fxDir    = "../web/src/scene/fx/"
+	clipsDir = "../web/public/assets/clips/"
+	partsDir = "../web/public/assets/parts/"
 
-	clipsMaxRaw  = 1_500_000
+	clipsMaxRaw  = 1_500_000 // all bundles together
 	clipsMaxGzip = 400_000
 	partsMax     = 10_000_000 // the whole parts library
 	armyMax      = 3_000_000  // the parts and textures of every class's first recipe
@@ -80,15 +83,21 @@ type unitLook struct {
 	Skills map[string]skillLook `json:"skills"`
 }
 
+type clipInfo struct {
+	Loop  bool     `json:"loop"`
+	Hit   float64  `json:"hit"`
+	Speed float64  `json:"speed"` // move clips: m/s at 1×
+	From  []string `json:"from"`
+}
+
+// looksData is every look file merged: Clips from all of them, Builds from
+// _shared.json, Units from the unit files (by file name); Owner says which
+// file (and so which clip bundle) lists each clip.
 type looksData struct {
-	Clips map[string]struct {
-		Loop  bool     `json:"loop"`
-		Hit   float64  `json:"hit"`
-		Speed float64  `json:"speed"` // move clips: m/s at 1×
-		From  []string `json:"from"`
-	} `json:"clips"`
-	Builds map[string]build    `json:"builds"`
-	Units  map[string]unitLook `json:"units"`
+	Clips  map[string]clipInfo
+	Builds map[string]build
+	Units  map[string]unitLook
+	Owner  map[string]string
 }
 
 func readJSON(t *testing.T, path string, v any) []byte {
@@ -114,9 +123,9 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 		case name == "":
 			bad("%s: no clip", where)
 		case !ok:
-			bad("%s: clip %q is not in looks.json clips", where, name)
+			bad("%s: clip %q is in no look file's clips", where, name)
 		case !slices.Contains(packed, name):
-			bad("%s: clip %q is not packed in clips.json (run tools/assets/ual_clips.py)", where, name)
+			bad("%s: clip %q is not packed in the clip bundles (run tools/assets/ual_clips.py)", where, name)
 		case attack && c.Hit <= 0:
 			bad("%s: attack clip %q has no hit time", where, name)
 		}
@@ -169,7 +178,7 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 				clip(d.Name+" "+s.Name+" attack", sl.Attack, true)
 			}
 			if _, ok := fx[sl.Fx]; sl.Fx != "" && !ok {
-				bad("%s: skill %s names effect preset %q, which fx.json lacks", d.Name, s.Name, sl.Fx)
+				bad("%s: skill %s names effect preset %q, which no fx file has", d.Name, s.Name, sl.Fx)
 			}
 		}
 		for id := range look.Skills {
@@ -180,7 +189,7 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 	}
 	for name, c := range l.Clips {
 		if !slices.Contains(packed, name) {
-			bad("clip %q is in looks.json but not packed", name)
+			bad("clip %q is in the looks but not packed", name)
 		}
 		if len(c.From) == 1 {
 			bad("clip %q: from needs two or more parts", name)
@@ -190,34 +199,106 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 	return errs
 }
 
-func loadLooks(t *testing.T) (looksData, map[string]json.RawMessage, []string, []byte) {
-	var l looksData
-	readJSON(t, looksFile, &l)
-	var fx map[string]json.RawMessage
-	readJSON(t, fxFile, &fx)
-	var clips []struct{ Name string }
-	raw := readJSON(t, clipsFile, &clips)
-	var names []string
-	for _, c := range clips {
-		names = append(names, c.Name)
+// jsonFiles lists a directory's .json files by name without the extension, sorted.
+func jsonFiles(t *testing.T, dir string) []string {
+	t.Helper()
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		t.Fatal(err)
 	}
-	return l, fx, names, raw
+	var out []string
+	for _, e := range entries {
+		if n := e.Name(); strings.HasSuffix(n, ".json") {
+			out = append(out, strings.TrimSuffix(n, ".json"))
+		}
+	}
+	return out
+}
+
+// readLooks merges the look files; a clip listed in two files is an error.
+func readLooks(t *testing.T) looksData {
+	t.Helper()
+	l := looksData{Clips: map[string]clipInfo{}, Units: map[string]unitLook{}, Owner: map[string]string{}}
+	for _, name := range jsonFiles(t, looksDir) {
+		var f struct {
+			unitLook
+			Clips  map[string]clipInfo `json:"clips"`
+			Builds map[string]build    `json:"builds"`
+		}
+		readJSON(t, looksDir+name+".json", &f)
+		for c, info := range f.Clips {
+			if prev, ok := l.Owner[c]; ok {
+				t.Errorf("clip %q is listed in both %s.json and %s.json: keep it in one (shared clips in _shared.json)", c, prev, name)
+			}
+			l.Clips[c], l.Owner[c] = info, name
+		}
+		if name == "_shared" {
+			l.Builds = f.Builds
+		} else {
+			l.Units[name] = f.unitLook
+		}
+	}
+	return l
+}
+
+// readFx merges the effect preset files; a preset defined twice is an error.
+func readFx(t *testing.T) map[string]json.RawMessage {
+	t.Helper()
+	fx, from := map[string]json.RawMessage{}, map[string]string{}
+	for _, name := range jsonFiles(t, fxDir) {
+		var f map[string]json.RawMessage
+		readJSON(t, fxDir+name+".json", &f)
+		for k, v := range f {
+			if prev, ok := from[k]; ok {
+				t.Errorf("effect preset %q is in both fx/%s.json and fx/%s.json", k, prev, name)
+			}
+			fx[k], from[k] = v, name
+		}
+	}
+	return fx
+}
+
+func loadLooks(t *testing.T) (looksData, map[string]json.RawMessage, []string, map[string][]byte) {
+	l := readLooks(t)
+	fx := readFx(t)
+	var names []string
+	bundles := map[string][]byte{}
+	for _, b := range jsonFiles(t, clipsDir) {
+		var clips []struct{ Name string }
+		bundles[b] = readJSON(t, clipsDir+b+".json", &clips)
+		for _, c := range clips {
+			names = append(names, c.Name)
+			if l.Owner[c.Name] != b {
+				t.Errorf("clip %q is packed in bundle %s but listed in looks/%s.json: re-run tools/assets/ual_clips.py", c.Name, b, l.Owner[c.Name])
+			}
+		}
+	}
+	return l, fx, names, bundles
 }
 
 func TestLooksMatchRoster(t *testing.T) {
-	l, fx, packed, raw := loadLooks(t)
+	l, fx, packed, bundles := loadLooks(t)
 	for _, e := range checkLooks(sim.Roster, l, fx, packed) {
 		t.Error(e)
 	}
 	if len(packed) != len(l.Clips) {
-		t.Errorf("clips.json has %d clips, looks.json names %d: re-run tools/assets/ual_clips.py", len(packed), len(l.Clips))
+		t.Errorf("the clip bundles have %d clips, the looks name %d: re-run tools/assets/ual_clips.py", len(packed), len(l.Clips))
 	}
-	var z bytes.Buffer
-	w := gzip.NewWriter(&z)
-	w.Write(raw)
-	w.Close()
-	if len(raw) > clipsMaxRaw || z.Len() > clipsMaxGzip {
-		t.Errorf("clips.json is %d bytes (%d gzipped), budget %d (%d)", len(raw), z.Len(), clipsMaxRaw, clipsMaxGzip)
+	for name := range l.Units {
+		if _, ok := bundles[name]; !ok {
+			t.Errorf("look %s has no clip bundle (clips/%s.json): re-run tools/assets/ual_clips.py", name, name)
+		}
+	}
+	var raw, gz int
+	for _, b := range bundles {
+		var z bytes.Buffer
+		w := gzip.NewWriter(&z)
+		w.Write(b)
+		w.Close()
+		raw, gz = raw+len(b), gz+z.Len()
+	}
+	if raw > clipsMaxRaw || gz > clipsMaxGzip {
+		t.Errorf("the clip bundles are %d bytes (%d gzipped), budget %d (%d)", raw, gz, clipsMaxRaw, clipsMaxGzip)
 	}
 }
 
@@ -327,8 +408,7 @@ func partFiles(t *testing.T, name string, seen map[string]bool) int64 {
 }
 
 func TestRecipes(t *testing.T) {
-	var l looksData
-	readJSON(t, looksFile, &l)
+	l := readLooks(t)
 	var m partsManifest
 	readJSON(t, partsDir+"parts.json", &m)
 	for _, e := range checkRecipes(l, m) {
@@ -380,8 +460,7 @@ func TestRecipes(t *testing.T) {
 }
 
 func TestRecipeCheckCatches(t *testing.T) {
-	var l looksData
-	readJSON(t, looksFile, &l)
+	l := readLooks(t)
 	var m partsManifest
 	readJSON(t, partsDir+"parts.json", &m)
 	edit := func(f func(r *recipe)) looksData {

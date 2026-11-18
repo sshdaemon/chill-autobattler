@@ -1,0 +1,15 @@
+{
+  "version": "0.4.0",
+  "case": "custom positions",
+  "outcome": {
+    "result": 2,
+    "ticks": 337,
+    "checksum": "6253464820543214835",
+    "survivors": [
+      {
+        "Index": 8,
+        "HP": 2164737
+      }
+    ]
+  }
+}

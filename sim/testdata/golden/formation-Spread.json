@@ -1,0 +1,23 @@
+{
+  "version": "0.4.0",
+  "case": "formation Spread",
+  "outcome": {
+    "result": 2,
+    "ticks": 358,
+    "checksum": "8057774722895154123",
+    "survivors": [
+      {
+        "Index": 6,
+        "HP": 2800940
+      },
+      {
+        "Index": 8,
+        "HP": 1021272
+      },
+      {
+        "Index": 9,
+        "HP": 3604480
+      }
+    ]
+  }
+}

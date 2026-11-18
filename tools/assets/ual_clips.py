@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Packs the animation clips the game plays (web/public/assets/clips.json) from
+"""Packs the animation clips the game plays (web/public/assets/clips/*.json) from
 Quaternius's Universal Animation Library 1 and 2 (CC0, Standard editions).
 
     python3 -I tools/assets/ual_clips.py [UAL_DIR]
 
 UAL_DIR (default ~/fun/assets-src) holds ual1/ and ual2/ with the unzipped
-packs. Which clips to keep comes from web/src/units/looks.json ("clips"); an
+packs. Which clips to keep comes from the looks (web/src/units/looks/*.json,
+each file's "clips"); each look file gets its own bundle of the clips it lists
+(_shared.json: clips several units use), so units' clips change separately. An
 entry with "from": [A, B] is made by playing A then B (a combo strike and
 its recovery, so the attack starts and ends at rest).
 
@@ -19,8 +21,8 @@ values are rounded to 4 decimals.
 import glob, json, os, struct, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-LOOKS = os.path.join(ROOT, 'web', 'src', 'units', 'looks.json')
-OUT = os.path.join(ROOT, 'web', 'public', 'assets', 'clips.json')
+LOOKS = os.path.join(ROOT, 'web', 'src', 'units', 'looks')
+OUT = os.path.join(ROOT, 'web', 'public', 'assets', 'clips')
 
 FPS = 30
 DEC = 4
@@ -149,14 +151,21 @@ def main():
             cache[name] = dense(*raw[name])
         return cache[name]
 
-    wanted = json.load(open(LOOKS))['clips']
-    clips = []
-    for name, spec in sorted(wanted.items()):
-        parts = spec.get('from', [name])
-        tracks, n = concat([get(p) for p in parts]) if len(parts) > 1 else get(parts[0])
-        clips.append(simplify(name, tracks, n))
-    json.dump(clips, open(OUT, 'w'), separators=(',', ':'))
-    print(f'{len(clips)} clips -> {OUT}: {os.path.getsize(OUT) / 1e6:.2f} MB')
+    os.makedirs(OUT, exist_ok=True)
+    seen = {}
+    for look in sorted(glob.glob(os.path.join(LOOKS, '*.json'))):
+        bundle = os.path.basename(look)[:-len('.json')]
+        clips = []
+        for name, spec in sorted(json.load(open(look)).get('clips', {}).items()):
+            if name in seen:
+                sys.exit(f'clip {name} is listed in both {seen[name]} and {bundle}: keep it in one (shared clips in _shared.json)')
+            seen[name] = bundle
+            parts = spec.get('from', [name])
+            tracks, n = concat([get(p) for p in parts]) if len(parts) > 1 else get(parts[0])
+            clips.append(simplify(name, tracks, n))
+        out = os.path.join(OUT, bundle + '.json')
+        json.dump(clips, open(out, 'w'), separators=(',', ':'))
+        print(f'{len(clips)} clips -> {out}: {os.path.getsize(out) / 1e6:.2f} MB')
 
 
 if __name__ == '__main__':

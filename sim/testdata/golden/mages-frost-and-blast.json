@@ -1,0 +1,19 @@
+{
+  "version": "0.4.0",
+  "case": "mages frost and blast",
+  "outcome": {
+    "result": 2,
+    "ticks": 265,
+    "checksum": "1139425254681134569",
+    "survivors": [
+      {
+        "Index": 7,
+        "HP": 2848407
+      },
+      {
+        "Index": 9,
+        "HP": 1494108
+      }
+    ]
+  }
+}

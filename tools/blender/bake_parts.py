@@ -36,44 +36,34 @@ SLOTS = {'Body': 'torso', 'Arms': 'arms', 'Legs': 'legs', 'Feet': 'feet', 'Feet_
          'Head_Hood': 'headgear', 'Acc_Pauldron': 'accessory', 'Acc_Pauldrons': 'accessory'}
 HAIR = {'male': ['Hair_SimpleParted', 'Hair_Beard', 'Hair_Buzzed', 'Eyebrows_Regular'],
         'female': ['Hair_Buns', 'Hair_Long', 'Hair_BuzzedFemale', 'Eyebrows_Female']}
-# rigid items: (name, source file, attach bone); grip offsets are set in ITEM_POSE
-ITEMS = [
-    ('Sword', os.path.join(PROPS, 'Sword_Bronze.gltf'), 'hand_r'),
-    ('Axe', os.path.join(PROPS, 'Axe_Bronze.gltf'), 'hand_r'),
-    ('Shield_Wooden', os.path.join(PROPS, 'Shield_Wooden.gltf'), 'lowerarm_l'),
-    ('Shield_Round', os.path.join(KAYKIT, 'shield_round_color.gltf'), 'lowerarm_l'),
-    ('Bow', os.path.join(KAYKIT, 'bow_withString.gltf'), 'hand_l'),
-    ('Quiver', os.path.join(KAYKIT, 'quiver.gltf'), 'spine_03'),
-    ('Staff', os.path.join(KAYKIT, 'staff.gltf'), 'hand_r'),
-    ('Wand', os.path.join(KAYKIT, 'wand.gltf'), 'hand_r'),
-    ('Sword_Long', os.path.join(KAYKIT, 'sword_2handed_color.gltf'), 'hand_r'),
-]
-MODELLED = [('Wizard_Hat', 'Head'), ('Helmet', 'Head'), ('Spear', 'hand_r'), ('Great_Helm', 'Head')]
-# Cloth items: generated and simulated by the client (web/src/scene/cloth.ts), no mesh here.
-# width (top, hem) and length in metres, hung from the bone; team: coloured in the team colour.
-CLOTH = {'Cape': {'kind': 'cloth', 'bone': 'spine_03', 'team': True, 'width': [0.4, 0.62], 'length': 0.95}}
-# Mount poses in the character's own space at rest (Y up, facing +Z, its left
-# is +X): offset from the attach bone's origin (metres), rotation (radians, XYZ)
-# and scale. The client places the item there, then attaches it to the bone
-# keeping that placement. Tuned in the browser against idle and attack clips.
-H = math.pi / 2
-ITEM_POSE = {
-    'Sword': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.85},
-    'Sword_Long': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.55},
-    'Axe': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.95},
-    # shields are strapped to the forearm (as the shield clips expect): centre two-thirds of the way
-    # to the wrist, face out of the back of the hand (+Y in the T-pose rest), clear of a heavy arm
-    'Shield_Wooden': {'pos': [0.18, 0.055, 0], 'rot': [-H, 0, 0], 'scale': 0.95},
-    'Shield_Round': {'pos': [0.18, 0.125, 0], 'rot': [-H, 0, 0], 'scale': 0.62},
-    'Bow': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.6},
-    'Quiver': {'pos': [0.05, 0.02, -0.16], 'rot': [-0.25, 0, 0.35], 'scale': 0.6},
-    'Staff': {'pos': [0, 0, 0], 'rot': [0, 0, 0], 'scale': 0.8},
-    'Wand': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.6},
-    'Helmet': {'pos': [0, 0.11, 0.01], 'rot': [0, 0, 0], 'scale': 1.0},
-    'Wizard_Hat': {'pos': [0, 0.2, -0.01], 'rot': [0, 0, 0], 'scale': 1.0},
-    'Spear': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 1.0},
-    'Great_Helm': {'pos': [0, 0.1, 0.01], 'rot': [0, 0, 0], 'scale': 1.0},
-}
+# Items, one file per unit (or _shared.json for kit several units use) in
+# tools/blender/items/*.json, so sessions working on different units edit
+# different files. Each item: its attach bone and mount pose in the
+# character's own space at rest (Y up, facing +Z, its left is +X): pos, offset
+# from the bone's origin (metres); rot, radians (XYZ); scale. The client places
+# the item there, then attaches it to the bone keeping that placement (tuned in
+# the browser against idle and attack clips). Kinds:
+#   "source": [pack, file]: a rigid prop from a pack ("props" or "kaykit");
+#   "modelled": true: built from simple shapes in model_items() below;
+#   "kind": "cloth": generated and simulated by the client (web/src/scene/cloth.ts),
+#     no mesh here; width (top, hem) and length in metres; team: team-coloured.
+PACKS = {'props': PROPS, 'kaykit': KAYKIT}
+
+
+def load_items():
+    items, owner = {}, {}
+    for path in sorted(glob.glob(os.path.join(HERE, 'items', '*.json'))):
+        for name, spec in json.load(open(path)).items():
+            if name in owner:
+                sys.exit(f'item {name} is in both {owner[name]} and {os.path.basename(path)}')
+            items[name], owner[name] = spec, os.path.basename(path)
+    return items
+
+
+ITEMS = load_items()
+POSE_KEYS = ('pos', 'rot', 'scale')
+
+
 # team masks: outfit -> (variant base colours, rule); 'cloth' also drops pixels
 # that are brownish in every variant (leather and wood recolour between variants too)
 MASKS = {'Ranger': (['T_Ranger_BaseColor', 'T_Ranger_3_BaseColor'], 'cloth'),
@@ -440,13 +430,18 @@ def main():
         for h in HAIR[sex]:
             mats = skinned_part(os.path.join(HAIRS, h + '.gltf'), h)
             manifest['parts'][h] = {'slot': 'hair', 'sex': sex, 'materials': mats}
-    for name, src, bone in ITEMS:
-        rigid_part(src, name)
-        manifest['items'][name] = {'bone': bone, **ITEM_POSE.get(name, {})}
+    pose = lambda spec: {k: spec[k] for k in POSE_KEYS if k in spec}
+    for name, spec in ITEMS.items():
+        if 'source' in spec:
+            pack, file = spec['source']
+            rigid_part(os.path.join(PACKS[pack], file), name)
+            manifest['items'][name] = {'bone': spec['bone'], **pose(spec)}
     model_items()
-    for name, bone in MODELLED:
-        manifest['items'][name] = {'bone': bone, **ITEM_POSE.get(name, {})}
-    manifest['items'].update(CLOTH)
+    for name, spec in ITEMS.items():
+        if spec.get('modelled'):
+            manifest['items'][name] = {'bone': spec['bone'], **pose(spec)}
+        elif spec.get('kind') == 'cloth':
+            manifest['items'][name] = spec
     bake_textures()
     bake_masks()
     for outfit, (variants, _) in MASKS.items():

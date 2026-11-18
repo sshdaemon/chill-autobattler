@@ -1,0 +1,15 @@
+{
+  "version": "0.4.0",
+  "case": "wet map",
+  "outcome": {
+    "result": 1,
+    "ticks": 358,
+    "checksum": "4821194265162702903",
+    "survivors": [
+      {
+        "Index": 3,
+        "HP": 1380148
+      }
+    ]
+  }
+}

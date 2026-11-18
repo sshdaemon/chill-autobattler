@@ -1,0 +1,23 @@
+{
+  "version": "0.4.0",
+  "case": "ranged standoff 657",
+  "outcome": {
+    "result": 2,
+    "ticks": 308,
+    "checksum": "9732493144582166809",
+    "survivors": [
+      {
+        "Index": 6,
+        "HP": 572644
+      },
+      {
+        "Index": 7,
+        "HP": 4325376
+      },
+      {
+        "Index": 8,
+        "HP": 916029
+      }
+    ]
+  }
+}

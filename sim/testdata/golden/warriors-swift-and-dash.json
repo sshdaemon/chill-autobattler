@@ -1,0 +1,23 @@
+{
+  "version": "0.4.0",
+  "case": "warriors swift and dash",
+  "outcome": {
+    "result": 1,
+    "ticks": 295,
+    "checksum": "16466925854236915231",
+    "survivors": [
+      {
+        "Index": 2,
+        "HP": 5716727
+      },
+      {
+        "Index": 3,
+        "HP": 2691773
+      },
+      {
+        "Index": 4,
+        "HP": 4375438
+      }
+    ]
+  }
+}

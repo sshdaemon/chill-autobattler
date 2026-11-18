@@ -1,0 +1,23 @@
+{
+  "version": "0.4.0",
+  "case": "explicit red army",
+  "outcome": {
+    "result": 2,
+    "ticks": 237,
+    "checksum": "8055205668117386771",
+    "survivors": [
+      {
+        "Index": 6,
+        "HP": 1359758
+      },
+      {
+        "Index": 7,
+        "HP": 3604480
+      },
+      {
+        "Index": 9,
+        "HP": 4325376
+      }
+    ]
+  }
+}
