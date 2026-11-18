@@ -15,6 +15,14 @@ func TestSnapshotLayout(t *testing.T) {
 	if SnapUnit != 13 {
 		t.Error("SnapUnit changed: update web/src/sim/snapshot.ts too")
 	}
+	b.Shots = []*Shot{{Shooter: 1, Victim: 0, Dur: 3}}
+	snap = b.Snapshot()
+	if len(snap) != SnapHeader+2*SnapUnit+SnapShot || SnapShot != 9 {
+		t.Fatal("SnapShot changed: update web/src/sim/snapshot.ts too")
+	}
+	if shot := snap[SnapHeader+2*SnapUnit:]; shot[7] != 0 || shot[8] != 1 {
+		t.Errorf("shot victim, shooter = %d, %d, want 0, 1", shot[7], shot[8])
+	}
 }
 
 func TestSeenCells(t *testing.T) {
