@@ -81,6 +81,7 @@ type unitLook struct {
 		Attack, Hit, Death              []string
 	} `json:"anims"`
 	Skills map[string]skillLook `json:"skills"`
+	Shot   string               `json:"shot"` // "" or "smoke" (its bolts drawn as smoke)
 }
 
 type clipInfo struct {
@@ -155,6 +156,9 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 			}
 		}
 		clip(d.Name+" cheer", a.Cheer, false)
+		if look.Shot != "" && (look.Shot != "smoke" || d.Projectile != sim.Bolt) {
+			bad("%s: shot %q: only \"smoke\", for a unit that fires bolts", d.Name, look.Shot)
+		}
 		for set, list := range map[string][]string{"attack": a.Attack, "hit": a.Hit, "death": a.Death} {
 			if len(list) == 0 {
 				bad("%s: no %s animation", d.Name, set)

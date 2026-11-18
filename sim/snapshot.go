@@ -5,12 +5,12 @@ package sim
 //
 //	header: tick, result, nUnits, nShots, nEvents
 //	unit:   team, class, x, z, faceX, faceZ, hp, maxHp, flags, target, skills, kills, dealt
-//	shot:   flags, startX, startZ, aimX, aimZ, t, dur, victim
+//	shot:   flags, startX, startZ, aimX, aimZ, t, dur, victim, shooter
 //	event:  kind, unit, other, amount, flags
 const (
 	SnapHeader = 5
 	SnapUnit   = 13
-	SnapShot   = 8
+	SnapShot   = 9
 	SnapEvent  = 5
 )
 
@@ -67,7 +67,7 @@ func (b *Battle) Snapshot() []int32 {
 		if s.burst {
 			f |= SFBurst
 		}
-		out = append(out, f, int32(s.Start.X), int32(s.Start.Z), int32(s.Aim.X), int32(s.Aim.Z), int32(s.T), int32(s.Dur), int32(s.Victim))
+		out = append(out, f, int32(s.Start.X), int32(s.Start.Z), int32(s.Aim.X), int32(s.Aim.Z), int32(s.T), int32(s.Dur), int32(s.Victim), int32(s.Shooter))
 	}
 	for _, e := range events {
 		out = append(out, int32(e.Kind), int32(e.Unit), int32(e.Other), int32(e.Amount), int32(e.Flags))

@@ -15,7 +15,16 @@ func TestSnapshotLayout(t *testing.T) {
 	if SnapUnit != 13 {
 		t.Error("SnapUnit changed: update web/src/sim/snapshot.ts too")
 	}
+	b.Shots = []*Shot{{Shooter: 1, Victim: 0, Dur: 3}}
+	snap = b.Snapshot()
+	if len(snap) != SnapHeader+2*SnapUnit+SnapShot || SnapShot != 9 {
+		t.Fatal("SnapShot changed: update web/src/sim/snapshot.ts too")
+	}
+	if shot := snap[SnapHeader+2*SnapUnit:]; shot[7] != 0 || shot[8] != 1 {
+		t.Errorf("shot victim, shooter = %d, %d, want 0, 1", shot[7], shot[8])
+	}
 	// a thrown spear is a lobbed burst shot (web/src/sim/snapshot.ts reads bit 4)
+	b.Shots = nil
 	b.throw(b.Units[0], b.Units[1], &Effect{Kind: Burst, Value: I(8), Ticks: sec(80), Factor: I(2), Speed: I(14)})
 	snap = b.Snapshot()
 	if f := snap[SnapHeader+2*SnapUnit]; f != SFLob|SFBurst || SFBurst != 4 {

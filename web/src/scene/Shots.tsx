@@ -5,6 +5,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { useBattle } from '../store.ts';
 import { alpha } from './interp.ts';
 import { trail, viewOf } from './effects.ts';
+import { smokeShots } from '../units/looks.ts';
 
 const MAX = 64, dummy = new Object3D(), ahead = new Vector3();
 
@@ -16,7 +17,8 @@ function at(s: { sx: number; sz: number; ax: number; az: number; bolt: boolean; 
 }
 
 // Arrows (shaft + tip, nose first along the arc), thrown spears (burst shots: a
-// longer, thicker shaft with an iron head) and magic bolts (glowing orbs).
+// longer, thicker shaft with an iron head), magic bolts (glowing orbs) and
+// curses (bolts of a unit whose look draws them as smoke: a trail only).
 export function Shots() {
   const arrows = useRef<InstancedMesh>(null), shafts = useRef<InstancedMesh>(null), heads = useRef<InstancedMesh>(null), boltsOuter = useRef<InstancedMesh>(null), boltsInner = useRef<InstancedMesh>(null);
   const arrowGeo = useMemo(() => {
@@ -35,7 +37,9 @@ export function Shots() {
     for (const s of shots) {
       const f = Math.min(1, (s.t + k) / s.dur);
       at(s, f, dummy.position);
-      if (f < 1) trail(dummy.position.x, dummy.position.y, dummy.position.z, s.bolt, view);
+      const smoke = s.bolt && smokeShots(st.curr?.units[s.shooter]?.cls ?? -1);
+      if (f < 1) trail(dummy.position.x, dummy.position.y, dummy.position.z, smoke ? 'smoke' : s.bolt ? 'bolt' : 'arrow', view);
+      if (smoke) continue;
       if (s.bolt) {
         dummy.rotation.set(0, 0, 0);
         dummy.updateMatrix();
