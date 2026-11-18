@@ -36,14 +36,20 @@ Unit roster (`sim/roster.go`, one `sim/unit_*.go` per unit type):
 - A skill is a list of effects from a fixed set (`EffectKind`). Each kind is a plug-in in its own file, `sim/effect_<name>.go`: it registers itself (`registerEffect`, id from `sim/ids.go`) with a check for its numbers and the hooks it needs (`beforeAct`, `approach`, `onBlow`, `onShotLands`; see `sim/effects.go`). A unit's learned effects are folded at spawn into a list in kind-id order, and the battle calls their hooks in that order; it never checks units or skills by name. A new kind adds a file and a hook point only if none fits.
 - Adding a unit means adding a roster file that registers itself (`func init() { register(xDef) }`); no shared file lists units. `ValidateRoster` (run by the tests) checks it. A new kind of behaviour means a new effect kind, which is a rule change.
 - New units: use the `/new-unit <name>` skill (`.claude/skills/new-unit/`): brief in `design/units/<name>/brief.md` (template in `design/units/_template/`), reference pictures in `design/units/<name>/refs/` (git-ignored, never committed or shared), design checkpoint with the user, then roster file + look + golden case, `pnpm balance:unit <name>` (bands: 25–75% head-to-head, ±10 pts swapped into the standard army, 0..+15 pts per skill), preview screenshots, PR.
-- Ids: a unit's id is its roster position, allocated in `sim/ids.go` (with effect kind ids) only by planning changes, never "next free" inside a unit's own change; ids are never reused. A unit's abilities are numbered 1..5 in the order its roster entry lists them (named consts in its own file); numbers mean nothing across units. No proto change needed (`UnitSpec.skills` and `SkillPick.skill` are ability numbers; the unit enum is open; the roster is the check). A unit outside Red's pool (`InRedPool: false`) needs no version bump; changing the pool does.
+- Ids: a unit's id is its roster position, allocated in `sim/ids.go` (with effect kind ids) only by planning changes, never "next free" inside a unit's own change; ids are never reused. A unit's abilities are numbered 1..5 in the order its roster entry lists them (named consts in its own file); numbers mean nothing across units. No proto change needed (`UnitSpec.skills` and `SkillPick.skill` are ability numbers; the unit enum is open; the roster is the check).
 - Restart `pnpm start` after adding a unit: the Go server is compiled with the roster.
-- Changing `InRedPool` changes Red's generated armies, so it needs a `sim.Version` bump.
+- Versions: `sim.Version` is `RulesVersion` plus a fingerprint of the roster (`0.5.0+1a2b3c4d`), set as units register. Changing a unit's data (numbers, skills, temperament, `InRedPool`) changes it by itself; bump `RulesVersion` (`sim/battle.go`) only when rules code changes outcomes.
 - `wasm data()` publishes the roster; the web client reads units and skills only from there.
 
 Golden replays (`sim/testdata/golden/`, one file per case; every roster entry gets a "<unit> skills" case automatically):
-- Any rule change that alters outcomes needs `sim.Version` bumped, then `go test ./sim -run TestGoldenReplays -update`.
-- The update refuses to run without the version bump.
+- Each case records `VersionFor` its units (rules version + fingerprint of the units in it, Red's pool included when Red is generated), so changing one unit only changes its own cases' files.
+- After a deliberate change, `go test ./sim -run TestGoldenReplays -update` rewrites only the cases whose outcome or version changed. It refuses when an outcome changed but its version didn't (rules code changed without a `RulesVersion` bump).
+
+Parallel unit work (several sessions at once; `docs/ROADMAP.md`):
+- One session per unit, in its own worktree and branch. It touches only its unit's files: `sim/unit_<name>.go`, `design/units/<name>/`, `web/src/units/looks/<name>.json`, `web/public/assets/clips/<name>.json`, `web/src/scene/fx/<name>.json`, `tools/blender/items/<name>.json`, and its golden case files.
+- Shared ids (units, effect kinds, target and engage rules) are allocated in `sim/ids.go` by planning changes only.
+- A unit that needs a new effect kind, rule, hook point or temperament field asks for it as a separate shared-core PR first; anything in `_shared.json` files is a shared edit too.
+- Before the PR: rebase on main, `pnpm test`, `pnpm balance:unit <name>`.
 
 The snapshot layout is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync; `TestSnapshotLayout` pins it.
 

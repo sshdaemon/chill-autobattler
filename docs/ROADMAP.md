@@ -141,7 +141,14 @@ Original plan:
   (warrior: charge the nearest; archer: kite; mage: hold), and the golden
   replays prove nothing changed.
 
-**0.5 Version and workflow**
+**0.5 Version and workflow** — done
+- As built: `sim.Version` = `RulesVersion` + roster fingerprint, set as units
+  register; golden cases record `VersionFor` the units they use, so `-update`
+  rewrites only the cases a change touches (no `-case` flag needed). The
+  parallel workflow is in `CLAUDE.md` ("Parallel unit work"); the local
+  `/new-unit` skill follows it.
+
+Original plan:
 - `sim.Version` gets a roster fingerprint: `Version = "0.5.0+" + hash(roster)`,
   so changing a unit's numbers changes the version without editing a shared
   constant. Manual bumps are only for rule code.

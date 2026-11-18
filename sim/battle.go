@@ -4,11 +4,50 @@
 // only from the battle's seeded streams. foundations_test.go enforces this.
 package sim
 
-import "hash/fnv"
+import (
+	"fmt"
+	"hash/fnv"
+	"sort"
+)
 
-// Version must change whenever the rules change, so old replays are checked
-// with the logic that produced them.
-const Version = "0.5.0"
+// RulesVersion must change whenever the rules code changes, so old replays
+// are checked with the logic that produced them. Changes to units' data need
+// no bump: Version carries a fingerprint of the roster.
+const RulesVersion = "0.5.0"
+
+// Version is RulesVersion plus a fingerprint of the roster ("0.5.0+1a2b3c4d"),
+// so changing any unit's numbers changes it without editing a shared constant.
+// Set by register as unit files add themselves.
+var Version = RulesVersion
+
+// Fingerprint is a short hash of roster entries' data (stats, temperament,
+// tags, skills and their effects), in the order given.
+func Fingerprint(defs ...UnitDef) string {
+	h := fnv.New32a()
+	for _, d := range defs {
+		fmt.Fprintf(h, "%#v;", d)
+	}
+	return fmt.Sprintf("%08x", h.Sum32())
+}
+
+// VersionFor is the version of the rules a battle between these units depends
+// on: RulesVersion plus the fingerprint of just those units (sorted by id).
+// Golden replays record it per case, so changing one unit only touches the
+// cases that use it.
+func VersionFor(classes ...Class) string {
+	cs := append([]Class(nil), classes...)
+	sort.Slice(cs, func(i, j int) bool { return cs[i] < cs[j] })
+	var defs []UnitDef
+	for i, c := range cs {
+		if i > 0 && c == cs[i-1] {
+			continue
+		}
+		if d := RosterOf(c); d != nil {
+			defs = append(defs, *d)
+		}
+	}
+	return RulesVersion + "+" + Fingerprint(defs...)
+}
 
 type Result int8
 

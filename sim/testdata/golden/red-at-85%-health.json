@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "0.5.0+d23fedf8",
   "case": "red at 85% health",
   "outcome": {
     "result": 1,
