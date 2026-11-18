@@ -17,7 +17,7 @@ Monorepo:
   - Balance numbers and formation slots come from the WASM build (`data()`, `formationSlots()`); never copy them into TS.
 - `proto/`: buf schema. Run `pnpm gen` to write `pb/` and `web/src/gen/`.
 
-Specs and changes live in `openspec/`; plan with the openspec skills before larger work. Game design: `docs/GAME_CONCEPT.md`.
+Specs and changes live in `openspec/`; plan with the openspec skills before larger work. Game design: `docs/GAME_CONCEPT.md`. Roadmap (factions, draft, the new roster, refactor for parallel unit work): `docs/ROADMAP.md`; setting: `design/SETTING.md`; the roster plan under review: `design/ROSTER-PLAN.md`.
 
 Commands:
 - `pnpm start`: the whole game locally. It builds the WASM, then runs the server on :8080 and Vite on :5173; Ctrl-C stops both.
