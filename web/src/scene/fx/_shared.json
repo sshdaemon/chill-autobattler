@@ -39,5 +39,6 @@
   "brace": [
     { "type": "sparks", "n": 12, "color": [2.6, 2, 1.2], "speed": 5 },
     { "type": "shake", "amount": 0.15 }
-  ]
+  ],
+  "burst": [{ "type": "dust", "n": 5, "size": 0.7, "up": 0.5 }]
 }
