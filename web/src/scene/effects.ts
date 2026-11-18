@@ -104,14 +104,18 @@ function presetFor(units: UnitLoadout[], unit: number | undefined, kind: string,
   return (l && skillWith(l.cls, l.skills, kind)?.look.fx) || fallback;
 }
 
+// Events that play the causing skill's action clip on the unit (by effect kind).
+const ACTIONS: Record<number, string> = { [EV.dash]: 'gapCloser', [EV.blink]: 'escape', [EV.brace]: 'brace' };
+
 export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
   budget = SNAP_BUDGET;
   scale = (v.high ? 1 : 0.5) / Math.sqrt(v.speed);
   for (const e of events) {
     const u = snap.units[e.unit], o = e.other >= 0 ? snap.units[e.other] : undefined;
     if (!u) continue;
-    if (e.kind === EV.dash || e.kind === EV.blink) { // animation state is kept for hidden units too
-      const l = v.units[e.unit], s = l && skillWith(l.cls, l.skills, e.kind === EV.dash ? 'gapCloser' : 'escape');
+    const acting = ACTIONS[e.kind];
+    if (acting) { // animation state is kept for hidden units too
+      const l = v.units[e.unit], s = l && skillWith(l.cls, l.skills, acting);
       if (s?.look.action) skillActions.set(e.unit, { clip: s.look.action, rate: s.look.rate ?? 1 });
     }
     if (!visible(u, v)) continue;
@@ -129,6 +133,8 @@ export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
       case EV.frost: play(presetFor(v.units, e.other, 'slowOnHit', 'frost'), u, o); break;
       case EV.blast: play(presetFor(v.units, e.other, 'splashOnHit', 'blast'), u, o); break;
       case EV.shot: if (v.bolt(u.cls)) play('shot.bolt', u); break;
+      case EV.guard: play(presetFor(v.units, e.unit, 'guard', 'guard'), u, o); break; // the guard takes part of a blow aimed at o
+      case EV.brace: play(presetFor(v.units, e.unit, 'brace', 'brace'), u, o); break; // u stopped o's dash
     }
   }
 }
@@ -171,11 +177,11 @@ if (import.meta.env.DEV) {
       const caster = Math.max(0, classes.findIndex((c) => c.projectile === 'bolt'));
       const v: View = { fogOn: false, fogged: false, speed: 1, high: true, units: [], bolt: (cls) => classes[cls]?.projectile === 'bolt' };
       const unit = (x: number, cls = 0): UnitSnap => ({ team: 0, cls, x, z: 4, fx: 0, fz: -1, hp: 1, maxHp: 1, flags: 0, target: -1, skills: 0, kills: 0, dealt: 0 });
-      const units = [-9, -6, -3, 0, 3, 6, 9].map((x) => unit(x)).concat([unit(-9, caster), unit(-6, caster), unit(3, caster)]);
+      const units = [-9, -6, -3, 0, 3, 6, 9].map((x) => unit(x)).concat([unit(-9, caster), unit(-6, caster), unit(3, caster), unit(-12), unit(12)]);
       const ev = (kind: number, u: number, other = -1, flags = 0): SimEvent => ({ kind, unit: u, other, amount: 10, flags });
       const snap = { tick: 0, result: 0, units, shots: [], events: [] } as Snapshot;
       units[7].z = units[8].z = units[9].z = 6;
-      onSnapshot(snap, [ev(EV.hit, 0, 7), ev(EV.hit, 1, 8, EF.flank), ev(EV.execute, 2, 0), ev(EV.blink, 3), ev(EV.frost, 4, 9), ev(EV.blast, 5, 9), ev(EV.death, 6), ev(EV.shot, 9)], v);
+      onSnapshot(snap, [ev(EV.hit, 0, 7), ev(EV.hit, 1, 8, EF.flank), ev(EV.execute, 2, 0), ev(EV.blink, 3), ev(EV.frost, 4, 9), ev(EV.blast, 5, 9), ev(EV.death, 6), ev(EV.shot, 9), ev(EV.guard, 10, 7), ev(EV.brace, 11, 8)], v);
       for (let i = 0; i < 6; i++) { feet(100, -9, 8, UF.moving, 1, v, unit(-9)); feet(101, 0, 8, UF.moving | UF.wet, 1, v, unit(0)); feet(102, 9, 8, UF.dashing, 1, v, unit(9)); }
     },
   });
