@@ -141,7 +141,7 @@ export function DevPanel() {
   const change = (p: Partial<typeof snd>) => { setSound(p); setSnd(soundPrefs()); };
   return (
     <div className="dev">
-      <span className="dim">dev · sim {version ?? '…'}</span>
+      <span className="dim">dev · sim {version ?? '…'}{import.meta.env.DEV && <> · <a href="/?lab" target="_blank" rel="noreferrer">unit lab</a></>}</span>
       {[1, 2, 4].map((s) => <button key={s} className={speed === s ? 'on' : ''} onClick={() => setSpeed(s)}>{s}×</button>)}
       <button aria-label={snd.muted ? 'unmute' : 'mute'} title={snd.muted ? 'Sound off' : 'Sound on'} onClick={() => change({ muted: !snd.muted })}>{snd.muted ? '🔇' : '🔊'}</button>
       <input type="range" min={0} max={1} step={0.05} value={snd.volume} aria-label="volume" style={{ width: 60 }}

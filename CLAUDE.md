@@ -47,7 +47,7 @@ Golden replays (`sim/testdata/golden.json`):
 
 The snapshot layout is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync; `TestSnapshotLayout` pins it.
 
-Unit preview (dev only): `http://localhost:5173/?preview=<unit>` shows a unit type's recipes on both teams, steps through its animations, skills, effects and portraits (`window.previewSteps`, `previewShot(step)`, `previewSave()` writes `design/units/<unit>/preview/*.png` through a dev-server endpoint in `web/preview-shots.mjs`). Unit UI text (label, icon, blurb) comes from `looks.json` `ui`; nothing in the UI assumes three unit types.
+Unit lab (dev only, `http://localhost:5173/?lab` or `?lab=<unit>`, linked from the dev HUD): any unit type, recipe or lineup, team, build override and variety seed, with an orbit camera, any clip played, paused, looped, slowed or scrubbed, the walk–jog blend on a moving floor with a foot-slide readout, skill animations and effects, and effect presets (`web/src/ui/UnitLab.tsx`). Unit preview (dev only): `http://localhost:5173/?preview=<unit>` shows a unit type's recipes on both teams, steps through its animations, skills, effects and portraits (`window.previewSteps`, `previewShot(step)`, `previewSave()` writes `design/units/<unit>/preview/*.png` through a dev-server endpoint in `web/preview-shots.mjs`). Unit UI text (label, icon, blurb) comes from `looks.json` `ui`; nothing in the UI assumes three unit types.
 
 Fog of war comes from the sim: `Battle.SeenCells` (exported by `wasm fog()`) and the snapshot's `UFSeen` flag. Never re-implement vision in TS. The camera is `scene/RtsCamera.tsx`; portraits are `scene/portraits.ts` and `ui/Portraits.tsx`.
 

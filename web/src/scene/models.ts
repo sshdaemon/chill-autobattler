@@ -159,7 +159,8 @@ function mergeGroup(key: string, geos: THREE.BufferGeometry[]) {
 }
 
 // A fresh, independently animated character for a unit, built from its recipe.
-export async function makeCharacter(cls: number, look: string, team: number, nth = 0): Promise<Character> {
+// opts.build tries another build on the recipe (the dev unit lab).
+export async function makeCharacter(cls: number, look: string, team: number, nth = 0, opts: { build?: string } = {}): Promise<Character> {
   const recipe: Recipe = recipeNamed(cls, look);
   const outfit = recipe.parts, torsoName = outfit[0]; // the first part's skeleton is the unit's
   const [man, clips, torso, ...rest] = await Promise.all([manifest(), loadClips(), load(torsoName),
@@ -199,7 +200,7 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
 
   const rnd = seeded(team, cls, nth);
   const rim: Character['rim'] = { color: { value: TEAM_RIM[team].clone() }, k: { value: 0.55 } };
-  const build = BUILDS[recipe.build] ?? BUILDS.normal;
+  const build = BUILDS[opts.build ?? recipe.build] ?? BUILDS.normal;
   const girth = { value: skel.bones.map((b) => build.girth[b.name.replace(/_[lr]$/, '')] ?? 0) };
   const hair = HAIR[Math.floor(rnd() * HAIR.length)], shade = 0.93 + rnd() * 0.14, hue = (rnd() - 0.5) * 0.08;
   const mats: THREE.MeshStandardMaterial[] = [];
