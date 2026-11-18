@@ -13,7 +13,7 @@ Monorepo:
   - `server/store`: SQLite (modernc, pure Go) with sqlc. Migrations are numbered files in `migrations/`, tracked with `user_version`; never edit an applied one. Regenerate with `go generate ./server/store`.
 - `web/`: Vite, React and react-three-fiber.
   - The sim runs in a Web Worker at 20 Hz, and the scene interpolates snapshots.
-  - The match flow (picker → deploy → countdown → fight → result) is a phase machine in `web/src/store.ts`; its UI is in `web/src/ui/`.
+  - The match flow (faction for a new run → battle start → draft → deploy → countdown → fight → result) is a phase machine in `web/src/store.ts`; its UI is in `web/src/ui/`. The draft (`web/src/draft.ts`, `ui/Draft.tsx`) comes from the sim (`sim/draft.go`, wasm `draft()`): who picks first and Red's picks follow from the map seed, so the server only checks the locked army.
   - Balance numbers and formation slots come from the WASM build (`data()`, `formationSlots()`); never copy them into TS.
 - `proto/`: buf schema. Run `pnpm gen` to write `pb/` and `web/src/gen/`.
 

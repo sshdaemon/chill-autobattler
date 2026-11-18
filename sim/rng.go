@@ -15,6 +15,7 @@ const (
 	StreamRedFormation
 	StreamCombat
 	StreamRedFaction
+	StreamDraft
 )
 
 // Sub derives an independent stream for a tag from the battle seed.

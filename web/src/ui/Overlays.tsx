@@ -37,7 +37,7 @@ export function RunBar() {
 // Unit counts during deployment and the fight.
 export function Status() {
   const { curr, phase } = useBattle();
-  if (!curr || phase === 'picker' || phase === 'loading') return null;
+  if (!curr || phase === 'drafting' || phase === 'faction' || phase === 'loading') return null;
   const alive = (team: number) => curr.units.filter((u) => u.team === team && !(u.flags & UF.dead)).length;
   return (
     <div className="status">

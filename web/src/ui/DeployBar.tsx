@@ -3,7 +3,7 @@ import { CUSTOM, PRESETS } from '../gamedata.ts';
 
 // Mini-diagram of where your own units would stand (top = toward the enemy).
 function Diagram({ f }: { f: number }) {
-  const { slots, counts, data, run } = useBattle();
+  const { slots, army, data } = useBattle();
   const frame = (inner: React.ReactNode, dashed = false) => (
     <svg viewBox="0 0 96 56"><rect x="1" y="1" width="94" height="54" rx="5" fill="rgba(58,140,255,.12)" stroke="#3a8cff" strokeDasharray={dashed ? '4 3' : undefined} />{inner}</svg>
   );
@@ -11,7 +11,7 @@ function Diagram({ f }: { f: number }) {
   const z = data?.deployZone, pos = slots[f];
   if (!z || !pos) return frame(null);
   const sx = (x: number) => 4 + ((x - z[0]) / (z[1] - z[0])) * 88, sy = (v: number) => 4 + ((v - z[2]) / (z[3] - z[2])) * 48;
-  const classes = armyClasses({ run, counts });
+  const classes = armyClasses({ army });
   return frame(pos.map((p, i) => {
     const x = sx(p.x), y = sy(p.z);
     return classes[i] === 0 ? <circle key={i} cx={x} cy={y} r="4.2" fill="#3a8cff" stroke="#bfe0ff" />

@@ -138,7 +138,7 @@ func TestStartBattle(t *testing.T) {
 	e := newEnv(t)
 	r1 := e.startRun(e.ctx)
 	a := e.mustStart(r1.Id)
-	if a.BattleId == "" || a.DeployDeadlineMs != e.now.Add(2*time.Minute).UnixMilli() || a.RedSkillCount != 0 {
+	if a.BattleId == "" || a.DeployDeadlineMs != e.now.Add(3*time.Minute).UnixMilli() || a.RedSkillCount != 0 {
 		t.Errorf("start response %v", a)
 	}
 	if _, err := e.start(r1.Id); code(err) != connect.CodeFailedPrecondition {
@@ -182,7 +182,7 @@ func TestLockDeployment(t *testing.T) {
 	}
 
 	late := e.mustStart(e.startRun(e.ctx).Id)
-	e.now = e.now.Add(2*time.Minute + time.Millisecond)
+	e.now = e.now.Add(3*time.Minute + time.Millisecond)
 	if _, err := e.lock(late.BattleId, mix()); code(err) != connect.CodeFailedPrecondition {
 		t.Errorf("too late: %v", err)
 	}
