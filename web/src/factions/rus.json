@@ -1,0 +1,26 @@
+{
+  "order": 1,
+  "label": "Kyivan Rus",
+  "icon": "🛡️",
+  "colour": "#b8322a",
+  "coming": true,
+  "blurb": "The prince's druzhyna: steady, armoured, stronger together.",
+  "lore": [
+    "Kyiv in the 10th and 11th centuries: a trading power on the Dnipro, under princes like Volodymyr and Yaroslav.",
+    "Crimson shields, mail and conical helmets; a singer with the husli at the prince's side."
+  ],
+  "units": [
+    {
+      "label": "Druzhynnyk",
+      "role": "Melee: advances in line, guards the archers"
+    },
+    {
+      "label": "Strilets",
+      "role": "Ranged: keeps distance, shoots while backing away"
+    },
+    {
+      "label": "Huslyar",
+      "role": "Support: songs that strengthen the army around him"
+    }
+  ]
+}

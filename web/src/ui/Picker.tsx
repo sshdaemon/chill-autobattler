@@ -1,4 +1,4 @@
-import { armySpecs, total as sum, useBattle, vetCounts } from '../store.ts';
+import { armySpecs, factionUnits, total as sum, useBattle, vetCounts } from '../store.ts';
 import { uiOf } from '../units/looks.ts';
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
@@ -17,7 +17,7 @@ export function Picker() {
           ? `Your ${run.veterans.length} veteran${run.veterans.length === 1 ? '' : 's'} (★) stay with their skills. Fill the rest.`
           : `Pick ${size} units. Next you arrange them, then they fight on their own.`}</div>
         <div className="cards">
-          {data.classes.map((c, i) => (
+          {data.classes.map((c, i) => factionUnits(data, run)(i) && (
             <div className="card" key={c.name}>
               <div className="icon">{uiOf(i).icon}</div>
               <div className="name">{uiOf(i).label}</div>

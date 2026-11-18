@@ -79,8 +79,8 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) erro
 
 const createRun = `-- name: CreateRun :exec
 
-INSERT INTO runs (id, player_id, name, state, match_no, wins, score, created_at)
-VALUES (?1, ?2, ?3, 'ready', 1, 0, 0, ?4)
+INSERT INTO runs (id, player_id, name, state, match_no, wins, score, created_at, faction)
+VALUES (?1, ?2, ?3, 'ready', 1, 0, 0, ?4, ?5)
 `
 
 type CreateRunParams struct {
@@ -88,6 +88,7 @@ type CreateRunParams struct {
 	PlayerID  string
 	Name      string
 	CreatedAt int64
+	Faction   int64
 }
 
 // ---------- runs ----------
@@ -97,14 +98,15 @@ func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) error {
 		arg.PlayerID,
 		arg.Name,
 		arg.CreatedAt,
+		arg.Faction,
 	)
 	return err
 }
 
 const createRunBattle = `-- name: CreateRunBattle :exec
 
-INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no, red_health_pct)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+INSERT INTO battles (id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, run_id, match_no, red_health_pct, blue_faction)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
 `
 
 type CreateRunBattleParams struct {
@@ -118,6 +120,7 @@ type CreateRunBattleParams struct {
 	RunID          sql.NullString
 	MatchNo        sql.NullInt64
 	RedHealthPct   int64
+	BlueFaction    int64
 }
 
 // ---------- battles in runs ----------
@@ -133,6 +136,7 @@ func (q *Queries) CreateRunBattle(ctx context.Context, arg CreateRunBattleParams
 		arg.RunID,
 		arg.MatchNo,
 		arg.RedHealthPct,
+		arg.BlueFaction,
 	)
 	return err
 }
@@ -187,7 +191,7 @@ func (q *Queries) FinishPicks(ctx context.Context, arg FinishPicksParams) (int64
 }
 
 const getBattle = `-- name: GetBattle :one
-SELECT id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, blue_army, locked_at, verify_deadline, verified_at, fair, reason, outcome, run_id, match_no, red_health_pct FROM battles WHERE id = ?1
+SELECT id, sim_version, map_seed, combat_seed, red_skill_count, created_at, deploy_deadline, blue_army, locked_at, verify_deadline, verified_at, fair, reason, outcome, run_id, match_no, red_health_pct, blue_faction FROM battles WHERE id = ?1
 `
 
 func (q *Queries) GetBattle(ctx context.Context, id string) (Battle, error) {
@@ -211,12 +215,13 @@ func (q *Queries) GetBattle(ctx context.Context, id string) (Battle, error) {
 		&i.RunID,
 		&i.MatchNo,
 		&i.RedHealthPct,
+		&i.BlueFaction,
 	)
 	return i, err
 }
 
 const getRun = `-- name: GetRun :one
-SELECT id, player_id, name, state, match_no, wins, score, veterans, current_battle_id, end_reason, created_at, ended_at FROM runs WHERE id = ?1
+SELECT id, player_id, name, state, match_no, wins, score, veterans, current_battle_id, end_reason, created_at, ended_at, faction FROM runs WHERE id = ?1
 `
 
 func (q *Queries) GetRun(ctx context.Context, id string) (Run, error) {
@@ -235,12 +240,13 @@ func (q *Queries) GetRun(ctx context.Context, id string) (Run, error) {
 		&i.EndReason,
 		&i.CreatedAt,
 		&i.EndedAt,
+		&i.Faction,
 	)
 	return i, err
 }
 
 const latestRun = `-- name: LatestRun :one
-SELECT id, player_id, name, state, match_no, wins, score, veterans, current_battle_id, end_reason, created_at, ended_at FROM runs WHERE player_id = ?1
+SELECT id, player_id, name, state, match_no, wins, score, veterans, current_battle_id, end_reason, created_at, ended_at, faction FROM runs WHERE player_id = ?1
 ORDER BY (state != 'over') DESC, created_at DESC, id DESC LIMIT 1
 `
 
@@ -261,6 +267,7 @@ func (q *Queries) LatestRun(ctx context.Context, playerID string) (Run, error) {
 		&i.EndReason,
 		&i.CreatedAt,
 		&i.EndedAt,
+		&i.Faction,
 	)
 	return i, err
 }

@@ -104,7 +104,7 @@ func goldenCases() []struct {
 	in   Input
 } {
 	in := func(seed uint64, blue Army, redSkills int) Input {
-		return Input{Version: Version, Seed: seed, CombatSeed: seed*7919 + 1, Blue: blue, RedSkills: redSkills}
+		return Input{Version: Version, BlueFaction: FactionClassic, Seed: seed, CombatSeed: seed*7919 + 1, Blue: blue, RedSkills: redSkills}
 	}
 	cases := []struct {
 		name string
@@ -186,7 +186,7 @@ func itoa(n int) string {
 
 // The combat seed changes only the fight: same map, same start, different battle.
 func TestCombatSeedChangesOnlyTheFight(t *testing.T) {
-	base := Input{Version: Version, Seed: 5, CombatSeed: 1, RedSkills: 2, Blue: Army{Formation: F3x2, Units: mix()}}
+	base := Input{Version: Version, BlueFaction: FactionClassic, Seed: 5, CombatSeed: 1, RedSkills: 2, Blue: Army{Formation: F3x2, Units: mix()}}
 	other := base
 	other.CombatSeed = 2
 	a, _ := New(base)
@@ -291,7 +291,7 @@ func FuzzDeterminism(f *testing.F) {
 	f.Add(uint64(1), uint8(0), uint8(0), uint8(0))
 	f.Add(uint64(90), uint8(3), uint8(4), uint8(5))
 	f.Fuzz(func(t *testing.T, seed uint64, formation, classes, redSkills uint8) {
-		in := Input{Version: Version, Seed: seed, CombatSeed: ^seed, RedSkills: int(redSkills) % (ArmySize*(MaxLevel-1) + 1),
+		in := Input{Version: Version, BlueFaction: FactionClassic, Seed: seed, CombatSeed: ^seed, RedSkills: int(redSkills) % (ArmySize*(MaxLevel-1) + 1),
 			Blue: Army{Formation: Presets[int(formation)%len(Presets)]}}
 		for i := 0; i < ArmySize; i++ {
 			c := Class((int(classes) >> i) % 3)

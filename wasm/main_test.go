@@ -24,7 +24,7 @@ func TestStepToOutcome(t *testing.T) {
 	register()
 	api := js.Global().Get("chillSim")
 	w, a, m := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER, chillv1.UnitClass_UNIT_CLASS_MAGE
-	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 921, RedSkillCount: 3, Blue: &chillv1.Army{
+	in := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 921, RedSkillCount: 3, Blue: &chillv1.Army{
 		Formation: chillv1.Formation_FORMATION_4_1,
 		Units:     []*chillv1.UnitSpec{{UnitClass: w, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: m, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: w, Skills: l1}},
 	}}
@@ -137,7 +137,7 @@ func TestUnits(t *testing.T) {
 	register()
 	api := js.Global().Get("chillSim")
 	w, a := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER
-	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 77, RedSkillCount: 6, Blue: &chillv1.Army{
+	in := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 77, RedSkillCount: 6, Blue: &chillv1.Army{
 		Formation: chillv1.Formation_FORMATION_SPREAD,
 		Units:     []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.WarriorDash)}}, {UnitClass: a, Skills: l1}},
 	}}

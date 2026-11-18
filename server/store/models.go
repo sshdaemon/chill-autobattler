@@ -26,6 +26,7 @@ type Battle struct {
 	RunID          sql.NullString
 	MatchNo        sql.NullInt64
 	RedHealthPct   int64
+	BlueFaction    int64
 }
 
 type Player struct {
@@ -47,4 +48,5 @@ type Run struct {
 	EndReason       sql.NullString
 	CreatedAt       int64
 	EndedAt         sql.NullInt64
+	Faction         int64
 }

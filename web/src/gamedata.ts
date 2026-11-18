@@ -8,8 +8,11 @@ export type ClassInfo = {
   ranged: boolean; kite: boolean; target: string; engage: string; /* temperament */ projectile?: 'arrow' | 'bolt'; tags: string[]; bonus: { tag: string; mult: number }[];
   matchup: number[]; skills: SkillInfo[];
 };
+// A faction (sim.Faction): the unit types a side fields. Lore and looks: factions/<name>.json.
+export type FactionInfo = { id: number; name: string; units: number[] };
 export type GameData = {
   version: string; classes: ClassInfo[]; formations: string[]; armySize: number; deployZone: [number, number, number, number];
+  factions: FactionInfo[];
   hitAt: number; // share of a swing at which the blow lands or the shot leaves
 };
 // Every unit of the current battle (wasm units()), Red's generated army too.

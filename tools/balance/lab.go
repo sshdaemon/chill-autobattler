@@ -72,7 +72,7 @@ func margin(p float64, n int) float64 { return 1.96 * math.Sqrt(p*(1-p)/float64(
 func pct(p float64) string { return fmt.Sprintf("%.1f%%", 100*p) }
 
 func input(seed uint64) sim.Input {
-	return sim.Input{Version: sim.Version, Seed: seed, CombatSeed: seed*7919 + 1}
+	return sim.Input{Version: sim.Version, Seed: seed, CombatSeed: seed*7919 + 1, BlueFaction: sim.FactionClassic}
 }
 
 // army builds recruits (level 1): unit i of a class gets that class's ability

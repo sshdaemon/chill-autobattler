@@ -122,6 +122,11 @@ func dataJSON() string {
 		Matchup    []float64 `json:"matchup"` // damage multiplier vs each roster entry
 		Skills     []skill   `json:"skills"`
 	}
+	type faction struct {
+		ID    int    `json:"id"`
+		Name  string `json:"name"`
+		Units []int  `json:"units"`
+	}
 	var out struct {
 		Version    string     `json:"version"`
 		Classes    []class    `json:"classes"`    // the unit roster, index = sim.Class
@@ -129,6 +134,7 @@ func dataJSON() string {
 		ArmySize   int        `json:"armySize"`
 		HitAt      float64    `json:"hitAt"`      // share of a swing at which the blow lands or the shot leaves
 		DeployZone [4]float64 `json:"deployZone"` // Blue: xMin, xMax, zMin, zMax
+		Factions   []faction  `json:"factions"`   // by id; units are roster ids
 	}
 	tagNames := func(t sim.Tag) []string {
 		names := []string{}
@@ -169,6 +175,13 @@ func dataJSON() string {
 	}
 	for f := sim.Custom; f <= sim.F5x0; f++ {
 		out.Formations = append(out.Formations, f.String())
+	}
+	for _, f := range sim.Factions {
+		fa := faction{ID: int(f.ID), Name: f.Name, Units: []int{}}
+		for _, c := range f.Units {
+			fa.Units = append(fa.Units, int(c))
+		}
+		out.Factions = append(out.Factions, fa)
 	}
 	z := sim.Zones[0]
 	out.DeployZone = [4]float64{fx(z.XMin), fx(z.XMax), fx(z.ZMin), fx(z.ZMax)}

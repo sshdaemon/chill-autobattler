@@ -560,7 +560,7 @@ func TestRedArmy(t *testing.T) {
 func TestValidate(t *testing.T) {
 	l1 := []Skill{1}
 	five := []UnitSpec{{Class: Warrior, Skills: l1}, {Class: Warrior, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Mage, Skills: l1}}
-	ok := Input{Version: Version, Seed: 1, Blue: Army{Formation: F3x2, Units: five}}
+	ok := Input{Version: Version, BlueFaction: FactionClassic, Seed: 1, Blue: Army{Formation: F3x2, Units: five}}
 	if err := ok.Validate(); err != nil {
 		t.Fatalf("valid input rejected: %v", err)
 	}
@@ -611,7 +611,7 @@ func setPos(units []UnitSpec, v Vec) {
 }
 
 func TestRedHealthPct(t *testing.T) {
-	in := Input{Version: Version, Seed: 3, RedSkills: 5, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Warrior, Skills: []Skill{1}}}}}
+	in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 3, RedSkills: 5, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Warrior, Skills: []Skill{1}}}}}
 	full, _ := New(in)
 	in.RedHealthPct = 85
 	eased, _ := New(in)

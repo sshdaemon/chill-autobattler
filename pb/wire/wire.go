@@ -169,11 +169,11 @@ func decodeArmy(b []byte) (army, error) {
 // convert.Input(proto.Unmarshal(b)).
 func DecodeInput(b []byte) (sim.Input, error) {
 	var (
-		version          []byte
-		seed, combat     uint64
-		redSkills, redHP uint64
-		blue, red        army
-		blueErr, redErr  error
+		version                   []byte
+		seed, combat              uint64
+		redSkills, redHP, faction uint64
+		blue, red                 army
+		blueErr, redErr           error
 	)
 	err := fields(b, func(num protowire.Number, typ protowire.Type, b []byte) int {
 		var sub []byte
@@ -200,6 +200,8 @@ func DecodeInput(b []byte) (sim.Input, error) {
 			return varint(typ, b, &combat)
 		case 7:
 			return varint(typ, b, &redHP)
+		case 8:
+			return varint(typ, b, &faction)
 		}
 		return skip
 	})
@@ -209,13 +211,16 @@ func DecodeInput(b []byte) (sim.Input, error) {
 	if err != nil {
 		return sim.Input{}, fmt.Errorf("bad input bytes: %w", err)
 	}
+	if uint32(faction) > 255 {
+		return sim.Input{}, fmt.Errorf("%w: faction %d out of range", sim.ErrInvalid, uint32(faction))
+	}
 	if uint32(redHP) > 100 {
 		return sim.Input{}, fmt.Errorf("%w: red health %d%% out of range", sim.ErrInvalid, uint32(redHP))
 	}
 	if uint32(redSkills) > sim.ArmySize*sim.MaxSkills {
 		return sim.Input{}, fmt.Errorf("%w: red skill count %d out of range", sim.ErrInvalid, uint32(redSkills))
 	}
-	in := sim.Input{Version: string(version), Seed: seed, CombatSeed: combat, RedSkills: int(uint32(redSkills)), RedHealthPct: int(uint32(redHP))}
+	in := sim.Input{Version: string(version), Seed: seed, CombatSeed: combat, RedSkills: int(uint32(redSkills)), RedHealthPct: int(uint32(redHP)), BlueFaction: sim.Faction(uint8(faction))}
 	if in.Blue, err = toSim(blue, "blue", true); err != nil {
 		return sim.Input{}, err
 	}

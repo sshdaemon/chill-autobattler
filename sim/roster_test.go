@@ -77,7 +77,15 @@ func withRoster(t *testing.T, extra ...UnitDef) {
 		d.ID = Class(len(Roster))
 		Roster = append(Roster, d)
 	}
-	t.Cleanup(func() { Roster = old })
+	oldF := Factions
+	Factions = append([]FactionDef(nil), oldF...)
+	for i := range Factions { // fieldable by every faction, for the test
+		Factions[i].Units = append([]Class(nil), Factions[i].Units...)
+		for _, d := range extra {
+			Factions[i].Units = append(Factions[i].Units, Class(len(old)+indexOf(extra, d.Name)))
+		}
+	}
+	t.Cleanup(func() { Roster, Factions = old, oldF })
 	if err := ValidateRoster(Roster); err != nil {
 		t.Fatal(err)
 	}
@@ -113,7 +121,7 @@ func TestDataOnlyUnit(t *testing.T) {
 		t.Errorf("warrior vs a ranged-tagged unit: %v, want 1.45", m)
 	}
 	spec := UnitSpec{Class: ranger, Skills: []Skill{1, 2, 3}}
-	in := Input{Version: Version, Seed: 7, CombatSeed: 8,
+	in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 7, CombatSeed: 8,
 		Blue: Army{Formation: Spread, Units: []UnitSpec{spec, spec, spec, spec, spec}},
 		Red:  Army{Formation: F3x2, Units: mix()}}
 	b, err := New(in)
@@ -140,8 +148,17 @@ func TestDataOnlyUnit(t *testing.T) {
 }
 
 func TestUnknownUnitRejected(t *testing.T) {
-	in := Input{Version: Version, Seed: 1, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Class(len(Roster) + 3)}}}}
+	in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 1, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Class(len(Roster) + 3)}}}}
 	if err := in.Validate(); !errors.Is(err, ErrInvalid) {
 		t.Errorf("class 7 accepted: %v", err)
 	}
+}
+
+func indexOf(defs []UnitDef, name string) int {
+	for i, d := range defs {
+		if d.Name == name {
+			return i
+		}
+	}
+	return -1
 }

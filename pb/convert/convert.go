@@ -21,7 +21,10 @@ func Input(in *chillv1.BattleInput) (sim.Input, error) {
 	if in.RedHealthPct > 100 {
 		return sim.Input{}, fmt.Errorf("%w: red health %d%% out of range", sim.ErrInvalid, in.RedHealthPct)
 	}
-	out := sim.Input{Version: in.SimVersion, Seed: in.Seed, CombatSeed: in.CombatSeed, RedSkills: int(in.RedSkillCount), RedHealthPct: int(in.RedHealthPct)}
+	if in.BlueFaction > 255 {
+		return sim.Input{}, fmt.Errorf("%w: faction %d out of range", sim.ErrInvalid, in.BlueFaction)
+	}
+	out := sim.Input{Version: in.SimVersion, Seed: in.Seed, CombatSeed: in.CombatSeed, RedSkills: int(in.RedSkillCount), RedHealthPct: int(in.RedHealthPct), BlueFaction: sim.Faction(uint8(in.BlueFaction))}
 	var err error
 	if out.Blue, err = army(in.Blue, "blue", true); err != nil {
 		return sim.Input{}, err

@@ -53,11 +53,12 @@ type Army struct {
 // CombatSeed decides every combat roll; the server reveals it only after the
 // player has locked Blue's army.
 type Input struct {
-	Version    string
-	Seed       uint64
-	CombatSeed uint64
-	Blue, Red  Army
-	RedSkills  int
+	Version     string
+	Seed        uint64
+	CombatSeed  uint64
+	BlueFaction Faction // Blue's units must come from it; Red's faction comes from the seed (RedFactionFor)
+	Blue, Red   Army
+	RedSkills   int
 	// RedHealthPct scales Red's health (0 means 100). The server sets it from
 	// the run's match number to ease the first matches.
 	RedHealthPct int
@@ -77,6 +78,15 @@ func (in Input) Validate() error {
 	}
 	if len(in.Blue.Units) == 0 {
 		return invalid("blue has no units")
+	}
+	blueFaction := FactionOf(in.BlueFaction)
+	if blueFaction == nil {
+		return invalid("unknown faction %d for blue", in.BlueFaction)
+	}
+	for i, u := range in.Blue.Units {
+		if RosterOf(u.Class) != nil && !blueFaction.Has(u.Class) {
+			return invalid("blue unit %d: a %v isn't in the %s faction", i, u.Class, blueFaction.Name)
+		}
 	}
 	if len(in.Red.Units) > 0 && in.RedSkills != 0 {
 		return invalid("red skill count is only used for a generated red army")
@@ -126,14 +136,14 @@ func (in Input) Validate() error {
 	return nil
 }
 
-// RedArmy generates Red's army from the seed: 5 random units from Red's
-// pool (listed in roster order), a random preset, one random ability each
+// RedArmy generates Red's army from the seed: 5 random units from the pool
+// of Red's faction (RedFactionFor; listed in roster order), a random preset, one random ability each
 // (level 1), then `skills` more abilities spread at random (levels 2 and 3),
 // never twice on one unit. Changing the pool changes every Red
 // army (and, through the roster fingerprint, sim.Version).
 func RedArmy(seed uint64, skills int) Army {
 	r := Sub(seed, StreamRedArmy)
-	pool := RedPool()
+	pool := FactionOf(RedFactionFor(seed)).Pool()
 	counts := make([]int, len(pool))
 	for i := 0; i < ArmySize; i++ {
 		counts[r.IntN(len(pool))]++

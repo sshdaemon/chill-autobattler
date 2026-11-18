@@ -39,7 +39,8 @@ Unit roster (`sim/roster.go`, one `sim/unit_*.go` per unit type):
 - Ids: a unit's id is its roster position, allocated in `sim/ids.go` (with effect kind ids) only by planning changes, never "next free" inside a unit's own change; ids are never reused. A unit's abilities are numbered 1..5 in the order its roster entry lists them (named consts in its own file); numbers mean nothing across units. No proto change needed (`UnitSpec.skills` and `SkillPick.skill` are ability numbers; the unit enum is open; the roster is the check).
 - Restart `pnpm start` after adding a unit: the Go server is compiled with the roster.
 - Versions: `sim.Version` is `RulesVersion` plus a fingerprint of the roster (`0.5.0+1a2b3c4d`), set as units register. Changing a unit's data (numbers, skills, temperament, `InRedPool`) changes it by itself; bump `RulesVersion` (`sim/battle.go`) only when rules code changes outcomes.
-- `wasm data()` publishes the roster; the web client reads units and skills only from there.
+- Factions (`sim/faction.go`, one `faction_<name>.go` each, ids in `sim/ids.go`): the unit types a side fields. A run plays one faction (picked on the faction screen, `web/src/ui/FactionPick.tsx`); Blue's units must come from it; Red's faction is drawn from the map seed (`RedFactionFor`) and Red's army from its units. Lore and looks: `web/src/factions/<name>.json` (`"coming": true` for factions not playable yet).
+- `wasm data()` publishes the roster and factions; the web client reads units, skills and factions only from there.
 
 Golden replays (`sim/testdata/golden/`, one file per case; every roster entry gets a "<unit> skills" case automatically):
 - Each case records `VersionFor` its units (rules version + fingerprint of the units in it, Red's pool included when Red is generated), so changing one unit only changes its own cases' files.

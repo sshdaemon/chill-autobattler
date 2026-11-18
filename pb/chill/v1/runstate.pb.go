@@ -200,7 +200,9 @@ type Run struct {
 	// Set when over: defeat, draw, not fair, abandoned or restarted.
 	EndReason string `protobuf:"bytes,10,opt,name=end_reason,json=endReason,proto3" json:"end_reason,omitempty"`
 	// Total skills of the veterans: Red's skill count for the next match.
-	RedSkills     uint32 `protobuf:"varint,11,opt,name=red_skills,json=redSkills,proto3" json:"red_skills,omitempty"`
+	RedSkills uint32 `protobuf:"varint,11,opt,name=red_skills,json=redSkills,proto3" json:"red_skills,omitempty"`
+	// The faction the run plays (sim.Faction), picked when it started.
+	Faction       uint32 `protobuf:"varint,12,opt,name=faction,proto3" json:"faction,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -312,6 +314,13 @@ func (x *Run) GetRedSkills() uint32 {
 	return 0
 }
 
+func (x *Run) GetFaction() uint32 {
+	if x != nil {
+		return x.Faction
+	}
+	return 0
+}
+
 var File_chill_v1_runstate_proto protoreflect.FileDescriptor
 
 const file_chill_v1_runstate_proto_rawDesc = "" +
@@ -327,7 +336,7 @@ const file_chill_v1_runstate_proto_rawDesc = "" +
 	"combatSeed\x12\"\n" +
 	"\x04blue\x18\a \x01(\v2\x0e.chill.v1.ArmyR\x04blue\x12,\n" +
 	"\x12verify_deadline_ms\x18\b \x01(\x03R\x10verifyDeadlineMs\x12$\n" +
-	"\x0ered_health_pct\x18\t \x01(\rR\fredHealthPct\"\xd1\x02\n" +
+	"\x0ered_health_pct\x18\t \x01(\rR\fredHealthPct\"\xeb\x02\n" +
 	"\x03Run\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -343,7 +352,8 @@ const file_chill_v1_runstate_proto_rawDesc = "" +
 	"end_reason\x18\n" +
 	" \x01(\tR\tendReason\x12\x1d\n" +
 	"\n" +
-	"red_skills\x18\v \x01(\rR\tredSkills*e\n" +
+	"red_skills\x18\v \x01(\rR\tredSkills\x12\x18\n" +
+	"\afaction\x18\f \x01(\rR\afaction*e\n" +
 	"\bRunState\x12\x19\n" +
 	"\x15RUN_STATE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fRUN_STATE_READY\x10\x01\x12\x15\n" +
