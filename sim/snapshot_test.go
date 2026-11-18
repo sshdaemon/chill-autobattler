@@ -15,6 +15,12 @@ func TestSnapshotLayout(t *testing.T) {
 	if SnapUnit != 13 {
 		t.Error("SnapUnit changed: update web/src/sim/snapshot.ts too")
 	}
+	// a thrown spear is a lobbed burst shot (web/src/sim/snapshot.ts reads bit 4)
+	b.throw(b.Units[0], b.Units[1], &Effect{Kind: Burst, Value: I(8), Ticks: sec(80), Factor: I(2), Speed: I(14)})
+	snap = b.Snapshot()
+	if f := snap[SnapHeader+2*SnapUnit]; f != SFLob|SFBurst || SFBurst != 4 {
+		t.Errorf("thrown shot flags = %d, want lob|burst (%d)", f, SFLob|SFBurst)
+	}
 }
 
 func TestSeenCells(t *testing.T) {
