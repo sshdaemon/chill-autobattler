@@ -10,6 +10,9 @@ type FactionDef struct {
 	ID    Faction
 	Name  string
 	Units []Class // roster ids, in the order the UI lists them
+	// Playable: players may pick it and Red may draw it. A faction whose units
+	// are still placeholders isn't.
+	Playable bool
 }
 
 // Factions is sorted by id.
@@ -36,6 +39,16 @@ func FactionOf(id Faction) *FactionDef {
 	return nil
 }
 
+// FactionWith returns the first faction that fields a unit type (0 if none).
+func FactionWith(c Class) Faction {
+	for _, f := range Factions {
+		if f.Has(c) {
+			return f.ID
+		}
+	}
+	return 0
+}
+
 // Has reports whether the faction fields a unit type.
 func (f *FactionDef) Has(c Class) bool {
 	for _, u := range f.Units {
@@ -57,17 +70,29 @@ func (f *FactionDef) Pool() []Class {
 	return out
 }
 
-// RedFactionFor is Red's faction for a battle: seeded random among all
-// factions, so it may be the same as Blue's.
+// RedFactionFor is Red's faction for a battle: seeded random among the
+// playable factions, so it may be the same as Blue's.
 func RedFactionFor(seed uint64) Faction {
-	return Factions[Sub(seed, StreamRedFaction).IntN(len(Factions))].ID
+	var ids []Faction
+	for _, f := range Factions {
+		if f.Playable {
+			ids = append(ids, f.ID)
+		}
+	}
+	return ids[Sub(seed, StreamRedFaction).IntN(len(ids))]
 }
 
 // ValidateFactions checks the factions against the roster: known units, no
 // unit twice, and something for Red to draw from.
 func ValidateFactions(fs []FactionDef) error {
-	if len(fs) == 0 {
-		return fmt.Errorf("no factions")
+	playable := 0
+	for _, f := range fs {
+		if f.Playable {
+			playable++
+		}
+	}
+	if playable == 0 {
+		return fmt.Errorf("no playable faction")
 	}
 	for i, f := range fs {
 		if f.ID == 0 || f.Name == "" || (i > 0 && fs[i-1].ID >= f.ID) {

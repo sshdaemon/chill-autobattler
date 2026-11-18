@@ -88,7 +88,7 @@ func TestNewUnitIDs(t *testing.T) {
 
 	old, oldF := sim.Roster, sim.Factions
 	t.Cleanup(func() { sim.Roster, sim.Factions = old, oldF })
-	sim.Factions = []sim.FactionDef{{ID: sim.FactionClassic, Name: "classic", Units: []sim.Class{sim.Warrior, sim.Archer, sim.Mage, sim.Class(len(old))}}}
+	sim.Factions = []sim.FactionDef{{ID: sim.FactionClassic, Name: "classic", Units: []sim.Class{sim.Warrior, sim.Archer, sim.Mage, sim.Class(len(old))}, Playable: true}}
 	extra := old[sim.Warrior]
 	extra.ID, extra.Name, extra.InRedPool = sim.Class(len(old)), "test spearman", false
 	extra.Skills[0].Effects = []sim.Effect{{Kind: sim.StatBonus, Stat: sim.StatRange, Pct: 20}}

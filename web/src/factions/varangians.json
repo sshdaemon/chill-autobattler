@@ -3,24 +3,9 @@
   "label": "Varangians",
   "icon": "🪓",
   "colour": "#3b4a6b",
-  "coming": true,
   "blurb": "Norse warriors of the eastern road: reckless, hard-hitting, lightly armoured.",
   "lore": [
     "Traders, river crews and mercenaries from the Baltic to Constantinople; some served the emperor in the Varangian Guard.",
     "Painted round shields, Dane axes and yew bows; a seeress whose curses unsettle the bravest."
-  ],
-  "units": [
-    {
-      "label": "Huskarl",
-      "role": "Melee: charges at once, hunts the wounded"
-    },
-    {
-      "label": "Bowman",
-      "role": "Ranged: goes after archers and specials"
-    },
-    {
-      "label": "Völva",
-      "role": "Special: curses and dread"
-    }
   ]
 }

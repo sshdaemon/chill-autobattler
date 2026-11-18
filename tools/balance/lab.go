@@ -71,8 +71,21 @@ func margin(p float64, n int) float64 { return 1.96 * math.Sqrt(p*(1-p)/float64(
 
 func pct(p float64) string { return fmt.Sprintf("%.1f%%", 100*p) }
 
+// labFaction fields every unit type, so the lab can mix any of them in one
+// army (a new unit swapped into the classic army). Lab-only: never playable,
+// so Red keeps drawing from the game's playable factions.
+const labFaction sim.Faction = 255
+
+func init() {
+	var all []sim.Class
+	for _, d := range sim.Roster {
+		all = append(all, d.ID)
+	}
+	sim.Factions = append(sim.Factions, sim.FactionDef{ID: labFaction, Name: "lab", Units: all})
+}
+
 func input(seed uint64) sim.Input {
-	return sim.Input{Version: sim.Version, Seed: seed, CombatSeed: seed*7919 + 1, BlueFaction: sim.FactionClassic}
+	return sim.Input{Version: sim.Version, Seed: seed, CombatSeed: seed*7919 + 1, BlueFaction: labFaction}
 }
 
 // army builds recruits (level 1): unit i of a class gets that class's ability

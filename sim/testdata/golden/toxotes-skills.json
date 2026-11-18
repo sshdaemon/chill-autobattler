@@ -1,0 +1,23 @@
+{
+  "version": "0.7.0+9488062f",
+  "case": "toxotes skills",
+  "outcome": {
+    "result": 2,
+    "ticks": 355,
+    "checksum": "17672689290411232997",
+    "survivors": [
+      {
+        "Index": 7,
+        "HP": 5169932
+      },
+      {
+        "Index": 8,
+        "HP": 3604480
+      },
+      {
+        "Index": 9,
+        "HP": 606462
+      }
+    ]
+  }
+}

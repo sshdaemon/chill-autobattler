@@ -429,3 +429,6 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
 };
 
 addEventListener('pointerup', () => useBattle.getState().endDrag()); // drops outside the canvas
+
+// dev: the store from the console (window.battle.getState()), whether or not the 3D view runs
+if (import.meta.env.DEV) (window as unknown as { battle: typeof useBattle }).battle = useBattle;

@@ -199,8 +199,8 @@ func (s *Service) StartRun(ctx context.Context, req *chillv1.StartRunRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	if req.Faction > 255 || sim.FactionOf(sim.Faction(req.Faction)) == nil {
-		return nil, connect.Errorf(connect.CodeInvalidArgument, "unknown faction %d", req.Faction)
+	if f := sim.FactionOf(sim.Faction(min(req.Faction, 255))); req.Faction > 255 || f == nil || !f.Playable {
+		return nil, connect.Errorf(connect.CodeInvalidArgument, "faction %d doesn't exist or isn't playable yet", req.Faction)
 	}
 	id := NewID()
 	now := s.nowMs()

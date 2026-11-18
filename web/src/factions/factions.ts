@@ -1,7 +1,7 @@
 // Factions' lore and looks (presentation only): one file per faction,
 // factions/<name>.json, matched to the sim's factions (wasm data()) by name.
-// A file with "coming": true is a faction not playable yet, shown as a teaser
-// with its planned units.
+// Which factions are playable comes from the sim; a file with "coming": true
+// and no sim faction is lore only, shown with its planned units.
 export type FactionLook = {
   order: number; label: string; icon: string; colour: string; blurb: string; lore: string[];
   coming?: boolean; units?: { label: string; role: string }[];

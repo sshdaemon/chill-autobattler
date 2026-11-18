@@ -45,7 +45,7 @@ func caseVersion(in Input) string {
 		}
 	}
 	if len(in.Red.Units) == 0 {
-		cs = append(cs, RedPool()...)
+		cs = append(cs, FactionOf(RedFactionFor(in.Seed)).Pool()...)
 	}
 	return VersionFor(cs...)
 }
@@ -125,7 +125,9 @@ func goldenCases() []struct {
 		if int(d.ID) < 3 {
 			f = []Formation{F3x2, Spread, F2x3}[d.ID] // the original three's cases, as recorded
 		}
-		add(d.Name+" skills", in(11+uint64(d.ID), Army{Formation: f, Units: allSkills(d.ID, 1)}, 2))
+		c := in(11+uint64(d.ID), Army{Formation: f, Units: allSkills(d.ID, 1)}, 2)
+		c.BlueFaction = FactionWith(d.ID)
+		add(d.Name+" skills", c)
 	}
 	add("veterans 3 stars", in(14, Army{Formation: F3x2, Units: []UnitSpec{
 		{Class: Warrior, Skills: []Skill{WarriorSwift, WarriorDash, WarriorExecutioner}},

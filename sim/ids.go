@@ -14,7 +14,17 @@ const (
 	Warrior Class = 0
 	Archer  Class = 1
 	Mage    Class = 2
-	// next free: 3
+	// The Dnipro road (design/ROSTER-PLAN.md), allocated together in roadmap Phase 3:
+	Druzhynnyk  Class = 3  // Kyivan Rus
+	Strilets    Class = 4  // Kyivan Rus
+	Huslyar     Class = 5  // Kyivan Rus
+	Huskarl     Class = 6  // Varangians
+	Bowman      Class = 7  // Varangians
+	Volva       Class = 8  // Varangians
+	Skoutatos   Class = 9  // Romans
+	Toxotes     Class = 10 // Romans
+	Siphonarios Class = 11 // Romans
+	// next free: 12
 )
 
 // EffectKind is a kind of ability effect (roster.go); ids are explicit so that
@@ -75,6 +85,9 @@ const (
 type Faction uint8
 
 const (
-	FactionClassic Faction = 1 // the original warrior, archer and mage
-	// next free: 2 (planned: Rus, Varangians, Romans; design/ROSTER-PLAN.md)
+	FactionClassic    Faction = 1 // the original warrior, archer and mage
+	FactionRus        Faction = 2 // Kyivan Rus
+	FactionVarangians Faction = 3
+	FactionRomans     Faction = 4
+	// next free: 5
 )
