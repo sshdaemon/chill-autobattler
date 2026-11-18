@@ -44,9 +44,9 @@ func playRun(runSeed uint64, p policy, red redMode, curve []int) runResult {
 	rng := sim.NewRNG(runSeed ^ 0x5eed)
 	for m := 1; m <= maxMatches; m++ {
 		seed := runSeed*1000 + uint64(m)
-		stars := 0
+		stars := 0 // abilities above level 1: what Red is matched to
 		for _, v := range vets {
-			stars += len(v.Skills)
+			stars += len(v.Skills) - 1
 		}
 		// army: veterans first, then recruits up to the target mix
 		blue := append([]sim.UnitSpec(nil), vets...)
@@ -56,12 +56,16 @@ func playRun(runSeed uint64, p policy, red redMode, curve []int) runResult {
 		}
 		for c := sim.Warrior; c <= sim.Mage && len(blue) < sim.ArmySize; c++ {
 			for have[c] < p.target[c] && len(blue) < sim.ArmySize {
-				blue = append(blue, sim.UnitSpec{Class: c})
+				u := sim.UnitSpec{Class: c}
+				u.Skills = []sim.Skill{pickSkill(u, p.picks, rng)} // level 1
+				blue = append(blue, u)
 				have[c]++
 			}
 		}
 		for len(blue) < sim.ArmySize { // veterans pushed the mix over: fill with warriors
-			blue = append(blue, sim.UnitSpec{Class: sim.Warrior})
+			u := sim.UnitSpec{Class: sim.Warrior}
+			u.Skills = []sim.Skill{pickSkill(u, p.picks, rng)}
+			blue = append(blue, u)
 		}
 		in := input(seed)
 		in.Blue = sim.Army{Formation: sim.F3x2, Units: blue}
@@ -88,7 +92,7 @@ func playRun(runSeed uint64, p policy, red redMode, curve []int) runResult {
 		for _, s := range o.Survivors {
 			if s.Index < len(blue) {
 				u := sim.UnitSpec{Class: blue[s.Index].Class, Skills: append([]sim.Skill(nil), blue[s.Index].Skills...)}
-				if len(u.Skills) < sim.MaxSkills {
+				if len(u.Skills) < sim.MaxLevel {
 					u.Skills = append(u.Skills, pickSkill(u, p.picks, rng))
 				}
 				vets = append(vets, u)
@@ -239,31 +243,38 @@ func ramp4Red(seed uint64, _ []sim.UnitSpec, skills int) sim.Army {
 // counters[c] is the class that beats c.
 var counters = [3]sim.Class{sim.Warrior: sim.Mage, sim.Archer: sim.Warrior, sim.Mage: sim.Archer}
 
-// spreadSkills hands out skills at random over the units, never twice on one.
+// spreadSkills gives every unit one ability (level 1), then hands out n more
+// at random, never twice on one unit and up to the top level (as RedArmy).
 func spreadSkills(r *sim.RNG, units []sim.UnitSpec, n int) {
+	for i := range units {
+		learnRandom(r, &units[i])
+	}
 	for ; n > 0; n-- {
 		var open []int
 		for i, u := range units {
-			if len(u.Skills) < sim.MaxSkills {
+			if len(u.Skills) < sim.MaxLevel {
 				open = append(open, i)
 			}
 		}
 		if len(open) == 0 {
 			return
 		}
-		u := &units[open[r.IntN(len(open))]]
-		var left []sim.Skill
-		for _, d := range sim.Roster[u.Class].Skills {
-			known := false
-			for _, k := range u.Skills {
-				known = known || k == d.Skill
-			}
-			if !known {
-				left = append(left, d.Skill)
-			}
-		}
-		u.Skills = append(u.Skills, left[r.IntN(len(left))])
+		learnRandom(r, &units[open[r.IntN(len(open))]])
 	}
+}
+
+func learnRandom(r *sim.RNG, u *sim.UnitSpec) {
+	var left []sim.Skill
+	for _, d := range sim.Roster[u.Class].Skills {
+		known := false
+		for _, k := range u.Skills {
+			known = known || k == d.Skill
+		}
+		if !known {
+			left = append(left, d.Skill)
+		}
+	}
+	u.Skills = append(u.Skills, left[r.IntN(len(left))])
 }
 
 // counterRed: each Red unit is, with 50% chance, the counter of the matching

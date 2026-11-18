@@ -10,10 +10,9 @@ import (
 // Balance bands for a new unit (openspec unit-authoring, "New units are
 // balanced against the roster").
 const (
-	h2hLo, h2hHi     = 0.25, 0.75 // 5 of it against 5 of each other unit
-	swapBand         = 0.10       // swapped into the standard army: within ±10 points
-	skillLo, skillHi = 0.0, 0.15  // each skill: 0..+15 points over no skill
-	skillNoise       = 0.02       // a skill within 2 points below 0 counts as neutral, not harmful
+	h2hLo, h2hHi = 0.25, 0.75 // 5 of it against 5 of each other unit
+	swapBand     = 0.10       // swapped into the standard army: within ±10 points
+	skillBand    = 0.10       // each ability as the level-1 pick: within ±10 points of the unit's average
 )
 
 type check struct {
@@ -63,7 +62,7 @@ func UnitReport(name string, n int) (string, bool, error) {
 	for i := 0; i < n; i++ {
 		base = append(base, standard(i))
 		in := standard(i)
-		in.Blue.Units[slot] = sim.UnitSpec{Class: u}
+		in.Blue.Units[slot] = recruit(u, i) // its abilities in turn, so the swap measures the unit, not one ability
 		swapped = append(swapped, in)
 	}
 	bt, st := count(play(base)), count(play(swapped))
@@ -71,16 +70,23 @@ func UnitReport(name string, n int) (string, bool, error) {
 	checks = append(checks, check{fmt.Sprintf("standard army with one %s swapped for %s", title(mix(2, 2, 1)[slot]), name),
 		fmt.Sprintf("%s (base %s, %+.1f pts)", pct(st.win()), pct(bt.win()), 100*d), "±10 pts", d >= -swapBand && d <= swapBand})
 
-	for _, sd := range sim.Roster[u].Skills {
+	// each ability as its level-1 pick, against the average of all five: none
+	// should be a trap or a must-pick
+	var rates [sim.MaxSkills]float64
+	avg := 0.0
+	for k, sd := range sim.Roster[u].Skills {
 		var with []sim.Input
 		for i := 0; i < n; i++ {
 			in := standard(i)
 			in.Blue.Units[slot] = sim.UnitSpec{Class: u, Skills: []sim.Skill{sd.Skill}}
 			with = append(with, in)
 		}
-		wt := count(play(with))
-		d := wt.win() - st.win()
-		checks = append(checks, check{"skill " + sd.Name, fmt.Sprintf("%+.1f pts", 100*d), "0 to +15 pts", d >= skillLo-skillNoise && d <= skillHi})
+		rates[k] = count(play(with)).win()
+		avg += rates[k] / sim.MaxSkills
+	}
+	for k, sd := range sim.Roster[u].Skills {
+		d := rates[k] - avg
+		checks = append(checks, check{"level-1 pick " + sd.Name, fmt.Sprintf("%s (%+.1f pts vs its average)", pct(rates[k]), 100*d), "±10 pts", d >= -skillBand && d <= skillBand})
 	}
 
 	var b strings.Builder

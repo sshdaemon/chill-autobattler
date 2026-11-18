@@ -84,7 +84,7 @@ func (in Input) Validate() error {
 	if in.RedHealthPct < 0 || in.RedHealthPct > 100 {
 		return invalid("red health %d%% out of range", in.RedHealthPct)
 	}
-	if in.RedSkills < 0 || in.RedSkills > ArmySize*MaxSkills {
+	if in.RedSkills < 0 || in.RedSkills > ArmySize*(MaxLevel-1) {
 		return invalid("red skill count %d out of range", in.RedSkills)
 	}
 	for team, a := range [2]Army{in.Blue, in.Red} {
@@ -98,8 +98,8 @@ func (in Input) Validate() error {
 			if RosterOf(u.Class) == nil {
 				return invalid("team %d unit %d: unknown class %d", team, i, u.Class)
 			}
-			if len(u.Skills) > MaxSkills {
-				return invalid("team %d unit %d: too many skills", team, i)
+			if len(u.Skills) < 1 || len(u.Skills) > MaxLevel {
+				return invalid("team %d unit %d: %d abilities, a unit has 1 to %d (one per level)", team, i, len(u.Skills), MaxLevel)
 			}
 			seen := map[Skill]bool{}
 			for _, s := range u.Skills {
@@ -127,8 +127,9 @@ func (in Input) Validate() error {
 }
 
 // RedArmy generates Red's army from the seed: 5 random units from Red's
-// pool (listed in roster order), a random preset, and `skills` skills spread
-// at random, never twice on one unit. Changing the pool changes every Red
+// pool (listed in roster order), a random preset, one random ability each
+// (level 1), then `skills` more abilities spread at random (levels 2 and 3),
+// never twice on one unit. Changing the pool changes every Red
 // army (and, through the roster fingerprint, sim.Version).
 func RedArmy(seed uint64, skills int) Army {
 	r := Sub(seed, StreamRedArmy)
@@ -144,17 +145,7 @@ func RedArmy(seed uint64, skills int) Army {
 		}
 	}
 	rs := Sub(seed, StreamRedSkills)
-	for n := skills; n > 0; n-- {
-		var open []int
-		for i, u := range a.Units {
-			if len(u.Skills) < MaxSkills {
-				open = append(open, i)
-			}
-		}
-		if len(open) == 0 {
-			break
-		}
-		u := &a.Units[open[rs.IntN(len(open))]]
+	learn := func(u *UnitSpec) {
 		var left []Skill
 		for _, d := range RosterOf(u.Class).Skills {
 			if !hasSkill(u.Skills, d.Skill) {
@@ -162,6 +153,21 @@ func RedArmy(seed uint64, skills int) Army {
 			}
 		}
 		u.Skills = append(u.Skills, left[rs.IntN(len(left))])
+	}
+	for i := range a.Units {
+		learn(&a.Units[i])
+	}
+	for n := skills; n > 0; n-- {
+		var open []int
+		for i, u := range a.Units {
+			if len(u.Skills) < MaxLevel {
+				open = append(open, i)
+			}
+		}
+		if len(open) == 0 {
+			break
+		}
+		learn(&a.Units[open[rs.IntN(len(open))]])
 	}
 	a.Formation = Presets[Sub(seed, StreamRedFormation).IntN(len(Presets))]
 	return a

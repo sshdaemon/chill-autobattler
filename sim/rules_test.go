@@ -540,8 +540,8 @@ func TestRedArmy(t *testing.T) {
 			t.Error("same seed gave a different red army")
 		}
 	}
-	if total != 3 {
-		t.Errorf("red has %d skills, want 3", total)
+	if total != ArmySize+3 {
+		t.Errorf("red has %d abilities, want %d (one each, plus 3)", total, ArmySize+3)
 	}
 	if a.Formation == Custom || a.Formation != b.Formation {
 		t.Errorf("red formation %v / %v", a.Formation, b.Formation)
@@ -551,14 +551,15 @@ func TestRedArmy(t *testing.T) {
 		for _, u := range full.Units {
 			n += len(u.Skills)
 		}
-		if n != ArmySize*MaxSkills {
-			t.Errorf("asking for more skills than exist should cap at %d, got %d", ArmySize*MaxSkills, n)
+		if n != ArmySize*MaxLevel {
+			t.Errorf("asking for more abilities than levels allow should cap at %d, got %d", ArmySize*MaxLevel, n)
 		}
 	}
 }
 
 func TestValidate(t *testing.T) {
-	five := []UnitSpec{{Class: Warrior}, {Class: Warrior}, {Class: Archer}, {Class: Archer}, {Class: Mage}}
+	l1 := []Skill{1}
+	five := []UnitSpec{{Class: Warrior, Skills: l1}, {Class: Warrior, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Mage, Skills: l1}}
 	ok := Input{Version: Version, Seed: 1, Blue: Army{Formation: F3x2, Units: five}}
 	if err := ok.Validate(); err != nil {
 		t.Fatalf("valid input rejected: %v", err)
@@ -573,9 +574,11 @@ func TestValidate(t *testing.T) {
 	inside := V(0, I(10))
 	bad := map[string]Input{
 		"version":     in(func(c *Input) { c.Version = "0.0.1" }),
-		"six units":   in(func(c *Input) { c.Blue.Units = append(c.Blue.Units, UnitSpec{Class: Mage}) }),
+		"six units":   in(func(c *Input) { c.Blue.Units = append(c.Blue.Units, UnitSpec{Class: Mage, Skills: l1}) }),
 		"no units":    in(func(c *Input) { c.Blue.Units = nil }),
 		"skill twice": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{WarriorDash, WarriorDash} }),
+		"no ability":  in(func(c *Input) { c.Blue.Units[0].Skills = nil }),
+		"level 4":     in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{1, 2, 3, 4} }),
 		"wrong class": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{6} }),
 		"outside zone": in(func(c *Input) {
 			c.Blue.Formation = Custom
@@ -608,7 +611,7 @@ func setPos(units []UnitSpec, v Vec) {
 }
 
 func TestRedHealthPct(t *testing.T) {
-	in := Input{Version: Version, Seed: 3, RedSkills: 5, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Warrior}}}}
+	in := Input{Version: Version, Seed: 3, RedSkills: 5, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Warrior, Skills: []Skill{1}}}}}
 	full, _ := New(in)
 	in.RedHealthPct = 85
 	eased, _ := New(in)

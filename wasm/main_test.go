@@ -17,13 +17,16 @@ import (
 
 // Drives the JS API the way the web worker does and checks it reaches the same
 // outcome as the sim run directly.
+// l1: a recruit's single level-1 ability
+var l1 = []uint32{1}
+
 func TestStepToOutcome(t *testing.T) {
 	register()
 	api := js.Global().Get("chillSim")
 	w, a, m := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER, chillv1.UnitClass_UNIT_CLASS_MAGE
 	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 921, RedSkillCount: 3, Blue: &chillv1.Army{
 		Formation: chillv1.Formation_FORMATION_4_1,
-		Units:     []*chillv1.UnitSpec{{UnitClass: w}, {UnitClass: a}, {UnitClass: m}, {UnitClass: a}, {UnitClass: w}},
+		Units:     []*chillv1.UnitSpec{{UnitClass: w, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: m, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: w, Skills: l1}},
 	}}
 	raw, _ := proto.Marshal(in)
 	if msg := api.Call("create", bytesToJS(raw)).String(); msg != "" {
@@ -136,7 +139,7 @@ func TestUnits(t *testing.T) {
 	w, a := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER
 	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 77, RedSkillCount: 6, Blue: &chillv1.Army{
 		Formation: chillv1.Formation_FORMATION_SPREAD,
-		Units:     []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.WarriorDash)}}, {UnitClass: a}},
+		Units:     []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.WarriorDash)}}, {UnitClass: a, Skills: l1}},
 	}}
 	raw, _ := proto.Marshal(in)
 	if msg := api.Call("create", bytesToJS(raw)).String(); msg != "" {
@@ -169,7 +172,7 @@ func TestUnits(t *testing.T) {
 			red += len(u.Skills)
 		}
 	}
-	if red != 6 || got[0].Skills[0] != int(sim.WarriorDash) {
-		t.Errorf("red skills %d (want 6), blue warrior %v", red, got[0].Skills)
+	if red != sim.ArmySize+6 || got[0].Skills[0] != int(sim.WarriorDash) {
+		t.Errorf("red abilities %d (want one each plus 6), blue warrior %v", red, got[0].Skills)
 	}
 }

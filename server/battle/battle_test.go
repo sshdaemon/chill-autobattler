@@ -89,14 +89,14 @@ func (e *env) mustStart(runID string) *chillv1.StartBattleResponse {
 	return st
 }
 
-// army: the run's veterans first, then recruits.
+// army: the run's veterans first, then recruits (level 1: their first ability).
 func army(vets []*chillv1.UnitSpec, recruits ...chillv1.UnitClass) *chillv1.Army {
 	a := &chillv1.Army{Formation: chillv1.Formation_FORMATION_3_2}
 	for _, v := range vets {
 		a.Units = append(a.Units, &chillv1.UnitSpec{UnitClass: v.UnitClass, Skills: v.Skills})
 	}
 	for _, c := range recruits {
-		a.Units = append(a.Units, &chillv1.UnitSpec{UnitClass: c})
+		a.Units = append(a.Units, &chillv1.UnitSpec{UnitClass: c, Skills: []uint32{1}})
 	}
 	return a
 }
@@ -196,8 +196,10 @@ func TestLockDeployment(t *testing.T) {
 		u.Position = &chillv1.Point{ZRaw: int64(sim.I(-10))}
 	}
 	skilled := mix()
-	skilled.Units[0].Skills = []uint32{uint32(sim.WarriorDash)}
-	for name, a := range map[string]*chillv1.Army{"six units": six, "outside zone": outside, "recruit with a skill": skilled, "four units": army(nil, W, W, A, A)} {
+	skilled.Units[0].Skills = []uint32{1, uint32(sim.WarriorDash)}
+	bare := mix()
+	bare.Units[0].Skills = nil
+	for name, a := range map[string]*chillv1.Army{"six units": six, "outside zone": outside, "recruit at level 2": skilled, "recruit with no ability": bare, "four units": army(nil, W, W, A, A)} {
 		if _, err := e.lock(bad.BattleId, a); code(err) != connect.CodeInvalidArgument {
 			t.Errorf("%s: %v", name, err)
 		}

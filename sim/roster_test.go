@@ -112,7 +112,7 @@ func TestDataOnlyUnit(t *testing.T) {
 	if m := MatchupOf(&Roster[Warrior], &Roster[ranger]); m != Ratio(145, 100) {
 		t.Errorf("warrior vs a ranged-tagged unit: %v, want 1.45", m)
 	}
-	spec := UnitSpec{Class: ranger, Skills: []Skill{1, 2, 3, 4, 5}}
+	spec := UnitSpec{Class: ranger, Skills: []Skill{1, 2, 3}}
 	in := Input{Version: Version, Seed: 7, CombatSeed: 8,
 		Blue: Army{Formation: Spread, Units: []UnitSpec{spec, spec, spec, spec, spec}},
 		Red:  Army{Formation: F3x2, Units: mix()}}
@@ -125,7 +125,7 @@ func TestDataOnlyUnit(t *testing.T) {
 		b.Step()
 		for _, e := range b.TakeEvents() {
 			dashed = dashed || e.Kind == EvDash && b.Units[e.Unit].Class == ranger
-			if e.Kind == EvFrost {
+			if e.Kind == EvFrost && b.Units[e.Other].Class == ranger { // Red's mages may slow too
 				slowed = true
 				if v := b.Units[e.Unit]; v.slowFactor != Half {
 					t.Errorf("slowed with factor %v, want 0.5", v.slowFactor)

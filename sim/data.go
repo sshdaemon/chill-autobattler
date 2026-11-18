@@ -8,7 +8,8 @@ const (
 	TicksPerSecond = 20
 	MaxTicks       = 3 * 60 * TicksPerSecond // a battle that runs 3 minutes is a draw
 	ArmySize       = 5
-	MaxSkills      = 5
+	MaxSkills      = 5 // abilities each unit type offers
+	MaxLevel       = 3 // abilities a unit knows at most: one per level (a recruit is level 1)
 )
 
 // sec converts seconds (as tenths, to stay in integers) to ticks: sec(13) = 1.3 s.

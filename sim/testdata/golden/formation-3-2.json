@@ -1,14 +1,18 @@
 {
-  "version": "0.5.0+d23fedf8",
+  "version": "0.6.0+d23fedf8",
   "case": "formation 3-2",
   "outcome": {
     "result": 1,
-    "ticks": 421,
-    "checksum": "7342769876678811264",
+    "ticks": 370,
+    "checksum": "12269150452430062889",
     "survivors": [
       {
         "Index": 1,
-        "HP": 1882768
+        "HP": 3604480
+      },
+      {
+        "Index": 3,
+        "HP": 1194671
       }
     ]
   }
