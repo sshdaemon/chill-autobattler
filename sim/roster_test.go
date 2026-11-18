@@ -44,9 +44,13 @@ func TestRosterRejectsBadEntries(t *testing.T) {
 		}
 	}
 	r := cloneRoster()
-	r[Warrior].Skills[3].Effects = []Effect{{Kind: SlowOnHit, Pct: 50, Ticks: 10, Factor: Half}}
+	r[Warrior].Skills[3].Effects = []Effect{{Kind: OverCover}}
 	if err := ValidateRoster(r); err == nil || !strings.Contains(err.Error(), "ranged") {
-		t.Errorf("slow on hit on a melee unit: %v", err)
+		t.Errorf("arcing shots on a melee unit: %v", err)
+	}
+	r[Warrior].Skills[3].Effects = []Effect{{Kind: SlowOnHit, Pct: 50, Ticks: 10, Factor: Half}}
+	if err := ValidateRoster(r); err != nil {
+		t.Errorf("slow on hit works for melee blows too: %v", err)
 	}
 	r = cloneRoster()
 	for i := range r {

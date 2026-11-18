@@ -13,6 +13,9 @@ type effectKind struct {
 	name string
 	// check validates an effect's numbers for a roster entry.
 	check func(e Effect, d *UnitDef) error
+	// stacks: a unit may have several effects of this kind (they add up);
+	// other kinds at most one per unit.
+	stacks bool
 	// overCover: the unit's shots need no clear line of fire.
 	overCover bool
 	// temper changes the unit's temperament at spawn (e.g. a hunter targets ranged units first).
@@ -24,8 +27,28 @@ type effectKind struct {
 	// onBlow can change a hit's damage before it lands (finisher); scale is
 	// the hit's share (One for a direct hit, less for splash).
 	onBlow func(b *Battle, att, v *Unit, scale, amount Fx, a *active) Fx
-	// onShotLands runs after the unit's projectile hit its victim (slow, splash).
-	onShotLands func(b *Battle, u, v *Unit, s *Shot, a *active)
+	// onHit runs after the unit's direct hit landed on its victim: a melee
+	// blow, an arrow or bolt, or each victim of a cone (slow, splash, curse).
+	onHit func(b *Battle, u, v *Unit, from Vec, a *active)
+	// aura runs every tick for a living unit: it adds modifiers to the units
+	// around it (songs, foretelling, mocking).
+	aura func(b *Battle, src *Unit, a *active)
+	// self runs every tick after auras: modifiers from the unit's own state (fury, phalanx).
+	self func(b *Battle, u *Unit, a *active)
+	// onHurt can change damage the unit takes, before the damage-taken
+	// modifier (shield wall).
+	onHurt func(b *Battle, v, att *Unit, from Vec, amount Fx, a *active) Fx
+	// intercept: the unit (an ally of the victim) takes a share of a blow;
+	// returns the share (guard).
+	intercept func(b *Battle, guard, v, att *Unit, amount Fx, a *active) Fx
+	// onDeath runs for living units when any unit dies (rally).
+	onDeath func(b *Battle, holder, dead *Unit, a *active)
+	// onCharged runs when an enemy dashes at the unit (brace).
+	onCharged func(b *Battle, t, charger *Unit, a *active)
+	// strike replaces the unit's blow when its swing lands (cone); true if it did.
+	strike func(b *Battle, u, v *Unit, a *active) bool
+	// kiteShoot: the unit keeps shooting while it backs away.
+	kiteShoot bool
 }
 
 // active is one learned effect on a unit, with its state.
@@ -85,16 +108,20 @@ func needsRanged(e Effect, d *UnitDef) error {
 type loadout struct {
 	active    []active // in kind-id order (at most one of each kind)
 	overCover bool
+	kiteShoot bool
 }
 
 // learn adds the non-stat effects of the unit's skills to its loadout.
 func (kit *loadout) learn(def *UnitDef, skills []Skill) {
-	for _, sd := range def.Skills {
-		if !hasSkill(skills, sd.Skill) {
-			continue
+	for k := -1; k < len(def.Skills); k++ { // the type's traits, then its learned skills
+		var effects []Effect
+		if k < 0 {
+			effects = def.Traits
+		} else if hasSkill(skills, def.Skills[k].Skill) {
+			effects = def.Skills[k].Effects
 		}
-		for i := range sd.Effects {
-			e := &sd.Effects[i]
+		for i := range effects {
+			e := &effects[i]
 			if e.Kind == StatBonus {
 				continue
 			}
@@ -107,6 +134,7 @@ func (kit *loadout) learn(def *UnitDef, skills []Skill) {
 			copy(kit.active[at+1:], kit.active[at:])
 			kit.active[at] = active{kind: ek, id: e.Kind, e: e}
 			kit.overCover = kit.overCover || ek.overCover
+			kit.kiteShoot = kit.kiteShoot || ek.kiteShoot
 		}
 	}
 }

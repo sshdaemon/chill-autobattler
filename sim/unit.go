@@ -22,10 +22,13 @@ type Unit struct {
 	Slowed   bool
 	Swinging bool
 
-	cd, busy, retarget, slow      int // tick counters
-	slowFactor                    Fx  // speed factor while slow > 0
-	kit                           loadout
-	kiteTime, kiteRest, pathTimer int
+	cd, busy, retarget, slow, fear int  // tick counters
+	fearFrom                       Vec  // where dread drives it away from
+	mods                           mods // this tick's modifiers (mods.go)
+	buffs                          []buff
+	slowFactor                     Fx // speed factor while slow > 0
+	kit                            loadout
+	kiteTime, kiteRest, pathTimer  int
 
 	swing       *swing
 	dash        *dash
@@ -88,6 +91,14 @@ func (b *Battle) think(u *Unit) {
 		}
 	}
 
+	if u.fear > 0 && u.dash == nil { // dread: run away, nothing else
+		u.swing = nil
+		if p, ok := b.stepAway(u, u.fearFrom); ok {
+			u.path, u.moveTarget = nil, &p
+		}
+		return
+	}
+
 	if u.dash != nil { // a quick straight rush; nothing else happens meanwhile
 		u.dash.t++
 		u.Pos = Lerp(u.dash.from, u.dash.to, u.dash.t, u.dash.dur)
@@ -112,8 +123,9 @@ func (b *Battle) think(u *Unit) {
 			if v := b.Units[s.victim]; !v.Dead {
 				if u.Stats.Ranged {
 					b.shoot(u, v)
-				} else if Dist(u.Pos, v.Pos) < u.Stats.Range+MeleeSlack {
+				} else if !b.strike(u, v) && Dist(u.Pos, v.Pos) < u.Stats.Range+MeleeSlack {
 					b.damage(u, v, u.Pos, One)
+					b.landed(u, v, u.Pos)
 				}
 			}
 		}
@@ -137,6 +149,10 @@ func (b *Battle) think(u *Unit) {
 	}
 
 	if u.Temper.Kite && b.kite(u) {
+		if u.kit.kiteShoot && u.cd <= 0 && Within(u.Pos, t.Pos, u.Stats.Range) && (u.kit.overCover || b.Map.LineOfFire(u.Pos, t.Pos)) {
+			b.shoot(u, t) // looses an arrow while backing away
+			u.cd = cooldownOf(u.Stats.Cooldown, u.mods[ModAttackSpeed])
+		}
 		return
 	}
 
@@ -160,8 +176,18 @@ func (b *Battle) think(u *Unit) {
 	if u.cd <= 0 && aimed {
 		u.swing = &swing{dur: u.Stats.SwingTicks, victim: t.Index}
 		jitter := 100 - CooldownJitter + b.rng.IntN(2*CooldownJitter+1)
-		u.cd = u.Stats.Cooldown * jitter / 100
+		u.cd = cooldownOf(u.Stats.Cooldown*jitter/100, u.mods[ModAttackSpeed])
 	}
+}
+
+// strike lets an effect replace the unit's blow (a cone attack); false if none did.
+func (b *Battle) strike(u, v *Unit) bool {
+	for i := range u.kit.active {
+		if a := &u.kit.active[i]; a.kind.strike != nil && a.kind.strike(b, u, v, a) {
+			return true
+		}
+	}
+	return false
 }
 
 // kite makes an archer back away from nearby melee, in bursts. It reports
@@ -287,7 +313,7 @@ func (b *Battle) move(u *Unit) {
 		return
 	}
 	want := d.Norm()
-	speed := perTick(u.Stats.Speed)
+	speed := pctOf(perTick(u.Stats.Speed), u.mods[ModSpeed])
 	if u.Kiting { // archers back away facing their attackers, a little slower
 		speed = speed.Mul(BackpedalSpeed)
 	} else {

@@ -83,14 +83,20 @@ func fx(v sim.Fx) float64 { return math.Round(float64(v)/float64(sim.One)*1000) 
 
 func dataJSON() string {
 	type effect struct {
-		Kind   string  `json:"kind"`
-		Stat   string  `json:"stat,omitempty"`
-		Pct    int     `json:"pct,omitempty"`
-		Value  float64 `json:"value,omitempty"`  // metres
-		Radius float64 `json:"radius,omitempty"` // metres
-		Speed  float64 `json:"speed,omitempty"`  // metres per second
-		Factor float64 `json:"factor,omitempty"`
-		Secs   float64 `json:"secs,omitempty"` // cooldown or duration
+		Kind      string   `json:"kind"`
+		Stat      string   `json:"stat,omitempty"`
+		Pct       int      `json:"pct,omitempty"`
+		Value     float64  `json:"value,omitempty"`  // metres
+		Radius    float64  `json:"radius,omitempty"` // metres
+		Speed     float64  `json:"speed,omitempty"`  // metres per second
+		Factor    float64  `json:"factor,omitempty"`
+		Secs      float64  `json:"secs,omitempty"`     // cooldown or duration
+		Duration  float64  `json:"duration,omitempty"` // seconds an effect lasts, when secs is its cooldown
+		Mod       string   `json:"mod,omitempty"`      // auras, buffs: damage, taken, attackSpeed, evade, speed
+		Tags      []string `json:"tags,omitempty"`     // bonus against, guarded allies
+		Cond      int      `json:"cond,omitempty"`     // damage taken: 1 ranged, 2 front, 3 standing
+		Threshold int      `json:"threshold,omitempty"`
+		Foes      bool     `json:"foes,omitempty"` // an aura on enemies
 	}
 	type skill struct {
 		ID      int      `json:"id"`
@@ -122,6 +128,7 @@ func dataJSON() string {
 		Bonus      []bonus   `json:"bonus"`   // multiplier against tags; the first the victim has wins
 		Matchup    []float64 `json:"matchup"` // damage multiplier vs each roster entry
 		Skills     []skill   `json:"skills"`
+		Traits     []effect  `json:"traits"` // effects every unit of the type has
 	}
 	type faction struct {
 		ID    int    `json:"id"`
@@ -160,15 +167,29 @@ func dataJSON() string {
 		for v := range sim.Roster {
 			cl.Matchup = append(cl.Matchup, fx(sim.MatchupOf(d, &sim.Roster[v])))
 		}
+		toEffect := func(e sim.Effect) effect {
+			ef := effect{Kind: e.Kind.String(), Pct: e.Pct, Value: fx(e.Value), Radius: fx(e.Radius), Speed: fx(e.Speed),
+				Factor: fx(e.Factor), Secs: float64(e.Ticks) / sim.TicksPerSecond, Duration: float64(e.Duration) / sim.TicksPerSecond,
+				Cond: int(e.Cond), Threshold: e.Threshold, Foes: e.Foes}
+			if e.Kind == sim.StatBonus {
+				ef.Stat = e.Stat.String()
+			}
+			if e.Mod != 0 {
+				ef.Mod = e.Mod.String()
+			}
+			if e.Tag != 0 {
+				ef.Tags = tagNames(e.Tag)
+			}
+			return ef
+		}
+		cl.Traits = []effect{}
+		for _, e := range d.Traits {
+			cl.Traits = append(cl.Traits, toEffect(e))
+		}
 		for _, sd := range d.Skills {
 			sk := skill{ID: int(sd.Skill), Name: sd.Name, Pct: sd.Main().Pct, Value: fx(sd.Main().Value)}
 			for _, e := range sd.Effects {
-				ef := effect{Kind: e.Kind.String(), Pct: e.Pct, Value: fx(e.Value), Radius: fx(e.Radius), Speed: fx(e.Speed),
-					Factor: fx(e.Factor), Secs: float64(e.Ticks) / sim.TicksPerSecond}
-				if e.Kind == sim.StatBonus {
-					ef.Stat = e.Stat.String()
-				}
-				sk.Effects = append(sk.Effects, ef)
+				sk.Effects = append(sk.Effects, toEffect(e))
 			}
 			cl.Skills = append(cl.Skills, sk)
 		}

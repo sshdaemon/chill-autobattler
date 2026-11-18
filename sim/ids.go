@@ -29,7 +29,23 @@ const (
 	GapCloser   EffectKind = 5 // rush at Speed to a target up to Value away; Ticks cooldown
 	Escape      EffectKind = 6 // teleport Value away from melee within Radius; Ticks cooldown
 	OverCover   EffectKind = 7 // shots need no clear line of fire
-	// next free: 8
+	// Phase 3 (design/ROSTER-PLAN.md), one file each:
+	DamageTaken   EffectKind = 8  // takes Pct% more (negative: less) damage, under Cond
+	Aura          EffectKind = 9  // allies (or Foes) within Radius get Mod +Pct%
+	Rally         EffectKind = 10 // when an ally dies within Radius, allies there get Mod +Pct% for Ticks
+	Guard         EffectKind = 11 // takes Pct% of blows aimed at allies with Tag within Radius
+	Brace         EffectKind = 12 // an enemy that dashes at it takes a Pct% counter-blow and is stopped short
+	Fury          EffectKind = 13 // Mod +Pct% while below Threshold% health
+	Curse         EffectKind = 14 // its hits make the victim take Pct% more damage for Ticks
+	Fear          EffectKind = 15 // every Ticks, enemies within Radius flee for Duration
+	Burst         EffectKind = 16 // every Ticks, a ×Factor attack thrown up to Value (Speed m/s), Pct% splash within Radius
+	BonusAgainst  EffectKind = 17 // +Pct% damage against units with Tag
+	Focus         EffectKind = 18 // +Pct% damage when Threshold or more allies fight the same target
+	Phalanx       EffectKind = 19 // Mod +Pct% for each ally of its type within Radius, up to Threshold
+	BurningGround EffectKind = 20 // its hits leave fire of Radius for Duration: Pct% of a blow per second
+	KiteShoot     EffectKind = 21 // keeps shooting while it backs away
+	Cone          EffectKind = 22 // its blow hits every enemy within range in front (cos of the half-angle: Factor)
+	// next free: 23
 )
 
 // TargetRule is how a unit picks whom to fight (temperament.go); EngageRule is

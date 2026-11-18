@@ -1,12 +1,15 @@
 // Balance data as exported by the sim (wasm data()). Never hard-code these numbers.
 // One effect of a skill (sim EffectKind), e.g. { kind: 'gapCloser', value: 10, speed: 16, secs: 10 }.
-export type EffectInfo = { kind: string; stat?: string; pct?: number; value?: number; radius?: number; speed?: number; factor?: number; secs?: number };
+export type EffectInfo = {
+  kind: string; stat?: string; pct?: number; value?: number; radius?: number; speed?: number; factor?: number; secs?: number;
+  duration?: number; mod?: string; tags?: string[]; cond?: number; threshold?: number; foes?: boolean;
+};
 export type SkillInfo = { id: number; name: string; pct: number; value: number; effects: EffectInfo[] };
 // A unit-roster entry (classes[i] is sim class i).
 export type ClassInfo = {
   name: string; hp: number; dmgLo: number; dmgHi: number; cooldown: number; range: number; speed: number; sight: number; swing: number;
   ranged: boolean; kite: boolean; target: string; engage: string; /* temperament */ projectile?: 'arrow' | 'bolt'; tags: string[]; bonus: { tag: string; mult: number }[];
-  matchup: number[]; skills: SkillInfo[];
+  matchup: number[]; skills: SkillInfo[]; traits: EffectInfo[];
 };
 // A faction (sim.Faction): the unit types a side fields. Lore and looks: factions/<name>.json.
 export type FactionInfo = { id: number; name: string; units: number[] };

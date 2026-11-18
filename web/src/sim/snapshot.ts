@@ -11,7 +11,10 @@ export type Snapshot = { tick: number; result: number; units: UnitSnap[]; shots:
 export type Obstacle = { kind: number; x: number; z: number; r: number };
 
 export const UF = { dead: 1, moving: 2, swinging: 4, wet: 8, slowed: 16, kiting: 32, dashing: 64, staggered: 128, seen: 256 };
-export const EV = { hit: 1, death: 2, dash: 3, blink: 4, frost: 5, blast: 6, execute: 7, shot: 8 };
+export const EV = {
+  hit: 1, death: 2, dash: 3, blink: 4, frost: 5, blast: 6, execute: 7, shot: 8,
+  miss: 9, fear: 10, burst: 11, jet: 12, burn: 13, rally: 14, guard: 15, brace: 16, curse: 17, // roadmap 3.2: no presets yet
+};
 export const EF = { flank: 1, strong: 2, weak: 4 };
 export const OBSTACLE = { water: 0, rock: 1, tree: 2 };
 export const RESULT = { ongoing: 0, blue: 1, red: 2, draw: 3 };

@@ -27,6 +27,7 @@ type Stats struct {
 	Sight        Fx
 	Ranged       bool
 	SwingTicks   int // attack animation length; the blow lands at HitAtPct of it
+	AuraPct      int // auras reach +AuraPct% (StatAuraRadius)
 	ShotSpeed    Fx  // projectile metres per second (ranged only)
 }
 

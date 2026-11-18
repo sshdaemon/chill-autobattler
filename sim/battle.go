@@ -74,6 +74,7 @@ type Battle struct {
 
 	rng     *RNG
 	spotted [2][]int // enemies each team sees, in unit order
+	zones   []zone   // burning ground
 	events  []Event
 }
 
@@ -129,6 +130,7 @@ func (b *Battle) Step() {
 	}
 	b.Tick++
 	b.updateVision()
+	b.computeMods()
 	for _, u := range b.Units {
 		if !u.Dead {
 			b.think(u)
@@ -153,6 +155,7 @@ func (b *Battle) Step() {
 		u.Pos = b.Map.PushOut(u.Pos)
 	}
 	b.updateShots()
+	b.updateZones()
 
 	blue, red := len(b.alive(0)), len(b.alive(1))
 	switch {
@@ -282,6 +285,15 @@ const (
 	EvBlast
 	EvExecute
 	EvShot
+	EvMiss  // a blow was dodged (Unit: who dodged)
+	EvFear  // Unit is struck with dread by Other
+	EvBurst // Unit throws a burst attack (spear, fire pot) at Other
+	EvJet   // Unit's fire jet (a cone attack) hits around Other
+	EvBurn  // burning ground starts under Unit (Other: who set it)
+	EvRally // Unit is rallied by an ally's death
+	EvGuard // Unit takes Amount of a blow aimed at Other
+	EvBrace // Unit braced against Other's charge
+	EvCurse // Unit is cursed (takes more damage) by Other
 )
 
 const (
