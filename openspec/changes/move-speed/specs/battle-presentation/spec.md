@@ -4,7 +4,7 @@
 
 ### Requirement: Animation follows the sim
 Each unit's animation SHALL follow its state in the latest sim snapshot, using the animation set of its look (unit-looks):
-- walking → its walk and move clips, blended and played so the stride covers the unit's ground speed; dashing → the gap-closer's action animation if it has one, otherwise its sprint clip at the dash's speed;
+- walking → its walk and move clips, blended and played so the stride covers the unit's ground speed, with the body shifted so the lowest sole touches the floor; dashing → the gap-closer's action animation if it has one, otherwise its sprint clip at the dash's speed;
 - attacking → one of its attack variants, or its skill's attack animation, timed so the blow lands with the sim's hit;
 - staggered → hit reaction;
 - dead → death, held on the last frame;
@@ -35,3 +35,8 @@ When the battle ends, the winning side's survivors SHALL cheer.
 #### Scenario: Slowing down
 - **WHEN** a frozen archer moves at 60% of its speed
 - **THEN** its legs shift towards a walk and slow down with it, rather than jogging in slow motion
+
+#### Scenario: Feet stay on the floor while moving
+- **WHEN** a unit walks or runs at any speed from 1 to 4.5 m/s
+- **THEN** its lowest sole stays within 2 cm of the floor through the whole stride, rather than floating during the walk–jog blend or the jog's airborne phase
+

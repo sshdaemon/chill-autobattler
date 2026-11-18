@@ -14,6 +14,7 @@ import { makeCape } from './cloth.ts';
 export { modelFor as lookFor } from '../units/looks.ts';
 
 const PARTS = '/assets/parts/';
+const tmpV = new THREE.Vector3();
 const loader = new GLTFLoader();
 const scenes = new Map<string, Promise<THREE.Object3D>>();
 const load = (name: string) => {
@@ -78,6 +79,9 @@ export type Character = {
   // simulated parts (capes): tick after the bones are posed each frame (game-time seconds);
   // settle before a still render
   tick?: (dt: number, wind?: THREE.Vector3) => void; settle?: () => void;
+  // keeps the feet on the floor after the animation posed the body (on: while
+  // walking or running; off: eases back to the standing height); dt in seconds
+  ground: (on: boolean, dt: number) => void;
 };
 
 export const TEAM_RIM = [new THREE.Color('#4f8dff'), new THREE.Color('#ff5a4a')];
@@ -292,10 +296,45 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
     m.computeBoundingBox();
     lowest = Math.min(lowest, m.boundingBox!.clone().applyMatrix4(m.matrixWorld).min.y);
   });
-  if (Number.isFinite(lowest)) armature.position.y -= (lowest - root.getWorldPosition(new THREE.Vector3()).y) / root.scale.y;
+  const rootY = () => root.getWorldPosition(tmpV).y;
+  if (Number.isFinite(lowest)) armature.position.y -= (lowest - rootY()) / root.scale.y;
+  // Grounding while moving: blending walk and jog (and the jog's airborne phase)
+  // lifts both feet off the floor at times, and tilting feet dip toes and heels
+  // below it. Sole samples (up to 64 vertices at the bottom of the boots, spread
+  // heel to toe, picked standing) are skinned each frame, and the body is shifted
+  // so the lowest one touches the floor.
+  root.updateMatrixWorld(true);
+  const soles: { mesh: THREE.SkinnedMesh; i: number }[] = [];
+  root.traverse((o) => {
+    const m = o as THREE.SkinnedMesh;
+    if (!m.isSkinnedMesh) return;
+    const n = m.geometry.getAttribute('position').count;
+    for (let i = 0; i < n; i++) {
+      m.getVertexPosition(i, tmpV).applyMatrix4(m.matrixWorld);
+      if (tmpV.y - rootY() < 0.04) soles.push({ mesh: m, i });
+    }
+  });
+  if (soles.length > 64) { const k = soles.length / 64; for (let j = 0; j < 64; j++) soles[j] = soles[Math.floor(j * k)]; soles.length = 64; }
+  const soleMin = () => {
+    let y = Infinity;
+    for (const { mesh, i } of soles) y = Math.min(y, mesh.getVertexPosition(i, tmpV).applyMatrix4(mesh.matrixWorld).y);
+    return y - rootY();
+  };
+  const baseY = armature.position.y;
+  let shift = 0;
+  const ground = (on: boolean, dt: number) => {
+    if (!soles.length) return;
+    let want = 0;
+    if (on) {
+      root.updateMatrixWorld(true);
+      want = shift - soleMin() / root.scale.y; // where the lowest sole would touch the floor
+    }
+    shift += (want - shift) * (1 - Math.exp(-Math.max(0, dt) / 0.02));
+    armature.position.y = baseY + shift;
+  };
   mixer.setTime(Math.random() * 2); // idle out of step between units (presentation only)
   return {
-    root, mixer, actions, clips, mats, rim, spine1: bones.spine_01, spine2: bones.spine_02,
+    root, mixer, actions, clips, mats, rim, spine1: bones.spine_01, spine2: bones.spine_02, ground,
     ...(sims.length ? { tick: (dt: number, wind?: THREE.Vector3) => sims.forEach((c) => c.tick(dt, wind)), settle: () => sims.forEach((c) => c.settle()) } : {}),
   };
 }

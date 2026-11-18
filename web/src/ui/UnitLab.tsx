@@ -254,6 +254,7 @@ function Driver({ live }: { live: React.MutableRefObject<Live> }) {
         }
         if (L.scrub !== null) a.time = Math.min(L.scrub, a.getClip().duration - 1e-4);
         ch.mixer.update(L.scrub !== null ? 0 : step);
+        ch.ground(false, 1 / 30);
         ch.tick?.(L.scrub !== null ? 1 / 60 : step); // capes keep settling while scrubbing
         L.time = a.time; L.duration = a.getClip().duration;
       } else {
@@ -266,6 +267,7 @@ function Driver({ live }: { live: React.MutableRefObject<Live> }) {
         j.weight = l.k; w.weight = 1 - l.k; j.timeScale = l.jogRate; w.timeScale = l.walkRate;
         ch.mixer.update(step);
         if (l.k > 0 && l.k < 1) { w.time = (j.time / jc.duration) * wc.duration; ch.mixer.update(0); }
+        ch.ground(true, step || 1 / 60); // as in battle: feet on the floor
         // the unit stays put on a moving floor: the air streams past it instead
         const ry = ch.root.rotation.y;
         ch.tick?.(step, new THREE.Vector3(-Math.sin(ry) * L.speed, 0, -Math.cos(ry) * L.speed));

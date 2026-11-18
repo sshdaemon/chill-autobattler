@@ -22,6 +22,14 @@ Below walk speed the walk plays alone at `v/0.97` (min 0.5×); above jog speed t
 ### Sprint for plain dashes
 A unit dashing without a skill action plays the sprint clip at `min(1.6, v / 8.25)`. A dash is 12–16 m/s, so the legs still undershoot; at that speed it reads as a lunge, which is accepted.
 
+### Grounding while moving
+Blending walk and jog poses bends the knees a little, and the jog has an airborne phase, so at 3.2 m/s units floated up to 6.7 cm (14 cm at 4.5 m/s). While a unit walks or runs, its body is shifted each frame so its lowest sole touches the floor.
+- **Soles:** up to 64 vertices at the bottom of the boots, picked when the character is assembled, skinned each frame (about 15 µs per unit).
+- **Smoothing:** the shift is eased over 0.02 s.
+- **Rejected: foot bones as the reference.** Toes and heels dip below them when the foot tilts, which gave up to 9 cm of sinking.
+
+Result: within ±2 cm of the floor for every unit type from 1 to 4.5 m/s.
+
 ## Result
 An offline check (a character driven at a given speed with the same blend function, planted-foot speed over the ground measured at 240 Hz) gives 0–3% of the ground speed across unit types and builds, from 0.96 to 4.48 m/s. The old fixed jog gave 44–550%. Blends land at walk 1.1–1.27× and jog 0.76–0.89×.
 
