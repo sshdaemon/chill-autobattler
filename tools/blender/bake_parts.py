@@ -342,7 +342,62 @@ def model_items():
     slit.data.materials.append(dark)
     export('Great_Helm', [barrel, top, slit, crest])
 
-    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm'):
+    def lathe(name, profile, segs=24, skip=None):
+        """A surface of revolution about Z from (radius, z) points; skip(angle)
+        leaves out the faces of a sector (an open front)."""
+        import bmesh
+        me = bpy.data.meshes.new(name); bm = bmesh.new()
+        rings = [[bm.verts.new((r * math.sin(2 * math.pi * i / segs), -r * math.cos(2 * math.pi * i / segs), z))
+                  for i in range(segs)] for r, z in profile]
+        for a, b in zip(rings, rings[1:]):
+            for i in range(segs):
+                if skip and skip(2 * math.pi * (i + 0.5) / segs):
+                    continue
+                j = (i + 1) % segs
+                bm.faces.new((a[i], a[j], b[j], b[i]))
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+        bm.to_mesh(me); bm.free()
+        o = bpy.data.objects.new(name, me); bpy.context.collection.objects.link(o)
+        return o
+
+    # shelom (druzhynnyk): a tall conical Rus helmet of the Chernihiv type with a
+    # finial, a nasal and a mail neck guard (aventail) open at the face
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    iron = mat('MI_Shelom', lin(0x9aa0a8), 0.35, 0.8)
+    mail = mat('MI_ShelomMail', lin(0x5f646b), 0.55, 0.65)
+    bowl = lathe('ShelomBowl', [(0.134, -0.02), (0.134, 0.03), (0.128, 0.08), (0.112, 0.13), (0.085, 0.175),
+                                (0.052, 0.21), (0.02, 0.235), (0.0, 0.245)])
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.134, minor_radius=0.01, location=(0, 0, -0.015))
+    srim = bpy.context.object
+    bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.007, depth=0.06, location=(0, 0, 0.265))
+    spike = bpy.context.object
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, -0.137, -0.05), scale=(0.012, 0.01, 0.06))
+    nasal = bpy.context.object
+    aventail = lathe('ShelomMail', [(0.136, -0.02), (0.142, -0.07), (0.15, -0.13)],
+                     skip=lambda a: a < math.radians(55) or a > math.radians(305))
+    for o in (bowl, srim, spike, nasal):
+        o.data.materials.append(iron)
+    aventail.data.materials.append(mail)
+    export('Shelom', [bowl, srim, spike, nasal, aventail])
+
+    # crimson shield (druzhynnyk): a round board painted crimson, iron rim and
+    # boss; the same frame as KayKit's round shield (face toward glTF +Z)
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    paint = mat('MI_ShieldCrimson', lin(0x9b1b24), 0.8)
+    rimiron = mat('MI_ShieldIron', lin(0x5a5f66), 0.45, 0.7)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=0.29, depth=0.025, location=(0, 0.0175, 0), rotation=(math.radians(90), 0, 0))
+    board = bpy.context.object
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.29, minor_radius=0.012, location=(0, 0.0175, 0), rotation=(math.radians(90), 0, 0))
+    edge = bpy.context.object
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=8, radius=0.06, location=(0, 0.005, 0))
+    boss = bpy.context.object
+    boss.scale = (1, 0.8, 1)
+    board.data.materials.append(paint)
+    for o in (edge, boss):
+        o.data.materials.append(rimiron)
+    export('Shield_Crimson', [board, edge, boss])
+
+    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
