@@ -1,0 +1,93 @@
+package sim
+
+import (
+	"encoding/json"
+	"flag"
+	"os"
+	"reflect"
+	"testing"
+)
+
+// Spawn stats and Red armies recorded before units and skills became roster
+// data (testdata/roster_baseline.json). The roster must reproduce them
+// exactly: a different rounding or draw order would change replays.
+var baseline = flag.Bool("baseline", false, "rewrite testdata/roster_baseline.json")
+
+const baselineFile = "testdata/roster_baseline.json"
+
+type spawnStats struct {
+	Class  Class
+	Skills []Skill
+	Stats  Stats
+	MaxHP  Fx
+}
+
+type baselineData struct {
+	Spawns []spawnStats
+	Red    []Army
+}
+
+func baselineNow() baselineData {
+	var d baselineData
+	add := func(c Class, skills ...Skill) {
+		u := newUnit(0, 0, UnitSpec{Class: c, Skills: skills}, Vec{})
+		d.Spawns = append(d.Spawns, spawnStats{c, skills, u.Stats, u.MaxHP})
+	}
+	for c := Warrior; c <= Mage; c++ {
+		add(c)
+		for _, s := range []Skill{SkillHealth, SkillSpeed, SkillDamage, SkillDash, SkillExecute, SkillRange, SkillLob, SkillFrost, SkillBlink, SkillBlast} {
+			if hasSkill(skillIDs(c), s) {
+				add(c, s)
+			}
+		}
+		add(c, skillIDs(c)...)
+	}
+	add(Archer, SkillLob, SkillDamage)
+	add(Archer, SkillDamage, SkillLob)
+	add(Warrior, SkillDash, SkillSpeed)
+	add(Mage, SkillBlast, SkillFrost, SkillDamage)
+	for seed := uint64(1); seed <= 200; seed++ {
+		d.Red = append(d.Red, RedArmy(seed, int(seed%26)))
+	}
+	return d
+}
+
+func skillIDs(c Class) []Skill {
+	var out []Skill
+	for _, d := range Roster[c].Skills {
+		out = append(out, d.Skill)
+	}
+	return out
+}
+
+func TestRosterBaseline(t *testing.T) {
+	got := baselineNow()
+	if *baseline {
+		raw, _ := json.MarshalIndent(got, "", " ")
+		if err := os.WriteFile(baselineFile, append(raw, '\n'), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		return
+	}
+	raw, err := os.ReadFile(baselineFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var want baselineData
+	if err := json.Unmarshal(raw, &want); err != nil {
+		t.Fatal(err)
+	}
+	for i := range want.Spawns {
+		if !reflect.DeepEqual(got.Spawns[i], want.Spawns[i]) {
+			t.Errorf("spawn %d: got %+v\nwant %+v", i, got.Spawns[i], want.Spawns[i])
+		}
+	}
+	for i := range want.Red {
+		if !reflect.DeepEqual(got.Red[i], want.Red[i]) {
+			t.Errorf("red army for seed %d: got %+v\nwant %+v", i+1, got.Red[i], want.Red[i])
+		}
+	}
+	if len(got.Spawns) != len(want.Spawns) || len(got.Red) != len(want.Red) {
+		t.Errorf("baseline has %d spawns and %d armies, test made %d and %d", len(want.Spawns), len(want.Red), len(got.Spawns), len(got.Red))
+	}
+}

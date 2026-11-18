@@ -66,9 +66,23 @@ func TestDataAndSlots(t *testing.T) {
 	api := js.Global().Get("chillSim")
 	var d struct {
 		Classes []struct {
-			Name   string `json:"name"`
-			HP     float64
-			Skills []struct{ Name string }
+			Name       string `json:"name"`
+			HP         float64
+			Projectile string
+			Tags       []string
+			Matchup    []float64
+			Skills     []struct {
+				Name    string
+				Pct     int
+				Value   float64
+				Effects []struct {
+					Kind, Stat  string
+					Pct         int
+					Value, Secs float64
+					Radius      float64
+					Factor      float64
+				}
+			}
 		}
 		Formations []string
 	}
@@ -77,6 +91,23 @@ func TestDataAndSlots(t *testing.T) {
 	}
 	if len(d.Classes) != 3 || d.Classes[0].HP != 100 || len(d.Classes[2].Skills) != 5 || d.Formations[sim.F3x2] != "3-2" {
 		t.Errorf("data %+v", d)
+	}
+	w, ar, m := d.Classes[sim.Warrior], d.Classes[sim.Archer], d.Classes[sim.Mage]
+	if w.Matchup[sim.Archer] != 1.45 || w.Matchup[sim.Mage] != 0.95 || m.Matchup[sim.Warrior] != 1.35 || ar.Matchup[sim.Mage] != 1 {
+		t.Errorf("matchups %v %v %v", w.Matchup, ar.Matchup, m.Matchup)
+	}
+	if ar.Projectile != "arrow" || m.Projectile != "bolt" || w.Projectile != "" || len(m.Tags) != 1 || m.Tags[0] != "caster" {
+		t.Errorf("traits %+v", d.Classes)
+	}
+	// the old headline fields keep their values
+	swift, lob, blink, frost := w.Skills[1], ar.Skills[2], m.Skills[2], m.Skills[0]
+	if swift.Pct != 40 || lob.Pct != 10 || blink.Value != 8 || frost.Pct != 100 || w.Skills[4].Pct != 35 {
+		t.Errorf("headline pct/value changed: %+v %+v %+v %+v", swift, lob, blink, frost)
+	}
+	if len(swift.Effects) != 2 || swift.Effects[1].Stat != "attackSpeed" || swift.Effects[1].Pct != 80 ||
+		frost.Effects[0].Kind != "slowOnHit" || frost.Effects[0].Secs != 3 || frost.Effects[0].Factor != 0.6 ||
+		blink.Effects[0].Kind != "escape" || blink.Effects[0].Secs != 8 || blink.Effects[0].Radius != 2.5 {
+		t.Errorf("effects %+v %+v %+v", swift.Effects, frost.Effects, blink.Effects)
 	}
 	classes := []sim.Class{sim.Warrior, sim.Archer, sim.Mage, sim.Archer, sim.Warrior}
 	jsClasses := js.Global().Get("Array").New()

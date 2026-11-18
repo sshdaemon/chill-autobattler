@@ -91,7 +91,7 @@ func TestPathAroundRock(t *testing.T) {
 }
 
 func TestMovement(t *testing.T) {
-	speed := perTick(ClassStats[Warrior].Speed)
+	speed := perTick(Roster[Warrior].Stats.Speed)
 	walked := func(obs []Obstacle, setup func(*Unit)) Fx {
 		b := testBattle(obs, tu{0, Warrior, V(0, 0), nil})
 		u := b.Units[0]
@@ -110,7 +110,7 @@ func TestMovement(t *testing.T) {
 	if got := walked([]Obstacle{{Kind: Water, Pos: V(0, 0), R: I(3)}}, nil); got != speed.Mul(WaterSpeed) {
 		t.Errorf("wading %v, want 70%%", got)
 	}
-	if got := walked(nil, func(u *Unit) { u.slow = 10 }); got != speed.Mul(FrostSpeed) {
+	if got := walked(nil, func(u *Unit) { u.slow, u.slowFactor = 10, Ratio(6, 10) }); got != speed.Mul(Ratio(6, 10)) {
 		t.Errorf("frost %v, want 60%%", got)
 	}
 	if got := walked(nil, func(u *Unit) { u.Face = V(0, -One) }); got != speed.Mul(SlowTurnSpeed) {
@@ -239,7 +239,7 @@ func TestFlankAndMatchup(t *testing.T) {
 	front, ff := hit(p(0, -10))
 	back, bf := hit(p(0, 10))
 	roll := NewRNG(99).Between(I(10), I(16))
-	m := Matchup[Warrior][Archer]
+	m := MatchupOf(&Roster[Warrior], &Roster[Archer])
 	if front != roll.Mul(m) || ff != FlagStrong {
 		t.Errorf("front hit %v flags %b, want roll×%v = %v", front, ff, m, roll.Mul(m))
 	}
@@ -413,7 +413,7 @@ func TestFrostAndBlast(t *testing.T) {
 		b.rng = NewRNG(seed)
 		b.Shots = []*Shot{{Shooter: 0, Victim: 1, Bolt: true, Start: p(0, 56), Aim: p(0, 0), Dur: 1}}
 		b.updateShots()
-		if b.Units[1].slow == FrostTicks {
+		if b.Units[1].slow == 60 {
 			slowed++
 		}
 		if b.Units[2].HP < b.Units[2].MaxHP {

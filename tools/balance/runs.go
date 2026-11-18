@@ -103,7 +103,7 @@ func pickSkill(u sim.UnitSpec, how string, rng *sim.RNG) sim.Skill {
 	order := bestOrder[u.Class]
 	if how == "random" {
 		order = nil
-		for _, d := range sim.SkillsOf[u.Class] {
+		for _, d := range sim.Roster[u.Class].Skills {
 			order = append(order, d.Skill)
 		}
 	}
@@ -253,7 +253,7 @@ func spreadSkills(r *sim.RNG, units []sim.UnitSpec, n int) {
 		}
 		u := &units[open[r.IntN(len(open))]]
 		var left []sim.Skill
-		for _, d := range sim.SkillsOf[u.Class] {
+		for _, d := range sim.Roster[u.Class].Skills {
 			known := false
 			for _, k := range u.Skills {
 				known = known || k == d.Skill

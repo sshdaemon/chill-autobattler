@@ -18,6 +18,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"math"
+	"strings"
 	"syscall/js"
 
 	"chill/pb/wire" // lean decoder: keeps the protobuf runtime out of the browser build
@@ -78,45 +79,86 @@ func outcome(js.Value, []js.Value) any {
 func fx(v sim.Fx) float64 { return math.Round(float64(v)/float64(sim.One)*1000) / 1000 }
 
 func dataJSON() string {
+	type effect struct {
+		Kind   string  `json:"kind"`
+		Stat   string  `json:"stat,omitempty"`
+		Pct    int     `json:"pct,omitempty"`
+		Value  float64 `json:"value,omitempty"`  // metres
+		Radius float64 `json:"radius,omitempty"` // metres
+		Speed  float64 `json:"speed,omitempty"`  // metres per second
+		Factor float64 `json:"factor,omitempty"`
+		Secs   float64 `json:"secs,omitempty"` // cooldown or duration
+	}
 	type skill struct {
-		ID    int     `json:"id"`
-		Name  string  `json:"name"`
-		Pct   int     `json:"pct"`
-		Value float64 `json:"value"`
+		ID      int      `json:"id"`
+		Name    string   `json:"name"`
+		Pct     int      `json:"pct"`   // the headline effect's %
+		Value   float64  `json:"value"` // the headline effect's value
+		Effects []effect `json:"effects"`
+	}
+	type bonus struct {
+		Tag  string  `json:"tag"`
+		Mult float64 `json:"mult"`
 	}
 	type class struct {
-		Name     string    `json:"name"`
-		HP       float64   `json:"hp"`
-		DmgLo    float64   `json:"dmgLo"`
-		DmgHi    float64   `json:"dmgHi"`
-		Cooldown float64   `json:"cooldown"` // seconds
-		Range    float64   `json:"range"`
-		Speed    float64   `json:"speed"`
-		Sight    float64   `json:"sight"`
-		Swing    float64   `json:"swing"` // attack animation seconds (the blow lands at 45%)
-		Ranged   bool      `json:"ranged"`
-		Kite     bool      `json:"kite"`
-		Matchup  []float64 `json:"matchup"` // damage multiplier vs each class
-		Skills   []skill   `json:"skills"`
+		Name       string    `json:"name"`
+		HP         float64   `json:"hp"`
+		DmgLo      float64   `json:"dmgLo"`
+		DmgHi      float64   `json:"dmgHi"`
+		Cooldown   float64   `json:"cooldown"` // seconds
+		Range      float64   `json:"range"`
+		Speed      float64   `json:"speed"`
+		Sight      float64   `json:"sight"`
+		Swing      float64   `json:"swing"` // attack animation seconds (the blow lands at 45%)
+		Ranged     bool      `json:"ranged"`
+		Kite       bool      `json:"kite"`
+		Projectile string    `json:"projectile,omitempty"` // "arrow" or "bolt"
+		Tags       []string  `json:"tags"`
+		Bonus      []bonus   `json:"bonus"`   // multiplier against tags; the first the victim has wins
+		Matchup    []float64 `json:"matchup"` // damage multiplier vs each roster entry
+		Skills     []skill   `json:"skills"`
 	}
 	var out struct {
 		Version    string     `json:"version"`
-		Classes    []class    `json:"classes"`
+		Classes    []class    `json:"classes"`    // the unit roster, index = sim.Class
 		Formations []string   `json:"formations"` // index = sim.Formation
 		ArmySize   int        `json:"armySize"`
 		DeployZone [4]float64 `json:"deployZone"` // Blue: xMin, xMax, zMin, zMax
 	}
-	out.Version, out.ArmySize = sim.Version, sim.ArmySize
-	for c := sim.Warrior; c <= sim.Mage; c++ {
-		st := sim.ClassStats[c]
-		cl := class{Name: c.String(), HP: fx(st.HP), DmgLo: fx(st.DmgLo), DmgHi: fx(st.DmgHi),
-			Cooldown: float64(st.Cooldown) / sim.TicksPerSecond, Range: fx(st.Range), Speed: fx(st.Speed), Sight: fx(st.Sight),
-			Swing: float64(st.SwingTicks) / sim.TicksPerSecond, Ranged: st.Ranged, Kite: st.Kite}
-		for v := sim.Warrior; v <= sim.Mage; v++ {
-			cl.Matchup = append(cl.Matchup, fx(sim.Matchup[c][v]))
+	tagNames := func(t sim.Tag) []string {
+		names := []string{}
+		for _, d := range sim.Tags {
+			if t&d.Tag != 0 {
+				names = append(names, d.Name)
+			}
 		}
-		for _, d := range sim.SkillsOf[c] {
-			cl.Skills = append(cl.Skills, skill{int(d.Skill), d.Name, d.Pct, fx(d.Value)})
+		return names
+	}
+	out.Version, out.ArmySize = sim.Version, sim.ArmySize
+	for i := range sim.Roster {
+		d := &sim.Roster[i]
+		st := d.Stats
+		cl := class{Name: d.Name, HP: fx(st.HP), DmgLo: fx(st.DmgLo), DmgHi: fx(st.DmgHi),
+			Cooldown: float64(st.Cooldown) / sim.TicksPerSecond, Range: fx(st.Range), Speed: fx(st.Speed), Sight: fx(st.Sight),
+			Swing: float64(st.SwingTicks) / sim.TicksPerSecond, Ranged: st.Ranged, Kite: st.Kite,
+			Projectile: [...]string{"", "arrow", "bolt"}[d.Projectile], Tags: tagNames(d.Tags), Bonus: []bonus{}}
+		for _, b := range d.Bonus {
+			cl.Bonus = append(cl.Bonus, bonus{strings.Join(tagNames(b.Tag), "|"), fx(b.Mult)})
+		}
+		for v := range sim.Roster {
+			cl.Matchup = append(cl.Matchup, fx(sim.MatchupOf(d, &sim.Roster[v])))
+		}
+		for _, sd := range d.Skills {
+			sk := skill{ID: int(sd.Skill), Name: sd.Name, Pct: sd.Main().Pct, Value: fx(sd.Main().Value)}
+			for _, e := range sd.Effects {
+				ef := effect{Kind: e.Kind.String(), Pct: e.Pct, Value: fx(e.Value), Radius: fx(e.Radius), Speed: fx(e.Speed),
+					Factor: fx(e.Factor), Secs: float64(e.Ticks) / sim.TicksPerSecond}
+				if e.Kind == sim.StatBonus {
+					ef.Stat = e.Stat.String()
+				}
+				sk.Effects = append(sk.Effects, ef)
+			}
+			cl.Skills = append(cl.Skills, sk)
 		}
 		out.Classes = append(out.Classes, cl)
 	}

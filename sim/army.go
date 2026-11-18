@@ -95,7 +95,7 @@ func (in Input) Validate() error {
 			return invalid("team %d: unknown formation %d", team, a.Formation)
 		}
 		for i, u := range a.Units {
-			if u.Class >= numClasses {
+			if RosterOf(u.Class) == nil {
 				return invalid("team %d unit %d: unknown class %d", team, i, u.Class)
 			}
 			if len(u.Skills) > MaxSkills {
@@ -126,18 +126,20 @@ func (in Input) Validate() error {
 	return nil
 }
 
-// RedArmy generates Red's army from the seed: 5 random classes (listed
-// warriors, archers, mages), a random preset, and `skills` skills spread at
-// random, never twice on one unit.
+// RedArmy generates Red's army from the seed: 5 random units from Red's
+// pool (listed in roster order), a random preset, and `skills` skills spread
+// at random, never twice on one unit. Changing the pool changes every Red
+// army, so it needs a sim.Version bump.
 func RedArmy(seed uint64, skills int) Army {
 	r := Sub(seed, StreamRedArmy)
-	var counts [numClasses]int
+	pool := RedPool()
+	counts := make([]int, len(pool))
 	for i := 0; i < ArmySize; i++ {
-		counts[r.IntN(int(numClasses))]++
+		counts[r.IntN(len(pool))]++
 	}
 	var a Army
-	for c := Class(0); c < numClasses; c++ {
-		for n := 0; n < counts[c]; n++ {
+	for k, c := range pool {
+		for n := 0; n < counts[k]; n++ {
 			a.Units = append(a.Units, UnitSpec{Class: c})
 		}
 	}
@@ -154,7 +156,7 @@ func RedArmy(seed uint64, skills int) Army {
 		}
 		u := &a.Units[open[rs.IntN(len(open))]]
 		var left []Skill
-		for _, d := range SkillsOf[u.Class] {
+		for _, d := range RosterOf(u.Class).Skills {
 			if !hasSkill(u.Skills, d.Skill) {
 				left = append(left, d.Skill)
 			}
@@ -186,7 +188,7 @@ func FormationSlots(f Formation, classes []Class, team int) []Vec {
 	order := make([]int, 0, len(classes)) // melee first, then by index
 	for _, ranged := range []bool{false, true} {
 		for i, c := range classes {
-			if ClassStats[c].Ranged == ranged {
+			if d := RosterOf(c); d != nil && d.Stats.Ranged == ranged {
 				order = append(order, i)
 			}
 		}
