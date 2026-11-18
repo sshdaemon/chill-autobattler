@@ -406,6 +406,35 @@
     0
    ],
    "scale": 1.0
+  },
+  "Great_Helm": {
+   "bone": "Head",
+   "pos": [
+    0,
+    0.1,
+    0.01
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0
+  },
+  "Cape": {
+   "bone": "spine_03",
+   "pos": [
+    0,
+    0.1,
+    -0.11
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0,
+   "team": true
   }
  },
  "materials": {
