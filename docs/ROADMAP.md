@@ -289,8 +289,11 @@ be built without touching shared code.
 
 Progress: **Kyivan Rus done and playable** (druzhynnyk #64, strilets #66,
 huslyar #65, guard and brace effects #63, faction made playable after them).
-Red now draws Classic or Rus. Next: Varangians, then Romans, one faction at a
-time.
+Red now draws Classic or Rus.
+
+**Varangians done and playable** (huskarl #72, bowman #74, völva #76; shared:
+escape runs #70, thrown spears #71, curse, fear and miss cues #73, parts
+budget #75). Red now draws Classic, Rus or Varangians. Next: Romans.
 
 Each unit goes through `/new-unit`: brief, design checkpoint with the user,
 roster file, look, golden case, balance band, previews, PR. Suggested waves,

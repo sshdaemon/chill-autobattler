@@ -1,7 +1,7 @@
 package sim
 
-// varangians (design/SETTING.md). Not playable until its units are finished
-// (roadmap Phase 4): players can't pick it and Red never draws it.
+// Varangians (design/SETTING.md): huskarl, bowman and völva, finished in
+// roadmap Phase 4. Playable: players can pick it and Red may draw it.
 func init() {
-	registerFaction(FactionDef{ID: FactionVarangians, Name: "varangians", Units: []Class{Huskarl, Bowman, Volva}})
+	registerFaction(FactionDef{ID: FactionVarangians, Name: "varangians", Units: []Class{Huskarl, Bowman, Volva}, Playable: true})
 }

@@ -1,22 +1,22 @@
 {
-  "version": "0.8.0+9cf2dc35",
+  "version": "0.8.0+a0f49a39",
   "case": "mages frost and blast",
   "outcome": {
-    "result": 2,
-    "ticks": 242,
-    "checksum": "13771920723906066890",
+    "result": 1,
+    "ticks": 299,
+    "checksum": "2821220156968639104",
     "survivors": [
       {
-        "Index": 7,
-        "HP": 3883318
+        "Index": 0,
+        "HP": 860958
       },
       {
-        "Index": 8,
-        "HP": 392518
+        "Index": 1,
+        "HP": 1739783
       },
       {
-        "Index": 9,
-        "HP": 3145540
+        "Index": 3,
+        "HP": 1181917
       }
     ]
   }

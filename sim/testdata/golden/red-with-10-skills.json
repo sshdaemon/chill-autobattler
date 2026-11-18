@@ -1,22 +1,26 @@
 {
-  "version": "0.8.0+9cf2dc35",
+  "version": "0.8.0+7b296492",
   "case": "red with 10 skills",
   "outcome": {
     "result": 2,
-    "ticks": 299,
-    "checksum": "9196349447211311693",
+    "ticks": 494,
+    "checksum": "9205820517103985420",
     "survivors": [
       {
+        "Index": 6,
+        "HP": 3003884
+      },
+      {
         "Index": 7,
-        "HP": 2143909
+        "HP": 1641204
       },
       {
         "Index": 8,
-        "HP": 2811926
+        "HP": 4250681
       },
       {
         "Index": 9,
-        "HP": 3604480
+        "HP": 5186745
       }
     ]
   }
