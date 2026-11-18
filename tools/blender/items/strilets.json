@@ -1,0 +1,50 @@
+{
+ "Composite_Bow": {
+  "modelled": true,
+  "bone": "hand_l",
+  "pos": [
+   0,
+   0,
+   0
+  ],
+  "rot": [
+   1.5707963267948966,
+   0,
+   0
+  ],
+  "scale": 1.0
+ },
+ "Fur_Cap": {
+  "modelled": true,
+  "bone": "Head",
+  "pos": [
+   0,
+   0.155,
+   0.0
+  ],
+  "rot": [
+   -0.08,
+   0,
+   0
+  ],
+  "scale": 1.0
+ },
+ "Quiver_Belt": {
+  "source": [
+   "kaykit",
+   "quiver.gltf"
+  ],
+  "bone": "pelvis",
+  "pos": [
+   -0.22,
+   0.05,
+   -0.08
+  ],
+  "rot": [
+   0.25,
+   0,
+   -0.2
+  ],
+  "scale": 0.55
+ }
+}

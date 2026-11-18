@@ -11,21 +11,22 @@ const (
 
 func init() { register(striletsDef) }
 
-// Strilets (Kyivan Rus, ranged): archer of the druzhyna; mobile, shoots while backing away.
-// Numbers from design/ROSTER-PLAN.md; a placeholder until its unit session
-// (roadmap Phase 4) designs, balances and dresses it.
+// Strilets (Kyivan Rus, ranged): archer of the druzhyna with a composite
+// recurved bow of steppe type; light and quick, gives ground while shooting
+// (design/units/strilets/brief.md). No fall-back: a ranged unit that retreats
+// at low health stops shooting and loses archer duels (balance.md).
 var striletsDef = UnitDef{
 	ID: Strilets, Name: "strilets",
-	Stats:      Stats{HP: I(55), DmgLo: I(9), DmgHi: I(14), Cooldown: sec(17), Range: I(9), Speed: Ratio(36, 10), Sight: I(11), Ranged: true, SwingTicks: sec(6), ShotSpeed: I(18)},
-	Temper:     Temperament{Target: TargetNearest, Engage: EngageLine, Kite: true, Keep: I(7), FallBack: 30},
+	Stats:      Stats{HP: I(57), DmgLo: I(9), DmgHi: I(14), Cooldown: sec(17), Range: Ratio(85, 10), Speed: Ratio(36, 10), Sight: I(11), Ranged: true, SwingTicks: sec(6), ShotSpeed: I(18)},
+	Temper:     Temperament{Target: TargetNearest, Engage: EngageLine, Kite: true, Keep: I(7)},
 	Projectile: Arrow,
 	Tags:       TagRanged,
 	Skills: [MaxSkills]SkillDef{
-		{StriletsLongShot, "Long shot", []Effect{{Kind: StatBonus, Stat: StatRange, Pct: 25}}},
-		{StriletsSteppeShooting, "Steppe shooting", []Effect{{Kind: KiteShoot}}},
+		{StriletsLongShot, "Long shot", []Effect{{Kind: StatBonus, Stat: StatRange, Pct: 20}}},
+		{StriletsSteppeShooting, "Steppe shooting", []Effect{{Kind: KiteShoot}, {Kind: StatBonus, Stat: StatSpeed, Pct: 10}}},
 		{StriletsBodkinPoints, "Bodkin points", []Effect{{Kind: BonusAgainst, Pct: 30, Tag: TagMelee}}},
-		{StriletsArcingShot, "Arcing shot", []Effect{{Kind: OverCover}}},
-		{StriletsQuickDraw, "Quick draw", []Effect{{Kind: StatBonus, Stat: StatAttackSpeed, Pct: 80}}},
+		{StriletsArcingShot, "Arcing shot", []Effect{{Kind: StatBonus, Stat: StatDamage, Pct: 10}, {Kind: OverCover}}},
+		{StriletsQuickDraw, "Quick draw", []Effect{{Kind: StatBonus, Stat: StatAttackSpeed, Pct: 84}}},
 	},
 	InRedPool: true,
 }
