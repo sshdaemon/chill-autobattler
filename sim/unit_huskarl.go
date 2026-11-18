@@ -11,12 +11,12 @@ const (
 
 func init() { register(huskarlDef) }
 
-// Huskarl (Varangians, melee): sworn household warrior with a Dane axe; big blows, less armour.
-// Numbers from design/ROSTER-PLAN.md; a placeholder until its unit session
-// (roadmap Phase 4) designs, balances and dresses it.
+// Huskarl (Varangians, melee): sworn household warrior with a Dane axe; shock
+// troops with big blows and less armour that charge at once, never fall back
+// and cut down the wounded (design/units/huskarl/brief.md, balance.md).
 var huskarlDef = UnitDef{
 	ID: Huskarl, Name: "huskarl",
-	Stats:  Stats{HP: I(85), DmgLo: I(14), DmgHi: I(20), Cooldown: sec(15), Range: Ratio(17, 10), Speed: Ratio(33, 10), Sight: I(7), SwingTicks: sec(10)},
+	Stats:  Stats{HP: I(94), DmgLo: I(14), DmgHi: I(20), Cooldown: sec(15), Range: Ratio(17, 10), Speed: Ratio(36, 10), Sight: I(7), SwingTicks: sec(10)},
 	Temper: Temperament{Target: TargetWounded, Engage: EngageCharge},
 	Tags:   TagMelee,
 	Bonus:  []TagBonus{{TagRanged, Ratio(145, 100)}},

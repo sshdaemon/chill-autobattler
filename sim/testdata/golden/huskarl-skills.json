@@ -1,10 +1,10 @@
 {
-  "version": "0.8.0+b901edab",
+  "version": "0.8.0+ef474268",
   "case": "huskarl skills",
   "outcome": {
     "result": 2,
-    "ticks": 294,
-    "checksum": "14164624843852533186",
+    "ticks": 334,
+    "checksum": "2338095977638671911",
     "survivors": [
       {
         "Index": 6,
@@ -12,11 +12,11 @@
       },
       {
         "Index": 8,
-        "HP": 1842422
+        "HP": 7208960
       },
       {
         "Index": 9,
-        "HP": 7208960
+        "HP": 907700
       }
     ]
   }

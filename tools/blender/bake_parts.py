@@ -490,6 +490,102 @@ def model_items():
         o.data.materials.append(rimiron)
     export('Shield_Crimson', [board, edge, boss])
 
+    # huskarl: Dane axe, Gokstad-painted round shield (in hand and slung on the
+    # back) and a Gjermundbu-type helmet with a spectacle guard
+    def plate(name, pts, thick, m):
+        """A flat blade from (x, z) outline points, thick along Y."""
+        me = bpy.data.meshes.new(name); bm = bmesh.new()
+        front = [bm.verts.new((x, -thick / 2, z)) for x, z in pts]
+        back = [bm.verts.new((x, thick / 2, z)) for x, z in pts]
+        bm.faces.new(front); bm.faces.new(list(reversed(back)))
+        for i in range(len(pts)):
+            j = (i + 1) % len(pts)
+            bm.faces.new((front[i], front[j], back[j], back[i]))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me); bm.free()
+        o = bpy.data.objects.new(name, me); bpy.context.collection.objects.link(o)
+        o.data.materials.append(m)
+        return o
+
+    # Dane axe: a long ash haft (grip at the origin, up along +Y like the
+    # spear), a thin bearded crescent blade on +X with a socket over the haft
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    ash = mat('MI_DaneAxeHaft', lin(0x8a6a44), 0.75)
+    blade_iron = mat('MI_DaneAxeBlade', lin(0xb4bac2), 0.3, 0.85)
+    haft = rod((0, 0, -0.5), (0, 0, 0.98), 0.017, ash, 8)
+    socket = rod((0, 0, 0.78), (0, 0, 0.92), 0.026, blade_iron, 8)
+    blade = plate('DaneAxeBlade', [(0.02, 0.9), (0.08, 0.92), (0.15, 0.99), (0.19, 0.95), (0.2, 0.84),
+                                   (0.19, 0.73), (0.15, 0.66), (0.1, 0.7), (0.05, 0.76), (0.02, 0.79)], 0.01, blade_iron)
+    export('Dane_Axe', [haft, socket, blade])
+
+    # Gokstad shield: a round board in yellow and black quarters, iron rim
+    # and boss; KayKit's round-shield frame (face toward glTF +Z), like Shield_Crimson
+    def gokstad_shield(name):
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        yellow = mat('MI_ShieldGokstadYellow', lin(0xc99a2e), 0.8)
+        black = mat('MI_ShieldGokstadBlack', lin(0x1e1c1a), 0.8)
+        iron2 = mat('MI_ShieldGokstadIron', lin(0x5a5f66), 0.45, 0.7)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=0.3, depth=0.025, end_fill_type='TRIFAN',
+                                            location=(0, 0.0175, 0), rotation=(math.radians(90), 0, 0))
+        board = bpy.context.object
+        board.data.materials.append(yellow); board.data.materials.append(black)
+        for f in board.data.polygons:
+            c = f.center
+            q = int(((math.atan2(c.y, c.x) + 2 * math.pi) % (2 * math.pi)) // (math.pi / 2))
+            f.material_index = q % 2
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.3, minor_radius=0.012, major_segments=32, minor_segments=4,
+                                         location=(0, 0.0175, 0), rotation=(math.radians(90), 0, 0))
+        edge = bpy.context.object
+        bpy.ops.object.shade_smooth()
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=6, radius=0.065, location=(0, 0.005, 0))
+        boss = bpy.context.object
+        bpy.ops.object.shade_smooth()
+        boss.scale = (1, 0.8, 1)
+        for o in (edge, boss):
+            o.data.materials.append(iron2)
+        export(name, [board, edge, boss])
+    gokstad_shield('Shield_Gokstad')
+    gokstad_shield('Shield_Gokstad_Back')
+
+    # spangenhelm (Gjermundbu): a rounded bowl with a brow band, cross bands, a
+    # short knob, and a spectacle guard round the eyes; framed like Helmet (face -Y)
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    giron = mat('MI_Spangenhelm', lin(0xa0a6ae), 0.38, 0.8)
+    gband = mat('MI_SpangenhelmBand', lin(0x7e848b), 0.45, 0.75)
+    sbowl = lathe('SpangenBowl', [(0.134, -0.03), (0.134, 0.02), (0.13, 0.07), (0.116, 0.115), (0.094, 0.152),
+                                  (0.064, 0.18), (0.032, 0.195), (0.0, 0.2)])
+    sbowl.data.materials.append(giron)
+    for f in sbowl.data.polygons:
+        f.use_smooth = True
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.136, minor_radius=0.011, major_segments=24, minor_segments=4, location=(0, 0, -0.02))
+    brow = bpy.context.object
+    bpy.ops.object.shade_smooth()
+    crosses = []
+    for rz in (0, 90):
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.17, minor_radius=0.008, major_segments=24, minor_segments=4, location=(0, 0, 0.03),
+                                         rotation=(math.radians(90), 0, math.radians(rz)))
+        c = bpy.context.object
+        c.scale = (0.8, 0.8, 1.0)
+        bpy.ops.object.shade_smooth()
+        bpy.ops.object.mode_set(mode='EDIT')
+        bm = bmesh.from_edit_mesh(c.data)
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y < -0.06], context='VERTS')
+        bmesh.update_edit_mesh(c.data); bpy.ops.object.mode_set(mode='OBJECT')
+        crosses.append(c)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.012, depth=0.03, location=(0, 0, 0.21))
+    knob = bpy.context.object
+    eyes = []
+    for sx in (-1, 1):
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.032, minor_radius=0.007, major_segments=12, minor_segments=4,
+                                         location=(sx * 0.036, -0.13, -0.05), rotation=(math.radians(90), 0, 0))
+        bpy.ops.object.shade_smooth()
+        eyes.append(bpy.context.object)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, -0.136, -0.065), scale=(0.012, 0.01, 0.05))
+    snasal = bpy.context.object
+    for o in [brow, knob, snasal] + crosses + eyes:
+        o.data.materials.append(gband)
+    export('Spangenhelm', [sbowl, brow, knob, snasal] + crosses + eyes)
+
     # völva: an iron staff of the seeresses' graves (Fyrkat, Oseberg): a thin
     # iron rod, grip at the origin and up along +Y like the spear, with a cage
     # of bowed iron strips bound by rings near the top and a small knob.
@@ -549,7 +645,8 @@ def model_items():
     drop.data.materials.append(amber)
     export('Volva_Beads', beads + [disc, drop])
 
-    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap', 'Iron_Staff', 'Volva_Beads'):
+    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap',
+                 'Dane_Axe', 'Shield_Gokstad', 'Shield_Gokstad_Back', 'Spangenhelm', 'Iron_Staff', 'Volva_Beads'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
