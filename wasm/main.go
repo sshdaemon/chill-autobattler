@@ -20,6 +20,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"math"
+	"strconv"
 	"strings"
 	"syscall/js"
 
@@ -210,6 +211,38 @@ func unitsJSON() string {
 	return string(b)
 }
 
+// draftJSON(seed, redSkills): the draft for a battle: who picks first, picks
+// per turn, Red's faction and generated army (class and abilities per unit)
+// and the order its units are revealed in. seed is a decimal string (a JS
+// number can't hold a uint64).
+func draftJSON(_ js.Value, args []js.Value) any {
+	seed, err := strconv.ParseUint(args[0].String(), 10, 64)
+	if err != nil {
+		return js.Null()
+	}
+	type unit struct {
+		Cls    int   `json:"cls"`
+		Skills []int `json:"skills"`
+	}
+	first, reveal := sim.Draft(seed)
+	out := struct {
+		First      int    `json:"first"`
+		Turns      []int  `json:"turns"`
+		RedFaction int    `json:"redFaction"`
+		Red        []unit `json:"red"`
+		Reveal     []int  `json:"reveal"`
+	}{First: first, Turns: sim.DraftTurns, RedFaction: int(sim.RedFactionFor(seed)), Reveal: reveal, Red: []unit{}}
+	for _, u := range sim.RedArmy(seed, args[1].Int()).Units {
+		skills := []int{}
+		for _, s := range u.Skills {
+			skills = append(skills, int(s))
+		}
+		out.Red = append(out.Red, unit{int(u.Class), skills})
+	}
+	b, _ := json.Marshal(out)
+	return string(b)
+}
+
 func formationSlots(_ js.Value, args []js.Value) any {
 	f := sim.Formation(args[0].Int())
 	if f == sim.Custom || f > sim.F5x0 {
@@ -235,6 +268,7 @@ func register() {
 	api.Set("outcome", js.FuncOf(outcome))
 	api.Set("data", js.FuncOf(func(js.Value, []js.Value) any { return dataJSON() }))
 	api.Set("units", js.FuncOf(func(js.Value, []js.Value) any { return unitsJSON() }))
+	api.Set("draft", js.FuncOf(draftJSON))
 	api.Set("fog", js.FuncOf(func(js.Value, []js.Value) any {
 		if battle == nil {
 			return js.Null()

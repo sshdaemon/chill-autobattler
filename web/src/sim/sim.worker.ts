@@ -9,6 +9,7 @@ type SimApi = {
   outcome(): Uint8Array;
   data(): string;
   units(): string;
+  draft(seed: string, redSkills: number): string | null;
   formationSlots(formation: number, classes: number[]): Uint8Array | null;
   fog(): Uint8Array | null;
 };
@@ -17,10 +18,12 @@ export type ToWorker =
   | { type: 'start' | 'preview'; input: Uint8Array }
   | { type: 'speed'; speed: number }
   | { type: 'stop' }
-  | { type: 'slots'; classes: number[] }; // sim classes (0..2); replies with every preset's positions
+  | { type: 'slots'; classes: number[] } // sim classes; replies with every preset's positions
+  | { type: 'draft'; seed: string; redSkills: number }; // replies with the battle's draft (seed: decimal uint64)
 export type FromWorker =
   | { type: 'ready'; version: string; data: string }
   | { type: 'slots'; slots: Record<number, { x: number; z: number }[]> } // keyed by sim formation (1..7)
+  | { type: 'draft'; plan: string | null } // JSON DraftPlan (draft.ts)
   | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer; units: string } // units: JSON UnitLoadout[]
   | { type: 'snapshot'; snapshot: ArrayBuffer }
   | { type: 'fog'; seen: ArrayBuffer } // Blue's visible cells, 56×56, every 2 ticks
@@ -70,6 +73,8 @@ self.onmessage = async (e: MessageEvent<ToWorker>) => {
     const map = buf(sim.map()), snapshot = buf(sim.step(0));
     post({ type: 'started', map, snapshot, units: sim.units() }, [map, snapshot]);
     if (msg.type === 'start') loop(sim);
+  } else if (msg.type === 'draft') {
+    post({ type: 'draft', plan: sim.draft(msg.seed, msg.redSkills) });
   } else if (msg.type === 'slots') {
     const slots: Record<number, { x: number; z: number }[]> = {};
     for (let f = 1; f <= 7; f++) {

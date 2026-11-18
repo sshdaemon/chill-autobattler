@@ -209,6 +209,15 @@ checks the locked army: no `DraftPick` RPC is needed in single player.
 
 ### 1.3 Draft (before every battle)
 
+Done (OpenSpec `draft`): the battle starts first (its map seed fixes Red's
+faction, army, the coin flip and Red's reveal order: `sim.Draft`, wasm
+`draft()`), then the draft runs in the client (`web/src/draft.ts`,
+`ui/Draft.tsx`) and the drafted army goes to deployment; the army picker is
+gone. The server only checks the locked army (no `DraftPick` RPC). Deploy
+window 3 minutes. A reload mid-draft drafts the same battle again.
+
+Original plan:
+
 - A coin flip decides who picks first. Order of picks, five units each:
   **first 1 · second 2 · first 2 · second 2 · first 2 · second 1**.
 - **15 seconds per turn.** If the time runs out, the remaining picks of that

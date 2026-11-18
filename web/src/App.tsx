@@ -13,7 +13,7 @@ import { Perf } from './scene/Perf.tsx';
 import { Portraits } from './ui/Portraits.tsx';
 import { InfoPanel } from './ui/InfoPanel.tsx';
 import { Minimap } from './ui/Minimap.tsx';
-import { Picker } from './ui/Picker.tsx';
+import { DraftScreen } from './ui/Draft.tsx';
 import { FactionPick } from './ui/FactionPick.tsx';
 import { DeployBar } from './ui/DeployBar.tsx';
 import { Banner, DevPanel, Result, RunBar, Status } from './ui/Overlays.tsx';
@@ -41,7 +41,7 @@ export function App() {
       <Status />
       <Banner />
       {phase === 'faction' && <FactionPick />}
-      {phase === 'picker' && <Picker />}
+      {phase === 'drafting' && <DraftScreen />}
       {(phase === 'deploying' || phase === 'locking') && <DeployBar />}
       {phase === 'done' && <Result />}
       <Portraits />

@@ -14,6 +14,7 @@ import { battleApi, runApi } from './api.ts';
 import { authed, ensurePlayer } from './session.ts';
 import { CUSTOM, type GameData, type UnitLoadout } from './gamedata.ts';
 import { setRoster } from './units/looks.ts';
+import { done as draftDone, newDraft, pick as draftPick, tick as draftTick, type Draft, type DraftPlan } from './draft.ts';
 import { play as playSound } from './sound.ts';
 
 export const TICK_MS = 50;
@@ -22,10 +23,10 @@ const COUNTDOWN_MS = 1000;
 const FX = 65536;
 
 export type Float = { id: number; x: number; z: number; text: string; color: string; born: number };
-// loading → picker → starting → deploying → locking → countdown → fighting → done (result, picks or run over)
-export type Phase = 'loading' | 'faction' | 'picker' | 'starting' | 'deploying' | 'locking' | 'countdown' | 'fighting' | 'done';
-export type Counts = number[]; // per roster entry (sim class), veterans included; missing entries are 0
-export const total = (c: Counts) => c.reduce((a, n) => a + (n ?? 0), 0);
+// loading → faction (new run) → starting → drafting → deploying → locking → countdown → fighting → done (result, picks or run over)
+export type Phase = 'loading' | 'faction' | 'starting' | 'drafting' | 'deploying' | 'locking' | 'countdown' | 'fighting' | 'done';
+// A unit of Blue's army: sim class, abilities, and whether it's a veteran.
+export type ArmyUnit = { cls: number; skills: Skill[]; vet: boolean };
 type Pt = { x: number; z: number };
 export type { Run, ScoreRow };
 
@@ -38,7 +39,8 @@ type State = {
   phase: Phase;
   run?: Run;
   board?: GetScoreboardResponse;
-  counts: Counts;
+  army: ArmyUnit[]; // Blue's army for the current battle, in the order the server requires (veterans first)
+  draft?: Draft; // the draft in progress (phase drafting)
   formation: number; // sim.Formation; 0 = Custom
   positions?: Pt[]; // Custom: Blue's positions
   slots: Record<number, Pt[]>; // preset → positions for the current army (from the sim)
@@ -74,8 +76,9 @@ type State = {
   toggleFollow(): void;
   newRun(): Promise<void>; // to the faction screen
   startRun(faction: number): Promise<void>;
-  setCount(cls: number, delta: number): void;
-  toDeploy(): Promise<void>;
+  beginDraft(plan: DraftPlan): void; // the sim's draft for the battle arrived
+  draftPick(cls: number, skill: Skill): void;
+  retryDraft(): void;
   setFormation(f: number): void;
   beginDrag(index: number, at: Pt): void;
   dragTo(at: Pt): void;
@@ -94,45 +97,14 @@ let floatId = 0;
 let deployTimer: ReturnType<typeof setInterval> | undefined;
 const errMsg = (e: unknown) => (e as Error).message;
 
-const savedCounts = (): Counts => {
-  try {
-    const c = JSON.parse(localStorage.getItem('army') ?? '');
-    if (Array.isArray(c) && c.length >= 1 && c.every((n) => Number.isInteger(n) && n >= 0)) return c as Counts;
-  } catch { /* first visit or storage blocked */ }
-  return [2, 2, 1];
-};
-
 const savedQuality = (): 'high' | 'low' => {
   try { return localStorage.getItem('quality') === 'low' ? 'low' : 'high'; } catch { return 'high'; }
 };
 
-export const vetCounts = (run?: Run): Counts => {
-  const c: Counts = [];
-  for (const v of run?.veterans ?? []) c[v.unitClass - 1] = (c[v.unitClass - 1] ?? 0) + 1;
-  return Array.from(c, (n) => n ?? 0);
-};
-
-// A recruit's level-1 ability until the draft lets the player choose it:
-// picked at random but stable for the run, match and slot, so every view of
-// the army (deployment, lock, replay) agrees.
-function levelOne(run: Run | undefined, cls: number, nth: number): Skill {
-  let h = 2166136261;
-  for (const c of `${run?.id ?? ''}:${run?.match ?? 0}:${cls}:${nth}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
-  return ((h >>> 0) % ABILITIES) + 1;
-}
-const ABILITIES = 5; // abilities each unit type offers (sim MaxSkills)
-
 // The army in the order the server requires: veterans first (exactly as
-// stored), then recruits by class (level 1: one ability each). cls is the sim
-// class (roster index).
-export function armySpecs(s: { run?: Run; counts: Counts }): { cls: number; skills: Skill[]; vet: boolean }[] {
-  const vets = s.run?.veterans ?? [];
-  const out = vets.map((v: UnitSpec) => ({ cls: v.unitClass - 1, skills: [...v.skills], vet: true }));
-  const vc = vetCounts(s.run);
-  s.counts.forEach((n, cls) => { for (let i = vc[cls] ?? 0; i < (n ?? 0); i++) out.push({ cls, skills: [levelOne(s.run, cls, i)], vet: false }); });
-  return out;
-}
-export const armyClasses = (s: { run?: Run; counts: Counts }) => armySpecs(s).map((u) => u.cls);
+// stored), then the drafted recruits (level 1: one ability each).
+export const armySpecs = (s: { army: ArmyUnit[] }) => s.army;
+export const armyClasses = (s: { army: ArmyUnit[] }) => s.army.map((u) => u.cls);
 
 function blueArmy(s: State): Army {
   if (s.battle?.lockedBlue) return s.battle.lockedBlue; // replaying a locked battle after a reload
@@ -161,22 +133,11 @@ function inputBytes(s: State, combatSeed: bigint) {
 const preview = () => send({ type: 'preview', input: inputBytes(useBattle.getState(), 0n) });
 
 // Counts the picker should show: the remembered army, raised to cover the veterans.
-function pickerCounts(run?: Run): Counts {
-  const c = savedCounts(), v = vetCounts(run);
-  // a remembered army may name unit types this build's roster or the run's faction lacks: those slots just open up
-  const data = useBattle.getState().data;
-  const types = data?.classes.length ?? Math.max(c.length, v.length);
-  const fields = factionUnits(data, run);
-  const out: Counts = Array.from({ length: types }, (_, i) => Math.max(fields(i) ? c[i] ?? 0 : 0, v[i] ?? 0));
-  for (let i = out.length - 1; i >= 0; i--) while (out[i] > (v[i] ?? 0) && total(out) > 5) out[i]--; // trim newest types first
-  return out;
-}
-
-// Whether the run's faction fields a unit type (any type while the data is loading).
-export const factionUnits = (data: GameData | undefined, run: Run | undefined) => {
-  const f = data?.factions.find((x) => x.id === run?.faction);
-  return (cls: number) => !f || f.units.includes(cls);
-};
+// The unit types the run's faction fields.
+export const factionUnits = (data: GameData | undefined, run: Run | undefined) =>
+  data?.factions.find((x) => x.id === run?.faction)?.units ?? [];
+const ABILITIES = 5; // abilities each unit type offers (sim MaxSkills)
+let draftTimer: ReturnType<typeof setInterval> | undefined;
 
 export const useBattle = create<State>((set, get) => {
   const startDeployTimer = () => {
@@ -196,10 +157,34 @@ export const useBattle = create<State>((set, get) => {
       send({ type: 'start', input: inputBytes(get(), combatSeed) });
     }, COUNTDOWN_MS);
   };
-  const toPicker = (run: Run) => {
-    const counts = pickerCounts(run);
-    send({ type: 'slots', classes: armyClasses({ run, counts }) });
-    set({ run, phase: 'picker', counts, outcome: undefined, verdict: undefined, battle: undefined, picks: {}, board: undefined });
+  // Next match: start the battle (its map seed fixes Red's army and the draft
+  // order), then draft.
+  const toDraft = async (run: Run) => {
+    const { version } = get();
+    if (!version) return;
+    set({ run, phase: 'starting', army: [], draft: undefined, error: undefined, outcome: undefined, verdict: undefined, battle: undefined, picks: {}, board: undefined,
+      floats: [], positions: undefined, fog: undefined, selected: undefined, follow: false, curr: undefined, prev: undefined,
+      formation: get().formation === CUSTOM ? 2 : get().formation });
+    try {
+      const st = await authed(() => battleApi.startBattle({ simVersion: version, runId: run.id }));
+      requestDraft({ id: st.battleId, seed: st.seed, redSkillCount: st.redSkillCount, redHealthPct: st.redHealthPct });
+    } catch (e) {
+      set({ phase: 'drafting', error: `Couldn't start a battle: ${errMsg(e)}` });
+    }
+  };
+  // Ask the sim for the battle's draft (worker replies 'draft' → beginDraft).
+  const requestDraft = (battle: Battle) => {
+    set({ battle, phase: 'starting' });
+    send({ type: 'draft', seed: battle.seed.toString(), redSkills: battle.redSkillCount });
+  };
+  const finishDraft = () => {
+    clearInterval(draftTimer);
+    const d = get().draft;
+    if (!d) return;
+    set({ army: d.blue.map((u) => ({ cls: u.cls, skills: u.skills, vet: !!u.vet })), phase: 'deploying', positions: undefined });
+    send({ type: 'slots', classes: armyClasses(get()) });
+    preview();
+    startDeployTimer();
   };
   const showRunOver = async (run: Run) => {
     set({ run, phase: 'done' });
@@ -210,20 +195,18 @@ export const useBattle = create<State>((set, get) => {
     const b = run.battle;
     if (run.state === RunState.OVER) return showRunOver(run);
     if (run.state === RunState.PICKING) return set({ run, phase: 'done', picks: {} });
-    if (!b) return toPicker(run);
+    if (!b) return toDraft(run);
     const battle: Battle = { id: b.battleId, seed: b.seed, redSkillCount: b.redSkillCount, redHealthPct: b.redHealthPct };
     if (b.locked) { // replay the locked battle from tick 0, then verify it
       set({ run, battle: { ...battle, combatSeed: b.combatSeed, lockedBlue: b.blue }, fog: undefined, selected: undefined });
       return fight(b.combatSeed);
     }
-    set({ run, battle, counts: pickerCounts(run), formation: 2, positions: undefined, phase: 'deploying' });
-    send({ type: 'slots', classes: armyClasses(get()) });
-    preview();
-    startDeployTimer();
+    set({ run, formation: 2, positions: undefined }); // not locked yet: draft it again
+    requestDraft(battle);
   };
 
   return {
-    phase: 'loading', counts: savedCounts(), formation: 2 /* 3-2 */, slots: {}, deployLeft: DEPLOY_SECONDS,
+    phase: 'loading', army: [], formation: 2 /* 3-2 */, slots: {}, deployLeft: DEPLOY_SECONDS,
     obstacles: [], units: [], currAt: 0, speed: 1, floats: [], picks: {}, fogOn: true, follow: false,
     quality: savedQuality(), autoLowered: false, lowDpr: false, qualityChosen: false, tiltShift: false,
     setQuality(quality, auto = false) {
@@ -246,7 +229,7 @@ export const useBattle = create<State>((set, get) => {
         if (!run || run.state === RunState.OVER) return set({ phase: 'faction' });
         await resume(run);
       } catch (e) {
-        set({ phase: 'picker', error: `Couldn't reach the server: ${errMsg(e)}` });
+        set({ phase: 'faction', error: `Couldn't reach the server: ${errMsg(e)}` });
       }
     },
 
@@ -257,35 +240,36 @@ export const useBattle = create<State>((set, get) => {
     async startRun(faction) {
       try {
         const { run } = await authed(() => runApi.startRun({ faction }));
-        if (run) toPicker(run);
+        if (run) await toDraft(run);
       } catch (e) {
         set({ error: `Couldn't start a run: ${errMsg(e)}` });
       }
     },
 
-    setCount(cls, delta) {
-      const counts = Array.from({ length: Math.max(get().counts.length, cls + 1) }, (_, i) => get().counts[i] ?? 0);
-      if (delta > 0 && total(counts) >= (get().data?.armySize ?? 5)) return;
-      counts[cls] = Math.max(vetCounts(get().run)[cls] ?? 0, counts[cls] + delta); // veterans can't be dismissed
-      set({ counts });
-      send({ type: 'slots', classes: armyClasses(get()) });
+    beginDraft(plan: DraftPlan) {
+      const run = get().run;
+      if (get().phase !== 'starting' || !run) return;
+      const vets = (run.veterans ?? []).map((v: UnitSpec) => ({ cls: v.unitClass - 1, skills: [...v.skills] }));
+      set({ draft: newDraft(plan, vets, Date.now()), phase: 'drafting' });
+      clearInterval(draftTimer);
+      draftTimer = setInterval(() => {
+        const d = get().draft;
+        if (get().phase !== 'drafting' || !d) return clearInterval(draftTimer);
+        if (draftTick(d, Date.now(), factionUnits(get().data, get().run), ABILITIES)) set({ draft: { ...d } });
+        else if (draftDone(d)) finishDraft();
+        else set({ draft: { ...d } }); // the turn's countdown
+      }, 250);
     },
 
-    async toDeploy() {
-      const { version, run, counts } = get();
-      if (!version || !run) return;
-      try { localStorage.setItem('army', JSON.stringify(counts)); } catch { /* storage blocked */ }
-      send({ type: 'slots', classes: armyClasses(get()) });
-      set({ phase: 'starting', error: undefined, outcome: undefined, verdict: undefined, floats: [], positions: undefined, fog: undefined, selected: undefined, follow: false,
-        formation: get().formation === CUSTOM ? 2 : get().formation, curr: undefined, prev: undefined });
-      try {
-        const st = await authed(() => battleApi.startBattle({ simVersion: version, runId: run.id }));
-        set({ battle: { id: st.battleId, seed: st.seed, redSkillCount: st.redSkillCount, redHealthPct: st.redHealthPct }, phase: 'deploying' });
-        preview();
-        startDeployTimer();
-      } catch (e) {
-        set({ phase: 'picker', error: `Couldn't start a battle: ${errMsg(e)}` });
-      }
+    draftPick(cls, skill) {
+      const d = get().draft;
+      if (d && draftPick(d, cls, skill, Date.now())) set({ draft: { ...d } });
+    },
+
+    retryDraft() { // the battle if it was started, else a new one
+      const { run, battle } = get();
+      if (battle && !battle.combatSeed) requestDraft(battle);
+      else if (run) void toDraft(run);
     },
 
     setFormation(formation) {
@@ -324,7 +308,7 @@ export const useBattle = create<State>((set, get) => {
         set({ battle: { ...s.battle!, combatSeed: r.combatSeed } });
         fight(r.combatSeed);
       } catch (e) {
-        set({ phase: 'picker', error: `Couldn't lock the deployment: ${errMsg(e)}` });
+        set({ phase: 'drafting', draft: undefined, error: `Couldn't lock the deployment: ${errMsg(e)}` });
       }
     },
 
@@ -361,7 +345,7 @@ export const useBattle = create<State>((set, get) => {
       const run = get().run;
       if (!run) return;
       if (run.state === RunState.OVER) void get().newRun();
-      else if (run.state === RunState.READY) toPicker(run);
+      else if (run.state === RunState.READY) void toDraft(run);
     },
   };
 });
@@ -413,6 +397,12 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
       void useBattle.getState().init();
       break;
     case 'slots': useBattle.setState({ slots: m.slots }); break;
+    case 'draft': {
+      const plan = m.plan ? JSON.parse(m.plan) as DraftPlan : undefined;
+      if (plan) useBattle.getState().beginDraft(plan);
+      else useBattle.setState({ phase: 'drafting', error: 'The sim could not set up the draft' });
+      break;
+    }
     case 'fog': useBattle.setState({ fog: new Uint8Array(m.seen) }); break;
     case 'error': useBattle.setState({ error: m.message }); break;
     case 'started': {

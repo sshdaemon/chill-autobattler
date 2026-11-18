@@ -28,12 +28,12 @@ type Service struct {
 	DB           *store.DB
 	Runs         *run.Service
 	Now          func() time.Time
-	DeployWindow time.Duration // start → lock
+	DeployWindow time.Duration // start → lock: the draft (up to six 15 s turns) and deployment
 	VerifyWindow time.Duration // lock → verify
 }
 
 func NewService(db *store.DB, runs *run.Service) *Service {
-	return &Service{DB: db, Runs: runs, Now: time.Now, DeployWindow: 2 * time.Minute, VerifyWindow: 10 * time.Minute}
+	return &Service{DB: db, Runs: runs, Now: time.Now, DeployWindow: 3 * time.Minute, VerifyWindow: 10 * time.Minute}
 }
 
 func (s *Service) nowMs() int64 { return s.Now().UnixMilli() }
