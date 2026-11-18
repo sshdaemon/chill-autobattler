@@ -288,6 +288,29 @@ func (s *Service) PickSkills(ctx context.Context, req *chillv1.PickSkillsRequest
 	return &chillv1.PickSkillsResponse{Run: pr}, err
 }
 
+// SurrenderRun ends the player's active run (surrendered); its score stays on the board.
+func (s *Service) SurrenderRun(ctx context.Context, req *chillv1.SurrenderRunRequest) (*chillv1.SurrenderRunResponse, error) {
+	player, err := Player(ctx)
+	if err != nil {
+		return nil, err
+	}
+	r, err := s.Get(ctx, player, req.RunId)
+	if err != nil {
+		return nil, err
+	}
+	if r.State == Over {
+		return nil, connect.Errorf(connect.CodeFailedPrecondition, "run %s is already over", r.ID)
+	}
+	if err := s.DB.EndRun(ctx, store.EndRunParams{ID: r.ID, EndReason: sql.NullString{String: "surrendered", Valid: true}, Now: sql.NullInt64{Int64: s.nowMs(), Valid: true}}); err != nil {
+		return nil, err
+	}
+	if r, err = s.DB.GetRun(ctx, r.ID); err != nil {
+		return nil, err
+	}
+	pr, err := s.Proto(ctx, r)
+	return &chillv1.SurrenderRunResponse{Run: pr}, err
+}
+
 func (s *Service) GetScoreboard(ctx context.Context, _ *chillv1.GetScoreboardRequest) (*chillv1.GetScoreboardResponse, error) {
 	player, err := Player(ctx)
 	if err != nil {

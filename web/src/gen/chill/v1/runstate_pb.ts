@@ -133,7 +133,7 @@ export type Run = Message<"chill.v1.Run"> & {
   battle?: CurrentBattle | undefined;
 
   /**
-   * Set when over: defeat, draw, not fair, abandoned or restarted.
+   * Set when over: defeat, draw, not fair, abandoned, restarted or surrendered.
    *
    * @generated from field: string end_reason = 10;
    */

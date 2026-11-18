@@ -22,6 +22,8 @@ export function Banner() {
 // Run name · match · wins · points · Red's skills.
 export function RunBar() {
   const run = useBattle((s) => s.run);
+  const phase = useBattle((s) => s.phase);
+  const surrender = useBattle((s) => s.surrender);
   // the server eases a run's first matches; shown only while that battle is on
   const eased = useBattle((s) => (['deploying', 'locking', 'countdown', 'fighting'].includes(s.phase) ? s.battle?.redHealthPct ?? 0 : 0));
   if (!run) return null;
@@ -30,6 +32,10 @@ export function RunBar() {
       <b>{run.name}</b> · match {run.match} · {run.wins} win{run.wins === 1 ? '' : 's'} · <b>{run.score}</b> pts
       {run.redSkills > 0 && <span className="r"> · Red ★×{run.redSkills}</span>}
       {eased > 0 && <span className="dim" title="Red is weaker in a run's first matches"> · Red at {eased}% strength</span>}
+      {run.state !== RunState.OVER && phase !== 'faction' && phase !== 'loading' && (
+        <button className="surrender" title="End this run (its score stays on the board) and start a new one"
+          onClick={() => { if (window.confirm('Surrender this run and start a new one? Its score stays on the board.')) void surrender(); }}>Surrender</button>
+      )}
     </div>
   );
 }
@@ -92,7 +98,7 @@ function Scoreboard() {
 
 const REASON: Record<string, string> = {
   defeat: 'Defeated', draw: 'A draw ends the run', 'not fair': 'The server could not confirm the result',
-  abandoned: 'The battle was abandoned', restarted: 'Restarted',
+  abandoned: 'The battle was abandoned', restarted: 'Restarted', surrendered: 'You surrendered',
 };
 
 export function Result() {

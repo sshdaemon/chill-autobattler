@@ -36,18 +36,26 @@ func TestTargetRules(t *testing.T) {
 }
 
 func TestHoldWaitsForTrigger(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, V(0, I(8)), nil}, tu{1, Warrior, V(0, I(-1)), nil})
-	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(5)})
-	withTemper(b, 1, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(5)})
+	// two holding warriors that see each other 6 m apart, beyond their 4 m trigger
+	b := testBattle(nil, tu{0, Warrior, V(0, I(5)), nil}, tu{1, Warrior, V(0, I(-1)), nil})
+	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(4)})
+	withTemper(b, 1, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(4)})
 	start := b.Units[0].Pos
-	b.steps(40)
+	b.steps(HoldPatience / 2)
 	if b.Units[0].Pos != start {
-		t.Fatalf("a holding unit moved with its enemy 9 m away: %v", b.Units[0].Pos)
+		t.Fatalf("a holding unit moved toward an enemy beyond its trigger: %v", b.Units[0].Pos)
 	}
-	withTemper(b, 1, Temperament{Target: TargetNearest, Engage: EngageCharge})
-	b.steps(60)
-	if Dist(b.Units[0].Pos, b.Units[1].Pos) > I(3) {
-		t.Errorf("the holding unit should fight once the enemy comes within its trigger")
+	b.steps(HoldPatience + 60) // patience runs out: they meet
+	if b.Units[0].HP == b.Units[0].MaxHP && b.Units[1].HP == b.Units[1].MaxHP {
+		t.Errorf("two holding armies must still fight once their patience runs out")
+	}
+	// with nothing in sight it marches
+	b = testBattle(nil, tu{0, Warrior, V(0, I(8)), nil}, tu{1, Warrior, V(0, I(-12)), nil})
+	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(4)})
+	b.Units[1].busy = 1000 // the enemy stays put
+	b.steps(20)
+	if b.Units[0].Pos.Z >= I(8) {
+		t.Errorf("a holding unit with nothing in sight should march: z %v", b.Units[0].Pos.Z)
 	}
 }
 
@@ -75,22 +83,23 @@ func TestLineAndStayNear(t *testing.T) {
 	// a line unit with nothing in sight doesn't run ahead of its allies
 	b := testBattle(nil, tu{0, Warrior, V(0, 0), nil}, tu{0, Warrior, V(I(2), I(10)), nil}, tu{1, Warrior, V(0, I(-25)), nil})
 	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageLine})
-	b.Units[1].Temper = Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(1)} // the ally stays back
+	b.Units[1].busy = 1000 // the ally stays back
 	b.steps(30)
-	if b.Units[0].Target >= 0 || b.Units[0].Pos.Z < -Half {
+	if b.Units[0].Pos.Z < -LineSlack-Half { // it may get LineSlack further ahead than it stood, no more
 		t.Errorf("a line unit ran ahead of its ally: z %v (target %d)", b.Units[0].Pos.Z, b.Units[0].Target)
 	}
 	b.Units[1].Pos = V(I(2), I(-1)) // the ally moves up: the line follows
+	b.Units[1].busy = 1000
 	b.steps(20)
-	if b.Units[0].Pos.Z > -Half {
-		t.Errorf("with its ally level, a line unit should advance: z %v", b.Units[0].Pos.Z)
+	if b.Units[0].Pos.Z > -LineSlack-Half {
+		t.Errorf("with its ally moved up, a line unit should advance: z %v", b.Units[0].Pos.Z)
 	}
 	// a support unit stays behind its front line
 	b = testBattle(nil, tu{0, Mage, V(I(8), I(10)), nil}, tu{0, Warrior, V(0, I(5)), nil}, tu{1, Warrior, V(0, I(-25)), nil})
 	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageCharge, StayNear: TagMelee})
 	b.Units[1].Temper = Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(1)}
 	b.steps(60)
-	if d := Dist(b.Units[0].Pos, b.Units[1].Pos.Add(V(0, I(3)))); d > I(3) {
+	if d := Dist(b.Units[0].Pos, b.Units[1].Pos.Add(V(0, I(3)))); d > I(4) { // it follows as the front moves
 		t.Errorf("stay near melee: %v m from its spot behind the front line", d)
 	}
 }

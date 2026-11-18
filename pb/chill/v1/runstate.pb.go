@@ -197,7 +197,7 @@ type Run struct {
 	// Indexes into veterans that owe a pick (state PICKING).
 	OwedPicks []uint32       `protobuf:"varint,8,rep,packed,name=owed_picks,json=owedPicks,proto3" json:"owed_picks,omitempty"`
 	Battle    *CurrentBattle `protobuf:"bytes,9,opt,name=battle,proto3" json:"battle,omitempty"`
-	// Set when over: defeat, draw, not fair, abandoned or restarted.
+	// Set when over: defeat, draw, not fair, abandoned, restarted or surrendered.
 	EndReason string `protobuf:"bytes,10,opt,name=end_reason,json=endReason,proto3" json:"end_reason,omitempty"`
 	// Total skills of the veterans: Red's skill count for the next match.
 	RedSkills uint32 `protobuf:"varint,11,opt,name=red_skills,json=redSkills,proto3" json:"red_skills,omitempty"`

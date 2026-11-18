@@ -22,7 +22,10 @@ type Unit struct {
 	Slowed   bool
 	Swinging bool
 
-	cd, busy, retarget, slow, fear int  // tick counters
+	cd, busy, retarget, slow, fear int // tick counters
+	held                           int // ticks a holding unit has waited for an enemy
+	lineAhead                      Fx  // EngageLine: how far ahead of its allies' centre it stood at the start
+	lineSet                        bool
 	fearFrom                       Vec  // where dread drives it away from
 	mods                           mods // this tick's modifiers (mods.go)
 	buffs                          []buff

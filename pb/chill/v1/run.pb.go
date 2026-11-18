@@ -21,6 +21,94 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type SurrenderRunRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RunId         string                 `protobuf:"bytes,1,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SurrenderRunRequest) Reset() {
+	*x = SurrenderRunRequest{}
+	mi := &file_chill_v1_run_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SurrenderRunRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SurrenderRunRequest) ProtoMessage() {}
+
+func (x *SurrenderRunRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_run_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SurrenderRunRequest.ProtoReflect.Descriptor instead.
+func (*SurrenderRunRequest) Descriptor() ([]byte, []int) {
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *SurrenderRunRequest) GetRunId() string {
+	if x != nil {
+		return x.RunId
+	}
+	return ""
+}
+
+type SurrenderRunResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Run           *Run                   `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SurrenderRunResponse) Reset() {
+	*x = SurrenderRunResponse{}
+	mi := &file_chill_v1_run_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SurrenderRunResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SurrenderRunResponse) ProtoMessage() {}
+
+func (x *SurrenderRunResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_run_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SurrenderRunResponse.ProtoReflect.Descriptor instead.
+func (*SurrenderRunResponse) Descriptor() ([]byte, []int) {
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *SurrenderRunResponse) GetRun() *Run {
+	if x != nil {
+		return x.Run
+	}
+	return nil
+}
+
 type CreatePlayerRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -29,7 +117,7 @@ type CreatePlayerRequest struct {
 
 func (x *CreatePlayerRequest) Reset() {
 	*x = CreatePlayerRequest{}
-	mi := &file_chill_v1_run_proto_msgTypes[0]
+	mi := &file_chill_v1_run_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -41,7 +129,7 @@ func (x *CreatePlayerRequest) String() string {
 func (*CreatePlayerRequest) ProtoMessage() {}
 
 func (x *CreatePlayerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[0]
+	mi := &file_chill_v1_run_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54,7 +142,7 @@ func (x *CreatePlayerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePlayerRequest.ProtoReflect.Descriptor instead.
 func (*CreatePlayerRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{0}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{2}
 }
 
 type CreatePlayerResponse struct {
@@ -66,7 +154,7 @@ type CreatePlayerResponse struct {
 
 func (x *CreatePlayerResponse) Reset() {
 	*x = CreatePlayerResponse{}
-	mi := &file_chill_v1_run_proto_msgTypes[1]
+	mi := &file_chill_v1_run_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -78,7 +166,7 @@ func (x *CreatePlayerResponse) String() string {
 func (*CreatePlayerResponse) ProtoMessage() {}
 
 func (x *CreatePlayerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[1]
+	mi := &file_chill_v1_run_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -91,7 +179,7 @@ func (x *CreatePlayerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePlayerResponse.ProtoReflect.Descriptor instead.
 func (*CreatePlayerResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{1}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreatePlayerResponse) GetPlayerToken() string {
@@ -110,7 +198,7 @@ type StartRunRequest struct {
 
 func (x *StartRunRequest) Reset() {
 	*x = StartRunRequest{}
-	mi := &file_chill_v1_run_proto_msgTypes[2]
+	mi := &file_chill_v1_run_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -122,7 +210,7 @@ func (x *StartRunRequest) String() string {
 func (*StartRunRequest) ProtoMessage() {}
 
 func (x *StartRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[2]
+	mi := &file_chill_v1_run_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -135,7 +223,7 @@ func (x *StartRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartRunRequest.ProtoReflect.Descriptor instead.
 func (*StartRunRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{2}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *StartRunRequest) GetFaction() uint32 {
@@ -154,7 +242,7 @@ type StartRunResponse struct {
 
 func (x *StartRunResponse) Reset() {
 	*x = StartRunResponse{}
-	mi := &file_chill_v1_run_proto_msgTypes[3]
+	mi := &file_chill_v1_run_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -166,7 +254,7 @@ func (x *StartRunResponse) String() string {
 func (*StartRunResponse) ProtoMessage() {}
 
 func (x *StartRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[3]
+	mi := &file_chill_v1_run_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -179,7 +267,7 @@ func (x *StartRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartRunResponse.ProtoReflect.Descriptor instead.
 func (*StartRunResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{3}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *StartRunResponse) GetRun() *Run {
@@ -197,7 +285,7 @@ type GetRunRequest struct {
 
 func (x *GetRunRequest) Reset() {
 	*x = GetRunRequest{}
-	mi := &file_chill_v1_run_proto_msgTypes[4]
+	mi := &file_chill_v1_run_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -209,7 +297,7 @@ func (x *GetRunRequest) String() string {
 func (*GetRunRequest) ProtoMessage() {}
 
 func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[4]
+	mi := &file_chill_v1_run_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -222,7 +310,7 @@ func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunRequest.ProtoReflect.Descriptor instead.
 func (*GetRunRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{4}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{6}
 }
 
 type GetRunResponse struct {
@@ -235,7 +323,7 @@ type GetRunResponse struct {
 
 func (x *GetRunResponse) Reset() {
 	*x = GetRunResponse{}
-	mi := &file_chill_v1_run_proto_msgTypes[5]
+	mi := &file_chill_v1_run_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -247,7 +335,7 @@ func (x *GetRunResponse) String() string {
 func (*GetRunResponse) ProtoMessage() {}
 
 func (x *GetRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[5]
+	mi := &file_chill_v1_run_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -260,7 +348,7 @@ func (x *GetRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunResponse.ProtoReflect.Descriptor instead.
 func (*GetRunResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{5}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetRunResponse) GetRun() *Run {
@@ -280,7 +368,7 @@ type SkillPick struct {
 
 func (x *SkillPick) Reset() {
 	*x = SkillPick{}
-	mi := &file_chill_v1_run_proto_msgTypes[6]
+	mi := &file_chill_v1_run_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -292,7 +380,7 @@ func (x *SkillPick) String() string {
 func (*SkillPick) ProtoMessage() {}
 
 func (x *SkillPick) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[6]
+	mi := &file_chill_v1_run_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -305,7 +393,7 @@ func (x *SkillPick) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillPick.ProtoReflect.Descriptor instead.
 func (*SkillPick) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{6}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SkillPick) GetVeteran() uint32 {
@@ -332,7 +420,7 @@ type PickSkillsRequest struct {
 
 func (x *PickSkillsRequest) Reset() {
 	*x = PickSkillsRequest{}
-	mi := &file_chill_v1_run_proto_msgTypes[7]
+	mi := &file_chill_v1_run_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -344,7 +432,7 @@ func (x *PickSkillsRequest) String() string {
 func (*PickSkillsRequest) ProtoMessage() {}
 
 func (x *PickSkillsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[7]
+	mi := &file_chill_v1_run_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -357,7 +445,7 @@ func (x *PickSkillsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PickSkillsRequest.ProtoReflect.Descriptor instead.
 func (*PickSkillsRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{7}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *PickSkillsRequest) GetRunId() string {
@@ -383,7 +471,7 @@ type PickSkillsResponse struct {
 
 func (x *PickSkillsResponse) Reset() {
 	*x = PickSkillsResponse{}
-	mi := &file_chill_v1_run_proto_msgTypes[8]
+	mi := &file_chill_v1_run_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -395,7 +483,7 @@ func (x *PickSkillsResponse) String() string {
 func (*PickSkillsResponse) ProtoMessage() {}
 
 func (x *PickSkillsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[8]
+	mi := &file_chill_v1_run_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -408,7 +496,7 @@ func (x *PickSkillsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PickSkillsResponse.ProtoReflect.Descriptor instead.
 func (*PickSkillsResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{8}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *PickSkillsResponse) GetRun() *Run {
@@ -426,7 +514,7 @@ type GetScoreboardRequest struct {
 
 func (x *GetScoreboardRequest) Reset() {
 	*x = GetScoreboardRequest{}
-	mi := &file_chill_v1_run_proto_msgTypes[9]
+	mi := &file_chill_v1_run_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -438,7 +526,7 @@ func (x *GetScoreboardRequest) String() string {
 func (*GetScoreboardRequest) ProtoMessage() {}
 
 func (x *GetScoreboardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[9]
+	mi := &file_chill_v1_run_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -451,7 +539,7 @@ func (x *GetScoreboardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetScoreboardRequest.ProtoReflect.Descriptor instead.
 func (*GetScoreboardRequest) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{9}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{11}
 }
 
 type ScoreRow struct {
@@ -467,7 +555,7 @@ type ScoreRow struct {
 
 func (x *ScoreRow) Reset() {
 	*x = ScoreRow{}
-	mi := &file_chill_v1_run_proto_msgTypes[10]
+	mi := &file_chill_v1_run_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -479,7 +567,7 @@ func (x *ScoreRow) String() string {
 func (*ScoreRow) ProtoMessage() {}
 
 func (x *ScoreRow) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[10]
+	mi := &file_chill_v1_run_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -492,7 +580,7 @@ func (x *ScoreRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScoreRow.ProtoReflect.Descriptor instead.
 func (*ScoreRow) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{10}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ScoreRow) GetRank() uint32 {
@@ -541,7 +629,7 @@ type GetScoreboardResponse struct {
 
 func (x *GetScoreboardResponse) Reset() {
 	*x = GetScoreboardResponse{}
-	mi := &file_chill_v1_run_proto_msgTypes[11]
+	mi := &file_chill_v1_run_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -553,7 +641,7 @@ func (x *GetScoreboardResponse) String() string {
 func (*GetScoreboardResponse) ProtoMessage() {}
 
 func (x *GetScoreboardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chill_v1_run_proto_msgTypes[11]
+	mi := &file_chill_v1_run_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -566,7 +654,7 @@ func (x *GetScoreboardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetScoreboardResponse.ProtoReflect.Descriptor instead.
 func (*GetScoreboardResponse) Descriptor() ([]byte, []int) {
-	return file_chill_v1_run_proto_rawDescGZIP(), []int{11}
+	return file_chill_v1_run_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetScoreboardResponse) GetTop() []*ScoreRow {
@@ -594,7 +682,11 @@ var File_chill_v1_run_proto protoreflect.FileDescriptor
 
 const file_chill_v1_run_proto_rawDesc = "" +
 	"\n" +
-	"\x12chill/v1/run.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\"\x15\n" +
+	"\x12chill/v1/run.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\",\n" +
+	"\x13SurrenderRunRequest\x12\x15\n" +
+	"\x06run_id\x18\x01 \x01(\tR\x05runId\"7\n" +
+	"\x14SurrenderRunResponse\x12\x1f\n" +
+	"\x03run\x18\x01 \x01(\v2\r.chill.v1.RunR\x03run\"\x15\n" +
 	"\x13CreatePlayerRequest\"9\n" +
 	"\x14CreatePlayerResponse\x12!\n" +
 	"\fplayer_token\x18\x01 \x01(\tR\vplayerToken\"+\n" +
@@ -624,7 +716,7 @@ const file_chill_v1_run_proto_rawDesc = "" +
 	"\x03top\x18\x01 \x03(\v2\x12.chill.v1.ScoreRowR\x03top\x12 \n" +
 	"\fmy_best_rank\x18\x02 \x01(\rR\n" +
 	"myBestRank\x12\"\n" +
-	"\rmy_best_score\x18\x03 \x01(\rR\vmyBestScore2\xf6\x02\n" +
+	"\rmy_best_score\x18\x03 \x01(\rR\vmyBestScore2\xc5\x03\n" +
 	"\n" +
 	"RunService\x12M\n" +
 	"\fCreatePlayer\x12\x1d.chill.v1.CreatePlayerRequest\x1a\x1e.chill.v1.CreatePlayerResponse\x12A\n" +
@@ -632,7 +724,8 @@ const file_chill_v1_run_proto_rawDesc = "" +
 	"\x06GetRun\x12\x17.chill.v1.GetRunRequest\x1a\x18.chill.v1.GetRunResponse\x12G\n" +
 	"\n" +
 	"PickSkills\x12\x1b.chill.v1.PickSkillsRequest\x1a\x1c.chill.v1.PickSkillsResponse\x12P\n" +
-	"\rGetScoreboard\x12\x1e.chill.v1.GetScoreboardRequest\x1a\x1f.chill.v1.GetScoreboardResponseBt\n" +
+	"\rGetScoreboard\x12\x1e.chill.v1.GetScoreboardRequest\x1a\x1f.chill.v1.GetScoreboardResponse\x12M\n" +
+	"\fSurrenderRun\x12\x1d.chill.v1.SurrenderRunRequest\x1a\x1e.chill.v1.SurrenderRunResponseBt\n" +
 	"\fcom.chill.v1B\bRunProtoP\x01Z\x19chill/pb/chill/v1;chillv1\xa2\x02\x03CXX\xaa\x02\bChill.V1\xca\x02\bChill\\V1\xe2\x02\x14Chill\\V1\\GPBMetadata\xea\x02\tChill::V1b\x06proto3"
 
 var (
@@ -647,43 +740,48 @@ func file_chill_v1_run_proto_rawDescGZIP() []byte {
 	return file_chill_v1_run_proto_rawDescData
 }
 
-var file_chill_v1_run_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_chill_v1_run_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_chill_v1_run_proto_goTypes = []any{
-	(*CreatePlayerRequest)(nil),   // 0: chill.v1.CreatePlayerRequest
-	(*CreatePlayerResponse)(nil),  // 1: chill.v1.CreatePlayerResponse
-	(*StartRunRequest)(nil),       // 2: chill.v1.StartRunRequest
-	(*StartRunResponse)(nil),      // 3: chill.v1.StartRunResponse
-	(*GetRunRequest)(nil),         // 4: chill.v1.GetRunRequest
-	(*GetRunResponse)(nil),        // 5: chill.v1.GetRunResponse
-	(*SkillPick)(nil),             // 6: chill.v1.SkillPick
-	(*PickSkillsRequest)(nil),     // 7: chill.v1.PickSkillsRequest
-	(*PickSkillsResponse)(nil),    // 8: chill.v1.PickSkillsResponse
-	(*GetScoreboardRequest)(nil),  // 9: chill.v1.GetScoreboardRequest
-	(*ScoreRow)(nil),              // 10: chill.v1.ScoreRow
-	(*GetScoreboardResponse)(nil), // 11: chill.v1.GetScoreboardResponse
-	(*Run)(nil),                   // 12: chill.v1.Run
+	(*SurrenderRunRequest)(nil),   // 0: chill.v1.SurrenderRunRequest
+	(*SurrenderRunResponse)(nil),  // 1: chill.v1.SurrenderRunResponse
+	(*CreatePlayerRequest)(nil),   // 2: chill.v1.CreatePlayerRequest
+	(*CreatePlayerResponse)(nil),  // 3: chill.v1.CreatePlayerResponse
+	(*StartRunRequest)(nil),       // 4: chill.v1.StartRunRequest
+	(*StartRunResponse)(nil),      // 5: chill.v1.StartRunResponse
+	(*GetRunRequest)(nil),         // 6: chill.v1.GetRunRequest
+	(*GetRunResponse)(nil),        // 7: chill.v1.GetRunResponse
+	(*SkillPick)(nil),             // 8: chill.v1.SkillPick
+	(*PickSkillsRequest)(nil),     // 9: chill.v1.PickSkillsRequest
+	(*PickSkillsResponse)(nil),    // 10: chill.v1.PickSkillsResponse
+	(*GetScoreboardRequest)(nil),  // 11: chill.v1.GetScoreboardRequest
+	(*ScoreRow)(nil),              // 12: chill.v1.ScoreRow
+	(*GetScoreboardResponse)(nil), // 13: chill.v1.GetScoreboardResponse
+	(*Run)(nil),                   // 14: chill.v1.Run
 }
 var file_chill_v1_run_proto_depIdxs = []int32{
-	12, // 0: chill.v1.StartRunResponse.run:type_name -> chill.v1.Run
-	12, // 1: chill.v1.GetRunResponse.run:type_name -> chill.v1.Run
-	6,  // 2: chill.v1.PickSkillsRequest.picks:type_name -> chill.v1.SkillPick
-	12, // 3: chill.v1.PickSkillsResponse.run:type_name -> chill.v1.Run
-	10, // 4: chill.v1.GetScoreboardResponse.top:type_name -> chill.v1.ScoreRow
-	0,  // 5: chill.v1.RunService.CreatePlayer:input_type -> chill.v1.CreatePlayerRequest
-	2,  // 6: chill.v1.RunService.StartRun:input_type -> chill.v1.StartRunRequest
-	4,  // 7: chill.v1.RunService.GetRun:input_type -> chill.v1.GetRunRequest
-	7,  // 8: chill.v1.RunService.PickSkills:input_type -> chill.v1.PickSkillsRequest
-	9,  // 9: chill.v1.RunService.GetScoreboard:input_type -> chill.v1.GetScoreboardRequest
-	1,  // 10: chill.v1.RunService.CreatePlayer:output_type -> chill.v1.CreatePlayerResponse
-	3,  // 11: chill.v1.RunService.StartRun:output_type -> chill.v1.StartRunResponse
-	5,  // 12: chill.v1.RunService.GetRun:output_type -> chill.v1.GetRunResponse
-	8,  // 13: chill.v1.RunService.PickSkills:output_type -> chill.v1.PickSkillsResponse
-	11, // 14: chill.v1.RunService.GetScoreboard:output_type -> chill.v1.GetScoreboardResponse
-	10, // [10:15] is the sub-list for method output_type
-	5,  // [5:10] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	14, // 0: chill.v1.SurrenderRunResponse.run:type_name -> chill.v1.Run
+	14, // 1: chill.v1.StartRunResponse.run:type_name -> chill.v1.Run
+	14, // 2: chill.v1.GetRunResponse.run:type_name -> chill.v1.Run
+	8,  // 3: chill.v1.PickSkillsRequest.picks:type_name -> chill.v1.SkillPick
+	14, // 4: chill.v1.PickSkillsResponse.run:type_name -> chill.v1.Run
+	12, // 5: chill.v1.GetScoreboardResponse.top:type_name -> chill.v1.ScoreRow
+	2,  // 6: chill.v1.RunService.CreatePlayer:input_type -> chill.v1.CreatePlayerRequest
+	4,  // 7: chill.v1.RunService.StartRun:input_type -> chill.v1.StartRunRequest
+	6,  // 8: chill.v1.RunService.GetRun:input_type -> chill.v1.GetRunRequest
+	9,  // 9: chill.v1.RunService.PickSkills:input_type -> chill.v1.PickSkillsRequest
+	11, // 10: chill.v1.RunService.GetScoreboard:input_type -> chill.v1.GetScoreboardRequest
+	0,  // 11: chill.v1.RunService.SurrenderRun:input_type -> chill.v1.SurrenderRunRequest
+	3,  // 12: chill.v1.RunService.CreatePlayer:output_type -> chill.v1.CreatePlayerResponse
+	5,  // 13: chill.v1.RunService.StartRun:output_type -> chill.v1.StartRunResponse
+	7,  // 14: chill.v1.RunService.GetRun:output_type -> chill.v1.GetRunResponse
+	10, // 15: chill.v1.RunService.PickSkills:output_type -> chill.v1.PickSkillsResponse
+	13, // 16: chill.v1.RunService.GetScoreboard:output_type -> chill.v1.GetScoreboardResponse
+	1,  // 17: chill.v1.RunService.SurrenderRun:output_type -> chill.v1.SurrenderRunResponse
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_chill_v1_run_proto_init() }
@@ -698,7 +796,7 @@ func file_chill_v1_run_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_chill_v1_run_proto_rawDesc), len(file_chill_v1_run_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

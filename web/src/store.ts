@@ -76,6 +76,7 @@ type State = {
   toggleFollow(): void;
   newRun(): Promise<void>; // to the faction screen
   startRun(faction: number): Promise<void>;
+  surrender(): Promise<void>; // end the active run (score kept) and go to the faction screen
   beginDraft(plan: DraftPlan): void; // the sim's draft for the battle arrived
   draftPick(cls: number, skill: Skill): void;
   retryDraft(): void;
@@ -235,6 +236,20 @@ export const useBattle = create<State>((set, get) => {
 
     async newRun() {
       set({ phase: 'faction', run: undefined, outcome: undefined, verdict: undefined, battle: undefined, board: undefined, error: undefined });
+    },
+
+    async surrender() {
+      const run = get().run;
+      if (!run || run.state === RunState.OVER) return get().newRun();
+      clearInterval(deployTimer);
+      clearInterval(draftTimer);
+      send({ type: 'stop' });
+      try {
+        await authed(() => runApi.surrenderRun({ runId: run.id }));
+        await get().newRun();
+      } catch (e) {
+        set({ error: `Couldn't surrender: ${errMsg(e)}` });
+      }
     },
 
     async startRun(faction) {
