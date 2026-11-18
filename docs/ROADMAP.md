@@ -287,6 +287,11 @@ be built without touching shared code.
 
 ## Phase 4: units (parallel, one session per unit)
 
+Progress: **Kyivan Rus done and playable** (druzhynnyk #64, strilets #66,
+huslyar #65, guard and brace effects #63, faction made playable after them).
+Red now draws Classic or Rus. Next: Varangians, then Romans, one faction at a
+time.
+
 Each unit goes through `/new-unit`: brief, design checkpoint with the user,
 roster file, look, golden case, balance band, previews, PR. Suggested waves,
 so each faction is playable early:

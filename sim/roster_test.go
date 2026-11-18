@@ -10,8 +10,17 @@ func TestRosterIsValid(t *testing.T) {
 	if err := ValidateRoster(Roster); err != nil {
 		t.Fatal(err)
 	}
-	if got := RedPool(); len(got) != 3 || got[0] != Warrior || got[1] != Archer || got[2] != Mage {
-		t.Errorf("red pool %v, want warrior, archer, mage", got)
+	var want []Class // the playable factions' units in Red's pool, in roster order
+	for _, d := range Roster {
+		for _, f := range Factions {
+			if f.Playable && f.Has(d.ID) && d.InRedPool {
+				want = append(want, d.ID)
+				break
+			}
+		}
+	}
+	if got := RedPool(); len(got) < 3 || got[0] != Warrior || got[1] != Archer || got[2] != Mage || len(got) != len(want) {
+		t.Errorf("red pool %v, want %v", got, want)
 	}
 }
 
