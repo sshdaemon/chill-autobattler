@@ -39,15 +39,6 @@ const (
 
 // EffectKind ids are in ids.go.
 
-var effectNames = [...]string{"", "statBonus", "finisher", "slowOnHit", "splashOnHit", "gapCloser", "escape", "overCover"}
-
-func (k EffectKind) String() string {
-	if int(k) < len(effectNames) {
-		return effectNames[k]
-	}
-	return fmt.Sprintf("effect(%d)", k)
-}
-
 type StatKind uint8
 
 const (
@@ -216,7 +207,7 @@ func validateEntries(r []UnitDef) error {
 		if d.InRedPool {
 			pool++
 		}
-		var kinds [len(effectNames)]bool
+		var kinds [len(effectKinds)]bool
 		for si, s := range d.Skills {
 			if s.Name == "" || len(s.Effects) == 0 {
 				return fail("skill %d: needs a name and at least one effect (five skills per unit)", si+1)
@@ -225,7 +216,7 @@ func validateEntries(r []UnitDef) error {
 				return fail("skill %s is numbered %d, want %d (skills are numbered 1..%d in order)", s.Name, s.Skill, si+1, MaxSkills)
 			}
 			for _, e := range s.Effects {
-				if err := checkEffect(e); err != nil {
+				if err := checkEffect(e, &d); err != nil {
 					return fail("skill %s: %v", s.Name, err)
 				}
 				if e.Kind != StatBonus {
@@ -234,57 +225,11 @@ func validateEntries(r []UnitDef) error {
 					}
 					kinds[e.Kind] = true
 				}
-				if (e.Kind == SlowOnHit || e.Kind == SplashOnHit || e.Kind == OverCover) && !st.Ranged {
-					return fail("%v needs a ranged unit (it acts on projectiles)", e.Kind)
-				}
 			}
 		}
 	}
 	if pool == 0 {
 		return fmt.Errorf("no roster entry is in Red's pool")
-	}
-	return nil
-}
-
-func checkEffect(e Effect) error {
-	pct := func(lo, hi int) error {
-		if e.Pct < lo || e.Pct > hi {
-			return fmt.Errorf("%v: %d%% outside %d..%d", e.Kind, e.Pct, lo, hi)
-		}
-		return nil
-	}
-	switch e.Kind {
-	case StatBonus:
-		if e.Stat == StatAttackSpeed {
-			return pct(1, 100)
-		}
-		if e.Stat < StatHP || e.Stat > StatAttackSpeed {
-			return fmt.Errorf("stat bonus on unknown stat %d", e.Stat)
-		}
-		return pct(-90, 400)
-	case Finisher:
-		return pct(1, 100)
-	case SlowOnHit:
-		if e.Ticks <= 0 || e.Factor <= 0 || e.Factor >= One {
-			return fmt.Errorf("slow needs ticks > 0 and a factor in (0, 1)")
-		}
-		return pct(1, 100)
-	case SplashOnHit:
-		if e.Radius <= 0 {
-			return fmt.Errorf("splash needs a radius")
-		}
-		return pct(1, 100)
-	case GapCloser:
-		if e.Value <= 0 || e.Speed <= 0 || e.Ticks <= 0 {
-			return fmt.Errorf("gap-closer needs reach, speed and cooldown")
-		}
-	case Escape:
-		if e.Value <= 0 || e.Radius <= 0 || e.Ticks <= 0 {
-			return fmt.Errorf("escape needs distance, threat radius and cooldown")
-		}
-	case OverCover:
-	default:
-		return fmt.Errorf("unknown effect kind %d", e.Kind)
 	}
 	return nil
 }

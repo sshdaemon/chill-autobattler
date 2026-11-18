@@ -103,8 +103,8 @@ func TestDataOnlyUnit(t *testing.T) {
 	withRoster(t, testRanger)
 	ranger := Class(len(Roster) - 1)
 	u := newUnit(0, 0, UnitSpec{Class: ranger, Skills: []Skill{3, 2}}, Vec{})
-	if u.MaxHP != I(105) || u.kit.slow == nil || u.kit.slow.Factor != Half {
-		t.Fatalf("loadout: hp %v slow %+v", u.MaxHP, u.kit.slow)
+	if sl := u.effect(SlowOnHit); u.MaxHP != I(105) || sl == nil || sl.e.Factor != Half {
+		t.Fatalf("loadout: hp %v slow %+v", u.MaxHP, sl)
 	}
 	if m := MatchupOf(&Roster[Warrior], &Roster[ranger]); m != Ratio(145, 100) {
 		t.Errorf("warrior vs a ranged-tagged unit: %v, want 1.45", m)

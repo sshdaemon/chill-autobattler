@@ -105,7 +105,14 @@ Original plan:
   dropped with a version bump, since there are no players to keep).
 - Effect kind ids: explicit numbers in `sim/ids.go`, allocated like unit ids.
 
-**0.3 Effects as plug-ins** (no outcome change)
+**0.3 Effects as plug-ins** (no outcome change) — done
+- As built: `sim/effects.go` (registry, hooks, loadout) and one file per kind
+  (`effect_stat.go`, `effect_finisher.go`, `effect_slow.go`, `effect_splash.go`,
+  `effect_gapcloser.go`, `effect_escape.go`, `effect_overcover.go`), each with
+  its own check. Cooldowns live on the learned effect, not the unit. Every
+  golden replay is unchanged, under the same version.
+
+Original plan:
 - Each effect kind lives in its own file, `sim/effect_<name>.go`, implementing a
   small interface: check its numbers, fold into the unit's loadout, and hooks the
   battle calls in a fixed order (before acting, on hit, on being hit, on death of
