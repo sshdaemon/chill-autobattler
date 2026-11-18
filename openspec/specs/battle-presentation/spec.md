@@ -18,7 +18,7 @@ Each unit SHALL be drawn as a character assembled from one of its class's recipe
 
 ### Requirement: Animation follows the sim
 Each unit's animation SHALL follow its state in the latest sim snapshot, using the animation set of its look (unit-looks):
-- walking → move; dashing → the gap-closer's action animation if it has one, otherwise a faster move;
+- walking → its walk and move clips, blended and played so the stride covers the unit's ground speed, with the body shifted so the lowest sole touches the floor; dashing → the gap-closer's action animation if it has one, otherwise its sprint clip at the dash's speed;
 - attacking → one of its attack variants, or its skill's attack animation, timed so the blow lands with the sim's hit;
 - staggered → hit reaction;
 - dead → death, held on the last frame;
@@ -41,6 +41,18 @@ When the battle ends, the winning side's survivors SHALL cheer.
 #### Scenario: Blink
 - **WHEN** a mage blinks
 - **THEN** it plays Blink's action animation where it lands
+
+#### Scenario: Feet don't slide
+- **WHEN** a unit walks at any speed the sim gives it (3.0–5.0 m/s on dry ground, slower in water, frost or a sharp turn)
+- **THEN** its planted foot moves backwards at the unit's ground speed within 10%, so the foot stays put on the ground
+
+#### Scenario: Slowing down
+- **WHEN** a frozen archer moves at 60% of its speed
+- **THEN** its legs shift towards a walk and slow down with it, rather than jogging in slow motion
+
+#### Scenario: Feet stay on the floor while moving
+- **WHEN** a unit walks or runs at any speed from 1 to 4.5 m/s
+- **THEN** its lowest sole stays within 2 cm of the floor through the whole stride, rather than floating during the walk–jog blend or the jog's airborne phase
 
 ### Requirement: Projectiles look like what they are
 Arrows SHALL be drawn as arrows pointing along their flight path, higher for Arcing shot. Magic bolts SHALL be drawn as glowing orbs flying straight.
