@@ -1,0 +1,15 @@
+{
+  "huskarl.sweep": [
+    { "type": "sparks", "n": 12, "color": [2.8, 2.4, 1.8], "speed": 5 },
+    { "type": "dust", "n": 6, "size": 0.7, "up": 0.5 }
+  ],
+  "huskarl.charge": [
+    { "type": "dust", "n": 14, "size": 1.1, "up": 0.9 },
+    { "type": "shake", "amount": 0.08 }
+  ],
+  "huskarl.execute": [
+    { "type": "burst", "pool": "glow", "n": 26, "y": 1.1, "color": [3, 0.45, 0.35], "speed": 4, "size": 0.42, "life": 0.6, "grav": -5 },
+    { "type": "sparks", "n": 10, "color": [2.8, 2.4, 1.8], "speed": 5 },
+    { "type": "shake", "amount": 0.3 }
+  ]
+}
