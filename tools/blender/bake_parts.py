@@ -586,8 +586,67 @@ def model_items():
         o.data.materials.append(gband)
     export('Spangenhelm', [sbowl, brow, knob, snasal] + crosses + eyes)
 
+    # völva: an iron staff of the seeresses' graves (Fyrkat, Oseberg): a thin
+    # iron rod, grip at the origin and up along +Y like the spear, with a cage
+    # of bowed iron strips bound by rings near the top and a small knob.
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    iron = mat('MI_VolvaIron', lin(0x3b3d40), 0.55, 0.75)
+    bronze = mat('MI_VolvaBronze', lin(0x8a6a35), 0.45, 0.8)
+
+    def vrod(a, b, r, m, verts=6):
+        a, b = Vector(a), Vector(b)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=r, depth=(b - a).length, location=(a + b) / 2)
+        o = bpy.context.object
+        o.rotation_mode = 'QUATERNION'; o.rotation_quaternion = (b - a).to_track_quat('Z', 'Y')
+        o.data.materials.append(m)
+        return o
+
+    staff = [vrod((0, 0, -0.85), (0, 0, 1.17), 0.013, iron, 8)]
+    lo, hi, bulge = 0.89, 1.15, 0.05
+    for k in range(6):  # the cage: each strip bows out through three segments
+        a = math.radians(60 * k)
+        c, sn = math.cos(a), math.sin(a)
+        pts = [(0.014 * c, 0.014 * sn, lo), (bulge * c, bulge * sn, lo + 0.07), (bulge * c, bulge * sn, hi - 0.07), (0.014 * c, 0.014 * sn, hi)]
+        staff += [vrod(pts[i], pts[i + 1], 0.005, iron, 4) for i in range(3)]
+    for z, r in ((lo, 0.022), (hi, 0.022), (lo - 0.12, 0.018)):
+        bpy.ops.mesh.primitive_torus_add(major_radius=r, minor_radius=0.006, major_segments=12, minor_segments=4, location=(0, 0, z))
+        ring = bpy.context.object
+        ring.data.materials.append(bronze if z == lo - 0.12 else iron)
+        staff.append(ring)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=10, ring_count=6, radius=0.024, location=(0, 0, hi + 0.03))
+    knob = bpy.context.object
+    knob.data.materials.append(iron)
+    staff.append(knob)
+    export('Iron_Staff', staff)
+    # völva: strings of amber and glass beads hanging across the chest, with
+    # two pendants: a bronze disc and an amber drop; a U across the front of
+    # the chest (Blender -Y, glTF +Z), the ends toward the shoulders.
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    amber = mat('MI_VolvaAmber', lin(0xc27a1c), 0.35)
+    glass = mat('MI_VolvaGlass', lin(0x2c4a6e), 0.25)
+    bone_white = mat('MI_VolvaBone', lin(0xd9cdb0), 0.6)
+    pendant = mat('MI_VolvaPendant', lin(0x8a6a35), 0.45, 0.8)
+    beads = []
+    for row, (w, dip, n, r) in enumerate(((0.11, 0.1, 13, 0.013), (0.13, 0.17, 15, 0.012))):
+        for i in range(n):
+            t = i / (n - 1) * 2 - 1  # -1 .. 1 across the chest
+            x, y = w * t, -dip * (1 - t * t)
+            z = 0.1 + 0.03 * (1 - t * t)  # rides out over the chest
+            bpy.ops.mesh.primitive_uv_sphere_add(segments=6, ring_count=4, radius=r, location=(x, -z, y))
+            b = bpy.context.object
+            b.data.materials.append((amber, glass, bone_white)[(i + row) % 3])
+            beads.append(b)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=10, radius=0.026, depth=0.006, location=(0, -0.135, -0.2), rotation=(math.radians(90), 0, 0))
+    disc = bpy.context.object
+    disc.data.materials.append(pendant)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=6, radius=0.018, location=(0, -0.13, -0.125))
+    drop = bpy.context.object
+    drop.scale = (1, 0.6, 1.3)
+    drop.data.materials.append(amber)
+    export('Volva_Beads', beads + [disc, drop])
+
     for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap',
-                 'Dane_Axe', 'Shield_Gokstad', 'Shield_Gokstad_Back', 'Spangenhelm'):
+                 'Dane_Axe', 'Shield_Gokstad', 'Shield_Gokstad_Back', 'Spangenhelm', 'Iron_Staff', 'Volva_Beads'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
