@@ -22,8 +22,8 @@
 ## 4. Callers outside the sim
 
 - [x] 4.1 Update `wasm/main.go data()` to build from the roster. Keep the existing fields, add `traits`, `tags`, `bonus` and the `effects` of each skill, and extend `wasm/main_test.go` to check the new fields and the unchanged old ones. Verify with `pnpm test:wasm`.
-- [ ] 4.2 Update `server/run` skill-pick validation, `pb/convert` and `pb/wire` (if they reference the class count), and `tools/balance` to use the roster. Verify with `pnpm test:go` and a short `pnpm balance` run whose report numbers equal the current `docs/balance-report.md`.
-- [ ] 4.3 Run `pnpm test` (Go, WASM and the web typecheck) and `pnpm start`, and play one battle in the browser. Verify the picker shows the same classes and skill texts, and the battle runs.
+- [x] 4.2 Update `server/run` skill-pick validation, `pb/convert` and `pb/wire` (if they reference the class count), and `tools/balance` to use the roster. Verify with `pnpm test:go` and a short `pnpm balance` run whose report numbers equal the current `docs/balance-report.md`.
+- [x] 4.3 Run `pnpm test` (Go, WASM and the web typecheck) and `pnpm start`, and play one battle in the browser. Verify the picker shows the same classes and skill texts, and the battle runs.
 
 ## 5. Docs
 
