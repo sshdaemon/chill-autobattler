@@ -17,15 +17,6 @@ func sec(tenths int) int { return tenths * TicksPerSecond / 10 }
 // perTick converts a per-second Fx amount to per tick.
 func perTick(v Fx) Fx { return v / TicksPerSecond }
 
-// Class is a roster id (Roster[c]); the first three are the original classes.
-type Class uint8
-
-const (
-	Warrior Class = iota
-	Archer
-	Mage
-)
-
 type Stats struct {
 	HP           Fx
 	DmgLo, DmgHi Fx
@@ -38,21 +29,10 @@ type Stats struct {
 	ShotSpeed    Fx  // projectile metres per second (ranged only)
 }
 
-// Skill is a skill's wire id; each roster entry lists the 5 it can learn.
+// Skill is an ability's number within its unit's roster entry: 1..MaxSkills,
+// in the order the entry lists them (unit_<name>.go names them). Numbers mean
+// nothing across units, so units never share or compete for skill ids.
 type Skill uint8
-
-const (
-	SkillHealth  Skill = iota + 1 // Toughness
-	SkillSpeed                    // Swift
-	SkillDamage                   // Strength / Sharp arrows / Power
-	SkillDash                     // warrior
-	SkillExecute                  // Executioner / Headshot
-	SkillRange                    // Long shot
-	SkillLob                      // Arcing shot
-	SkillFrost                    // mage
-	SkillBlink                    // mage
-	SkillBlast                    // mage
-)
 
 // Combat and movement constants.
 var (

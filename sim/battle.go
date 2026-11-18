@@ -8,7 +8,7 @@ import "hash/fnv"
 
 // Version must change whenever the rules change, so old replays are checked
 // with the logic that produced them.
-const Version = "0.4.0"
+const Version = "0.5.0"
 
 type Result int8
 

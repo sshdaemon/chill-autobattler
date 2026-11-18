@@ -67,8 +67,8 @@ func TestMigrations(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if v := userVersion(t, fresh); v != 3 {
-		t.Errorf("fresh db at version %d, want 3", v)
+	if v := userVersion(t, fresh); v != 4 {
+		t.Errorf("fresh db at version %d, want 4", v)
 	}
 	if err := fresh.CreatePlayer(ctx, CreatePlayerParams{ID: "p", TokenHash: []byte{1}, CreatedAt: 1}); err != nil {
 		t.Fatalf("players table missing: %v", err)
@@ -108,7 +108,7 @@ func TestMigrations(t *testing.T) {
 	if err != nil || b.MapSeed != 1 || b.RunID.Valid {
 		t.Errorf("old battle after upgrade: %v %+v", err, b)
 	}
-	if v := userVersion(t, up); v != 3 {
+	if v := userVersion(t, up); v != 4 {
 		t.Errorf("upgraded db at version %d", v)
 	}
 }

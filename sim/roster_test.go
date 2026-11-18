@@ -32,10 +32,7 @@ func TestRosterRejectsBadEntries(t *testing.T) {
 		"slow factor":  func(d *UnitDef) { d.Skills[3].Effects = []Effect{{Kind: SlowOnHit, Pct: 50, Ticks: 10, Factor: One}} },
 		"unknown kind": func(d *UnitDef) { d.Skills[3].Effects = []Effect{{Kind: 99}} },
 		"kind twice":   func(d *UnitDef) { d.Skills[0].Effects = []Effect{{Kind: Finisher, Pct: 10}} },
-		"id reused": func(d *UnitDef) {
-			d.Skills[4].Skill = SkillFrost
-			d.Skills[4].Effects = []Effect{{Kind: StatBonus, Stat: StatHP, Pct: 20}}
-		},
+		"numbering":    func(d *UnitDef) { d.Skills[4].Skill = 7 },
 	}
 	for name, breakIt := range cases {
 		r := cloneRoster()
@@ -94,25 +91,25 @@ var testRanger = UnitDef{
 	Tags:       TagRanged | TagCaster,
 	Bonus:      []TagBonus{{TagMelee, Ratio(120, 100)}},
 	Skills: [MaxSkills]SkillDef{
-		{SkillDash, "Leap", []Effect{{Kind: GapCloser, Value: I(12), Speed: I(12), Ticks: 100}}},
-		{SkillFrost, "Chill", []Effect{{Kind: SlowOnHit, Pct: 100, Ticks: 40, Factor: Half}}},
-		{SkillHealth, "Hide", []Effect{{Kind: StatBonus, Stat: StatHP, Pct: 50}}},
-		{SkillExecute, "Pierce", []Effect{{Kind: Finisher, Pct: 50}}},
-		{SkillBlast, "Shatter", []Effect{{Kind: SplashOnHit, Pct: 20, Radius: I(3)}}},
+		{1, "Leap", []Effect{{Kind: GapCloser, Value: I(12), Speed: I(12), Ticks: 100}}},
+		{2, "Chill", []Effect{{Kind: SlowOnHit, Pct: 100, Ticks: 40, Factor: Half}}},
+		{3, "Hide", []Effect{{Kind: StatBonus, Stat: StatHP, Pct: 50}}},
+		{4, "Pierce", []Effect{{Kind: Finisher, Pct: 50}}},
+		{5, "Shatter", []Effect{{Kind: SplashOnHit, Pct: 20, Radius: I(3)}}},
 	},
 }
 
 func TestDataOnlyUnit(t *testing.T) {
 	withRoster(t, testRanger)
 	ranger := Class(len(Roster) - 1)
-	u := newUnit(0, 0, UnitSpec{Class: ranger, Skills: []Skill{SkillHealth, SkillFrost}}, Vec{})
+	u := newUnit(0, 0, UnitSpec{Class: ranger, Skills: []Skill{3, 2}}, Vec{})
 	if u.MaxHP != I(105) || u.kit.slow == nil || u.kit.slow.Factor != Half {
 		t.Fatalf("loadout: hp %v slow %+v", u.MaxHP, u.kit.slow)
 	}
 	if m := MatchupOf(&Roster[Warrior], &Roster[ranger]); m != Ratio(145, 100) {
 		t.Errorf("warrior vs a ranged-tagged unit: %v, want 1.45", m)
 	}
-	spec := UnitSpec{Class: ranger, Skills: []Skill{SkillDash, SkillFrost, SkillHealth, SkillExecute, SkillBlast}}
+	spec := UnitSpec{Class: ranger, Skills: []Skill{1, 2, 3, 4, 5}}
 	in := Input{Version: Version, Seed: 7, CombatSeed: 8,
 		Blue: Army{Formation: Spread, Units: []UnitSpec{spec, spec, spec, spec, spec}},
 		Red:  Army{Formation: F3x2, Units: mix()}}

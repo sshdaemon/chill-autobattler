@@ -265,7 +265,7 @@ func (x *GetRunResponse) GetRun() *Run {
 type SkillPick struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Veteran       uint32                 `protobuf:"varint,1,opt,name=veteran,proto3" json:"veteran,omitempty"` // index into Run.veterans
-	Skill         Skill                  `protobuf:"varint,2,opt,name=skill,proto3,enum=chill.v1.Skill" json:"skill,omitempty"`
+	Skill         uint32                 `protobuf:"varint,2,opt,name=skill,proto3" json:"skill,omitempty"`     // ability number within the veteran's unit (UnitSpec.skills)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -307,11 +307,11 @@ func (x *SkillPick) GetVeteran() uint32 {
 	return 0
 }
 
-func (x *SkillPick) GetSkill() Skill {
+func (x *SkillPick) GetSkill() uint32 {
 	if x != nil {
 		return x.Skill
 	}
-	return Skill_SKILL_UNSPECIFIED
+	return 0
 }
 
 type PickSkillsRequest struct {
@@ -586,7 +586,7 @@ var File_chill_v1_run_proto protoreflect.FileDescriptor
 
 const file_chill_v1_run_proto_rawDesc = "" +
 	"\n" +
-	"\x12chill/v1/run.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\x1a\x14chill/v1/units.proto\"\x15\n" +
+	"\x12chill/v1/run.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\"\x15\n" +
 	"\x13CreatePlayerRequest\"9\n" +
 	"\x14CreatePlayerResponse\x12!\n" +
 	"\fplayer_token\x18\x01 \x01(\tR\vplayerToken\"\x11\n" +
@@ -595,10 +595,10 @@ const file_chill_v1_run_proto_rawDesc = "" +
 	"\x03run\x18\x01 \x01(\v2\r.chill.v1.RunR\x03run\"\x0f\n" +
 	"\rGetRunRequest\"1\n" +
 	"\x0eGetRunResponse\x12\x1f\n" +
-	"\x03run\x18\x01 \x01(\v2\r.chill.v1.RunR\x03run\"L\n" +
+	"\x03run\x18\x01 \x01(\v2\r.chill.v1.RunR\x03run\";\n" +
 	"\tSkillPick\x12\x18\n" +
-	"\aveteran\x18\x01 \x01(\rR\aveteran\x12%\n" +
-	"\x05skill\x18\x02 \x01(\x0e2\x0f.chill.v1.SkillR\x05skill\"U\n" +
+	"\aveteran\x18\x01 \x01(\rR\aveteran\x12\x14\n" +
+	"\x05skill\x18\x02 \x01(\rR\x05skill\"U\n" +
 	"\x11PickSkillsRequest\x12\x15\n" +
 	"\x06run_id\x18\x01 \x01(\tR\x05runId\x12)\n" +
 	"\x05picks\x18\x02 \x03(\v2\x13.chill.v1.SkillPickR\x05picks\"5\n" +
@@ -653,30 +653,28 @@ var file_chill_v1_run_proto_goTypes = []any{
 	(*ScoreRow)(nil),              // 10: chill.v1.ScoreRow
 	(*GetScoreboardResponse)(nil), // 11: chill.v1.GetScoreboardResponse
 	(*Run)(nil),                   // 12: chill.v1.Run
-	(Skill)(0),                    // 13: chill.v1.Skill
 }
 var file_chill_v1_run_proto_depIdxs = []int32{
 	12, // 0: chill.v1.StartRunResponse.run:type_name -> chill.v1.Run
 	12, // 1: chill.v1.GetRunResponse.run:type_name -> chill.v1.Run
-	13, // 2: chill.v1.SkillPick.skill:type_name -> chill.v1.Skill
-	6,  // 3: chill.v1.PickSkillsRequest.picks:type_name -> chill.v1.SkillPick
-	12, // 4: chill.v1.PickSkillsResponse.run:type_name -> chill.v1.Run
-	10, // 5: chill.v1.GetScoreboardResponse.top:type_name -> chill.v1.ScoreRow
-	0,  // 6: chill.v1.RunService.CreatePlayer:input_type -> chill.v1.CreatePlayerRequest
-	2,  // 7: chill.v1.RunService.StartRun:input_type -> chill.v1.StartRunRequest
-	4,  // 8: chill.v1.RunService.GetRun:input_type -> chill.v1.GetRunRequest
-	7,  // 9: chill.v1.RunService.PickSkills:input_type -> chill.v1.PickSkillsRequest
-	9,  // 10: chill.v1.RunService.GetScoreboard:input_type -> chill.v1.GetScoreboardRequest
-	1,  // 11: chill.v1.RunService.CreatePlayer:output_type -> chill.v1.CreatePlayerResponse
-	3,  // 12: chill.v1.RunService.StartRun:output_type -> chill.v1.StartRunResponse
-	5,  // 13: chill.v1.RunService.GetRun:output_type -> chill.v1.GetRunResponse
-	8,  // 14: chill.v1.RunService.PickSkills:output_type -> chill.v1.PickSkillsResponse
-	11, // 15: chill.v1.RunService.GetScoreboard:output_type -> chill.v1.GetScoreboardResponse
-	11, // [11:16] is the sub-list for method output_type
-	6,  // [6:11] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	6,  // 2: chill.v1.PickSkillsRequest.picks:type_name -> chill.v1.SkillPick
+	12, // 3: chill.v1.PickSkillsResponse.run:type_name -> chill.v1.Run
+	10, // 4: chill.v1.GetScoreboardResponse.top:type_name -> chill.v1.ScoreRow
+	0,  // 5: chill.v1.RunService.CreatePlayer:input_type -> chill.v1.CreatePlayerRequest
+	2,  // 6: chill.v1.RunService.StartRun:input_type -> chill.v1.StartRunRequest
+	4,  // 7: chill.v1.RunService.GetRun:input_type -> chill.v1.GetRunRequest
+	7,  // 8: chill.v1.RunService.PickSkills:input_type -> chill.v1.PickSkillsRequest
+	9,  // 9: chill.v1.RunService.GetScoreboard:input_type -> chill.v1.GetScoreboardRequest
+	1,  // 10: chill.v1.RunService.CreatePlayer:output_type -> chill.v1.CreatePlayerResponse
+	3,  // 11: chill.v1.RunService.StartRun:output_type -> chill.v1.StartRunResponse
+	5,  // 12: chill.v1.RunService.GetRun:output_type -> chill.v1.GetRunResponse
+	8,  // 13: chill.v1.RunService.PickSkills:output_type -> chill.v1.PickSkillsResponse
+	11, // 14: chill.v1.RunService.GetScoreboard:output_type -> chill.v1.GetScoreboardResponse
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_chill_v1_run_proto_init() }
@@ -685,7 +683,6 @@ func file_chill_v1_run_proto_init() {
 		return
 	}
 	file_chill_v1_runstate_proto_init()
-	file_chill_v1_units_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

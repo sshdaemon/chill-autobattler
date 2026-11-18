@@ -109,9 +109,9 @@ func goldenCases() []struct {
 		add(d.Name+" skills", in(11+uint64(d.ID), Army{Formation: f, Units: allSkills(d.ID, 1)}, 2))
 	}
 	add("veterans 5 stars", in(14, Army{Formation: F3x2, Units: []UnitSpec{
-		{Class: Warrior, Skills: []Skill{SkillHealth, SkillSpeed, SkillDamage, SkillDash, SkillExecute}},
-		{Class: Archer, Skills: []Skill{SkillRange, SkillDamage, SkillLob, SkillExecute, SkillHealth}},
-		{Class: Mage, Skills: []Skill{SkillFrost, SkillDamage, SkillBlink, SkillBlast, SkillHealth}},
+		{Class: Warrior, Skills: []Skill{WarriorToughness, WarriorSwift, WarriorStrength, WarriorDash, WarriorExecutioner}},
+		{Class: Archer, Skills: []Skill{ArcherLongShot, ArcherSharpArrows, ArcherArcingShot, ArcherHeadshot, ArcherToughness}},
+		{Class: Mage, Skills: []Skill{MageFrost, MagePower, MageBlink, MageBlast, MageToughness}},
 	}}, 15))
 	// every skill and the combinations whose order matters (data-driven-units)
 	with := func(c Class, skills ...Skill) []UnitSpec {
@@ -121,12 +121,12 @@ func goldenCases() []struct {
 		}
 		return out
 	}
-	add("mages frost and blast", in(41, Army{Formation: F2x3, Units: with(Mage, SkillBlast, SkillFrost)}, 5))
-	add("mages blink and power", in(42, Army{Formation: Spread, Units: with(Mage, SkillBlink, SkillDamage, SkillHealth)}, 5))
-	add("archers sharp arrows and lob", in(43, Army{Formation: F3x2, Units: with(Archer, SkillLob, SkillDamage)}, 5))
-	add("archers long shot and headshot", in(44, Army{Formation: F1x4, Units: with(Archer, SkillRange, SkillExecute, SkillHealth)}, 5))
-	add("warriors swift and dash", in(45, Army{Formation: F4x1, Units: with(Warrior, SkillDash, SkillSpeed)}, 5))
-	add("warriors executioner", in(46, Army{Formation: F5x0, Units: with(Warrior, SkillExecute, SkillDamage, SkillHealth)}, 5))
+	add("mages frost and blast", in(41, Army{Formation: F2x3, Units: with(Mage, MageBlast, MageFrost)}, 5))
+	add("mages blink and power", in(42, Army{Formation: Spread, Units: with(Mage, MageBlink, MagePower, MageToughness)}, 5))
+	add("archers sharp arrows and lob", in(43, Army{Formation: F3x2, Units: with(Archer, ArcherArcingShot, ArcherSharpArrows)}, 5))
+	add("archers long shot and headshot", in(44, Army{Formation: F1x4, Units: with(Archer, ArcherLongShot, ArcherHeadshot, ArcherToughness)}, 5))
+	add("warriors swift and dash", in(45, Army{Formation: F4x1, Units: with(Warrior, WarriorDash, WarriorSwift)}, 5))
+	add("warriors executioner", in(46, Army{Formation: F5x0, Units: with(Warrior, WarriorExecutioner, WarriorStrength, WarriorToughness)}, 5))
 	for _, n := range []int{0, 3, 25} {
 		add("red with "+itoa(n)+" skills", in(uint64(50+n), Army{Formation: Spread, Units: mix()}, n))
 	}

@@ -95,20 +95,20 @@
     ]
   },
   "skills": {
-    "3": {},
-    "1": {},
-    "8": {
+    "1": {
       "fx": "frost"
     },
-    "9": {
+    "2": {},
+    "3": {
       "action": "NinjaJump_Land",
       "rate": 1.4,
       "fx": "blink"
     },
-    "10": {
+    "4": {
       "attack": "OverhandThrow",
       "fx": "blast"
-    }
+    },
+    "5": {}
   },
   "clips": {
     "Spell_Simple_Idle_Loop": {

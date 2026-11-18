@@ -136,7 +136,7 @@ func TestUnits(t *testing.T) {
 	w, a := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER
 	in := &chillv1.BattleInput{SimVersion: sim.Version, Seed: 77, RedSkillCount: 6, Blue: &chillv1.Army{
 		Formation: chillv1.Formation_FORMATION_SPREAD,
-		Units:     []*chillv1.UnitSpec{{UnitClass: w, Skills: []chillv1.Skill{chillv1.Skill_SKILL_DASH}}, {UnitClass: a}},
+		Units:     []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.WarriorDash)}}, {UnitClass: a}},
 	}}
 	raw, _ := proto.Marshal(in)
 	if msg := api.Call("create", bytesToJS(raw)).String(); msg != "" {
@@ -169,7 +169,7 @@ func TestUnits(t *testing.T) {
 			red += len(u.Skills)
 		}
 	}
-	if red != 6 || got[0].Skills[0] != int(sim.SkillDash) {
+	if red != 6 || got[0].Skills[0] != int(sim.WarriorDash) {
 		t.Errorf("red skills %d (want 6), blue warrior %v", red, got[0].Skills)
 	}
 }

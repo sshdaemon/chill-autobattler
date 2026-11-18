@@ -4,7 +4,7 @@ import "testing"
 
 // The snapshot layout is decoded by web/src/sim/snapshot.ts; this pins its size.
 func TestSnapshotLayout(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, p(0, 100), []Skill{SkillDash, SkillHealth}}, tu{1, Archer, p(0, -100), nil})
+	b := testBattle(nil, tu{0, Warrior, p(0, 100), []Skill{WarriorDash, WarriorToughness}}, tu{1, Archer, p(0, -100), nil})
 	snap := b.Snapshot()
 	if len(snap) != SnapHeader+2*SnapUnit {
 		t.Fatalf("snapshot has %d ints, want %d", len(snap), SnapHeader+2*SnapUnit)

@@ -311,15 +311,15 @@ func TestStatSkills(t *testing.T) {
 		s     Skill
 		check func(Stats) bool
 	}{
-		{Warrior, SkillHealth, func(s Stats) bool { return s.HP == I(110) }},
-		{Archer, SkillHealth, func(s Stats) bool { return s.HP == I(66) }},
-		{Mage, SkillHealth, func(s Stats) bool { return s.HP == I(66) }},
-		{Warrior, SkillSpeed, func(s Stats) bool { // Swift: +40% speed, attacks 20% faster
+		{Warrior, WarriorToughness, func(s Stats) bool { return s.HP == I(110) }},
+		{Archer, ArcherToughness, func(s Stats) bool { return s.HP == I(66) }},
+		{Mage, MageToughness, func(s Stats) bool { return s.HP == I(66) }},
+		{Warrior, WarriorSwift, func(s Stats) bool { // Swift: +40% speed, attacks 20% faster
 			return (s.Speed-Ratio(448, 100)).Abs() <= 2 && s.Cooldown == sec(13)*80/100 && s.SwingTicks == sec(9)*80/100
 		}},
-		{Warrior, SkillDamage, func(s Stats) bool { return s.DmgLo == Ratio(115, 10) && (s.DmgHi-Ratio(184, 10)).Abs() <= 2 }},
-		{Archer, SkillRange, func(s Stats) bool { return s.Range == Ratio(1125, 100) }},
-		{Archer, SkillLob, func(s Stats) bool { return (s.DmgLo - Ratio(99, 10)).Abs() <= 2 }}, // Arcing shot: +10% damage
+		{Warrior, WarriorStrength, func(s Stats) bool { return s.DmgLo == Ratio(115, 10) && (s.DmgHi-Ratio(184, 10)).Abs() <= 2 }},
+		{Archer, ArcherLongShot, func(s Stats) bool { return s.Range == Ratio(1125, 100) }},
+		{Archer, ArcherArcingShot, func(s Stats) bool { return (s.DmgLo - Ratio(99, 10)).Abs() <= 2 }}, // Arcing shot: +10% damage
 	}
 	for _, c := range cases {
 		u := newUnit(0, 0, UnitSpec{Class: c.c, Skills: []Skill{c.s}}, Vec{})
@@ -330,7 +330,7 @@ func TestStatSkills(t *testing.T) {
 }
 
 func TestDash(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, p(0, 60), []Skill{SkillDash}}, tu{1, Mage, p(0, 0), nil})
+	b := testBattle(nil, tu{0, Warrior, p(0, 60), []Skill{WarriorDash}}, tu{1, Mage, p(0, 0), nil})
 	b.Units[1].cd = 1000
 	b.Step()
 	u := b.Units[0]
@@ -347,7 +347,7 @@ func TestDash(t *testing.T) {
 }
 
 func TestBlink(t *testing.T) {
-	b := testBattle(nil, tu{0, Mage, p(0, 0), []Skill{SkillBlink}}, tu{1, Warrior, p(0, -20), nil})
+	b := testBattle(nil, tu{0, Mage, p(0, 0), []Skill{MageBlink}}, tu{1, Warrior, p(0, -20), nil})
 	b.Units[1].cd = 1000
 	b.Step()
 	m := b.Units[0]
@@ -367,7 +367,7 @@ func TestLob(t *testing.T) {
 	for _, lob := range []bool{false, true} {
 		var skills []Skill
 		if lob {
-			skills = []Skill{SkillLob}
+			skills = []Skill{ArcherArcingShot}
 		}
 		b := testBattle(rock, tu{0, Archer, p(0, 80), skills}, tu{1, Warrior, p(0, 0), nil}, tu{0, Warrior, p(30, 0), nil})
 		b.Units[1].cd, b.Units[2].cd = 1000, 1000
@@ -385,7 +385,7 @@ func TestExecute(t *testing.T) {
 	kills := func(hpPct int) int {
 		n := 0
 		for seed := uint64(0); seed < 400; seed++ {
-			b := testBattle(nil, tu{0, Warrior, V(0, 0), []Skill{SkillExecute}}, tu{1, Warrior, p(0, -10), nil})
+			b := testBattle(nil, tu{0, Warrior, V(0, 0), []Skill{WarriorExecutioner}}, tu{1, Warrior, p(0, -10), nil})
 			v := b.Units[1]
 			v.HP = v.MaxHP.MulDiv(hpPct, 100)
 			v.Face = V(0, One) // facing the attacker: no flank bonus
@@ -408,7 +408,7 @@ func TestExecute(t *testing.T) {
 func TestFrostAndBlast(t *testing.T) {
 	slowed, splash := 0, 0
 	for seed := uint64(0); seed < 200; seed++ {
-		b := testBattle(nil, tu{0, Mage, p(0, 60), []Skill{SkillFrost, SkillBlast}},
+		b := testBattle(nil, tu{0, Mage, p(0, 60), []Skill{MageFrost, MageBlast}},
 			tu{1, Warrior, p(0, 0), nil}, tu{1, Warrior, p(10, 0), nil})
 		b.rng = NewRNG(seed)
 		b.Shots = []*Shot{{Shooter: 0, Victim: 1, Bolt: true, Start: p(0, 56), Aim: p(0, 0), Dur: 1}}
@@ -575,8 +575,8 @@ func TestValidate(t *testing.T) {
 		"version":     in(func(c *Input) { c.Version = "0.0.1" }),
 		"six units":   in(func(c *Input) { c.Blue.Units = append(c.Blue.Units, UnitSpec{Class: Mage}) }),
 		"no units":    in(func(c *Input) { c.Blue.Units = nil }),
-		"skill twice": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{SkillDash, SkillDash} }),
-		"wrong class": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{SkillBlink} }),
+		"skill twice": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{WarriorDash, WarriorDash} }),
+		"wrong class": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{6} }),
 		"outside zone": in(func(c *Input) {
 			c.Blue.Formation = Custom
 			setPos(c.Blue.Units, inside)

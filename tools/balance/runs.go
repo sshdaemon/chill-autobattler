@@ -19,9 +19,9 @@ type policy struct {
 
 // Skill preference for the "best" policy, from the 0.4.0 skill-impact table.
 var bestOrder = map[sim.Class][]sim.Skill{
-	sim.Warrior: {sim.SkillSpeed, sim.SkillDash, sim.SkillHealth, sim.SkillExecute, sim.SkillDamage},
-	sim.Archer:  {sim.SkillLob, sim.SkillDamage, sim.SkillExecute, sim.SkillHealth, sim.SkillRange},
-	sim.Mage:    {sim.SkillBlast, sim.SkillDamage, sim.SkillHealth, sim.SkillBlink, sim.SkillFrost},
+	sim.Warrior: {sim.WarriorSwift, sim.WarriorDash, sim.WarriorToughness, sim.WarriorExecutioner, sim.WarriorStrength},
+	sim.Archer:  {sim.ArcherArcingShot, sim.ArcherSharpArrows, sim.ArcherHeadshot, sim.ArcherToughness, sim.ArcherLongShot},
+	sim.Mage:    {sim.MageBlast, sim.MagePower, sim.MageToughness, sim.MageBlink, sim.MageFrost},
 }
 
 // redMode: how Red's army is chosen each match.

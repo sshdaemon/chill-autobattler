@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file chill/v1/units.proto.
  */
 export const file_chill_v1_units: GenFile = /*@__PURE__*/
-  fileDesc("ChRjaGlsbC92MS91bml0cy5wcm90bxIIY2hpbGwudjEiJQoFUG9pbnQSDQoFeF9yYXcYASABKBISDQoFel9yYXcYAiABKBIidwoIVW5pdFNwZWMSJwoKdW5pdF9jbGFzcxgBIAEoDjITLmNoaWxsLnYxLlVuaXRDbGFzcxIfCgZza2lsbHMYAiADKA4yDy5jaGlsbC52MS5Ta2lsbBIhCghwb3NpdGlvbhgDIAEoCzIPLmNoaWxsLnYxLlBvaW50IlEKBEFybXkSJgoJZm9ybWF0aW9uGAEgASgOMhMuY2hpbGwudjEuRm9ybWF0aW9uEiEKBXVuaXRzGAIgAygLMhIuY2hpbGwudjEuVW5pdFNwZWMqawoJVW5pdENsYXNzEhoKFlVOSVRfQ0xBU1NfVU5TUEVDSUZJRUQQABIWChJVTklUX0NMQVNTX1dBUlJJT1IQARIVChFVTklUX0NMQVNTX0FSQ0hFUhACEhMKD1VOSVRfQ0xBU1NfTUFHRRADKskBCgVTa2lsbBIVChFTS0lMTF9VTlNQRUNJRklFRBAAEhAKDFNLSUxMX0hFQUxUSBABEg8KC1NLSUxMX1NQRUVEEAISEAoMU0tJTExfREFNQUdFEAMSDgoKU0tJTExfREFTSBAEEhEKDVNLSUxMX0VYRUNVVEUQBRIPCgtTS0lMTF9SQU5HRRAGEg0KCVNLSUxMX0xPQhAHEg8KC1NLSUxMX0ZST1NUEAgSDwoLU0tJTExfQkxJTksQCRIPCgtTS0lMTF9CTEFTVBAKKsQBCglGb3JtYXRpb24SGQoVRk9STUFUSU9OX1VOU1BFQ0lGSUVEEAASFAoQRk9STUFUSU9OX0NVU1RPTRABEhQKEEZPUk1BVElPTl9TUFJFQUQQAhIRCg1GT1JNQVRJT05fM18yEAMSEQoNRk9STUFUSU9OXzJfMxAEEhEKDUZPUk1BVElPTl80XzEQBRIRCg1GT1JNQVRJT05fMV80EAYSEQoNRk9STUFUSU9OXzBfNRAHEhEKDUZPUk1BVElPTl81XzAQCEJ2Cgxjb20uY2hpbGwudjFCClVuaXRzUHJvdG9QAVoZY2hpbGwvcGIvY2hpbGwvdjE7Y2hpbGx2MaICA0NYWKoCCENoaWxsLlYxygIIQ2hpbGxcVjHiAhRDaGlsbFxWMVxHUEJNZXRhZGF0YeoCCUNoaWxsOjpWMWIGcHJvdG8z");
+  fileDesc("ChRjaGlsbC92MS91bml0cy5wcm90bxIIY2hpbGwudjEiJQoFUG9pbnQSDQoFeF9yYXcYASABKBISDQoFel9yYXcYAiABKBIiZgoIVW5pdFNwZWMSJwoKdW5pdF9jbGFzcxgBIAEoDjITLmNoaWxsLnYxLlVuaXRDbGFzcxIOCgZza2lsbHMYAiADKA0SIQoIcG9zaXRpb24YAyABKAsyDy5jaGlsbC52MS5Qb2ludCJRCgRBcm15EiYKCWZvcm1hdGlvbhgBIAEoDjITLmNoaWxsLnYxLkZvcm1hdGlvbhIhCgV1bml0cxgCIAMoCzISLmNoaWxsLnYxLlVuaXRTcGVjKmsKCVVuaXRDbGFzcxIaChZVTklUX0NMQVNTX1VOU1BFQ0lGSUVEEAASFgoSVU5JVF9DTEFTU19XQVJSSU9SEAESFQoRVU5JVF9DTEFTU19BUkNIRVIQAhITCg9VTklUX0NMQVNTX01BR0UQAyrEAQoJRm9ybWF0aW9uEhkKFUZPUk1BVElPTl9VTlNQRUNJRklFRBAAEhQKEEZPUk1BVElPTl9DVVNUT00QARIUChBGT1JNQVRJT05fU1BSRUFEEAISEQoNRk9STUFUSU9OXzNfMhADEhEKDUZPUk1BVElPTl8yXzMQBBIRCg1GT1JNQVRJT05fNF8xEAUSEQoNRk9STUFUSU9OXzFfNBAGEhEKDUZPUk1BVElPTl8wXzUQBxIRCg1GT1JNQVRJT05fNV8wEAhCdgoMY29tLmNoaWxsLnYxQgpVbml0c1Byb3RvUAFaGWNoaWxsL3BiL2NoaWxsL3YxO2NoaWxsdjGiAgNDWFiqAghDaGlsbC5WMcoCCENoaWxsXFYx4gIUQ2hpbGxcVjFcR1BCTWV0YWRhdGHqAglDaGlsbDo6VjFiBnByb3RvMw");
 
 /**
  * A point in raw Q48.16 fixed-point metres (value × 65536), so no float
@@ -47,9 +47,12 @@ export type UnitSpec = Message<"chill.v1.UnitSpec"> & {
   unitClass: UnitClass;
 
   /**
-   * @generated from field: repeated chill.v1.Skill skills = 2;
+   * Abilities by number within the unit's roster entry, 1..5 in the order it
+   * lists them (sim/unit_*.go); numbers mean nothing across units.
+   *
+   * @generated from field: repeated uint32 skills = 2;
    */
-  skills: Skill[];
+  skills: number[];
 
   /**
    * Required with FORMATION_CUSTOM, absent otherwise.
@@ -124,87 +127,6 @@ export const UnitClassSchema: GenEnum<UnitClass> = /*@__PURE__*/
   enumDesc(file_chill_v1_units, 0);
 
 /**
- * Skills by id; which ones a unit can learn is in its roster entry (sim/unit_*.go).
- * New skills take the next free id from the roster, with no new value needed here.
- *
- * @generated from enum chill.v1.Skill
- */
-export enum Skill {
-  /**
-   * @generated from enum value: SKILL_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * Toughness
-   *
-   * @generated from enum value: SKILL_HEALTH = 1;
-   */
-  HEALTH = 1,
-
-  /**
-   * Swift
-   *
-   * @generated from enum value: SKILL_SPEED = 2;
-   */
-  SPEED = 2,
-
-  /**
-   * Strength / Sharp arrows / Power
-   *
-   * @generated from enum value: SKILL_DAMAGE = 3;
-   */
-  DAMAGE = 3,
-
-  /**
-   * @generated from enum value: SKILL_DASH = 4;
-   */
-  DASH = 4,
-
-  /**
-   * Executioner / Headshot
-   *
-   * @generated from enum value: SKILL_EXECUTE = 5;
-   */
-  EXECUTE = 5,
-
-  /**
-   * Long shot
-   *
-   * @generated from enum value: SKILL_RANGE = 6;
-   */
-  RANGE = 6,
-
-  /**
-   * Arcing shot
-   *
-   * @generated from enum value: SKILL_LOB = 7;
-   */
-  LOB = 7,
-
-  /**
-   * @generated from enum value: SKILL_FROST = 8;
-   */
-  FROST = 8,
-
-  /**
-   * @generated from enum value: SKILL_BLINK = 9;
-   */
-  BLINK = 9,
-
-  /**
-   * @generated from enum value: SKILL_BLAST = 10;
-   */
-  BLAST = 10,
-}
-
-/**
- * Describes the enum chill.v1.Skill.
- */
-export const SkillSchema: GenEnum<Skill> = /*@__PURE__*/
-  enumDesc(file_chill_v1_units, 1);
-
-/**
  * FORMATION_CUSTOM means every unit carries its own position.
  *
  * @generated from enum chill.v1.Formation
@@ -262,5 +184,5 @@ export enum Formation {
  * Describes the enum chill.v1.Formation.
  */
 export const FormationSchema: GenEnum<Formation> = /*@__PURE__*/
-  enumDesc(file_chill_v1_units, 2);
+  enumDesc(file_chill_v1_units, 1);
 

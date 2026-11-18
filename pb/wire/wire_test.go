@@ -22,7 +22,7 @@ func randArmy(r *rand.Rand) *chillv1.Army {
 	for i, n := 0, r.IntN(7); i < n; i++ {
 		u := &chillv1.UnitSpec{UnitClass: chillv1.UnitClass(r.IntN(5))}
 		for k, m := 0, r.IntN(4); k < m; k++ {
-			u.Skills = append(u.Skills, chillv1.Skill(r.IntN(13)))
+			u.Skills = append(u.Skills, uint32(r.IntN(13)))
 		}
 		if r.IntN(2) == 0 {
 			u.Position = &chillv1.Point{XRaw: r.Int64N(int64(sim.I(30))) - int64(sim.I(15)), ZRaw: r.Int64N(int64(sim.I(30))) - int64(sim.I(15))}
@@ -97,7 +97,7 @@ func TestDecodeMatchesConvert(t *testing.T) {
 func TestUnpackedSkills(t *testing.T) {
 	unit := protowire.AppendTag(nil, 1, protowire.VarintType)
 	unit = protowire.AppendVarint(unit, uint64(chillv1.UnitClass_UNIT_CLASS_WARRIOR))
-	for _, s := range []chillv1.Skill{chillv1.Skill_SKILL_DASH, chillv1.Skill_SKILL_HEALTH} {
+	for _, s := range []uint32{4, 1} {
 		unit = protowire.AppendTag(unit, 2, protowire.VarintType)
 		unit = protowire.AppendVarint(unit, uint64(s))
 	}

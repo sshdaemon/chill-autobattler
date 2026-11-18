@@ -508,7 +508,7 @@ func TestLooksCheckCatches(t *testing.T) {
 			c.Units["archer"] = u
 			return packed
 		},
-		"unknown preset": func(c *looksData) []string { c.Units["mage"].Skills["8"] = skillLook{Fx: "nope"}; return packed },
+		"unknown preset": func(c *looksData) []string { c.Units["mage"].Skills["4"] = skillLook{Fx: "nope"}; return packed },
 		"move clip without speed": func(c *looksData) []string {
 			jog := c.Clips["Jog_Fwd_Loop"]
 			jog.Speed = 0

@@ -81,11 +81,7 @@ func TestWinPicksAndNextMatch(t *testing.T) {
 	}
 
 	// invalid picks change nothing
-	v0 := r.Veterans[0]
-	foreign := chillv1.Skill_SKILL_BLINK // mage only
-	if v0.UnitClass == chillv1.UnitClass_UNIT_CLASS_MAGE {
-		foreign = chillv1.Skill_SKILL_DASH
-	}
+	foreign := uint32(sim.MaxSkills + 1) // no unit has a sixth ability
 	bad := [][]*chillv1.SkillPick{
 		{{Veteran: 0, Skill: foreign}},
 		nil, // too few
@@ -99,7 +95,7 @@ func TestWinPicksAndNextMatch(t *testing.T) {
 	var picks []*chillv1.SkillPick
 	for _, i := range r.OwedPicks {
 		cls := sim.Class(r.Veterans[i].UnitClass - 1)
-		picks = append(picks, &chillv1.SkillPick{Veteran: i, Skill: chillv1.Skill(sim.Roster[cls].Skills[0].Skill)})
+		picks = append(picks, &chillv1.SkillPick{Veteran: i, Skill: uint32(sim.Roster[cls].Skills[0].Skill)})
 	}
 	pr, err := e.runs.PickSkills(e.ctx, &chillv1.PickSkillsRequest{RunId: r.Id, Picks: picks})
 	if err != nil || pr.Run.State != chillv1.RunState_RUN_STATE_READY || pr.Run.RedSkills != uint32(len(picks)) {
@@ -157,8 +153,8 @@ func TestLosingEndsTheRun(t *testing.T) {
 			for _, i := range r.OwedPicks {
 				cls := sim.Class(r.Veterans[i].UnitClass - 1)
 				for _, d := range sim.Roster[cls].Skills {
-					if !slices.Contains(r.Veterans[i].Skills, chillv1.Skill(d.Skill)) {
-						picks = append(picks, &chillv1.SkillPick{Veteran: i, Skill: chillv1.Skill(d.Skill)})
+					if !slices.Contains(r.Veterans[i].Skills, uint32(d.Skill)) {
+						picks = append(picks, &chillv1.SkillPick{Veteran: i, Skill: uint32(d.Skill)})
 						break
 					}
 				}

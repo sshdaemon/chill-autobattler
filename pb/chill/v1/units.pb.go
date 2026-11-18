@@ -76,81 +76,6 @@ func (UnitClass) EnumDescriptor() ([]byte, []int) {
 	return file_chill_v1_units_proto_rawDescGZIP(), []int{0}
 }
 
-// Skills by id; which ones a unit can learn is in its roster entry (sim/unit_*.go).
-// New skills take the next free id from the roster, with no new value needed here.
-type Skill int32
-
-const (
-	Skill_SKILL_UNSPECIFIED Skill = 0
-	Skill_SKILL_HEALTH      Skill = 1 // Toughness
-	Skill_SKILL_SPEED       Skill = 2 // Swift
-	Skill_SKILL_DAMAGE      Skill = 3 // Strength / Sharp arrows / Power
-	Skill_SKILL_DASH        Skill = 4
-	Skill_SKILL_EXECUTE     Skill = 5 // Executioner / Headshot
-	Skill_SKILL_RANGE       Skill = 6 // Long shot
-	Skill_SKILL_LOB         Skill = 7 // Arcing shot
-	Skill_SKILL_FROST       Skill = 8
-	Skill_SKILL_BLINK       Skill = 9
-	Skill_SKILL_BLAST       Skill = 10
-)
-
-// Enum value maps for Skill.
-var (
-	Skill_name = map[int32]string{
-		0:  "SKILL_UNSPECIFIED",
-		1:  "SKILL_HEALTH",
-		2:  "SKILL_SPEED",
-		3:  "SKILL_DAMAGE",
-		4:  "SKILL_DASH",
-		5:  "SKILL_EXECUTE",
-		6:  "SKILL_RANGE",
-		7:  "SKILL_LOB",
-		8:  "SKILL_FROST",
-		9:  "SKILL_BLINK",
-		10: "SKILL_BLAST",
-	}
-	Skill_value = map[string]int32{
-		"SKILL_UNSPECIFIED": 0,
-		"SKILL_HEALTH":      1,
-		"SKILL_SPEED":       2,
-		"SKILL_DAMAGE":      3,
-		"SKILL_DASH":        4,
-		"SKILL_EXECUTE":     5,
-		"SKILL_RANGE":       6,
-		"SKILL_LOB":         7,
-		"SKILL_FROST":       8,
-		"SKILL_BLINK":       9,
-		"SKILL_BLAST":       10,
-	}
-)
-
-func (x Skill) Enum() *Skill {
-	p := new(Skill)
-	*p = x
-	return p
-}
-
-func (x Skill) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (Skill) Descriptor() protoreflect.EnumDescriptor {
-	return file_chill_v1_units_proto_enumTypes[1].Descriptor()
-}
-
-func (Skill) Type() protoreflect.EnumType {
-	return &file_chill_v1_units_proto_enumTypes[1]
-}
-
-func (x Skill) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use Skill.Descriptor instead.
-func (Skill) EnumDescriptor() ([]byte, []int) {
-	return file_chill_v1_units_proto_rawDescGZIP(), []int{1}
-}
-
 // FORMATION_CUSTOM means every unit carries its own position.
 type Formation int32
 
@@ -203,11 +128,11 @@ func (x Formation) String() string {
 }
 
 func (Formation) Descriptor() protoreflect.EnumDescriptor {
-	return file_chill_v1_units_proto_enumTypes[2].Descriptor()
+	return file_chill_v1_units_proto_enumTypes[1].Descriptor()
 }
 
 func (Formation) Type() protoreflect.EnumType {
-	return &file_chill_v1_units_proto_enumTypes[2]
+	return &file_chill_v1_units_proto_enumTypes[1]
 }
 
 func (x Formation) Number() protoreflect.EnumNumber {
@@ -216,7 +141,7 @@ func (x Formation) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Formation.Descriptor instead.
 func (Formation) EnumDescriptor() ([]byte, []int) {
-	return file_chill_v1_units_proto_rawDescGZIP(), []int{2}
+	return file_chill_v1_units_proto_rawDescGZIP(), []int{1}
 }
 
 // A point in raw Q48.16 fixed-point metres (value × 65536), so no float
@@ -276,7 +201,9 @@ func (x *Point) GetZRaw() int64 {
 type UnitSpec struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	UnitClass UnitClass              `protobuf:"varint,1,opt,name=unit_class,json=unitClass,proto3,enum=chill.v1.UnitClass" json:"unit_class,omitempty"`
-	Skills    []Skill                `protobuf:"varint,2,rep,packed,name=skills,proto3,enum=chill.v1.Skill" json:"skills,omitempty"`
+	// Abilities by number within the unit's roster entry, 1..5 in the order it
+	// lists them (sim/unit_*.go); numbers mean nothing across units.
+	Skills []uint32 `protobuf:"varint,2,rep,packed,name=skills,proto3" json:"skills,omitempty"`
 	// Required with FORMATION_CUSTOM, absent otherwise.
 	Position      *Point `protobuf:"bytes,3,opt,name=position,proto3" json:"position,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -320,7 +247,7 @@ func (x *UnitSpec) GetUnitClass() UnitClass {
 	return UnitClass_UNIT_CLASS_UNSPECIFIED
 }
 
-func (x *UnitSpec) GetSkills() []Skill {
+func (x *UnitSpec) GetSkills() []uint32 {
 	if x != nil {
 		return x.Skills
 	}
@@ -393,11 +320,11 @@ const file_chill_v1_units_proto_rawDesc = "" +
 	"\x14chill/v1/units.proto\x12\bchill.v1\"1\n" +
 	"\x05Point\x12\x13\n" +
 	"\x05x_raw\x18\x01 \x01(\x12R\x04xRaw\x12\x13\n" +
-	"\x05z_raw\x18\x02 \x01(\x12R\x04zRaw\"\x94\x01\n" +
+	"\x05z_raw\x18\x02 \x01(\x12R\x04zRaw\"\x83\x01\n" +
 	"\bUnitSpec\x122\n" +
 	"\n" +
-	"unit_class\x18\x01 \x01(\x0e2\x13.chill.v1.UnitClassR\tunitClass\x12'\n" +
-	"\x06skills\x18\x02 \x03(\x0e2\x0f.chill.v1.SkillR\x06skills\x12+\n" +
+	"unit_class\x18\x01 \x01(\x0e2\x13.chill.v1.UnitClassR\tunitClass\x12\x16\n" +
+	"\x06skills\x18\x02 \x03(\rR\x06skills\x12+\n" +
 	"\bposition\x18\x03 \x01(\v2\x0f.chill.v1.PointR\bposition\"c\n" +
 	"\x04Army\x121\n" +
 	"\tformation\x18\x01 \x01(\x0e2\x13.chill.v1.FormationR\tformation\x12(\n" +
@@ -406,21 +333,7 @@ const file_chill_v1_units_proto_rawDesc = "" +
 	"\x16UNIT_CLASS_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12UNIT_CLASS_WARRIOR\x10\x01\x12\x15\n" +
 	"\x11UNIT_CLASS_ARCHER\x10\x02\x12\x13\n" +
-	"\x0fUNIT_CLASS_MAGE\x10\x03*\xc9\x01\n" +
-	"\x05Skill\x12\x15\n" +
-	"\x11SKILL_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fSKILL_HEALTH\x10\x01\x12\x0f\n" +
-	"\vSKILL_SPEED\x10\x02\x12\x10\n" +
-	"\fSKILL_DAMAGE\x10\x03\x12\x0e\n" +
-	"\n" +
-	"SKILL_DASH\x10\x04\x12\x11\n" +
-	"\rSKILL_EXECUTE\x10\x05\x12\x0f\n" +
-	"\vSKILL_RANGE\x10\x06\x12\r\n" +
-	"\tSKILL_LOB\x10\a\x12\x0f\n" +
-	"\vSKILL_FROST\x10\b\x12\x0f\n" +
-	"\vSKILL_BLINK\x10\t\x12\x0f\n" +
-	"\vSKILL_BLAST\x10\n" +
-	"*\xc4\x01\n" +
+	"\x0fUNIT_CLASS_MAGE\x10\x03*\xc4\x01\n" +
 	"\tFormation\x12\x19\n" +
 	"\x15FORMATION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10FORMATION_CUSTOM\x10\x01\x12\x14\n" +
@@ -446,27 +359,25 @@ func file_chill_v1_units_proto_rawDescGZIP() []byte {
 	return file_chill_v1_units_proto_rawDescData
 }
 
-var file_chill_v1_units_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_chill_v1_units_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_chill_v1_units_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_chill_v1_units_proto_goTypes = []any{
 	(UnitClass)(0),   // 0: chill.v1.UnitClass
-	(Skill)(0),       // 1: chill.v1.Skill
-	(Formation)(0),   // 2: chill.v1.Formation
-	(*Point)(nil),    // 3: chill.v1.Point
-	(*UnitSpec)(nil), // 4: chill.v1.UnitSpec
-	(*Army)(nil),     // 5: chill.v1.Army
+	(Formation)(0),   // 1: chill.v1.Formation
+	(*Point)(nil),    // 2: chill.v1.Point
+	(*UnitSpec)(nil), // 3: chill.v1.UnitSpec
+	(*Army)(nil),     // 4: chill.v1.Army
 }
 var file_chill_v1_units_proto_depIdxs = []int32{
 	0, // 0: chill.v1.UnitSpec.unit_class:type_name -> chill.v1.UnitClass
-	1, // 1: chill.v1.UnitSpec.skills:type_name -> chill.v1.Skill
-	3, // 2: chill.v1.UnitSpec.position:type_name -> chill.v1.Point
-	2, // 3: chill.v1.Army.formation:type_name -> chill.v1.Formation
-	4, // 4: chill.v1.Army.units:type_name -> chill.v1.UnitSpec
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	2, // 1: chill.v1.UnitSpec.position:type_name -> chill.v1.Point
+	1, // 2: chill.v1.Army.formation:type_name -> chill.v1.Formation
+	3, // 3: chill.v1.Army.units:type_name -> chill.v1.UnitSpec
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_chill_v1_units_proto_init() }
@@ -479,7 +390,7 @@ func file_chill_v1_units_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_chill_v1_units_proto_rawDesc), len(file_chill_v1_units_proto_rawDesc)),
-			NumEnums:      3,
+			NumEnums:      2,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
