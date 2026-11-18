@@ -17,11 +17,11 @@ The server SHALL issue a random secret token to identify a player, and SHALL sto
 - **THEN** the server refuses it as unauthenticated
 
 ### Requirement: Start and resume a run
-A player SHALL have at most one active run. Starting a run SHALL give it a random name made of an adjective, a noun and a number, starting at match 1 with no wins, no score and no veterans, and SHALL end any previous active run as lost. Reading the run SHALL return its current state, so a client that reloads continues where it was.
+A player SHALL have at most one active run. Starting a run SHALL name the faction it plays, which the run keeps to the end; an unknown faction SHALL be rejected. A new run SHALL get a random name made of an adjective, a noun and a number, starting at match 1 with no wins, no score and no veterans, and SHALL end any previous active run as lost. Reading the run SHALL return its current state and faction, so a client that reloads continues where it was.
 
 #### Scenario: New run
-- **WHEN** a player starts a run
-- **THEN** they get a run named like "Iron Fox 910" at match 1, with 0 wins, 0 points and no veterans
+- **WHEN** a player starts a run as the Classic faction
+- **THEN** they get a run named like "Iron Fox 910" at match 1, with 0 wins, 0 points, no veterans and the Classic faction
 
 #### Scenario: Restart abandons the old run
 - **WHEN** a player with an active run starts another
@@ -29,25 +29,33 @@ A player SHALL have at most one active run. Starting a run SHALL give it a rando
 
 #### Scenario: Reload mid-run
 - **WHEN** a player reloads the page during match 3
-- **THEN** reading the run returns match 3 with the same veterans, wins and score
+- **THEN** reading the run returns match 3 with the same veterans, wins, score and faction
+
+#### Scenario: Unknown faction
+- **WHEN** a player starts a run with a faction that doesn't exist
+- **THEN** the server rejects it, and any active run is unchanged
 
 ### Requirement: Veterans join every match
-In a match of a run, Blue's army SHALL contain every veteran of the run, with exactly its class and skills, plus recruits without skills, up to 5 units. The server SHALL reject any other army.
+In a match of a run, Blue's army SHALL contain every veteran of the run, with exactly its class and abilities, plus recruits at level 1 with exactly one ability of their class each, up to 5 units. The server SHALL reject any other army.
 
 #### Scenario: Missing veteran
 - **WHEN** a player with a veteran archer locks an army without that archer
 - **THEN** the server rejects the army
 
 #### Scenario: Recruit with a skill
-- **WHEN** a player locks an army in which a new recruit has a skill
+- **WHEN** a player locks an army in which a new recruit has two abilities (level 2)
+- **THEN** the server rejects the army
+
+#### Scenario: Recruit without an ability
+- **WHEN** a player locks an army in which a new recruit has no ability
 - **THEN** the server rejects the army
 
 ### Requirement: Red matches the veterans
-For each match, the server SHALL give Red as many skills in total as Blue's veterans have, spread from the battle's map seed. A run with no veterans SHALL face Red with no skills.
+For each match, the server SHALL give Red as many abilities above level 1 in total as Blue's veterans have above level 1, spread from the battle's map seed. A run with no veterans above level 1 SHALL face Red at level 1.
 
 #### Scenario: Two-star army
-- **WHEN** the run's veterans have 2 skills in total
-- **THEN** the battle's Red army has exactly 2 skills in total
+- **WHEN** the run's veterans are one unit at level 3 and one at level 1
+- **THEN** the battle's Red army has exactly 2 abilities above level 1 in total
 
 ### Requirement: Winning a match
 When a battle of the run is verified fair and Blue won, the run SHALL gain 100 points plus 10 per surviving Blue unit and one win, and SHALL move to the next match. Every surviving Blue unit SHALL become a veteran, and veterans that died SHALL be gone.
@@ -57,14 +65,14 @@ When a battle of the run is verified fair and Blue won, the run SHALL gain 100 p
 - **THEN** the run gains 130 points and 1 win, and its veterans are exactly those 3 units
 
 ### Requirement: Skill picks after a win
-After a win, each veteran with fewer than 5 skills SHALL owe one skill pick: a skill of its class that it doesn't have. The next battle SHALL NOT start until every owed pick is made.
+After a win, each veteran below level 3 (fewer than 3 abilities) SHALL owe one ability pick: an ability of its class that it doesn't have. The next battle SHALL NOT start until every owed pick is made.
 
 #### Scenario: Picks owed
-- **WHEN** a run won with two survivors, one of them with 5 skills
+- **WHEN** a run won with two survivors, one of them at level 3
 - **THEN** exactly one pick is owed, and starting the next battle is refused until it is made
 
 #### Scenario: Invalid pick
-- **WHEN** a player picks a skill the veteran already has, or one from another class
+- **WHEN** a player picks an ability the veteran already has, or one its class doesn't offer
 - **THEN** the server rejects the pick, and nothing changes
 
 ### Requirement: Losing ends the run

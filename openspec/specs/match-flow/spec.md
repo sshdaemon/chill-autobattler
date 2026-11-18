@@ -5,25 +5,6 @@ The match as the player experiences it in the browser: choose an army, deploy it
 
 ## Requirements
 
-### Requirement: Army picker
-Before each match the player SHALL pick exactly 5 units from all of the roster's unit types. Each card shows the type's label, icon and blurb (from its look), stats and damage taken from each type. Veterans SHALL fill their slots, shown with stars, and no type can go below its veterans. The first pick SHALL default to 2 warriors, 2 archers and 1 mage; later picks SHALL default to the previous army, raised to cover the veterans.
-
-#### Scenario: Incomplete army
-- **WHEN** the player has picked 4 units
-- **THEN** they can't continue to deployment, and the button says how many are missing
-
-#### Scenario: Remembered army
-- **WHEN** the player played a match with 1 warrior, 3 archers and 1 mage, then presses Next match
-- **THEN** the picker starts at 1 warrior, 3 archers and 1 mage
-
-#### Scenario: Veterans are kept
-- **WHEN** the run has two veteran warriors
-- **THEN** the picker shows them in gold with their stars, and the warrior count can't go below 2
-
-#### Scenario: A fourth unit type
-- **WHEN** the roster has a fourth unit type
-- **THEN** the picker shows four cards, each with its own label, icon, blurb and damage-taken line, and armies can include the new type
-
 ### Requirement: Deployment under fog
 After the picker, the client SHALL start a server-issued battle and show its map with Blue deployed in its zone. Red's units SHALL NOT be shown during deployment.
 
@@ -92,3 +73,33 @@ On load, the client SHALL ask the server for the player's active run and continu
 #### Scenario: Reload during a fight
 - **WHEN** the player reloads while a locked battle is playing
 - **THEN** the battle plays again from its start with the same armies and seeds, and is verified when it ends
+
+### Requirement: Faction screen
+A new run SHALL open on a faction screen before the first army picker. Each playable faction SHALL show its name, colours, lore and its units (label, icon and blurb); choosing one SHALL start the run as that faction. Factions not playable yet MAY be shown with their planned units and SHALL NOT be selectable.
+
+#### Scenario: Pick a faction
+- **WHEN** a player with no active run opens the game and chooses Classic
+- **THEN** a run starts as Classic and the army picker opens
+
+#### Scenario: Coming soon
+- **WHEN** the faction screen shows a faction that isn't playable yet
+- **THEN** its card shows its planned units and its button is disabled
+
+### Requirement: Draft
+Before each battle of a run, after the battle is started, both sides SHALL draft five units in turns of 1, 2, 2, 2, 2 and 1 picks, alternating, the side picking first decided by a coin flip from the battle's map seed. Blue's veterans SHALL fill Blue's first picks by themselves. Every other Blue pick SHALL be a unit type of the run's faction with one of its abilities as its level-1 ability. Each Blue turn SHALL last at most 15 seconds; when it runs out, the turn's remaining picks SHALL be made at random. Red's picks SHALL be its generated army, revealed one unit at a time in a seeded order. The drafted army SHALL then go to deployment. Reloading during a draft SHALL draft the same battle again, with the same order and Red picks.
+
+#### Scenario: Turn order
+- **WHEN** the coin flip says Red picks first
+- **THEN** Red picks 1, Blue 2, Red 2, Blue 2, Red 2 and Blue 1
+
+#### Scenario: Veterans first
+- **WHEN** the run has two veterans
+- **THEN** they fill Blue's first two picks by themselves, and the player drafts the other three
+
+#### Scenario: Time runs out
+- **WHEN** the player makes no pick in a 15-second turn
+- **THEN** that turn's picks are made at random and the draft goes on
+
+#### Scenario: A pick
+- **WHEN** the player picks a mage with Blast
+- **THEN** Blue's army gains a level-1 mage whose ability is Blast
