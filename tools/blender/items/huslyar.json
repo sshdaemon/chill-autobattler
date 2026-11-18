@@ -1,0 +1,35 @@
+{
+ "Husli": {
+  "modelled": true,
+  "bone": "spine_03",
+  "pos": [
+   0.02,
+   0.0,
+   0.19
+  ],
+  "rot": [
+   0,
+   0,
+   -0.35
+  ],
+  "scale": 0.85
+ },
+ "Dagger": {
+  "source": [
+   "kaykit",
+   "dagger.gltf"
+  ],
+  "bone": "hand_r",
+  "pos": [
+   0,
+   0,
+   0
+  ],
+  "rot": [
+   1.5707963267948966,
+   0,
+   0
+  ],
+  "scale": 0.42
+ }
+}

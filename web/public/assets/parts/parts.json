@@ -365,6 +365,20 @@
    ],
    "scale": 0.55
   },
+  "Dagger": {
+   "bone": "hand_r",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 0.42
+  },
   "Quiver_Belt": {
    "bone": "pelvis",
    "pos": [
@@ -444,6 +458,48 @@
     0.62
    ],
    "length": 0.95
+  },
+  "Shelom": {
+   "bone": "Head",
+   "pos": [
+    0,
+    0.11,
+    0.01
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0
+  },
+  "Shield_Crimson": {
+   "bone": "lowerarm_l",
+   "pos": [
+    0.18,
+    0.125,
+    0
+   ],
+   "rot": [
+    -1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 1.0
+  },
+  "Husli": {
+   "bone": "spine_03",
+   "pos": [
+    0.02,
+    0.0,
+    0.19
+   ],
+   "rot": [
+    0,
+    0,
+    -0.35
+   ],
+   "scale": 0.85
   },
   "Composite_Bow": {
    "bone": "hand_l",
