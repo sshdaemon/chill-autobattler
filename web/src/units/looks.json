@@ -10,49 +10,189 @@
     "Death01": {},
     "Hit_Knockback": {},
     "Sword_Attack": { "hit": 0.5 },
-    "Sword_Slash_A": { "hit": 0.3, "from": ["Sword_Regular_A", "Sword_Regular_A_Rec"] },
-    "Sword_Slash_B": { "hit": 0.3, "from": ["Sword_Regular_B", "Sword_Regular_B_Rec"] },
+    "Sword_Slash_A": {
+      "hit": 0.3,
+      "from": ["Sword_Regular_A", "Sword_Regular_A_Rec"]
+    },
+    "Sword_Slash_B": {
+      "hit": 0.3,
+      "from": ["Sword_Regular_B", "Sword_Regular_B_Rec"]
+    },
     "Spell_Simple_Shoot": { "hit": 0.225 },
     "OverhandThrow": { "hit": 0.42 },
     "Sword_Dash": {},
     "NinjaJump_Land": {}
   },
+  "builds": {
+    "slim": {
+      "girth": { "spine_02": -0.006, "spine_03": -0.008, "upperarm": -0.006, "lowerarm": -0.004, "thigh": -0.006, "calf": -0.003 },
+      "shoulders": 0.95,
+      "head": 1.0,
+      "height": 1.02
+    },
+    "normal": {
+      "girth": {},
+      "shoulders": 1,
+      "head": 1,
+      "height": 1
+    },
+    "bulky": {
+      "girth": { "spine_01": 0.014, "spine_02": 0.024, "spine_03": 0.03, "clavicle": 0.02, "neck_01": 0.01, "upperarm": 0.024, "lowerarm": 0.018, "hand": 0.006, "thigh": 0.018, "calf": 0.01 },
+      "shoulders": 1.14,
+      "head": 0.97,
+      "height": 1.04
+    },
+    "stout": {
+      "girth": { "pelvis": 0.03, "spine_01": 0.03, "spine_02": 0.03, "spine_03": 0.02, "upperarm": 0.014, "lowerarm": 0.01, "thigh": 0.02, "calf": 0.012 },
+      "shoulders": 1.06,
+      "head": 1.04,
+      "height": 0.94
+    }
+  },
   "units": {
     "warrior": {
-      "models": ["Mirko", "Vesna", "Radim"],
+      "recipes": [
+        {
+          "name": "Mirko",
+          "sex": "male",
+          "head": "Head_Male",
+          "build": "bulky",
+          "parts": ["Male_Ranger_Body", "Male_Ranger_Arms", "Male_Peasant_Legs", "Male_Ranger_Feet_Boots", "Male_Ranger_Acc_Pauldron"],
+          "hair": ["Hair_Buzzed", "Hair_Beard", "Eyebrows_Regular"],
+          "variant": 1,
+          "items": ["Sword", "Shield_Wooden", "Helmet"],
+          "team": 0.9
+        },
+        {
+          "name": "Vesna",
+          "sex": "female",
+          "head": "Head_Female",
+          "build": "bulky",
+          "parts": ["Female_Ranger_Body", "Female_Ranger_Arms", "Female_Ranger_Legs", "Female_Ranger_Feet", "Female_Ranger_Acc_Pauldrons"],
+          "hair": ["Hair_Buns", "Eyebrows_Female"],
+          "variant": 1,
+          "items": ["Sword", "Shield_Round", "Helmet"],
+          "team": 0.9
+        },
+        {
+          "name": "Radim",
+          "sex": "male",
+          "head": "Head_Male",
+          "build": "stout",
+          "parts": ["Male_Peasant_Body", "Male_Peasant_Arms", "Male_Peasant_Legs", "Male_Ranger_Feet_Boots", "Male_Ranger_Acc_Pauldron"],
+          "hair": ["Hair_SimpleParted", "Hair_Beard", "Eyebrows_Regular"],
+          "variant": 0,
+          "items": ["Axe", "Shield_Round"],
+          "team": 0.9
+        }
+      ],
       "anims": {
-        "idle": "Sword_Idle", "move": "Jog_Fwd_Loop", "cheer": "Yes",
+        "idle": "Sword_Idle",
+        "move": "Jog_Fwd_Loop",
+        "cheer": "Yes",
         "attack": ["Sword_Attack", "Sword_Slash_A", "Sword_Slash_B"],
-        "hit": ["Hit_Chest", "Hit_Head"], "death": ["Death01", "Hit_Knockback"]
+        "hit": ["Hit_Chest", "Hit_Head"],
+        "death": ["Death01", "Hit_Knockback"]
       },
       "skills": {
-        "1": {}, "2": {}, "3": {},
+        "1": {},
+        "2": {},
+        "3": {},
         "4": { "action": "Sword_Dash", "rate": 2, "fx": "dash" },
         "5": { "fx": "execute.heavy" }
       }
     },
     "archer": {
-      "models": ["Bogdan", "Lada"],
+      "recipes": [
+        {
+          "name": "Bogdan",
+          "sex": "male",
+          "head": "Head_Male",
+          "build": "slim",
+          "parts": ["Male_Ranger_Body", "Male_Ranger_Arms", "Male_Ranger_Legs", "Male_Ranger_Feet_Boots", "Male_Ranger_Head_Hood"],
+          "hair": ["Hair_Beard", "Eyebrows_Regular"],
+          "variant": 0,
+          "items": ["Bow", "Quiver"],
+          "team": 0.85
+        },
+        {
+          "name": "Lada",
+          "sex": "female",
+          "head": "Head_Female",
+          "build": "slim",
+          "parts": ["Female_Ranger_Body", "Female_Ranger_Arms", "Female_Ranger_Legs", "Female_Ranger_Feet", "Female_Ranger_Head_Hood"],
+          "hair": ["Eyebrows_Female"],
+          "variant": 0,
+          "items": ["Bow", "Quiver"],
+          "team": 0.85
+        }
+      ],
       "anims": {
-        "idle": "Idle_Loop", "move": "Jog_Fwd_Loop", "cheer": "Yes",
+        "idle": "Idle_Loop",
+        "move": "Jog_Fwd_Loop",
+        "cheer": "Yes",
         "attack": ["Spell_Simple_Shoot"],
-        "hit": ["Hit_Chest", "Hit_Head"], "death": ["Death01", "Hit_Knockback"]
+        "hit": ["Hit_Chest", "Hit_Head"],
+        "death": ["Death01", "Hit_Knockback"]
       },
       "skills": {
-        "6": {}, "3": {}, "1": {},
+        "6": {},
+        "3": {},
+        "1": {},
         "7": { "pitch": 0.45 },
         "5": { "fx": "execute" }
       }
     },
     "mage": {
-      "models": ["Zoran", "Milena", "Velimir"],
+      "recipes": [
+        {
+          "name": "Zoran",
+          "sex": "male",
+          "head": "Head_Male",
+          "build": "normal",
+          "parts": ["Male_Peasant_Body", "Male_Peasant_Arms", "Male_Peasant_Legs", "Male_Peasant_Feet"],
+          "hair": ["Hair_Beard", "Eyebrows_Regular"],
+          "variant": 0,
+          "items": ["Staff", "Wizard_Hat"],
+          "team": 0.6,
+          "tint": "#9a80ff"
+        },
+        {
+          "name": "Milena",
+          "sex": "female",
+          "head": "Head_Female",
+          "build": "slim",
+          "parts": ["Female_Peasant_Body", "Female_Peasant_Arms", "Female_Peasant_Legs", "Female_Peasant_Feet"],
+          "hair": ["Hair_Long", "Eyebrows_Female"],
+          "variant": 0,
+          "items": ["Staff", "Wizard_Hat"],
+          "team": 0.6,
+          "tint": "#9a80ff"
+        },
+        {
+          "name": "Velimir",
+          "sex": "male",
+          "head": "Head_Male",
+          "build": "stout",
+          "parts": ["Male_Peasant_Body", "Male_Peasant_Arms", "Male_Peasant_Legs", "Male_Peasant_Feet"],
+          "hair": ["Hair_SimpleParted", "Hair_Beard", "Eyebrows_Regular"],
+          "variant": 1,
+          "items": ["Staff", "Wizard_Hat"],
+          "team": 0.6,
+          "tint": "#7f9cff"
+        }
+      ],
       "anims": {
-        "idle": "Spell_Simple_Idle_Loop", "move": "Jog_Fwd_Loop", "cheer": "Yes",
+        "idle": "Spell_Simple_Idle_Loop",
+        "move": "Jog_Fwd_Loop",
+        "cheer": "Yes",
         "attack": ["Spell_Simple_Shoot"],
-        "hit": ["Hit_Chest", "Hit_Head"], "death": ["Death01", "Hit_Knockback"]
+        "hit": ["Hit_Chest", "Hit_Head"],
+        "death": ["Death01", "Hit_Knockback"]
       },
       "skills": {
-        "3": {}, "1": {},
+        "3": {},
+        "1": {},
         "8": { "fx": "frost" },
         "9": { "action": "NinjaJump_Land", "rate": 1.4, "fx": "blink" },
         "10": { "attack": "OverhandThrow", "fx": "blast" }

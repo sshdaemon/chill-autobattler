@@ -1,0 +1,413 @@
+{
+ "parts": {
+  "Female_Peasant_Arms": {
+   "slot": "arms",
+   "sex": "female",
+   "outfit": "Peasant",
+   "materials": [
+    "MI_Peasant"
+   ]
+  },
+  "Female_Peasant_Body": {
+   "slot": "torso",
+   "sex": "female",
+   "outfit": "Peasant",
+   "materials": [
+    "MI_Peasant"
+   ]
+  },
+  "Female_Peasant_Feet": {
+   "slot": "feet",
+   "sex": "female",
+   "outfit": "Peasant",
+   "materials": [
+    "MI_Peasant"
+   ]
+  },
+  "Female_Peasant_Legs": {
+   "slot": "legs",
+   "sex": "female",
+   "outfit": "Peasant",
+   "materials": [
+    "MI_Peasant"
+   ]
+  },
+  "Female_Ranger_Acc_Pauldrons": {
+   "slot": "accessory",
+   "sex": "female",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Female_Ranger_Arms": {
+   "slot": "arms",
+   "sex": "female",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger",
+    "MI_Regular_Female"
+   ]
+  },
+  "Female_Ranger_Body": {
+   "slot": "torso",
+   "sex": "female",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Female_Ranger_Feet": {
+   "slot": "feet",
+   "sex": "female",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Female_Ranger_Head_Hood": {
+   "slot": "headgear",
+   "sex": "female",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Female_Ranger_Legs": {
+   "slot": "legs",
+   "sex": "female",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Male_Peasant_Arms": {
+   "slot": "arms",
+   "sex": "male",
+   "outfit": "Peasant",
+   "materials": [
+    "MI_Peasant",
+    "MI_Regular_Male"
+   ]
+  },
+  "Male_Peasant_Body": {
+   "slot": "torso",
+   "sex": "male",
+   "outfit": "Peasant",
+   "materials": [
+    "MI_Peasant"
+   ]
+  },
+  "Male_Peasant_Feet": {
+   "slot": "feet",
+   "sex": "male",
+   "outfit": "Peasant",
+   "materials": [
+    "MI_Peasant"
+   ]
+  },
+  "Male_Peasant_Legs": {
+   "slot": "legs",
+   "sex": "male",
+   "outfit": "Peasant",
+   "materials": [
+    "MI_Peasant"
+   ]
+  },
+  "Male_Ranger_Acc_Pauldron": {
+   "slot": "accessory",
+   "sex": "male",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Male_Ranger_Arms": {
+   "slot": "arms",
+   "sex": "male",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger",
+    "MI_Regular_Male"
+   ]
+  },
+  "Male_Ranger_Body": {
+   "slot": "torso",
+   "sex": "male",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Male_Ranger_Feet_Boots": {
+   "slot": "feet",
+   "sex": "male",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Male_Ranger_Head_Hood": {
+   "slot": "headgear",
+   "sex": "male",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Male_Ranger_Legs": {
+   "slot": "legs",
+   "sex": "male",
+   "outfit": "Ranger",
+   "materials": [
+    "MI_Ranger"
+   ]
+  },
+  "Head_Male": {
+   "slot": "head",
+   "sex": "male",
+   "materials": [
+    "MI_Hair_1",
+    "MI_Eyes",
+    "MI_Superhero_Male"
+   ]
+  },
+  "Hair_SimpleParted": {
+   "slot": "hair",
+   "sex": "male",
+   "materials": [
+    "MI_Hair_1"
+   ]
+  },
+  "Hair_Beard": {
+   "slot": "hair",
+   "sex": "male",
+   "materials": [
+    "MI_Hair_1"
+   ]
+  },
+  "Hair_Buzzed": {
+   "slot": "hair",
+   "sex": "male",
+   "materials": [
+    "MI_Hair_1"
+   ]
+  },
+  "Eyebrows_Regular": {
+   "slot": "hair",
+   "sex": "male",
+   "materials": [
+    "MI_Hair_1"
+   ]
+  },
+  "Head_Female": {
+   "slot": "head",
+   "sex": "female",
+   "materials": [
+    "MI_Hair_2",
+    "MI_Eyes",
+    "MI_Superhero_Female"
+   ]
+  },
+  "Hair_Buns": {
+   "slot": "hair",
+   "sex": "female",
+   "materials": [
+    "MI_Hair_2"
+   ]
+  },
+  "Hair_Long": {
+   "slot": "hair",
+   "sex": "female",
+   "materials": [
+    "MI_Hair_2"
+   ]
+  },
+  "Hair_BuzzedFemale": {
+   "slot": "hair",
+   "sex": "female",
+   "materials": [
+    "MI_Hair_1"
+   ]
+  },
+  "Eyebrows_Female": {
+   "slot": "hair",
+   "sex": "female",
+   "materials": [
+    "MI_Hair_2"
+   ]
+  }
+ },
+ "items": {
+  "Sword": {
+   "bone": "hand_r",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 0.85
+  },
+  "Axe": {
+   "bone": "hand_r",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 0.95
+  },
+  "Shield_Wooden": {
+   "bone": "lowerarm_l",
+   "pos": [
+    0.07,
+    0,
+    0.02
+   ],
+   "rot": [
+    0,
+    1.5707963267948966,
+    0
+   ],
+   "scale": 0.95
+  },
+  "Shield_Round": {
+   "bone": "lowerarm_l",
+   "pos": [
+    0.07,
+    0,
+    0.02
+   ],
+   "rot": [
+    0,
+    1.5707963267948966,
+    0
+   ],
+   "scale": 0.62
+  },
+  "Bow": {
+   "bone": "hand_l",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 0.6
+  },
+  "Quiver": {
+   "bone": "spine_03",
+   "pos": [
+    0.05,
+    0.02,
+    -0.16
+   ],
+   "rot": [
+    -0.25,
+    0,
+    0.35
+   ],
+   "scale": 0.6
+  },
+  "Staff": {
+   "bone": "hand_r",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "scale": 0.8
+  },
+  "Wand": {
+   "bone": "hand_r",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 0.6
+  },
+  "Sword_Long": {
+   "bone": "hand_r",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "scale": 0.55
+  },
+  "Wizard_Hat": {
+   "bone": "Head",
+   "pos": [
+    0,
+    0.2,
+    -0.01
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0
+  },
+  "Helmet": {
+   "bone": "Head",
+   "pos": [
+    0,
+    0.11,
+    0.01
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0
+  }
+ },
+ "materials": {
+  "MI_Ranger": {
+   "variants": [
+    "T_Ranger_BaseColor.jpg",
+    "T_Ranger_3_BaseColor.jpg"
+   ],
+   "mask": "T_Ranger_Mask.jpg"
+  },
+  "MI_Peasant": {
+   "variants": [
+    "T_Peasant_BaseColor.jpg",
+    "T_Peasant_2_BaseColor.jpg"
+   ],
+   "mask": "T_Peasant_Mask.jpg"
+  }
+ }
+}

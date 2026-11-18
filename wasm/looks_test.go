@@ -23,9 +23,16 @@ const (
 	looksFile = "../web/src/units/looks.json"
 	fxFile    = "../web/src/scene/fx.json"
 	clipsFile = "../web/public/assets/clips.json"
+	partsDir  = "../web/public/assets/parts/"
 
 	clipsMaxRaw  = 1_500_000
 	clipsMaxGzip = 400_000
+	partsMax     = 10_000_000 // the whole parts library
+	armyMax      = 3_000_000  // the parts and textures of every class's first recipe
+
+	buildMaxGirth  = 0.04 // metres pushed out per bone
+	buildMaxHeight = 0.08 // ±, overall height
+	buildMaxScale  = 0.2  // ±, shoulders and head
 )
 
 type skillLook struct {
@@ -36,9 +43,34 @@ type skillLook struct {
 	Fx     string  `json:"fx"`
 }
 
+type recipe struct {
+	Name, Sex, Build, Head string
+	Parts, Hair, Items     []string
+	Variant                int
+	Team                   float64
+	Tint                   string
+}
+
+type build struct {
+	Girth                   map[string]float64
+	Shoulders, Head, Height float64
+}
+
+type partsManifest struct {
+	Parts map[string]struct {
+		Slot, Sex string
+		Materials []string
+	}
+	Items     map[string]struct{ Bone string }
+	Materials map[string]struct {
+		Variants []string
+		Mask     string
+	}
+}
+
 type unitLook struct {
-	Models []string `json:"models"`
-	Anims  struct {
+	Recipes []recipe `json:"recipes"`
+	Anims   struct {
 		Idle, Move, Cheer  string
 		Attack, Hit, Death []string
 	} `json:"anims"`
@@ -51,7 +83,8 @@ type looksData struct {
 		Hit  float64  `json:"hit"`
 		From []string `json:"from"`
 	} `json:"clips"`
-	Units map[string]unitLook `json:"units"`
+	Builds map[string]build    `json:"builds"`
+	Units  map[string]unitLook `json:"units"`
 }
 
 func readJSON(t *testing.T, path string, v any) []byte {
@@ -90,8 +123,8 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 			bad("unit %s has no look", d.Name)
 			continue
 		}
-		if len(look.Models) == 0 {
-			bad("%s: no models", d.Name)
+		if len(look.Recipes) == 0 {
+			bad("%s: no recipes", d.Name)
 		}
 		a := look.Anims
 		clip(d.Name+" idle", a.Idle, false)
@@ -169,6 +202,190 @@ func TestLooksMatchRoster(t *testing.T) {
 	w.Close()
 	if len(raw) > clipsMaxRaw || z.Len() > clipsMaxGzip {
 		t.Errorf("clips.json is %d bytes (%d gzipped), budget %d (%d)", len(raw), z.Len(), clipsMaxRaw, clipsMaxGzip)
+	}
+}
+
+// checkRecipes returns every way a look's recipes disagree with the parts
+// manifest or the build limits.
+func checkRecipes(l looksData, m partsManifest) []string {
+	var errs []string
+	bad := func(format string, args ...any) { errs = append(errs, fmt.Sprintf(format, args...)) }
+	for name, b := range l.Builds {
+		for bone, g := range b.Girth {
+			if g < -buildMaxGirth || g > buildMaxGirth {
+				bad("build %s: girth %v on %s outside ±%v m", name, g, bone, buildMaxGirth)
+			}
+		}
+		if b.Height < 1-buildMaxHeight || b.Height > 1+buildMaxHeight {
+			bad("build %s: height %v outside ±%v", name, b.Height, buildMaxHeight)
+		}
+		for what, v := range map[string]float64{"shoulders": b.Shoulders, "head": b.Head} {
+			if v < 1-buildMaxScale || v > 1+buildMaxScale {
+				bad("build %s: %s %v outside ±%v", name, what, v, buildMaxScale)
+			}
+		}
+	}
+	for unit, look := range l.Units {
+		names := map[string]bool{}
+		for _, r := range look.Recipes {
+			where := unit + " recipe " + r.Name
+			if names[r.Name] {
+				bad("%s: name used twice", where)
+			}
+			names[r.Name] = true
+			if _, ok := l.Builds[r.Build]; !ok {
+				bad("%s: unknown build %q", where, r.Build)
+			}
+			if len(r.Parts) == 0 {
+				bad("%s: no parts", where)
+			}
+			slots := map[string]string{}
+			for i, p := range append(append(append([]string{}, r.Parts...), r.Head), r.Hair...) {
+				part, ok := m.Parts[p]
+				if !ok {
+					bad("%s: part %q is not in parts.json", where, p)
+					continue
+				}
+				if part.Sex != r.Sex {
+					bad("%s: part %s is %s, the recipe is %s (they have different skeletons)", where, p, part.Sex, r.Sex)
+				}
+				switch {
+				case i == 0 && part.Slot != "torso":
+					bad("%s: the first part must be a torso (its skeleton is the unit's), got %s (%s)", where, p, part.Slot)
+				case p == r.Head && part.Slot != "head":
+					bad("%s: head %s is a %s part", where, p, part.Slot)
+				case slices.Contains(r.Hair, p) && part.Slot != "hair":
+					bad("%s: hair %s is a %s part", where, p, part.Slot)
+				case part.Slot != "hair" && part.Slot != "accessory" && slots[part.Slot] != "":
+					bad("%s: %s and %s both fill slot %s", where, slots[part.Slot], p, part.Slot)
+				}
+				slots[part.Slot] = p
+				for _, mat := range part.Materials {
+					if spec, ok := m.Materials[mat]; ok && r.Variant >= len(spec.Variants) {
+						bad("%s: colour variant %d, %s has %d", where, r.Variant, mat, len(spec.Variants))
+					}
+				}
+			}
+			for _, it := range r.Items {
+				if _, ok := m.Items[it]; !ok {
+					bad("%s: item %q is not in parts.json", where, it)
+				}
+			}
+			if r.Team < 0 || r.Team > 1 {
+				bad("%s: team strength %v outside 0..1", where, r.Team)
+			}
+		}
+	}
+	sort.Strings(errs)
+	return errs
+}
+
+// size of a part (.gltf, .bin and its textures), counting textures once per set
+func partFiles(t *testing.T, name string, seen map[string]bool) int64 {
+	var g struct {
+		Buffers []struct{ URI string }
+		Images  []struct{ URI string }
+	}
+	readJSON(t, partsDir+name+".gltf", &g)
+	files := []string{name + ".gltf"}
+	for _, b := range g.Buffers {
+		files = append(files, b.URI)
+	}
+	for _, i := range g.Images {
+		files = append(files, i.URI)
+	}
+	var n int64
+	for _, f := range files {
+		if seen[f] {
+			continue
+		}
+		seen[f] = true
+		st, err := os.Stat(partsDir + f)
+		if err != nil {
+			t.Errorf("part %s: %v", name, err)
+			continue
+		}
+		n += st.Size()
+	}
+	return n
+}
+
+func TestRecipes(t *testing.T) {
+	var l looksData
+	readJSON(t, looksFile, &l)
+	var m partsManifest
+	readJSON(t, partsDir+"parts.json", &m)
+	for _, e := range checkRecipes(l, m) {
+		t.Error(e)
+	}
+	// budgets
+	entries, err := os.ReadDir(partsDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var total int64
+	for _, e := range entries {
+		info, _ := e.Info()
+		total += info.Size()
+	}
+	if total > partsMax {
+		t.Errorf("parts library is %d bytes, budget %d", total, partsMax)
+	}
+	seen := map[string]bool{}
+	var army int64
+	for _, d := range sim.Roster {
+		r := l.Units[d.Name].Recipes[0]
+		for _, p := range append(append(append(append([]string{}, r.Parts...), r.Head), r.Hair...), r.Items...) {
+			army += partFiles(t, p, seen)
+		}
+		for _, p := range r.Parts {
+			for _, mat := range m.Parts[p].Materials {
+				if spec, ok := m.Materials[mat]; ok {
+					for _, f := range []string{spec.Variants[r.Variant], spec.Mask} {
+						if !seen[f] {
+							seen[f] = true
+							st, _ := os.Stat(partsDir + f)
+							army += st.Size()
+						}
+					}
+				}
+			}
+		}
+	}
+	if army > armyMax {
+		t.Errorf("a default army's parts are %d bytes, budget %d", army, armyMax)
+	}
+	t.Logf("parts library %.1f MB, default army %.1f MB", float64(total)/1e6, float64(army)/1e6)
+}
+
+func TestRecipeCheckCatches(t *testing.T) {
+	var l looksData
+	readJSON(t, looksFile, &l)
+	var m partsManifest
+	readJSON(t, partsDir+"parts.json", &m)
+	edit := func(f func(r *recipe)) looksData {
+		var c looksData
+		b, _ := json.Marshal(l)
+		json.Unmarshal(b, &c)
+		f(&c.Units["warrior"].Recipes[0])
+		return c
+	}
+	cases := map[string]looksData{
+		"missing part":  edit(func(r *recipe) { r.Parts = append(r.Parts, "Male_Knight_Helmet") }),
+		"missing item":  edit(func(r *recipe) { r.Items = append(r.Items, "Halberd") }),
+		"torso first":   edit(func(r *recipe) { r.Parts[0], r.Parts[1] = r.Parts[1], r.Parts[0] }),
+		"mixed sex":     edit(func(r *recipe) { r.Head = "Head_Female" }),
+		"slot twice":    edit(func(r *recipe) { r.Parts = append(r.Parts, r.Parts[1]) }),
+		"unknown build": edit(func(r *recipe) { r.Build = "giant" }),
+		"variant":       edit(func(r *recipe) { r.Variant = 5 }),
+	}
+	big := edit(func(*recipe) {})
+	big.Builds["bulky"] = build{Girth: map[string]float64{"spine_03": 0.2}, Shoulders: 1.5, Head: 1, Height: 1.3}
+	cases["build limits"] = big
+	for name, c := range cases {
+		if errs := checkRecipes(c, m); len(errs) == 0 {
+			t.Errorf("%s: not reported", name)
+		}
 	}
 }
 
