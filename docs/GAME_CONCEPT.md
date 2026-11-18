@@ -34,6 +34,8 @@ New run (random name)
 
 ## 4. Classes
 
+In the code each class is an entry of the unit roster (`sim/unit_warrior.go`, `unit_archer.go`, `unit_mage.go`); those files are the source of truth for the numbers below.
+
 ### 4.1 Base stats
 
 | | ⚔️ Warrior | 🏹 Archer | ✨ Mage |
@@ -144,6 +146,8 @@ How to read it:
 - **Recruits:** new units always start with no skills.
 
 ### 10.1 Skill list
+
+In the code each skill is a list of effects (stat bonus, finisher, slow on hit, splash on hit, gap-closer, escape, over cover) in its unit's roster file.
 
 **⚔️ Warrior**
 

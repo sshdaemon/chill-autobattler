@@ -227,7 +227,7 @@ func Skills(n int) (string, []skillRow) {
 	first := map[sim.Class]int{sim.Warrior: 0, sim.Archer: 2, sim.Mage: 4}
 	var rows []skillRow
 	for c := sim.Warrior; c <= sim.Mage; c++ {
-		for _, d := range sim.SkillsOf[c] {
+		for _, d := range sim.Roster[c].Skills {
 			var ins []sim.Input
 			for i := 0; i < n; i++ {
 				in := base(i)

@@ -43,7 +43,7 @@ func allSkills(c Class, perUnit int) []UnitSpec {
 	for i := 0; i < ArmySize; i++ {
 		u := UnitSpec{Class: c}
 		for k := 0; k < perUnit; k++ {
-			u.Skills = append(u.Skills, SkillsOf[c][(i+k)%MaxSkills].Skill)
+			u.Skills = append(u.Skills, Roster[c].Skills[(i+k)%MaxSkills].Skill)
 		}
 		out = append(out, u)
 	}
@@ -234,8 +234,8 @@ func FuzzDeterminism(f *testing.F) {
 		in := Input{Version: Version, Seed: seed, CombatSeed: ^seed, RedSkills: int(redSkills) % (ArmySize*MaxSkills + 1),
 			Blue: Army{Formation: Presets[int(formation)%len(Presets)]}}
 		for i := 0; i < ArmySize; i++ {
-			c := Class((int(classes) >> i) % int(numClasses))
-			in.Blue.Units = append(in.Blue.Units, UnitSpec{Class: c, Skills: []Skill{SkillsOf[c][(int(seed)+i)%MaxSkills].Skill}})
+			c := Class((int(classes) >> i) % 3)
+			in.Blue.Units = append(in.Blue.Units, UnitSpec{Class: c, Skills: []Skill{Roster[c].Skills[(int(seed)+i)%MaxSkills].Skill}})
 		}
 		a, err := Run(in)
 		if err != nil {

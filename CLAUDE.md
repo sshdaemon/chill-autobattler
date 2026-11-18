@@ -31,6 +31,13 @@ sim/ rules (enforced by `TestNoNondeterministicImports`):
 - No floats, map iteration, time, goroutines, `math` or `math/rand`.
 - Randomness only from the battle's `Sub(seed, tag)` streams.
 
+Unit roster (`sim/roster.go`, one `sim/unit_*.go` per unit type):
+- A unit type is data: stats, traits (ranged, kite, projectile), matchup tags and bonuses, and five skills.
+- A skill is a list of effects from a fixed set (`EffectKind`). The battle code reads a loadout folded at spawn and never checks units or skills by name.
+- Adding a unit means adding a roster file; `ValidateRoster` (run by the tests) checks it. A new kind of behaviour means a new effect kind, which is a rule change.
+- Changing `InRedPool` changes Red's generated armies, so it needs a `sim.Version` bump.
+- `wasm data()` publishes the roster; the web client reads units and skills only from there.
+
 Golden replays (`sim/testdata/golden.json`):
 - Any rule change that alters outcomes needs `sim.Version` bumped, then `go test ./sim -run TestGoldenReplays -update`.
 - The update refuses to run without the version bump.

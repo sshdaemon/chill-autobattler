@@ -54,7 +54,7 @@ func baselineNow() baselineData {
 
 func skillIDs(c Class) []Skill {
 	var out []Skill
-	for _, d := range SkillsOf[c] {
+	for _, d := range Roster[c].Skills {
 		out = append(out, d.Skill)
 	}
 	return out

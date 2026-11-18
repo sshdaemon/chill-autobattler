@@ -107,7 +107,7 @@ Each `UnitDef` has `InRedPool bool`. `RedArmy` draws `IntN(len(pool))` over the 
 ### 6. Roster check
 `ValidateRoster(r []UnitDef) error` checks the rules in the unit-roster spec and runs in a test. The sim does not check its own constant data at startup in production, so WASM size and start-up time stay unchanged.
 
-The data-only test unit (a "spearman" with gap-closer, slow on hit and a stat bonus) lives in a `_test.go` file and is swapped into `Roster` by a test helper that restores the original afterwards.
+The data-only test unit (a ranged "frost ranger" with gap-closer, slow on hit, splash, finisher and a stat bonus; slow and splash act on projectiles, so the roster check only allows them on ranged units) lives in a `_test.go` file and is swapped into `Roster` by a test helper that restores the original afterwards.
 
 ### 7. Client data
 `wasm data()` keeps its current fields (`classes[].hp…`, `skills[].name/pct/value`, the `matchup` matrix computed from tags), so the web client doesn't change. It adds `traits`, `tags`, `bonus`, and `effects` for each skill. `pct` and `value` stay, filled from the skill's main effect, so the existing UI text still reads correctly.

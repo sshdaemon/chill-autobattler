@@ -1,7 +1,8 @@
 package sim
 
-// All balance numbers and tuning constants, ported from the prototype
-// (docs/GAME_CONCEPT.md §4, §5, §7, §10). Durations are in ticks.
+// Tuning constants shared by every unit, ported from the prototype
+// (docs/GAME_CONCEPT.md §5, §7). Units, their stats, matchups and skills are
+// roster data (roster.go, unit_*.go). Durations are in ticks.
 
 const (
 	TicksPerSecond = 20
@@ -16,16 +17,14 @@ func sec(tenths int) int { return tenths * TicksPerSecond / 10 }
 // perTick converts a per-second Fx amount to per tick.
 func perTick(v Fx) Fx { return v / TicksPerSecond }
 
+// Class is a roster id (Roster[c]); the first three are the original classes.
 type Class uint8
 
 const (
 	Warrior Class = iota
 	Archer
 	Mage
-	numClasses
 )
-
-func (c Class) String() string { return [...]string{"warrior", "archer", "mage"}[c] }
 
 type Stats struct {
 	HP           Fx
@@ -39,23 +38,7 @@ type Stats struct {
 	ShotSpeed    Fx  // projectile metres per second (ranged only)
 }
 
-var ClassStats = [numClasses]Stats{
-	Warrior: {HP: I(100), DmgLo: I(10), DmgHi: I(16), Cooldown: sec(13), Range: Ratio(15, 10), Speed: Ratio(32, 10), Sight: I(7),
-		SwingTicks: sec(9)}, // min(cooldown*0.9, ~0.9 s clip)
-	Archer: {HP: I(55), DmgLo: I(9), DmgHi: I(14), Cooldown: sec(17), Range: I(9), Speed: Ratio(36, 10), Sight: I(11),
-		Ranged: true, Kite: true, SwingTicks: sec(6), ShotSpeed: I(18)},
-	Mage: {HP: I(55), DmgLo: I(14), DmgHi: I(20), Cooldown: sec(22), Range: I(7), Speed: I(3), Sight: I(9),
-		Ranged: true, SwingTicks: sec(8), ShotSpeed: I(14)},
-}
-
-// Matchup[attacker][victim] damage multiplier (rock-paper-scissors).
-var Matchup = [numClasses][numClasses]Fx{
-	Warrior: {One, Ratio(145, 100), Ratio(95, 100)},
-	Archer:  {One, One, One},
-	Mage:    {Ratio(135, 100), One, One},
-}
-
-// Skill identifies an effect; each class has 5 of them (SkillsOf).
+// Skill is a skill's wire id; each roster entry lists the 5 it can learn.
 type Skill uint8
 
 const (
@@ -71,49 +54,6 @@ const (
 	SkillBlast                    // mage
 )
 
-type SkillDef struct {
-	Skill Skill
-	Name  string
-	Pct   int // percent bonus or chance, for percentage skills
-	Value Fx  // otherwise the number the skill uses (metres, seconds)
-}
-
-// SkillsOf lists each class's skills in the order Red's random picks use.
-var SkillsOf = [numClasses][MaxSkills]SkillDef{
-	Warrior: {
-		{SkillHealth, "Toughness", 10, 0},
-		{SkillSpeed, "Swift", 40, 0},
-		{SkillDamage, "Strength", 15, 0},
-		{SkillDash, "Dash", 0, I(10)}, // reach in metres
-		{SkillExecute, "Executioner", 35, 0},
-	},
-	Archer: {
-		{SkillRange, "Long shot", 25, 0},
-		{SkillDamage, "Sharp arrows", 10, 0},
-		{SkillLob, "Arcing shot", 10, 0},
-		{SkillExecute, "Headshot", 25, 0},
-		{SkillHealth, "Toughness", 20, 0},
-	},
-	Mage: {
-		{SkillFrost, "Frost", 100, 0}, // chance
-		{SkillDamage, "Power", 10, 0},
-		{SkillBlink, "Blink", 0, I(8)}, // cooldown seconds
-		{SkillBlast, "Blast", 35, 0},   // splash damage %
-		{SkillHealth, "Toughness", 20, 0},
-	},
-}
-
-// SkillDefOf returns the class's definition of a skill, ok=false if the class
-// can't learn it.
-func SkillDefOf(c Class, s Skill) (SkillDef, bool) {
-	for _, d := range SkillsOf[c] {
-		if d.Skill == s {
-			return d, true
-		}
-	}
-	return SkillDef{}, false
-}
-
 // Combat and movement constants.
 var (
 	FlankMultiplier = I(2)
@@ -121,19 +61,13 @@ var (
 	Separation      = Ratio(9, 10)
 	MeleeSlack      = Ratio(6, 10) // a melee blow still lands if the victim stepped this far out of range
 	WaterSpeed      = Ratio(7, 10)
-	FrostSpeed      = Ratio(6, 10)
 	SlowTurnSpeed   = Ratio(3, 10) // speed factor while turning sharply
-	SwiftAttackPct  = 80           // Swift also attacks faster: cooldown and swing ×80%
 	BackpedalSpeed  = One          // kiting archers step back without turning round
 
 	KitePanic = Ratio(45, 10)
 	KiteStep  = Ratio(25, 10)
 
-	DashSpeed   = I(16)
-	DashMinGap  = Ratio(15, 10) // dash only if the target is further than range + this
-	BlinkPanic  = Ratio(25, 10)
-	BlinkDist   = I(8)
-	BlastRadius = I(2)
+	DashMinGap = Ratio(15, 10) // dash only if the target is further than range + this
 
 	WaypointReach = Ratio(4, 10)
 	AdvanceReach  = Ratio(12, 10)
@@ -147,8 +81,6 @@ const (
 	StaggerTicks    = 6  // 0.3 s
 	KiteMaxTicks    = 40 // 1.2 s
 	KiteRestTicks   = 24 // 2 s
-	DashCooldown    = 200
-	FrostTicks      = 60 // 3 s
 	MinShotTicks    = 4  // 0.2 s minimum projectile flight
 	CooldownJitter  = 15 // ±15% on every attack cooldown
 	StartCooldownLo = 10 // first attack after 0.5..1.5 s

@@ -105,7 +105,7 @@ Native Go and Go-in-WASM must agree to the bit, so the sim follows strict rules:
 | **Versioned rules.** Every input carries `sim.Version`, and the server rejects versions it doesn't have. | Old replays must never be checked with new rules. |
 
 These rules are enforced by tests:
-- **Golden replays.** 18 recorded battles in `sim/testdata/golden.json` must replay exactly, both natively and under WASM. Updating the file without bumping `sim.Version` fails.
+- **Golden replays.** 28 recorded battles in `sim/testdata/golden.json` must replay exactly, both natively and under WASM. Updating the file without bumping `sim.Version` fails.
 - **Lint test.** `TestNoNondeterministicImports` fails if `sim/` imports `math`, `math/rand`, `time`, `sync` or `os`, or uses floats, goroutines or map ranges.
 - **Fuzz test.** `FuzzDeterminism` plays random inputs twice and requires identical outcomes.
 
@@ -130,14 +130,16 @@ Known limits: the client can read Red's army and the map, because the browser si
 ```
 sim/            Go: deterministic battle rules (no I/O, no dependencies outside the standard library)
   fixed.go        Fx fixed-point type, Vec, rotations
-  data.go         all balance numbers: class stats, matchups, skills, constants, angle tables
+  data.go         shared tuning constants and angle tables
+  roster.go       the unit roster: unit types, tags, effect kinds, roster checks
+  unit_*.go       one roster entry per unit type: stats, traits, matchup bonuses, five skills
   rng.go          SplitMix64 and derived streams
   mapgen.go       seeded obstacles (ponds, rocks, trees)
   grid.go         0.5 m nav grid: walkable, wet and opaque cells; line of sight and fire; push-out
   path.go         A* (integer costs, water ×1.43, stable ties) with string-pulling
   army.go         input types, validation, Red army generation, formation slots
   battle.go       Battle, Step, vision, end conditions, outcome and checksum, events
-  unit.go         per-unit decisions: targeting, dash, blink, swing, kite, advance, movement
+  unit.go         spawn loadout from skills, per-unit decisions: targeting, gap-closer, escape, swing, kite, advance, movement
   combat.go       projectiles and the damage formula
   snapshot.go     Int32 snapshot encoding for the renderer
   testdata/       golden replays
@@ -224,7 +226,7 @@ The renderer drives each character's animation purely from the sim's snapshot fl
 
 - **Spec first.** Larger changes start as an OpenSpec change: a proposal, delta specs, a design and tasks in `openspec/changes/<name>/`. They are implemented task by task, then archived into `openspec/specs/`. Project-wide constraints for agents are in `openspec/config.yaml`.
 - **One PR per change.** Every change lands as a pull request.
-- **Changing a rule** means changing `sim/data.go` or the logic, bumping `sim.Version`, then running `go test ./sim -run TestGoldenReplays -update` and reviewing the outcome changes in the diff.
+- **Changing a rule** means changing `sim/data.go`, a roster file or the logic, bumping `sim.Version`, then running `go test ./sim -run TestGoldenReplays -update` and reviewing the outcome changes in the diff.
 - **Balance changes** come with numbers: run `pnpm balance` before and after, and show the difference in the PR. [`docs/balance-findings.md`](docs/balance-findings.md) explains the current numbers.
 - **Graphics changes** follow [`docs/graphics-roadmap.md`](docs/graphics-roadmap.md): presentation only, inside the frame-rate budget, with before and after screenshots in the PR.
 - **Changing the wire format** means editing `proto/chill/v1/battle.proto`, then running `pnpm gen && pnpm lint:proto`.

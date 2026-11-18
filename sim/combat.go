@@ -16,7 +16,7 @@ func (b *Battle) shoot(u, v *Unit) {
 		dur = MinShotTicks
 	}
 	b.Shots = append(b.Shots, &Shot{
-		Shooter: u.Index, Victim: v.Index, Bolt: u.Class == Mage, Lob: u.Has(SkillLob),
+		Shooter: u.Index, Victim: v.Index, Bolt: u.Def.Projectile == Bolt, Lob: u.kit.overCover,
 		Start: start, Aim: v.Pos, Dur: dur,
 	})
 	b.emit(Event{Kind: EvShot, Unit: u.Index, Other: v.Index})
@@ -42,15 +42,16 @@ func (b *Battle) updateShots() {
 		}
 		u := b.Units[s.Shooter]
 		b.damage(u, v, s.Start, One)
-		if !v.Dead && u.Has(SkillFrost) && b.rng.IntN(100) < u.skill(SkillFrost).Pct {
-			v.slow = FrostTicks
+		// on-hit effects in a fixed order: slow, then splash
+		if sl := u.kit.slow; !v.Dead && sl != nil && b.rng.IntN(100) < sl.Pct {
+			v.slow, v.slowFactor = sl.Ticks, sl.Factor
 			b.emit(Event{Kind: EvFrost, Unit: v.Index, Other: u.Index})
 		}
-		if u.Has(SkillBlast) {
+		if sp := u.kit.splash; sp != nil {
 			b.emit(Event{Kind: EvBlast, Unit: v.Index, Other: u.Index})
 			for _, e := range b.Units {
-				if e != v && !e.Dead && e.Team == v.Team && Within(e.Pos, v.Pos, BlastRadius) {
-					b.damage(u, e, s.Start, Ratio(u.skill(SkillBlast).Pct, 100))
+				if e != v && !e.Dead && e.Team == v.Team && Within(e.Pos, v.Pos, sp.Radius) {
+					b.damage(u, e, s.Start, Ratio(sp.Pct, 100))
 				}
 			}
 		}
@@ -73,7 +74,7 @@ func (b *Battle) damage(att, v *Unit, from Vec, scale Fx) {
 		amount = amount.Mul(FlankMultiplier)
 		flags |= FlagFlank
 	}
-	m := Matchup[att.Class][v.Class]
+	m := MatchupOf(att.Def, v.Def)
 	amount = amount.Mul(m).Mul(scale)
 	if m > One {
 		flags |= FlagStrong
@@ -81,7 +82,7 @@ func (b *Battle) damage(att, v *Unit, from Vec, scale Fx) {
 		flags |= FlagWeak
 	}
 	// instant kills only finish off the wounded (below ExecuteBelowPct of max health)
-	if scale == One && att.Has(SkillExecute) && v.HP.MulDiv(100, ExecuteBelowPct) <= v.MaxHP && b.rng.IntN(100) < att.skill(SkillExecute).Pct {
+	if scale == One && att.kit.finisherPct > 0 && v.HP.MulDiv(100, ExecuteBelowPct) <= v.MaxHP && b.rng.IntN(100) < att.kit.finisherPct {
 		amount = Max(amount, v.HP)
 		b.emit(Event{Kind: EvExecute, Unit: v.Index, Other: att.Index})
 	}

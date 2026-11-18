@@ -20,13 +20,13 @@ func TestDataMatchesConcept(t *testing.T) {
 		sight                    int
 		ranged, kite             bool
 	}
-	want := [numClasses]row{
+	want := [...]row{
 		Warrior: {100, 10, 16, 13, 15, 32, 7, false, false},
 		Archer:  {55, 9, 14, 17, 90, 36, 11, true, true},
 		Mage:    {55, 14, 20, 22, 70, 30, 9, true, false},
 	}
 	for c, w := range want {
-		s := ClassStats[c]
+		s := Roster[c].Stats
 		if s.HP != I(w.hp) || s.DmgLo != I(w.lo) || s.DmgHi != I(w.hi) || s.Cooldown != sec(w.cdTenths) ||
 			s.Range != Ratio(w.rangeTenths, 10) || s.Speed != Ratio(w.speedTenths, 10) || s.Sight != I(w.sight) ||
 			s.Ranged != w.ranged || s.Kite != w.kite {
@@ -36,14 +36,14 @@ func TestDataMatchesConcept(t *testing.T) {
 	pct := map[[2]Class]int{
 		{Warrior, Archer}: 145, {Warrior, Mage}: 95, {Mage, Warrior}: 135,
 	}
-	for a := Class(0); a < numClasses; a++ {
-		for v := Class(0); v < numClasses; v++ {
+	for a := Warrior; a <= Mage; a++ {
+		for v := Warrior; v <= Mage; v++ {
 			p, ok := pct[[2]Class{a, v}]
 			if !ok {
 				p = 100
 			}
-			if Matchup[a][v] != Ratio(p, 100) {
-				t.Errorf("matchup %v>%v = %v, want %d%%", a, v, Matchup[a][v], p)
+			if m := MatchupOf(&Roster[a], &Roster[v]); m != Ratio(p, 100) {
+				t.Errorf("matchup %v>%v = %v, want %d%%", a, v, m, p)
 			}
 		}
 	}
@@ -54,7 +54,7 @@ func TestDataMatchesConcept(t *testing.T) {
 	}
 	for c, names := range skills {
 		var got []string
-		for _, d := range SkillsOf[c] {
+		for _, d := range Roster[c].Skills {
 			got = append(got, d.Name)
 		}
 		sep := " "
@@ -65,11 +65,11 @@ func TestDataMatchesConcept(t *testing.T) {
 			t.Errorf("%v skills = %v, want %v", c, got, names)
 		}
 	}
-	if d, _ := SkillDefOf(Warrior, SkillExecute); d.Pct != 35 {
-		t.Errorf("executioner chance %v", d.Pct)
+	if d, _ := SkillDefOf(Warrior, SkillExecute); d.Main().Pct != 35 {
+		t.Errorf("executioner chance %v", d.Main().Pct)
 	}
-	if d, _ := SkillDefOf(Archer, SkillExecute); d.Pct != 25 {
-		t.Errorf("headshot chance %v", d.Pct)
+	if d, _ := SkillDefOf(Archer, SkillExecute); d.Main().Pct != 25 {
+		t.Errorf("headshot chance %v", d.Main().Pct)
 	}
 }
 

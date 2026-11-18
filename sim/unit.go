@@ -4,6 +4,7 @@ type Unit struct {
 	Index  int
 	Team   int
 	Class  Class
+	Def    *UnitDef // roster entry
 	Skills []Skill
 	Stats  Stats // with skill bonuses applied
 
@@ -21,6 +22,8 @@ type Unit struct {
 	Swinging bool
 
 	cd, busy, retarget, dashCd, blinkCd, slow int // tick counters
+	slowFactor                                Fx  // speed factor while slow > 0
+	kit                                       loadout
 	kiteTime, kiteRest, pathTimer             int
 
 	swing       *swing
@@ -42,44 +45,82 @@ type dash struct {
 	t, dur   int
 }
 
+// loadout is a unit's learned non-stat effects, folded once at spawn so the
+// battle reads fields instead of scanning skills every tick.
+type loadout struct {
+	finisherPct                     int
+	slow, splash, gapCloser, escape *Effect
+	overCover                       bool
+}
+
+// statOrder is the fixed order stat bonuses apply in. Within one stat they
+// apply in the roster's skill order, each as its own MulDiv, so roundings
+// (and replays) never depend on the order skills were learned.
+var statOrder = [...]StatKind{StatHP, StatDamage, StatRange, StatSpeed, StatAttackSpeed}
+
 func newUnit(index, team int, spec UnitSpec, pos Vec) *Unit {
-	st := ClassStats[spec.Class]
-	pct := func(s Skill) int { // 100 + the skill's bonus, if the unit has it
-		if !hasSkill(spec.Skills, s) {
-			return 100
+	def := RosterOf(spec.Class)
+	st := def.Stats
+	var kit loadout
+	for _, stat := range statOrder {
+		for _, sd := range def.Skills {
+			if !hasSkill(spec.Skills, sd.Skill) {
+				continue
+			}
+			for _, e := range sd.Effects {
+				if e.Kind != StatBonus || e.Stat != stat {
+					continue
+				}
+				switch stat {
+				case StatHP:
+					st.HP = st.HP.MulDiv(100+e.Pct, 100)
+				case StatDamage:
+					st.DmgLo = st.DmgLo.MulDiv(100+e.Pct, 100)
+					st.DmgHi = st.DmgHi.MulDiv(100+e.Pct, 100)
+				case StatRange:
+					st.Range = st.Range.MulDiv(100+e.Pct, 100)
+				case StatSpeed:
+					st.Speed = st.Speed.MulDiv(100+e.Pct, 100)
+				case StatAttackSpeed: // faster blows: cooldown and swing ×Pct%
+					st.Cooldown = st.Cooldown * e.Pct / 100
+					st.SwingTicks = st.SwingTicks * e.Pct / 100
+				}
+			}
 		}
-		d, _ := SkillDefOf(spec.Class, s)
-		return 100 + d.Pct
 	}
-	st.HP = st.HP.MulDiv(pct(SkillHealth), 100)
-	st.DmgLo = st.DmgLo.MulDiv(pct(SkillDamage), 100)
-	st.DmgHi = st.DmgHi.MulDiv(pct(SkillDamage), 100)
-	st.Range = st.Range.MulDiv(pct(SkillRange), 100)
-	st.Speed = st.Speed.MulDiv(pct(SkillSpeed), 100)
-	if hasSkill(spec.Skills, SkillSpeed) { // Swift: faster feet and faster blows
-		st.Cooldown = st.Cooldown * SwiftAttackPct / 100
-		st.SwingTicks = st.SwingTicks * SwiftAttackPct / 100
-	}
-	if hasSkill(spec.Skills, SkillLob) { // Arcing shot: over cover, and harder hits
-		st.DmgLo = st.DmgLo.MulDiv(pct(SkillLob), 100)
-		st.DmgHi = st.DmgHi.MulDiv(pct(SkillLob), 100)
+	for _, sd := range def.Skills {
+		if !hasSkill(spec.Skills, sd.Skill) {
+			continue
+		}
+		for i := range sd.Effects {
+			e := &sd.Effects[i]
+			switch e.Kind {
+			case Finisher:
+				kit.finisherPct = e.Pct
+			case SlowOnHit:
+				kit.slow = e
+			case SplashOnHit:
+				kit.splash = e
+			case GapCloser:
+				kit.gapCloser = e
+			case Escape:
+				kit.escape = e
+			case OverCover:
+				kit.overCover = true
+			}
+		}
 	}
 	face := V(0, -One) // Blue faces up the field (-z), Red down
 	if team == 1 {
 		face = V(0, One)
 	}
 	return &Unit{
-		Index: index, Team: team, Class: spec.Class, Skills: append([]Skill(nil), spec.Skills...), Stats: st,
-		Pos: pos, Face: face, MaxHP: st.HP, HP: st.HP, Target: -1,
+		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st,
+		Pos: pos, Face: face, MaxHP: st.HP, HP: st.HP, Target: -1, kit: kit,
 	}
 }
 
 func (u *Unit) Has(s Skill) bool { return hasSkill(u.Skills, s) }
-
-func (u *Unit) skill(s Skill) SkillDef {
-	d, _ := SkillDefOf(u.Class, s)
-	return d
-}
 
 // think runs one tick of a living unit's decisions (prototype's step loop).
 func (b *Battle) think(u *Unit) {
@@ -115,7 +156,7 @@ func (b *Battle) think(u *Unit) {
 		return
 	}
 
-	if u.Has(SkillBlink) && u.blinkCd <= 0 && b.tryBlink(u) {
+	if u.kit.escape != nil && u.blinkCd <= 0 && b.tryBlink(u) {
 		return
 	}
 
@@ -153,23 +194,23 @@ func (b *Battle) think(u *Unit) {
 	}
 
 	d := Dist(u.Pos, t.Pos)
-	if u.Has(SkillDash) && u.dashCd <= 0 && d > u.Stats.Range+DashMinGap && d <= u.skill(SkillDash).Value && b.Map.LineOfSight(u.Pos, t.Pos) {
+	if g := u.kit.gapCloser; g != nil && u.dashCd <= 0 && d > u.Stats.Range+DashMinGap && d <= g.Value && b.Map.LineOfSight(u.Pos, t.Pos) {
 		dir := t.Pos.Sub(u.Pos).Norm()
 		reach := d - u.Stats.Range.MulDiv(8, 10)
-		dur := reach.Div(perTick(DashSpeed)).Ceil()
+		dur := reach.Div(perTick(g.Speed)).Ceil()
 		if dur < 1 {
 			dur = 1
 		}
 		u.dash = &dash{from: u.Pos, to: u.Pos.Add(dir.Scale(reach)), dur: dur}
 		u.Face = dir
-		u.dashCd = DashCooldown
+		u.dashCd = g.Ticks
 		u.path = nil
 		b.emit(Event{Kind: EvDash, Unit: u.Index, Other: -1})
 		return
 	}
 
 	// ranged units need a clear line of fire (unless they lob over); otherwise they walk until they have one
-	canHit := d <= u.Stats.Range && (!u.Stats.Ranged || u.Has(SkillLob) || b.Map.LineOfFire(u.Pos, t.Pos))
+	canHit := d <= u.Stats.Range && (!u.Stats.Ranged || u.kit.overCover || b.Map.LineOfFire(u.Pos, t.Pos))
 	if !canHit {
 		b.moveToward(u, t.Pos)
 		return
@@ -185,13 +226,14 @@ func (b *Battle) think(u *Unit) {
 	}
 }
 
-// tryBlink teleports a mage away from nearby melee. It reports whether the
+// tryBlink (the Escape effect) teleports a unit away from nearby melee. It reports whether the
 // mage blinked (which ends its turn).
 func (b *Battle) tryBlink(u *Unit) bool {
+	esc := u.kit.escape
 	var sum Vec
 	n := 0
 	for _, e := range b.Units {
-		if !e.Dead && e.Team != u.Team && !e.Stats.Ranged && Within(u.Pos, e.Pos, BlinkPanic) {
+		if !e.Dead && e.Team != u.Team && !e.Stats.Ranged && Within(u.Pos, e.Pos, esc.Radius) {
 			sum = sum.Add(e.Pos)
 			n++
 		}
@@ -205,14 +247,14 @@ func (b *Battle) tryBlink(u *Unit) bool {
 		base = V(0, One)
 	}
 	for _, turn := range BlinkTurns {
-		p := u.Pos.Add(base.Rot(turn).Scale(BlinkDist))
+		p := u.Pos.Add(base.Rot(turn).Scale(esc.Value))
 		if p.X.Abs() > EdgeLimit || p.Z.Abs() > EdgeLimit || !b.Map.FreeAt(p) {
 			continue
 		}
 		b.emit(Event{Kind: EvBlink, Unit: u.Index, Other: -1, Amount: 0})
 		u.Pos = p
 		u.moveTarget, u.path, u.swing = nil, nil, nil
-		u.blinkCd = u.skill(SkillBlink).Value.Floor() * TicksPerSecond
+		u.blinkCd = esc.Ticks
 		return true
 	}
 	return false
@@ -354,7 +396,7 @@ func (b *Battle) move(u *Unit) {
 		speed = speed.Mul(WaterSpeed)
 	}
 	if u.Slowed {
-		speed = speed.Mul(FrostSpeed)
+		speed = speed.Mul(u.slowFactor)
 	}
 	u.Pos = u.Pos.Add(want.Scale(Min(dist, speed)))
 }
