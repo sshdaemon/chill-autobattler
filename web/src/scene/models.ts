@@ -7,6 +7,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { BUILDS, CLIPS, lookOf, recipeNamed, type Recipe } from '../units/looks.ts';
+import { makeCape } from './cloth.ts';
 
 // Which recipe a unit wears comes from its look: the n-th unit of a class in a
 // team gets recipe n (mod the list), so an army looks the same after a reload.
@@ -23,7 +24,7 @@ const load = (name: string) => {
 
 type Manifest = {
   parts: Record<string, { slot: string; sex: string; materials: string[] }>;
-  items: Record<string, { bone: string; pos?: number[]; rot?: number[]; scale?: number; team?: boolean }>;
+  items: Record<string, { bone: string; pos?: number[]; rot?: number[]; scale?: number; team?: boolean; kind?: 'cloth'; width?: [number, number]; length?: number }>;
   materials: Record<string, { variants: string[]; mask: string }>;
 };
 let manifestP: Promise<Manifest> | undefined;
@@ -74,6 +75,9 @@ export type Character = {
   mats: THREE.MeshStandardMaterial[]; // this unit's own materials (rim, fade)
   rim: { color: { value: THREE.Color }; k: { value: number } };
   spine1?: THREE.Bone; spine2?: THREE.Bone;
+  // simulated parts (capes): tick after the bones are posed each frame (game-time seconds);
+  // settle before a still render
+  tick?: (dt: number, wind?: THREE.Vector3) => void; settle?: () => void;
 };
 
 export const TEAM_RIM = [new THREE.Color('#4f8dff'), new THREE.Color('#ff5a4a')];
@@ -165,7 +169,7 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
   const outfit = recipe.parts, torsoName = outfit[0]; // the first part's skeleton is the unit's
   const [man, clips, torso, ...rest] = await Promise.all([manifest(), loadClips(), load(torsoName),
     ...[...outfit.slice(1), recipe.head, ...recipe.hair].map(load)]);
-  const itemScenes = await Promise.all(recipe.items.map(load));
+  const itemScenes = await Promise.all(recipe.items.map((it) => (man.items[it]?.kind === 'cloth' ? Promise.resolve(undefined) : load(it))));
   const root = cloneSkinned(torso);
   let skeleton: THREE.Skeleton | undefined, bindMatrix = new THREE.Matrix4();
   root.traverse((o) => { if ((o as THREE.SkinnedMesh).isSkinnedMesh && !skeleton) { skeleton = (o as THREE.SkinnedMesh).skeleton; bindMatrix = (o as THREE.SkinnedMesh).bindMatrix; } });
@@ -229,11 +233,20 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
   // items (weapons, shields, quiver, hats): placed in the character's space at
   // rest, then attached to their bones keeping that placement
   root.updateMatrixWorld(true);
+  const sims: { tick: (dt: number, wind?: THREE.Vector3) => void; settle: () => void }[] = [];
   recipe.items.forEach((name, i) => {
     const spec = man.items[name];
     const bone = spec && bones[spec.bone];
     if (!bone) return;
-    const item = itemScenes[i].clone();
+    if (spec.kind === 'cloth') { // generated and simulated (scene/cloth.ts)
+      const cape = makeCape(root, bones, { bone: spec.bone, width: spec.width ?? [0.4, 0.6], length: spec.length ?? 0.9 },
+        spec.team ? TEAM_CLOTH[team].clone() : new THREE.Color('#ddd'), (b) => build.girth[b] ?? 0);
+      addHooks(cape.mat, { rim, girth: { value: girth.value.map(() => 0) } });
+      mats.push(cape.mat);
+      sims.push(cape);
+      return;
+    }
+    const item = itemScenes[i]!.clone();
     item.position.copy(root.worldToLocal(bone.getWorldPosition(new THREE.Vector3())));
     if (spec.pos) item.position.add(new THREE.Vector3().fromArray(spec.pos));
     if (spec.rot) item.rotation.fromArray(spec.rot as [number, number, number]);
@@ -268,5 +281,8 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
   }
   actions[lookOf(cls).anims.idle]?.play();
   mixer.setTime(Math.random() * 2); // idle out of step between units (presentation only)
-  return { root, mixer, actions, clips, mats, rim, spine1: bones.spine_01, spine2: bones.spine_02 };
+  return {
+    root, mixer, actions, clips, mats, rim, spine1: bones.spine_01, spine2: bones.spine_02,
+    ...(sims.length ? { tick: (dt: number, wind?: THREE.Vector3) => sims.forEach((c) => c.tick(dt, wind)), settle: () => sims.forEach((c) => c.settle()) } : {}),
+  };
 }

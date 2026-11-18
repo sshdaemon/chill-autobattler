@@ -48,8 +48,10 @@ ITEMS = [
     ('Wand', os.path.join(KAYKIT, 'wand.gltf'), 'hand_r'),
     ('Sword_Long', os.path.join(KAYKIT, 'sword_2handed_color.gltf'), 'hand_r'),
 ]
-MODELLED = [('Wizard_Hat', 'Head'), ('Helmet', 'Head'), ('Spear', 'hand_r'), ('Great_Helm', 'Head'), ('Cape', 'spine_03')]
-TEAM_ITEMS = {'Cape'}  # coloured fully in the team colour by the client
+MODELLED = [('Wizard_Hat', 'Head'), ('Helmet', 'Head'), ('Spear', 'hand_r'), ('Great_Helm', 'Head')]
+# Cloth items: generated and simulated by the client (web/src/scene/cloth.ts), no mesh here.
+# width (top, hem) and length in metres, hung from the bone; team: coloured in the team colour.
+CLOTH = {'Cape': {'kind': 'cloth', 'bone': 'spine_03', 'team': True, 'width': [0.4, 0.62], 'length': 0.95}}
 # Mount poses in the character's own space at rest (Y up, facing +Z, its left
 # is +X): offset from the attach bone's origin (metres), rotation (radians, XYZ)
 # and scale. The client places the item there, then attaches it to the bone
@@ -59,8 +61,10 @@ ITEM_POSE = {
     'Sword': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.85},
     'Sword_Long': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.55},
     'Axe': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.95},
-    'Shield_Wooden': {'pos': [0.07, 0, 0.02], 'rot': [0, H, 0], 'scale': 0.95},
-    'Shield_Round': {'pos': [0.07, 0, 0.02], 'rot': [0, H, 0], 'scale': 0.62},
+    # shields are strapped to the forearm (as the shield clips expect): centre two-thirds of the way
+    # to the wrist, face out of the back of the hand (+Y in the T-pose rest), clear of a heavy arm
+    'Shield_Wooden': {'pos': [0.16, 0.085, 0], 'rot': [-H, 0, 0], 'scale': 0.95},
+    'Shield_Round': {'pos': [0.16, 0.17, 0], 'rot': [-H, 0, 0], 'scale': 0.62},
     'Bow': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.6},
     'Quiver': {'pos': [0.05, 0.02, -0.16], 'rot': [-0.25, 0, 0.35], 'scale': 0.6},
     'Staff': {'pos': [0, 0, 0], 'rot': [0, 0, 0], 'scale': 0.8},
@@ -69,7 +73,6 @@ ITEM_POSE = {
     'Wizard_Hat': {'pos': [0, 0.2, -0.01], 'rot': [0, 0, 0], 'scale': 1.0},
     'Spear': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 1.0},
     'Great_Helm': {'pos': [0, 0.1, 0.01], 'rot': [0, 0, 0], 'scale': 1.0},
-    'Cape': {'pos': [0, 0.1, -0.11], 'rot': [0, 0, 0], 'scale': 1.0},
 }
 # team masks: outfit -> (variant base colours, rule); 'cloth' also drops pixels
 # that are brownish in every variant (leather and wood recolour between variants too)
@@ -349,22 +352,7 @@ def model_items():
     slit.data.materials.append(dark)
     export('Great_Helm', [barrel, top, slit, crest])
 
-    # cape: a short, slightly curved cloth hanging from the shoulders (white:
-    # the client colours it in the team colour); top edge at the origin, behind
-    # the body is +Y here (-Z in the game)
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-    cloth = mat('MI_Cape', (1, 1, 1), 0.85)
-    cloth.use_backface_culling = False
-    bpy.ops.mesh.primitive_grid_add(x_subdivisions=8, y_subdivisions=8, size=1, location=(0, 0, 0))
-    cape = bpy.context.object
-    for v in cape.data.vertices:
-        x, y = v.co.x, v.co.y          # grid in XY, -0.5..0.5
-        depth = -(y - 0.5)             # 0 at the top edge, 1 at the hem
-        width = 0.34 + 0.08 * depth    # widens a little towards the hem
-        v.co = (x * width * 2, 0.015 + 0.04 * depth ** 1.5 + 0.035 * (2 * x) ** 2, -0.36 * depth)  # short: a rigid cape mustn't flap
-    cape.data.materials.append(cloth)
-    export('Cape', [cape])
-    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Cape'):
+    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
@@ -457,7 +445,8 @@ def main():
         manifest['items'][name] = {'bone': bone, **ITEM_POSE.get(name, {})}
     model_items()
     for name, bone in MODELLED:
-        manifest['items'][name] = {'bone': bone, **ITEM_POSE.get(name, {}), **({'team': True} if name in TEAM_ITEMS else {})}
+        manifest['items'][name] = {'bone': bone, **ITEM_POSE.get(name, {})}
+    manifest['items'].update(CLOTH)
     bake_textures()
     bake_masks()
     for outfit, (variants, _) in MASKS.items():

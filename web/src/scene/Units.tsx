@@ -200,6 +200,7 @@ function Unit({ index }: { index: number }) {
     st.pitch += (wantPitch - st.pitch) * (1 - Math.exp(-10 * delta * speed));
     st.flags = b.flags;
     ch.mixer.update(delta * speed);
+    ch.tick?.(delta * speed); // capes follow the posed body
 
     // team rim, gold when selected
     const sel = bs.selected === index;
