@@ -13,7 +13,7 @@ The battle SHALL advance in fixed ticks of 1/20 s. All durations (cooldowns, win
 - **THEN** the battle advances by the same sequence of ticks and ends with the same outcome
 
 ### Requirement: Classes and stats
-Each unit SHALL be a warrior, archer or mage, with the health, damage range, attack cooldown, range, speed and sight given in docs/GAME_CONCEPT.md §4.1, adjusted by its skills.
+Each unit SHALL be an entry of the unit roster (see unit-roster), with the health, damage range, attack cooldown, range, speed and sight of that entry, adjusted by its skills. The roster's first entries are the warrior, archer and mage of docs/GAME_CONCEPT.md §4.1.
 
 #### Scenario: Toughness
 - **WHEN** a warrior with Toughness spawns
@@ -21,7 +21,7 @@ Each unit SHALL be a warrior, archer or mage, with the health, damage range, att
 
 ### Requirement: Damage
 A hit SHALL deal a random roll in the attacker's damage range, multiplied by:
-- the matchup multiplier (§4.2),
+- the matchup multiplier from the attacker's bonuses against the victim's tags (unit-roster; for the first three units these equal §4.2),
 - ×2 when the hit comes from outside the victim's ±60° front cone (for projectiles, measured from where they were fired),
 - the attacker's damage skills.
 
@@ -69,7 +69,7 @@ An archer SHALL retreat from melee enemies closer than 4.5 m, in bursts of at mo
 - **THEN** the archer steps away from it, still facing it, to a free spot it can walk to in a straight line
 
 ### Requirement: Skills
-Units SHALL apply the 15 skills in docs/GAME_CONCEPT.md §10.1, each learned at most once per unit. Chance-based skills (Executioner, Headshot) SHALL roll the battle's seeded random generator. Instant kills SHALL only be possible against victims below 40% of their maximum health.
+Units SHALL apply the skills of their roster entry, each made of effects (unit-roster) and learned at most once per unit; for the first three units these are the 15 skills in docs/GAME_CONCEPT.md §10.1. Chance-based effects (such as Executioner, Headshot and Frost) SHALL roll the battle's seeded random generator. Instant kills SHALL only be possible against victims below 40% of their maximum health.
 
 #### Scenario: Executioner
 - **WHEN** a warrior with Executioner hits a victim below 40% health and its roll succeeds
