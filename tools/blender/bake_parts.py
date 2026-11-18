@@ -63,8 +63,8 @@ ITEM_POSE = {
     'Axe': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.95},
     # shields are strapped to the forearm (as the shield clips expect): centre two-thirds of the way
     # to the wrist, face out of the back of the hand (+Y in the T-pose rest), clear of a heavy arm
-    'Shield_Wooden': {'pos': [0.16, 0.085, 0], 'rot': [-H, 0, 0], 'scale': 0.95},
-    'Shield_Round': {'pos': [0.16, 0.17, 0], 'rot': [-H, 0, 0], 'scale': 0.62},
+    'Shield_Wooden': {'pos': [0.18, 0.055, 0], 'rot': [-H, 0, 0], 'scale': 0.95},
+    'Shield_Round': {'pos': [0.18, 0.125, 0], 'rot': [-H, 0, 0], 'scale': 0.62},
     'Bow': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.6},
     'Quiver': {'pos': [0.05, 0.02, -0.16], 'rot': [-0.25, 0, 0.35], 'scale': 0.6},
     'Staff': {'pos': [0, 0, 0], 'rot': [0, 0, 0], 'scale': 0.8},

@@ -280,6 +280,19 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
     actions[name] = a;
   }
   actions[lookOf(cls).anims.idle]?.play();
+  // stand on the ground: the clips' pelvis height is the animation pack's mannequin,
+  // whose legs are a little shorter than ours, and soles reach below the foot bones;
+  // lift the body by its lowest point standing (measured once per character)
+  mixer.update(0);
+  root.updateMatrixWorld(true);
+  let lowest = Infinity;
+  root.traverse((o) => {
+    const m = o as THREE.SkinnedMesh;
+    if (!m.isSkinnedMesh) return;
+    m.computeBoundingBox();
+    lowest = Math.min(lowest, m.boundingBox!.clone().applyMatrix4(m.matrixWorld).min.y);
+  });
+  if (Number.isFinite(lowest)) armature.position.y -= (lowest - root.getWorldPosition(new THREE.Vector3()).y) / root.scale.y;
   mixer.setTime(Math.random() * 2); // idle out of step between units (presentation only)
   return {
     root, mixer, actions, clips, mats, rim, spine1: bones.spine_01, spine2: bones.spine_02,
