@@ -6,7 +6,7 @@ The match as the player experiences it in the browser: choose an army, deploy it
 ## Requirements
 
 ### Requirement: Army picker
-Before each match the player SHALL pick exactly 5 units from every unit type in the roster. Each unit card shows its label, icon and blurb (from its look), its stats and how much damage it takes from each unit type. The run's veterans SHALL already fill their slots, shown with their stars, and the player SHALL NOT be able to go below the number of veterans of any type. The first pick SHALL default to 2 warriors, 2 archers and 1 mage, and later picks SHALL default to the previous army, raised to cover the veterans.
+Before each match the player SHALL pick exactly 5 units from all of the roster's unit types. Each card shows the type's label, icon and blurb (from its look), stats and damage taken from each type. Veterans SHALL fill their slots, shown with stars, and no type can go below its veterans. The first pick SHALL default to 2 warriors, 2 archers and 1 mage; later picks SHALL default to the previous army, raised to cover the veterans.
 
 #### Scenario: Incomplete army
 - **WHEN** the player has picked 4 units
