@@ -163,12 +163,19 @@ func MatchupOf(att, v *UnitDef) Fx {
 	return One
 }
 
-// RedPool lists the classes Red's generated armies draw from, in roster order.
+// RedPool lists the unit types Red's generated armies can draw from: those
+// in Red's pool from the playable factions, in roster order.
 func RedPool() []Class {
 	var out []Class
 	for _, d := range Roster {
-		if d.InRedPool {
-			out = append(out, d.ID)
+		if !d.InRedPool {
+			continue
+		}
+		for _, f := range Factions {
+			if f.Playable && f.Has(d.ID) {
+				out = append(out, d.ID)
+				break
+			}
 		}
 	}
 	return out

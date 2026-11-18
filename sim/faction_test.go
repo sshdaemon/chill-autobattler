@@ -7,10 +7,11 @@ func TestFactions(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, bad := range map[string][]FactionDef{
-		"unknown unit": {{ID: 1, Name: "x", Units: []Class{99}}},
-		"unit twice":   {{ID: 1, Name: "x", Units: []Class{Warrior, Warrior}}},
-		"no red pool":  {{ID: 1, Name: "x"}},
-		"unsorted":     {{ID: 2, Name: "a", Units: []Class{Warrior}}, {ID: 1, Name: "b", Units: []Class{Warrior}}},
+		"unknown unit":  {{ID: 1, Name: "x", Units: []Class{99}, Playable: true}},
+		"unit twice":    {{ID: 1, Name: "x", Units: []Class{Warrior, Warrior}, Playable: true}},
+		"no red pool":   {{ID: 1, Name: "x", Playable: true}},
+		"none playable": {{ID: 1, Name: "x", Units: []Class{Warrior}}},
+		"unsorted":      {{ID: 2, Name: "a", Units: []Class{Warrior}, Playable: true}, {ID: 1, Name: "b", Units: []Class{Warrior}}},
 	} {
 		if ValidateFactions(bad) == nil {
 			t.Errorf("%s: accepted", name)
@@ -31,7 +32,7 @@ func TestFactionRules(t *testing.T) {
 	}
 	old := Factions
 	t.Cleanup(func() { Factions = old })
-	Factions = []FactionDef{{ID: FactionClassic, Name: "classic", Units: []Class{Archer, Mage}}}
+	Factions = []FactionDef{{ID: FactionClassic, Name: "classic", Units: []Class{Archer, Mage}, Playable: true}}
 	in.BlueFaction = FactionClassic
 	if in.Validate() == nil {
 		t.Error("a warrior accepted in a faction without warriors")

@@ -1,0 +1,106 @@
+{
+  "ui": {
+    "label": "Huslyar",
+    "icon": "🎶",
+    "blurb": "Singer with the husli: his songs make the army around him stronger",
+    "placeholder": true
+  },
+  "recipes": [
+    {
+      "name": "Huslyar 1",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "normal",
+      "parts": [
+        "Male_Peasant_Body",
+        "Male_Peasant_Arms",
+        "Male_Peasant_Legs",
+        "Male_Peasant_Feet"
+      ],
+      "hair": [
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 0,
+      "items": [
+        "Staff",
+        "Wizard_Hat"
+      ],
+      "team": 0.6,
+      "tint": "#9a80ff"
+    },
+    {
+      "name": "Huslyar 2",
+      "sex": "female",
+      "head": "Head_Female",
+      "build": "slim",
+      "parts": [
+        "Female_Peasant_Body",
+        "Female_Peasant_Arms",
+        "Female_Peasant_Legs",
+        "Female_Peasant_Feet"
+      ],
+      "hair": [
+        "Hair_Long",
+        "Eyebrows_Female"
+      ],
+      "variant": 0,
+      "items": [
+        "Staff",
+        "Wizard_Hat"
+      ],
+      "team": 0.6,
+      "tint": "#9a80ff"
+    },
+    {
+      "name": "Huslyar 3",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "stout",
+      "parts": [
+        "Male_Peasant_Body",
+        "Male_Peasant_Arms",
+        "Male_Peasant_Legs",
+        "Male_Peasant_Feet"
+      ],
+      "hair": [
+        "Hair_SimpleParted",
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 1,
+      "items": [
+        "Staff",
+        "Wizard_Hat"
+      ],
+      "team": 0.6,
+      "tint": "#7f9cff"
+    }
+  ],
+  "anims": {
+    "idle": "Spell_Simple_Idle_Loop",
+    "walk": "Walk_Loop",
+    "move": "Jog_Fwd_Loop",
+    "sprint": "Sprint_Loop",
+    "cheer": "Yes",
+    "attack": [
+      "Spell_Simple_Shoot"
+    ],
+    "hit": [
+      "Hit_Chest",
+      "Hit_Head"
+    ],
+    "death": [
+      "Death01",
+      "Hit_Knockback"
+    ]
+  },
+  "skills": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {}
+  },
+  "clips": {}
+}

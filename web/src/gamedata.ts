@@ -12,7 +12,7 @@ export type ClassInfo = {
   matchup: number[]; skills: SkillInfo[]; traits: EffectInfo[];
 };
 // A faction (sim.Faction): the unit types a side fields. Lore and looks: factions/<name>.json.
-export type FactionInfo = { id: number; name: string; units: number[] };
+export type FactionInfo = { id: number; name: string; units: number[]; playable: boolean };
 export type GameData = {
   version: string; classes: ClassInfo[]; formations: string[]; armySize: number; deployZone: [number, number, number, number];
   factions: FactionInfo[];

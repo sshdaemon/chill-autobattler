@@ -1,0 +1,113 @@
+{
+  "ui": {
+    "label": "Druzhynnyk",
+    "icon": "🛡️",
+    "blurb": "The prince's retainer: advances in line and guards the archers",
+    "placeholder": true
+  },
+  "recipes": [
+    {
+      "name": "Druzhynnyk 1",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "heavy",
+      "parts": [
+        "Male_Ranger_Body",
+        "Male_Ranger_Arms",
+        "Male_Ranger_Legs",
+        "Male_Ranger_Feet_Boots",
+        "Male_Ranger_Acc_Pauldron"
+      ],
+      "hair": [
+        "Hair_Buzzed",
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 1,
+      "items": [
+        "Sword",
+        "Shield_Round",
+        "Great_Helm",
+        "Cape"
+      ],
+      "team": 1.0
+    },
+    {
+      "name": "Druzhynnyk 2",
+      "sex": "female",
+      "head": "Head_Female",
+      "build": "heavy",
+      "parts": [
+        "Female_Ranger_Body",
+        "Female_Ranger_Arms",
+        "Female_Ranger_Legs",
+        "Female_Ranger_Feet",
+        "Female_Ranger_Acc_Pauldrons"
+      ],
+      "hair": [
+        "Hair_Buns",
+        "Eyebrows_Female"
+      ],
+      "variant": 1,
+      "items": [
+        "Sword",
+        "Shield_Wooden",
+        "Helmet",
+        "Cape"
+      ],
+      "team": 1.0
+    },
+    {
+      "name": "Druzhynnyk 3",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "stout",
+      "parts": [
+        "Male_Peasant_Body",
+        "Male_Peasant_Arms",
+        "Male_Peasant_Legs",
+        "Male_Ranger_Feet_Boots",
+        "Male_Ranger_Acc_Pauldron"
+      ],
+      "hair": [
+        "Hair_SimpleParted",
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 1,
+      "items": [
+        "Sword_Long",
+        "Helmet"
+      ],
+      "team": 1.0
+    }
+  ],
+  "anims": {
+    "idle": "Idle_Shield_Loop",
+    "walk": "Walk_Loop",
+    "move": "Jog_Fwd_Loop",
+    "sprint": "Sprint_Loop",
+    "cheer": "Yes",
+    "attack": [
+      "Sword_Attack",
+      "Sword_Slash_A",
+      "Sword_Slash_B"
+    ],
+    "hit": [
+      "Hit_Chest",
+      "Hit_Head"
+    ],
+    "death": [
+      "Death01",
+      "Hit_Knockback"
+    ]
+  },
+  "skills": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {}
+  },
+  "clips": {}
+}

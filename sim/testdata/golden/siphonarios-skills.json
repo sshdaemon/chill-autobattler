@@ -1,0 +1,23 @@
+{
+  "version": "0.7.0+d1b8b4e1",
+  "case": "siphonarios skills",
+  "outcome": {
+    "result": 2,
+    "ticks": 286,
+    "checksum": "4056565360244679450",
+    "survivors": [
+      {
+        "Index": 7,
+        "HP": 3604480
+      },
+      {
+        "Index": 8,
+        "HP": 3604480
+      },
+      {
+        "Index": 9,
+        "HP": 3604480
+      }
+    ]
+  }
+}

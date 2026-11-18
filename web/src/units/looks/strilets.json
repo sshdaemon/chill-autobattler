@@ -1,0 +1,81 @@
+{
+  "ui": {
+    "label": "Strilets",
+    "icon": "🏹",
+    "blurb": "Archer of the druzhyna: keeps its distance, shoots while backing away",
+    "placeholder": true
+  },
+  "recipes": [
+    {
+      "name": "Strilets 1",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "slim",
+      "parts": [
+        "Male_Ranger_Body",
+        "Male_Ranger_Arms",
+        "Male_Ranger_Legs",
+        "Male_Ranger_Feet_Boots",
+        "Male_Ranger_Head_Hood"
+      ],
+      "hair": [
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 0,
+      "items": [
+        "Bow",
+        "Quiver"
+      ],
+      "team": 0.85
+    },
+    {
+      "name": "Strilets 2",
+      "sex": "female",
+      "head": "Head_Female",
+      "build": "slim",
+      "parts": [
+        "Female_Ranger_Body",
+        "Female_Ranger_Arms",
+        "Female_Ranger_Legs",
+        "Female_Ranger_Feet",
+        "Female_Ranger_Head_Hood"
+      ],
+      "hair": [
+        "Eyebrows_Female"
+      ],
+      "variant": 0,
+      "items": [
+        "Bow",
+        "Quiver"
+      ],
+      "team": 0.85
+    }
+  ],
+  "anims": {
+    "idle": "Idle_Loop",
+    "walk": "Walk_Loop",
+    "move": "Jog_Fwd_Loop",
+    "sprint": "Sprint_Loop",
+    "cheer": "Yes",
+    "attack": [
+      "Spell_Simple_Shoot"
+    ],
+    "hit": [
+      "Hit_Chest",
+      "Hit_Head"
+    ],
+    "death": [
+      "Death01",
+      "Hit_Knockback"
+    ]
+  },
+  "skills": {
+    "1": {},
+    "2": {},
+    "3": {},
+    "4": {},
+    "5": {}
+  },
+  "clips": {}
+}

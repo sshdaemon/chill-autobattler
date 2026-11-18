@@ -131,9 +131,10 @@ func dataJSON() string {
 		Traits     []effect  `json:"traits"` // effects every unit of the type has
 	}
 	type faction struct {
-		ID    int    `json:"id"`
-		Name  string `json:"name"`
-		Units []int  `json:"units"`
+		ID       int    `json:"id"`
+		Name     string `json:"name"`
+		Units    []int  `json:"units"`
+		Playable bool   `json:"playable"`
 	}
 	var out struct {
 		Version    string     `json:"version"`
@@ -199,7 +200,7 @@ func dataJSON() string {
 		out.Formations = append(out.Formations, f.String())
 	}
 	for _, f := range sim.Factions {
-		fa := faction{ID: int(f.ID), Name: f.Name, Units: []int{}}
+		fa := faction{ID: int(f.ID), Name: f.Name, Units: []int{}, Playable: f.Playable}
 		for _, c := range f.Units {
 			fa.Units = append(fa.Units, int(c))
 		}

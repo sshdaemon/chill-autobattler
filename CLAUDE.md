@@ -46,9 +46,10 @@ Golden replays (`sim/testdata/golden/`, one file per case; every roster entry ge
 - Each case records `VersionFor` its units (rules version + fingerprint of the units in it, Red's pool included when Red is generated), so changing one unit only changes its own cases' files.
 - After a deliberate change, `go test ./sim -run TestGoldenReplays -update` rewrites only the cases whose outcome or version changed. It refuses when an outcome changed but its version didn't (rules code changed without a `RulesVersion` bump).
 
-Parallel unit work (several sessions at once; `docs/ROADMAP.md`):
+Parallel unit work (several sessions at once; `docs/ROADMAP.md`). The nine Dnipro-road units already exist as placeholders (roster plan numbers, borrowed looks with `ui.placeholder`), in factions that aren't `Playable` yet: a unit session redesigns, balances and dresses its unit; a faction is made playable (`Playable: true` in `sim/faction_<name>.go`, its own PR) once its three units are done.
 - One session per unit, in its own worktree and branch. It touches only its unit's files: `sim/unit_<name>.go`, `design/units/<name>/`, `web/src/units/looks/<name>.json`, `web/public/assets/clips/<name>.json`, `web/src/scene/fx/<name>.json`, `tools/blender/items/<name>.json`, and its golden case files.
-- Shared ids (units, effect kinds, target and engage rules) are allocated in `sim/ids.go` by planning changes only.
+- Shared ids (units, effect kinds, target and engage rules, factions) are allocated in `sim/ids.go` by planning changes only.
+- Effects and behaviour available to units: `sim/ids.go` lists every effect kind (one file each, `sim/effect_<name>.go`), target and engage rule; temperament fields are in `sim/temperament.go`; traits (`UnitDef.Traits`) are effects every unit of the type has.
 - A unit that needs a new effect kind, rule, hook point or temperament field asks for it as a separate shared-core PR first; anything in `_shared.json` files is a shared edit too.
 - Before the PR: rebase on main, `pnpm test`, `pnpm balance:unit <name>`.
 

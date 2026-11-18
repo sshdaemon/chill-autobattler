@@ -265,7 +265,20 @@ into the plan before anything is built.
 Progress: 3.1 temperament done (OpenSpec `temperaments`: target rules wounded,
 ranged first, strongest, focus, protect; engage rules line and hold; trigger,
 leash, keep, fall back, stay near). 3.2 effect kinds done (OpenSpec `effect-kinds`: per-tick
-modifiers, new hook points, traits, and 15 kinds with ids 8–22).
+modifiers, new hook points, traits, and 15 kinds with ids 8–22). 3.3 done
+(OpenSpec `roster-placeholders`): unit ids 3–11 and faction ids 2–4
+allocated; the nine units exist with the roster plan's stats, abilities and
+temperaments, and borrowed looks (`ui.placeholder`); their factions aren't
+`Playable` yet, so players can't pick them and Red never draws them (classic
+battles unchanged; each new unit has its own golden case). The balance lab
+mixes any units through a lab-only faction.
+
+Notes for Phase 4:
+- The new-unit balance bands assume a unit that fights on its own. A support
+  unit like the huslyar fails "5 against 5" by design (0% in a first run):
+  its session should propose bands that measure it inside an army.
+- Shield wall (druzhynnyk) applies against ranged attacks only; the plan said
+  "while standing" too (an effect has one condition).
 
 Once the plan is approved, one session adds every new effect kind and behaviour
 field the nine units need (each a file from step 0.3, each with rules tests and

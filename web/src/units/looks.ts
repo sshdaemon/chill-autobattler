@@ -25,7 +25,8 @@ export type Recipe = {
 // width, head size and height factors.
 export type Build = { girth: Record<string, number>; shoulders: number; head: number; height: number };
 // What the UI shows for the unit type: name, a short glyph (emoji) and a one-line description.
-export type UnitUI = { label: string; icon: string; blurb: string };
+// placeholder: the unit's look is borrowed until its unit session dresses it (roadmap Phase 4)
+export type UnitUI = { label: string; icon: string; blurb: string; placeholder?: boolean };
 export type UnitLook = { ui: UnitUI; recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook> };
 
 type LookFile = UnitLook & { clips?: Record<string, ClipInfo> };
