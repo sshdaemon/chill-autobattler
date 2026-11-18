@@ -4,7 +4,7 @@
 // slowed or scrubbed; the battle's walk–jog blend on a moving floor with a
 // foot-slide readout; each skill's animation and effect, any effect preset;
 // the portrait. Runs without the game store (that would start a run).
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Grid, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -17,14 +17,17 @@ import { onSnapshot, play, PRESETS } from '../scene/effects.ts';
 import { clipSpeed, locomotion } from '../scene/Units.tsx';
 import { changedOnly, DEFAULTS, resetTuning, setTuning, tuning, type Tuning } from '../scene/tuning.ts';
 import { portrait } from '../scene/portraits.ts';
+import { LabTerrain } from './LabTerrain.tsx';
 import type { Snapshot, UnitSnap } from '../sim/snapshot.ts';
 
-type Mode = { kind: 'clip'; clip: string; loop: boolean } | { kind: 'walk' };
+type Mode = { kind: 'clip'; clip: string; loop: boolean } | { kind: 'walk'; dash?: boolean }; // dash: the sprint clip, as plain dashes in battle
+type Regime = 'walk' | 'blend' | 'jog' | 'sprint';
 type Unit = { ch: Character; x: number; z: number; recipe: string; team: number };
 type Live = { // what the frame loop reads, without re-rendering React every frame
   units: Unit[]; mode: Mode; playing: boolean; rate: number; scrub: number | null; speed: number; spin: boolean;
   time: number; duration: number; blend: string; slide: string; floor: number; restart: number;
   wobble: boolean; clock: number; legSpeed: number; // speed changes like turns in battle; the legs' smoothed speed
+  regime: Regime; // which gait the walk test is in: decides which tuning sliders matter
 };
 
 const ALL = '*';
@@ -53,7 +56,9 @@ export function UnitLab({ initial }: { initial: string }) {
   const [wobble, setWobble] = useState(false);
   const [, retune] = useState(0);
   const [copied, setCopied] = useState('');
-  const live = useRef<Live>({ units: [], mode, playing, rate, scrub: null, speed, spin, time: 0, duration: 0, blend: '', slide: '', floor: 0, restart: 0, wobble, clock: 0, legSpeed: speed });
+  const [allTuning, setAllTuning] = useState(false);
+  const [terrain, setTerrain] = useState(true);
+  const live = useRef<Live>({ units: [], mode, playing, rate, scrub: null, speed, spin, time: 0, duration: 0, blend: '', slide: '', floor: 0, restart: 0, wobble, clock: 0, legSpeed: speed, regime: 'blend' });
 
   useEffect(() => { // the sim worker only for data(); no battle is created
     const w = new Worker(new URL('../sim/sim.worker.ts', import.meta.url), { type: 'module' });
@@ -114,8 +119,9 @@ export function UnitLab({ initial }: { initial: string }) {
       <Canvas shadows camera={{ position: [0, 1.6, 4.2], fov: 38 }}>
         <hemisphereLight args={['#ffffff', '#667766', 1.8]} />
         <directionalLight position={[3, 6, 4]} intensity={2.4} castShadow shadow-mapSize={[2048, 2048]} />
-        <Grid position={[0, 0.001, 0]} args={[30, 30]} cellSize={0.5} sectionSize={2} cellColor="#8a9a7a" sectionColor="#6a7a5a" fadeDistance={24} infiniteGrid />
-        <Floor live={live} />
+        {terrain
+          ? <Suspense fallback={<Floor live={live} />}><LabTerrain floor={live} /></Suspense>
+          : <><Grid position={[0, 0.001, 0]} args={[30, 30]} cellSize={0.5} sectionSize={2} cellColor="#8a9a7a" sectionColor="#6a7a5a" fadeDistance={24} infiniteGrid /><Floor live={live} /></>}
         <OrbitControls makeDefault target={[0, 0.9, 0]} minDistance={1.2} maxDistance={40} />
         <Driver live={live} />
         {units.map((u, i) => <primitive key={i} object={u.ch.root} position={[u.x, 0, u.z]} />)}
@@ -146,6 +152,7 @@ export function UnitLab({ initial }: { initial: string }) {
         <div style={h}>View</div>
         <div style={row}>
           <label><input type="checkbox" checked={spin} onChange={(e) => setSpin(e.target.checked)} /> turntable</label>
+          <label title="grass, path, rocks and trees, or a measuring grid"><input type="checkbox" checked={terrain} onChange={(e) => setTerrain(e.target.checked)} /> terrain</label>
           <button onClick={() => window.dispatchEvent(new CustomEvent('lab-frame', { detail: 'close' }))}>close-up</button>
           <button onClick={() => window.dispatchEvent(new CustomEvent('lab-frame', { detail: 'face' }))}>face</button>
           <button onClick={() => window.dispatchEvent(new CustomEvent('lab-frame', { detail: 'battle' }))}>battle camera</button>
@@ -171,28 +178,43 @@ export function UnitLab({ initial }: { initial: string }) {
         <div style={h}>Walking (battle blend)</div>
         <div style={row}>
           <button onClick={() => setMode({ kind: 'walk' })} style={{ fontWeight: mode.kind === 'walk' ? 700 : 400 }}>walk on the floor</button>
-          <input type="range" min={0} max={10} step={0.05} value={speed} onChange={(e) => { setSpeed(+e.target.value); setMode({ kind: 'walk' }); }} style={{ width: 90 }} /> {speed.toFixed(2)} m/s
+          <input type="range" min={0} max={16} step={0.05} value={speed} onChange={(e) => { setSpeed(+e.target.value); if (mode.kind !== 'walk') setMode({ kind: 'walk' }); }} style={{ width: 90 }} /> {speed.toFixed(2)} m/s
         </div>
-        <div style={row}>{presetSpeeds.map(([n, v]) => <button key={n} onClick={() => { setSpeed(+v.toFixed(2)); setMode({ kind: 'walk' }); }}>{n}</button>)}</div>
+        <div style={row}>{presetSpeeds.filter(([n]) => n !== 'sprint').map(([n, v]) => <button key={n} onClick={() => { setSpeed(+v.toFixed(2)); setMode({ kind: 'walk' }); }}>{n}</button>)}
+          <button title="the sprint clip, as dashes without a skill animation play it in battle (12–16 m/s)" style={{ fontWeight: mode.kind === 'walk' && mode.dash ? 700 : 400 }}
+            onClick={() => { setSpeed(Math.max(speed, 9)); setMode({ kind: 'walk', dash: true }); }}>dash</button></div>
         {mode.kind === 'walk' && <div style={{ color: '#445' }}>{L.blend}<br />{L.slide}</div>}
 
         <div style={h}>Tuning (walk & run)</div>
         <div style={{ color: '#667' }}>Live; saved in this browser and used by battles too (dev only).</div>
-        <TuneSlider k="walkSpeed" label="walk clip speed" min={0.5} max={2} step={0.01} unit="m/s" onChange={() => retune((n) => n + 1)} />
-        <TuneSlider k="jogSpeed" label="jog clip speed" min={3} max={9} step={0.02} unit="m/s" onChange={() => retune((n) => n + 1)} />
-        <TuneSlider k="sprintSpeed" label="sprint clip speed" min={5} max={13} step={0.05} unit="m/s" onChange={() => retune((n) => n + 1)} />
-        <TuneSlider k="blendBias" label="walk ← mix → jog" min={-0.5} max={0.5} step={0.01} onChange={() => retune((n) => n + 1)} />
-        <TuneSlider k="walkMin" label="slowest walk" min={0.2} max={1} step={0.05} unit="×" onChange={() => retune((n) => n + 1)} />
-        <TuneSlider k="jogMax" label="fastest jog" min={1} max={2.5} step={0.05} unit="×" onChange={() => retune((n) => n + 1)} />
-        <TuneSlider k="sprintMax" label="fastest sprint" min={1} max={3} step={0.05} unit="×" onChange={() => retune((n) => n + 1)} />
-        <TuneSlider k="speedSmooth" label="speed smoothing" min={0} max={0.5} step={0.01} unit="s" onChange={() => retune((n) => n + 1)} />
-        <div style={row}>
-          <label><input type="checkbox" checked={tuning.ground} onChange={(e) => { setTuning({ ground: e.target.checked }); retune((n) => n + 1); }} /> keep feet on the floor</label>
-        </div>
-        <TuneSlider k="groundSmooth" label="floor smoothing" min={0} max={0.2} step={0.005} unit="s" onChange={() => retune((n) => n + 1)} />
-        <div style={row}>
-          <label title="speed drops to 55% and back every 0.6 s, like sharp turns in battle: shows what speed smoothing does"><input type="checkbox" checked={wobble} onChange={(e) => { setWobble(e.target.checked); setMode({ kind: 'walk' }); }} /> wobble speed (turns)</label>
-        </div>
+        {(() => {
+          const re = () => retune((n) => n + 1);
+          const walking = mode.kind === 'walk', g = L.regime, all = allTuning;
+          const show = (...rs: Regime[]) => all || (walking && rs.includes(g));
+          return <>
+            <div style={row}>
+              {walking ? <span>gait now: <b>{{ walk: 'walk only', blend: 'walk–jog blend', jog: 'jog only', sprint: 'sprint (dash)' }[g]}</b></span> : <span style={{ color: '#889' }}>tuning applies to walking and running: use the walk test above</span>}
+              <label style={{ marginLeft: 'auto' }}><input type="checkbox" checked={all} onChange={(e) => setAllTuning(e.target.checked)} /> show all</label>
+            </div>
+            {show('walk', 'blend') && <TuneSlider k="walkSpeed" label="walk clip speed" min={0.5} max={2} step={0.01} unit="m/s" onChange={re} />}
+            {show('walk') && <TuneSlider k="walkMin" label="slowest walk" min={0.2} max={1} step={0.05} unit="×" onChange={re} />}
+            {show('blend', 'jog') && <TuneSlider k="jogSpeed" label="jog clip speed" min={3} max={9} step={0.02} unit="m/s" onChange={re} />}
+            {show('blend') && <TuneSlider k="blendBias" label="walk ← mix → jog" min={-0.5} max={0.5} step={0.01} onChange={re} />}
+            {show('jog') && <TuneSlider k="jogMax" label="fastest jog" min={1} max={2.5} step={0.05} unit="×" onChange={re} />}
+            {show('sprint') && <TuneSlider k="sprintSpeed" label="sprint clip speed" min={5} max={13} step={0.05} unit="m/s" onChange={re} />}
+            {show('sprint') && <TuneSlider k="sprintMax" label="fastest sprint" min={1} max={3} step={0.05} unit="×" onChange={re} />}
+            {(all || walking) && <>
+              <div style={row}>
+                <label title="speed drops to 55% and back every 0.6 s, like sharp turns in battle: shows what speed smoothing does"><input type="checkbox" checked={wobble} onChange={(e) => { setWobble(e.target.checked); if (mode.kind !== 'walk') setMode({ kind: 'walk' }); }} /> wobble speed (turns)</label>
+              </div>
+              {(all || wobble) && <TuneSlider k="speedSmooth" label="speed smoothing" min={0} max={0.5} step={0.01} unit="s" onChange={re} />}
+              <div style={row}>
+                <label><input type="checkbox" checked={tuning.ground} onChange={(e) => { setTuning({ ground: e.target.checked }); re(); }} /> keep feet on the floor</label>
+              </div>
+              {tuning.ground && <TuneSlider k="groundSmooth" label="floor smoothing" min={0} max={0.2} step={0.005} unit="s" onChange={re} />}
+            </>}
+          </>;
+        })()}
         <div style={row}>
           <button onClick={() => { const txt = JSON.stringify(changedOnly()); void navigator.clipboard?.writeText(txt).catch(() => undefined); setCopied(txt === '{}' ? 'all defaults' : txt); }}>copy values</button>
           <button onClick={() => { resetTuning(); retune((n) => n + 1); setCopied(''); }}>reset</button>
@@ -307,6 +329,18 @@ function Driver({ live }: { live: React.MutableRefObject<Live> }) {
         const look = lookOf(clsOf(ch));
         const w = ch.actions[look.anims.walk], j = ch.actions[look.anims.move];
         if (!w || !j) continue;
+        const sp = look.anims.sprint ? ch.actions[look.anims.sprint] : undefined;
+        if (L.mode.kind === 'walk' && L.mode.dash && sp) { // as plain dashes in battle
+          if (fresh) { ch.mixer.stopAllAction(); sp.reset().play(); }
+          sp.timeScale = Math.min(tuning.sprintMax, L.legSpeed / (clipSpeed(sp.getClip().name, 'sprint') * ch.root.scale.x));
+          ch.mixer.update(step);
+          ch.ground(tuning.ground, step || 1 / 60);
+          const ry0 = ch.root.rotation.y;
+          ch.tick?.(step, new THREE.Vector3(-Math.sin(ry0) * L.legSpeed, 0, -Math.cos(ry0) * L.legSpeed));
+          L.regime = 'sprint';
+          L.blend = `sprint at ${sp.timeScale.toFixed(2)}×` + (sp.timeScale >= tuning.sprintMax - 1e-6 ? ' (capped: feet will slide)' : '');
+          continue;
+        }
         if (fresh) { ch.mixer.stopAllAction(); w.reset().play(); j.reset().play(); }
         const wc = w.getClip(), jc = j.getClip();
         const l = locomotion(L.legSpeed, ch.root.scale.x, { speed: clipSpeed(wc.name, 'walk'), duration: wc.duration }, { speed: clipSpeed(jc.name, 'jog'), duration: jc.duration });
@@ -317,6 +351,7 @@ function Driver({ live }: { live: React.MutableRefObject<Live> }) {
         // the unit stays put on a moving floor: the air streams past it instead
         const ry = ch.root.rotation.y;
         ch.tick?.(step, new THREE.Vector3(-Math.sin(ry) * L.legSpeed, 0, -Math.cos(ry) * L.legSpeed));
+        L.regime = l.k <= 0 ? 'walk' : l.k >= 1 ? 'jog' : 'blend';
         L.blend = `blend ${(100 * (1 - l.k)).toFixed(0)}% walk / ${(100 * l.k).toFixed(0)}% jog · walk ${l.walkRate.toFixed(2)}× · jog ${l.jogRate.toFixed(2)}×` + (L.wobble ? ` · legs at ${L.legSpeed.toFixed(2)} m/s` : '');
       }
     }
