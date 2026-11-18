@@ -1,0 +1,62 @@
+{
+  "clips": {
+    "Sword_Idle": { "loop": true },
+    "Idle_Loop": { "loop": true },
+    "Spell_Simple_Idle_Loop": { "loop": true },
+    "Jog_Fwd_Loop": { "loop": true },
+    "Yes": { "loop": true },
+    "Hit_Chest": {},
+    "Hit_Head": {},
+    "Death01": {},
+    "Hit_Knockback": {},
+    "Sword_Attack": { "hit": 0.5 },
+    "Sword_Slash_A": { "hit": 0.3, "from": ["Sword_Regular_A", "Sword_Regular_A_Rec"] },
+    "Sword_Slash_B": { "hit": 0.3, "from": ["Sword_Regular_B", "Sword_Regular_B_Rec"] },
+    "Spell_Simple_Shoot": { "hit": 0.225 },
+    "OverhandThrow": { "hit": 0.42 },
+    "Sword_Dash": {},
+    "NinjaJump_Land": {}
+  },
+  "units": {
+    "warrior": {
+      "models": ["Mirko", "Vesna", "Radim"],
+      "anims": {
+        "idle": "Sword_Idle", "move": "Jog_Fwd_Loop", "cheer": "Yes",
+        "attack": ["Sword_Attack", "Sword_Slash_A", "Sword_Slash_B"],
+        "hit": ["Hit_Chest", "Hit_Head"], "death": ["Death01", "Hit_Knockback"]
+      },
+      "skills": {
+        "1": {}, "2": {}, "3": {},
+        "4": { "action": "Sword_Dash", "rate": 2, "fx": "dash" },
+        "5": { "fx": "execute.heavy" }
+      }
+    },
+    "archer": {
+      "models": ["Bogdan", "Lada"],
+      "anims": {
+        "idle": "Idle_Loop", "move": "Jog_Fwd_Loop", "cheer": "Yes",
+        "attack": ["Spell_Simple_Shoot"],
+        "hit": ["Hit_Chest", "Hit_Head"], "death": ["Death01", "Hit_Knockback"]
+      },
+      "skills": {
+        "6": {}, "3": {}, "1": {},
+        "7": { "pitch": 0.45 },
+        "5": { "fx": "execute" }
+      }
+    },
+    "mage": {
+      "models": ["Zoran", "Milena", "Velimir"],
+      "anims": {
+        "idle": "Spell_Simple_Idle_Loop", "move": "Jog_Fwd_Loop", "cheer": "Yes",
+        "attack": ["Spell_Simple_Shoot"],
+        "hit": ["Hit_Chest", "Hit_Head"], "death": ["Death01", "Hit_Knockback"]
+      },
+      "skills": {
+        "3": {}, "1": {},
+        "8": { "fx": "frost" },
+        "9": { "action": "NinjaJump_Land", "rate": 1.4, "fx": "blink" },
+        "10": { "attack": "OverhandThrow", "fx": "blast" }
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ type SimApi = {
   step(n: number): Uint8Array;
   outcome(): Uint8Array;
   data(): string;
+  units(): string;
   formationSlots(formation: number, classes: number[]): Uint8Array | null;
   fog(): Uint8Array | null;
 };
@@ -20,7 +21,7 @@ export type ToWorker =
 export type FromWorker =
   | { type: 'ready'; version: string; data: string }
   | { type: 'slots'; slots: Record<number, { x: number; z: number }[]> } // keyed by sim formation (1..7)
-  | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer }
+  | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer; units: string } // units: JSON UnitLoadout[]
   | { type: 'snapshot'; snapshot: ArrayBuffer }
   | { type: 'fog'; seen: ArrayBuffer } // Blue's visible cells, 56×56, every 2 ticks
   | { type: 'done'; outcome: Uint8Array }
@@ -67,7 +68,7 @@ self.onmessage = async (e: MessageEvent<ToWorker>) => {
     const err = sim.create(msg.input);
     if (err) return post({ type: 'error', message: err });
     const map = buf(sim.map()), snapshot = buf(sim.step(0));
-    post({ type: 'started', map, snapshot }, [map, snapshot]);
+    post({ type: 'started', map, snapshot, units: sim.units() }, [map, snapshot]);
     if (msg.type === 'start') loop(sim);
   } else if (msg.type === 'slots') {
     const slots: Record<number, { x: number; z: number }[]> = {};

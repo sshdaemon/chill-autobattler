@@ -212,9 +212,11 @@ Characters and animations come from [Quaternius](https://quaternius.com)'s CC0 m
 | Path | What |
 |---|---|
 | `web/public/assets/units/` | The packed models: one shared geometry file per look, Blue/Red `.gltf`, and JPEG textures (about 17 MB). |
-| `web/public/assets/clips.json` | The shared animations: idle, jog, sword attack, spell shot, hit, death, cheer. |
+| `web/public/assets/clips.json` | The shared animations (Quaternius Universal Animation Library 1 and 2, CC0), exactly the clips `web/src/units/looks.json` names. Packed by `python3 -I tools/assets/ual_clips.py` from the unzipped packs in `~/fun/assets-src/ual1` and `ual2`. |
+| `web/src/units/looks.json` | Unit looks: models, animation set and per-skill animations and effect presets for each roster entry. Checked against the roster by `wasm/looks_test.go`. |
+| `web/src/scene/fx.json` | Effect presets (sparks, bursts, dust, rings, shake) that sim events and skills name. |
 | `tools/blender/bake_units.py` | Re-bakes from the Quaternius source packs, which aren't in this repo (`QUATERNIUS_DIR`, default `../web3d-demo/assets/quaternius`): `blender --background --python tools/blender/bake_units.py`. |
-| `tools/assets/pack_units.py` | Packs a bake for the web: shares Blue/Red geometry, converts PNGs to JPEG (macOS `sips`), and trims the clips. Run `python3 tools/assets/pack_units.py tools/blender/out`. |
+| `tools/assets/pack_units.py` | Packs a bake for the web: shares Blue/Red geometry, converts PNGs to JPEG (macOS `sips`). Run `python3 tools/assets/pack_units.py tools/blender/out`. |
 | `web/public/assets/nature/` | The battlefield (about 7 MB): `nature.glb` holds rocks, pines for the far background, a bush, ferns, flowers and a pebble from Quaternius's CC0 [Stylized Nature MegaKit](https://quaternius.itch.io/stylized-nature-megakit); the ground textures are CC0 [ambientCG](https://ambientcg.com) Grass004, Ground037 (dirt) and Ground054 (mud). |
 | `tools/assets/pack_nature.py` | Packs those from the source downloads, which aren't in this repo (`NATURE_DIR`, default `../assets-src/quaternius-nature`; `AMBIENTCG_DIR`, default `../assets-src/ambientcg`). It downscales the textures and has Blender merge the chosen models into one GLB: `python3 tools/assets/pack_nature.py`. |
 | `web/public/assets/trees/` | Detailed trees and a bush (about 6 MB, ~3.5 MB compressed): oaks, an ash, an aspen and a pine generated with [EZ-Tree](https://github.com/dgreenheck/ez-tree) (MIT) and baked to `trees.glb`, plus its bark (Poly Haven and TextureCan, CC0) and leaf textures. |

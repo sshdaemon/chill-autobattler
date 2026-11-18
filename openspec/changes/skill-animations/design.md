@@ -51,7 +51,7 @@ Shape, with the skill ids from the roster:
 ### 2. Clip intake and budget
 - **Sources:** Quaternius Universal Animation Library 1 and 2, standard (free, CC0) editions, downloaded into `~/fun/assets-src/ual1`, `ual2` with their licence files. The files are named to the user before downloading.
 - **Same rig:** both packs use the Universal Base Characters rig, the same one our characters are baked on. If a pack's bone names differ, a name map is applied in the bake step, not retargeting.
-- **Clip list:** the bake script (`tools/blender/bake_units.py`, extended with a `clips` mode) exports the full clip list to a staging JSON. `pack_units.py` then keeps exactly the clips named in `looks.json`, replacing its hard-coded `KEEP_CLIPS`.
+- **Clip list:** `tools/assets/ual_clips.py` (plain Python, no Blender) reads the UAL `.glb` files directly and writes exactly the clips named in `looks.json` to `clips.json`, replacing `pack_units.py`'s hard-coded `KEEP_CLIPS`. The intake spike showed the UAL rig is ours value for value (the shared clips `Sword_Idle`, `Death01` and `Hit_Chest` match key for key); only the root bone is named `root` instead of `Rig`, and leaf bones are dropped. A look's clip entry may say `"from": [A, B]` to join a combo strike with its recovery (`Sword_Regular_A` + `Sword_Regular_A_Rec`), so the attack starts and ends at rest.
 - **Trimming:**
   - drop tracks that are constant across the clip;
   - drop scale tracks;
@@ -73,6 +73,8 @@ Shape, with the skill ids from the roster:
 | anything else | `idle` |
 
 **Variants:** `i` comes from `(unit index, swing count)` hashed, so a replay looks the same each time. The swing count rises on each rising edge of `UF.swinging`.
+
+**Extra skill fields:** besides `action`, `attack` and `fx`, a skill look may give `rate` (action playback speed) and `pitch` (radians the upper body leans back while attacking: the arcing shot, since the free packs have no aim-up bow shot).
 
 **Event actions:** for one-shot skills that act through an event (Blink → the escape skill's `action`), the clip is started on the event for that unit. It plays once, then the unit returns to its state clip.
 

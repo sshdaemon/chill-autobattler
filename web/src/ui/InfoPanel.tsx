@@ -16,7 +16,7 @@ export function status(f: number): string {
 
 // The selected unit. An unseen Red unit keeps showing what was last seen.
 export function InfoPanel() {
-  const { selected, curr, data, run, fogOn, phase, select, follow } = useBattle();
+  const { selected, curr, data, units, fogOn, phase, select, follow } = useBattle();
   const last = useRef<{ index: number; u: UnitSnap }>(undefined);
   if (selected === undefined || !curr || !data) return null;
   const now = curr.units[selected];
@@ -25,10 +25,9 @@ export function InfoPanel() {
   if (!unseen || last.current?.index !== selected) last.current = { index: selected, u: now };
   const u = unseen ? last.current.u : now;
   const cls = data.classes[u.cls];
-  const blueIndex = curr.units.slice(0, selected).filter((x) => x.team === 0).length;
-  // veterans' skill names; after the result the run's veterans are already the new ones
-  const skills = u.team === 0 && phase !== 'done' && blueIndex < (run?.veterans.length ?? 0)
-    ? run!.veterans[blueIndex].skills.map((id) => cls.skills.find((s) => s.id === id)?.name).join(', ')
+  // skill names from the sim's list of this battle's units; a Red unit's only while it is in sight
+  const skills = !unseen && units[selected]?.cls === u.cls
+    ? units[selected].skills.map((id) => cls.skills.find((s) => s.id === id)?.name).join(', ')
     : '';
   return (
     <div className="info">
