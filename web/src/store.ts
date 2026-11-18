@@ -2,7 +2,10 @@ import { lastKill, onSnapshot, viewOf } from './scene/effects.ts';
 import { create } from 'zustand';
 import { create as createMsg, toBinary, fromBinary } from '@bufbuild/protobuf';
 import { BattleInputSchema, BattleOutcomeSchema, BattleResult, type BattleOutcome } from './gen/chill/v1/battle_pb.ts';
-import { ArmySchema, type Army, type Skill, type UnitSpec } from './gen/chill/v1/units_pb.ts';
+import { ArmySchema, type Army, type UnitSpec } from './gen/chill/v1/units_pb.ts';
+
+// an ability's number within its unit's roster entry (1..5)
+type Skill = number;
 import { RunState, type Run } from './gen/chill/v1/runstate_pb.ts';
 import type { GetScoreboardResponse, ScoreRow } from './gen/chill/v1/run_pb.ts';
 import { decodeMap, decodeSnapshot, type Obstacle, type SimEvent, type Snapshot } from './sim/snapshot.ts';

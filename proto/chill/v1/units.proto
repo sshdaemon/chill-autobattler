@@ -14,22 +14,6 @@ enum UnitClass {
   UNIT_CLASS_MAGE = 3;
 }
 
-// Skills by id; which ones a unit can learn is in its roster entry (sim/unit_*.go).
-// New skills take the next free id from the roster, with no new value needed here.
-enum Skill {
-  SKILL_UNSPECIFIED = 0;
-  SKILL_HEALTH = 1; // Toughness
-  SKILL_SPEED = 2; // Swift
-  SKILL_DAMAGE = 3; // Strength / Sharp arrows / Power
-  SKILL_DASH = 4;
-  SKILL_EXECUTE = 5; // Executioner / Headshot
-  SKILL_RANGE = 6; // Long shot
-  SKILL_LOB = 7; // Arcing shot
-  SKILL_FROST = 8;
-  SKILL_BLINK = 9;
-  SKILL_BLAST = 10;
-}
-
 // FORMATION_CUSTOM means every unit carries its own position.
 enum Formation {
   FORMATION_UNSPECIFIED = 0; // rejected
@@ -52,7 +36,9 @@ message Point {
 
 message UnitSpec {
   UnitClass unit_class = 1;
-  repeated Skill skills = 2;
+  // Abilities by number within the unit's roster entry, 1..5 in the order it
+  // lists them (sim/unit_*.go); numbers mean nothing across units.
+  repeated uint32 skills = 2;
   // Required with FORMATION_CUSTOM, absent otherwise.
   Point position = 3;
 }

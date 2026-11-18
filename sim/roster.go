@@ -37,17 +37,7 @@ const (
 	Bolt
 )
 
-type EffectKind uint8
-
-const (
-	StatBonus   EffectKind = iota + 1 // Stat +Pct% (AttackSpeed: cooldown and swing ×Pct%)
-	Finisher                          // Pct% chance to kill a victim below ExecuteBelowPct of max health
-	SlowOnHit                         // Pct% chance per landed projectile: victim moves ×Factor for Ticks
-	SplashOnHit                       // victim's allies within Radius take Pct% of the hit
-	GapCloser                         // rush at Speed to a target up to Value away; Ticks cooldown
-	Escape                            // teleport Value away from melee within Radius; Ticks cooldown
-	OverCover                         // shots need no clear line of fire
-)
+// EffectKind ids are in ids.go.
 
 var effectNames = [...]string{"", "statBonus", "finisher", "slowOnHit", "splashOnHit", "gapCloser", "escape", "overCover"}
 
@@ -89,8 +79,9 @@ type Effect struct {
 	Ticks  int      // cooldown or duration
 }
 
-// SkillDef is a learnable skill: a wire id, a name and its effects. The first
-// effect is the skill's headline (its Pct and Value are what the UI shows).
+// SkillDef is a learnable skill: its number within the unit (1..MaxSkills, in
+// order), a name and its effects. The first effect is the skill's headline
+// (its Pct and Value are what the UI shows).
 type SkillDef struct {
 	Skill   Skill
 	Name    string
@@ -116,8 +107,21 @@ type UnitDef struct {
 	InRedPool bool
 }
 
-// Roster is indexed by Class: Roster[c].ID == c.
-var Roster = []UnitDef{warriorDef, archerDef, mageDef}
+// Roster is indexed by Class: Roster[c].ID == c. Each unit_<name>.go adds its
+// entry with register (from an init func), so adding a unit edits no shared file.
+var Roster []UnitDef
+
+// register adds a unit to the roster, keeping it sorted by id. ValidateRoster
+// (run by the tests) checks the ids are 0..n-1 with no gaps or duplicates.
+func register(d UnitDef) {
+	i := len(Roster)
+	for i > 0 && Roster[i-1].ID > d.ID {
+		i--
+	}
+	Roster = append(Roster, UnitDef{})
+	copy(Roster[i+1:], Roster[i:])
+	Roster[i] = d
+}
 
 // RosterOf returns the entry for a class, or nil if there is none.
 func RosterOf(c Class) *UnitDef {
@@ -168,35 +172,11 @@ func RedPool() []Class {
 	return out
 }
 
-// skillShape is what a skill id means across units: its effect kinds and
-// stats, in order (numbers may differ, e.g. Toughness +10% or +20% HP).
-func skillShape(d SkillDef) string {
-	s := ""
-	for _, e := range d.Effects {
-		s += fmt.Sprintf("%v/%v;", e.Kind, e.Stat)
-	}
-	return s
-}
-
 // ValidateRoster checks a roster against the unit-roster rules. Ids: a unit's
-// id is its position (new units append, ids are never reused); a skill id
-// shared by several units must mean the same there (same effect kinds and
-// stats), so a new kind of skill takes the next free id. Neither needs a proto
-// change: the wire enums are open and the roster is the check.
+// id is its position, allocated in ids.go (ids are never reused); a unit's
+// skills are numbered 1..MaxSkills in order. Neither needs a proto change.
 func ValidateRoster(r []UnitDef) error {
-	if err := validateEntries(r); err != nil {
-		return err
-	}
-	shapes := map[Skill]string{}
-	for _, d := range r {
-		for _, s := range d.Skills {
-			if prev, ok := shapes[s.Skill]; ok && prev != skillShape(s) {
-				return fmt.Errorf("skill id %d means different things (%s vs %s, in %s): give the new skill the next free id", s.Skill, prev, skillShape(s), d.Name)
-			}
-			shapes[s.Skill] = skillShape(s)
-		}
-	}
-	return nil
+	return validateEntries(r)
 }
 
 func validateEntries(r []UnitDef) error {
@@ -238,13 +218,11 @@ func validateEntries(r []UnitDef) error {
 		}
 		var kinds [len(effectNames)]bool
 		for si, s := range d.Skills {
-			if s.Skill == 0 || s.Name == "" || len(s.Effects) == 0 {
-				return fail("skill %d: needs an id, a name and at least one effect (five skills per unit)", si)
+			if s.Name == "" || len(s.Effects) == 0 {
+				return fail("skill %d: needs a name and at least one effect (five skills per unit)", si+1)
 			}
-			for sj := 0; sj < si; sj++ {
-				if d.Skills[sj].Skill == s.Skill {
-					return fail("skill id %d twice", s.Skill)
-				}
+			if s.Skill != Skill(si+1) {
+				return fail("skill %s is numbered %d, want %d (skills are numbered 1..%d in order)", s.Name, s.Skill, si+1, MaxSkills)
 			}
 			for _, e := range s.Effects {
 				if err := checkEffect(e); err != nil {

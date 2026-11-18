@@ -1,5 +1,16 @@
 package sim
 
+// Warrior's abilities, numbered in the order of its Skills list.
+const (
+	WarriorToughness Skill = iota + 1
+	WarriorSwift
+	WarriorStrength
+	WarriorDash
+	WarriorExecutioner
+)
+
+func init() { register(warriorDef) }
+
 // Warrior: melee bruiser, strong against ranged units (docs/GAME_CONCEPT.md §4).
 var warriorDef = UnitDef{
 	ID: Warrior, Name: "warrior",
@@ -8,11 +19,11 @@ var warriorDef = UnitDef{
 	Tags:  TagMelee,
 	Bonus: []TagBonus{{TagRanged, Ratio(145, 100)}, {TagCaster, Ratio(95, 100)}},
 	Skills: [MaxSkills]SkillDef{
-		{SkillHealth, "Toughness", []Effect{{Kind: StatBonus, Stat: StatHP, Pct: 10}}},
-		{SkillSpeed, "Swift", []Effect{{Kind: StatBonus, Stat: StatSpeed, Pct: 40}, {Kind: StatBonus, Stat: StatAttackSpeed, Pct: 80}}},
-		{SkillDamage, "Strength", []Effect{{Kind: StatBonus, Stat: StatDamage, Pct: 15}}},
-		{SkillDash, "Dash", []Effect{{Kind: GapCloser, Value: I(10), Speed: I(16), Ticks: 200}}},
-		{SkillExecute, "Executioner", []Effect{{Kind: Finisher, Pct: 35}}},
+		{WarriorToughness, "Toughness", []Effect{{Kind: StatBonus, Stat: StatHP, Pct: 10}}},
+		{WarriorSwift, "Swift", []Effect{{Kind: StatBonus, Stat: StatSpeed, Pct: 40}, {Kind: StatBonus, Stat: StatAttackSpeed, Pct: 80}}},
+		{WarriorStrength, "Strength", []Effect{{Kind: StatBonus, Stat: StatDamage, Pct: 15}}},
+		{WarriorDash, "Dash", []Effect{{Kind: GapCloser, Value: I(10), Speed: I(16), Ticks: 200}}},
+		{WarriorExecutioner, "Executioner", []Effect{{Kind: Finisher, Pct: 35}}},
 	},
 	InRedPool: true,
 }

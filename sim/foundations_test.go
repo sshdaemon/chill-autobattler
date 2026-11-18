@@ -65,10 +65,10 @@ func TestDataMatchesConcept(t *testing.T) {
 			t.Errorf("%v skills = %v, want %v", c, got, names)
 		}
 	}
-	if d, _ := SkillDefOf(Warrior, SkillExecute); d.Main().Pct != 35 {
+	if d, _ := SkillDefOf(Warrior, WarriorExecutioner); d.Main().Pct != 35 {
 		t.Errorf("executioner chance %v", d.Main().Pct)
 	}
-	if d, _ := SkillDefOf(Archer, SkillExecute); d.Main().Pct != 25 {
+	if d, _ := SkillDefOf(Archer, ArcherHeadshot); d.Main().Pct != 25 {
 		t.Errorf("headshot chance %v", d.Main().Pct)
 	}
 }

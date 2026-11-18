@@ -35,21 +35,28 @@ func baselineNow() baselineData {
 	}
 	for c := Warrior; c <= Mage; c++ {
 		add(c)
-		for _, s := range []Skill{SkillHealth, SkillSpeed, SkillDamage, SkillDash, SkillExecute, SkillRange, SkillLob, SkillFrost, SkillBlink, SkillBlast} {
-			if hasSkill(skillIDs(c), s) {
-				add(c, s)
-			}
+		for _, s := range baselineOrder[c] {
+			add(c, s)
 		}
 		add(c, skillIDs(c)...)
 	}
-	add(Archer, SkillLob, SkillDamage)
-	add(Archer, SkillDamage, SkillLob)
-	add(Warrior, SkillDash, SkillSpeed)
-	add(Mage, SkillBlast, SkillFrost, SkillDamage)
+	add(Archer, ArcherArcingShot, ArcherSharpArrows)
+	add(Archer, ArcherSharpArrows, ArcherArcingShot)
+	add(Warrior, WarriorDash, WarriorSwift)
+	add(Mage, MageBlast, MageFrost, MagePower)
 	for seed := uint64(1); seed <= 200; seed++ {
 		d.Red = append(d.Red, RedArmy(seed, int(seed%26)))
 	}
 	return d
+}
+
+// The order the baseline was recorded in: by the global skill ids skills had
+// before they were numbered per unit (Toughness, Swift, Strength, Dash,
+// Executioner, Long shot, Arcing shot, Frost, Blink, Blast).
+var baselineOrder = map[Class][]Skill{
+	Warrior: {WarriorToughness, WarriorSwift, WarriorStrength, WarriorDash, WarriorExecutioner},
+	Archer:  {ArcherToughness, ArcherSharpArrows, ArcherHeadshot, ArcherLongShot, ArcherArcingShot},
+	Mage:    {MageToughness, MagePower, MageFrost, MageBlink, MageBlast},
 }
 
 func skillIDs(c Class) []Skill {

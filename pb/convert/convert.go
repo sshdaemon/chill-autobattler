@@ -49,7 +49,7 @@ func army(a *chillv1.Army, name string, required bool) (sim.Army, error) {
 		}
 		spec := sim.UnitSpec{Class: sim.Class(u.UnitClass - 1)}
 		for _, s := range u.Skills {
-			spec.Skills = append(spec.Skills, sim.Skill(s)) // same numbering as sim.Skill
+			spec.Skills = append(spec.Skills, sim.Skill(s)) // the unit's ability number, as in sim
 		}
 		if u.Position != nil {
 			p := sim.V(sim.Fx(u.Position.XRaw), sim.Fx(u.Position.ZRaw))

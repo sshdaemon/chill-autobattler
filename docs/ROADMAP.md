@@ -82,7 +82,18 @@ Original plan:
   `design/units/<unit>/README.md` (from the roster), and the concept doc links
   to them.
 
-**0.2 Ids that can't collide** (rule change: version bump, golden update)
+**0.2 Ids that can't collide** (rule change: version bump, golden update) — done
+- As built: `sim/ids.go` holds unit and effect kind ids; unit files register
+  themselves; abilities are numbered per unit (`WarriorDash` = 4, `MageFrost`
+  = 1, ...) and the proto carries plain numbers (the `Skill` enum is gone).
+  `sim.Version` 0.5.0; every golden outcome is unchanged (only the version
+  field), and the roster baseline only renumbers abilities.
+- Unit ids stay dense (the client indexes units by id). So no gaps appear while
+  units are built in parallel, Phase 3 creates all nine new units at once as
+  valid placeholder entries with placeholder looks; Phase 4 sessions then only
+  fill in their own unit's files and never allocate ids.
+
+Original plan:
 - Unit ids: one file, `sim/ids.go`, lists every unit id, planned ones included,
   allocated in planning PRs only (Phase 2 allocates the nine new units at once).
   A unit file registers itself (`func init() { register(huskarlDef) }`); the

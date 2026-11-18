@@ -10,7 +10,7 @@ import (
 
 func five() []*chillv1.UnitSpec {
 	w, a, m := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER, chillv1.UnitClass_UNIT_CLASS_MAGE
-	return []*chillv1.UnitSpec{{UnitClass: w, Skills: []chillv1.Skill{chillv1.Skill_SKILL_DASH}}, {UnitClass: w}, {UnitClass: a}, {UnitClass: a}, {UnitClass: m}}
+	return []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.WarriorDash)}}, {UnitClass: w}, {UnitClass: a}, {UnitClass: a}, {UnitClass: m}}
 }
 
 func TestInput(t *testing.T) {
@@ -21,14 +21,13 @@ func TestInput(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got.Blue.Formation != sim.F3x2 || got.Blue.Units[0].Class != sim.Warrior || got.Blue.Units[4].Class != sim.Mage ||
-		got.Blue.Units[0].Skills[0] != sim.SkillDash || got.RedSkills != 2 || got.CombatSeed != 1<<63 || len(got.Red.Units) != 0 {
+		got.Blue.Units[0].Skills[0] != sim.WarriorDash || got.RedSkills != 2 || got.CombatSeed != 1<<63 || len(got.Red.Units) != 0 {
 		t.Errorf("converted %+v", got)
 	}
-	// enum numbering must line up with sim's
-	pairs := map[chillv1.Skill]sim.Skill{chillv1.Skill_SKILL_HEALTH: sim.SkillHealth, chillv1.Skill_SKILL_LOB: sim.SkillLob, chillv1.Skill_SKILL_BLAST: sim.SkillBlast}
-	for p, s := range pairs {
-		if sim.Skill(p) != s {
-			t.Errorf("skill %v != %v", p, s)
+	// ability numbers pass through unchanged
+	for _, s := range []sim.Skill{sim.ArcherArcingShot, sim.MageBlast} {
+		if uint32(s) != uint32(sim.Skill(uint32(s))) {
+			t.Errorf("skill %v", s)
 		}
 	}
 	if sim.Formation(chillv1.Formation_FORMATION_5_0-chillv1.Formation_FORMATION_CUSTOM) != sim.F5x0 {
@@ -76,10 +75,10 @@ func TestOutcome(t *testing.T) {
 // id is just a number on the wire, and the roster decides whether it exists.
 func TestNewUnitIDs(t *testing.T) {
 	newUnit := chillv1.UnitClass(len(sim.Roster) + 1) // next roster position, +1 for the proto's UNSPECIFIED
-	newSkill := chillv1.Skill(40)
+	newSkill := uint32(1)                             // its first ability: numbers are per unit
 	in := func() *chillv1.BattleInput {
 		units := five()
-		units[4] = &chillv1.UnitSpec{UnitClass: newUnit, Skills: []chillv1.Skill{newSkill}}
+		units[4] = &chillv1.UnitSpec{UnitClass: newUnit, Skills: []uint32{newSkill}}
 		return &chillv1.BattleInput{SimVersion: sim.Version, Seed: 3, Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_SPREAD, Units: units}}
 	}
 	if _, err := Input(in()); !errors.Is(err, sim.ErrInvalid) { // Input validates against the roster
@@ -90,7 +89,6 @@ func TestNewUnitIDs(t *testing.T) {
 	t.Cleanup(func() { sim.Roster = old })
 	extra := old[sim.Warrior]
 	extra.ID, extra.Name, extra.InRedPool = sim.Class(len(old)), "test spearman", false
-	extra.Skills[0].Skill = sim.Skill(newSkill)
 	extra.Skills[0].Effects = []sim.Effect{{Kind: sim.StatBonus, Stat: sim.StatRange, Pct: 20}}
 	sim.Roster = append(append([]sim.UnitDef(nil), old...), extra)
 	if err := sim.ValidateRoster(sim.Roster); err != nil {

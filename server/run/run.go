@@ -336,7 +336,7 @@ func CheckArmy(vets []*chillv1.UnitSpec, blue *chillv1.Army) error {
 	return nil
 }
 
-func sameSkills(a, b []chillv1.Skill) bool {
+func sameSkills(a, b []uint32) bool {
 	x, y := slices.Clone(a), slices.Clone(b)
 	slices.Sort(x)
 	slices.Sort(y)

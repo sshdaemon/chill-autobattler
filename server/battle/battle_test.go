@@ -196,7 +196,7 @@ func TestLockDeployment(t *testing.T) {
 		u.Position = &chillv1.Point{ZRaw: int64(sim.I(-10))}
 	}
 	skilled := mix()
-	skilled.Units[0].Skills = []chillv1.Skill{chillv1.Skill_SKILL_DASH}
+	skilled.Units[0].Skills = []uint32{uint32(sim.WarriorDash)}
 	for name, a := range map[string]*chillv1.Army{"six units": six, "outside zone": outside, "recruit with a skill": skilled, "four units": army(nil, W, W, A, A)} {
 		if _, err := e.lock(bad.BattleId, a); code(err) != connect.CodeInvalidArgument {
 			t.Errorf("%s: %v", name, err)

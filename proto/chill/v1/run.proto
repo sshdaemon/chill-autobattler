@@ -41,7 +41,7 @@ message GetRunResponse {
 
 message SkillPick {
   uint32 veteran = 1; // index into Run.veterans
-  Skill skill = 2;
+  uint32 skill = 2; // ability number within the veteran's unit (UnitSpec.skills)
 }
 
 message PickSkillsRequest {
