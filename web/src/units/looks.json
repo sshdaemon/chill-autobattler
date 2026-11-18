@@ -3,7 +3,7 @@
     "Sword_Idle": { "loop": true },
     "Idle_Loop": { "loop": true },
     "Spell_Simple_Idle_Loop": { "loop": true },
-    "Jog_Fwd_Loop": { "loop": true },
+    "Jog_Fwd_Loop": { "loop": true, "speed": 6.24 },
     "Yes": { "loop": true },
     "Hit_Chest": {},
     "Hit_Head": {},
@@ -23,7 +23,9 @@
     "Sword_Dash": {},
     "NinjaJump_Land": {},
     "Idle_Shield_Loop": { "loop": true },
-    "Shield_Dash": {}
+    "Shield_Dash": {},
+    "Walk_Loop": { "loop": true, "speed": 1.04 },
+    "Sprint_Loop": { "loop": true, "speed": 9.57 }
   },
   "builds": {
     "slim": {
@@ -97,7 +99,9 @@
       ],
       "anims": {
         "idle": "Idle_Shield_Loop",
+        "walk": "Walk_Loop",
         "move": "Jog_Fwd_Loop",
+        "sprint": "Sprint_Loop",
         "cheer": "Yes",
         "attack": ["Sword_Attack", "Sword_Slash_A", "Sword_Slash_B"],
         "hit": ["Hit_Chest", "Hit_Head"],
@@ -139,7 +143,9 @@
       ],
       "anims": {
         "idle": "Idle_Loop",
+        "walk": "Walk_Loop",
         "move": "Jog_Fwd_Loop",
+        "sprint": "Sprint_Loop",
         "cheer": "Yes",
         "attack": ["Spell_Simple_Shoot"],
         "hit": ["Hit_Chest", "Hit_Head"],
@@ -195,7 +201,9 @@
       ],
       "anims": {
         "idle": "Spell_Simple_Idle_Loop",
+        "walk": "Walk_Loop",
         "move": "Jog_Fwd_Loop",
+        "sprint": "Sprint_Loop",
         "cheer": "Yes",
         "attack": ["Spell_Simple_Shoot"],
         "hit": ["Hit_Chest", "Hit_Head"],

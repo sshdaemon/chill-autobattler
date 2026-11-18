@@ -1,0 +1,13 @@
+# Tasks
+
+## 1. Lab
+- [x] 1.1 Dev-only `?lab[=unit]` route and `UnitLab` (unit, recipe or lineup, team, build override, variety seed; orbit camera with turntable and framing). Verify the typecheck and that the production bundle has no lab code.
+- [x] 1.2 Animation panel: the unit's clips and all clips; play, pause, loop, speed, timeline scrub. Verify in the browser.
+- [x] 1.3 Locomotion: ground-speed slider and presets, moving floor, the battle's walk–jog blend, live blend and foot-slide readout. Verify the readout matches the earlier offline check (under 10%).
+- [x] 1.4 Skills (action or attack, lean, effect) and any effect preset; portrait. Verify in the browser.
+- [x] 1.6 Tuning panel: live sliders for the walk/run numbers (shared `scene/tuning.ts`, saved in the browser, used by dev battles, 'tuned' marker), speed wobble, copy and reset. Verify the defaults reproduce the shipped behaviour and that a change shows in the walk test.
+- [x] 1.7 Terrain under the walk test (scrolling, wrapping path, grass, rocks, plants and trees) with a grid toggle; tuning sliders shown per gait with 'show all'; a dash test for the sprint numbers. Verify in the browser.
+- [x] 1.5 Dev-HUD link and CLAUDE.md. Verify the link opens the lab.
+
+## 2. Checks
+- [x] 2.1 Run `pnpm test` and the production build. Verify everything is green and the lab is absent from `dist`.

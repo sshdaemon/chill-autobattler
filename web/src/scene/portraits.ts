@@ -21,6 +21,7 @@ async function render(cls: number, look: string, team: number, nth: number): Pro
   const ch = await makeCharacter(cls, look, team, nth);
   ch.rim.k.value = 0; // the frame shows the team; a rim would tint the face
   ch.mixer.setTime(0);
+  ch.settle?.();
   const scene = new THREE.Scene();
   scene.add(new THREE.HemisphereLight(0xdfefff, 0x445533, 2.2));
   const sun = new THREE.DirectionalLight(0xfff2dd, 2.4);

@@ -77,6 +77,7 @@ export function UnitPreview({ name }: { name: string }) {
       const act = s.clip ? ch.actions[s.clip] : undefined;
       if (act) { act.reset().play(); act.time = Math.min(s.at ?? 0, act.getClip().duration - 1e-3); }
       ch.mixer.update(0);
+      ch.settle?.(); // capes drape over the pose
     }
     if (s.fx) {
       onSnapshot({ tick: 0, result: 0, units: [], shots: [], events: [] } as Snapshot, [], { fogOn: false, fogged: false, speed: 1, high: true, units: [], bolt: () => false });
