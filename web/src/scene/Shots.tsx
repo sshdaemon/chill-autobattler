@@ -4,6 +4,7 @@ import { CylinderGeometry, ConeGeometry, InstancedMesh, Object3D, Vector3 } from
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { useBattle } from '../store.ts';
 import { alpha } from './interp.ts';
+import { UNIT_H } from './models.ts';
 import { trail, viewOf } from './effects.ts';
 
 const MAX = 64, dummy = new Object3D(), ahead = new Vector3();
@@ -12,7 +13,7 @@ const MAX = 64, dummy = new Object3D(), ahead = new Vector3();
 function at(s: { sx: number; sz: number; ax: number; az: number; bolt: boolean; lob: boolean }, f: number, out: Vector3) {
   const d = Math.hypot(s.ax - s.sx, s.az - s.sz);
   const arc = s.bolt ? 0 : d * (s.lob ? 0.22 : 0.07);
-  return out.set(s.sx + (s.ax - s.sx) * f, 1.3 + arc * 4 * f * (1 - f), s.sz + (s.az - s.sz) * f);
+  return out.set(s.sx + (s.ax - s.sx) * f, UNIT_H.hand + arc * 4 * f * (1 - f), s.sz + (s.az - s.sz) * f);
 }
 
 // Arrows (shaft + tip, nose first along the arc) and magic bolts (glowing orbs).

@@ -1,7 +1,7 @@
 // Face close-ups, rendered once per unit look (look, team, nth: hair varies per unit) with a short-lived second
 // renderer, cached as data URLs.
 import * as THREE from 'three';
-import { makeCharacter } from './models.ts';
+import { makeCharacter, UNIT_SCALE } from './models.ts';
 
 const cache = new Map<string, Promise<string>>();
 let queue: Promise<unknown> = Promise.resolve(); // one portrait at a time: one extra GL context, briefly
@@ -30,9 +30,9 @@ async function render(cls: number, look: string, team: number, nth: number): Pro
   let head: THREE.Object3D | undefined;
   ch.root.traverse((o) => { if ((o as THREE.Bone).isBone && o.name === 'Head') head = o; });
   const h = head ? head.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3(0, 1.6, 0);
-  h.y += 0.1;
+  h.y += 0.1 * UNIT_SCALE;
   const cam = new THREE.PerspectiveCamera(28, 1, 0.05, 60);
-  cam.position.set(h.x, h.y + 0.04, h.z + 0.8); // models face +z
+  cam.position.set(h.x, h.y + 0.04 * UNIT_SCALE, h.z + 0.8 * UNIT_SCALE); // models face +z
   cam.lookAt(h);
   const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   r.setSize(108, 108);

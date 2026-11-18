@@ -90,6 +90,12 @@ export type Character = {
   spine1?: THREE.Bone; spine2?: THREE.Bone;
 };
 
+// Units are drawn bigger than life, like in classic RTS games: a 1.8 m figure
+// is a few dozen pixels from the strategy camera. Footprints stay the sim's.
+export const UNIT_SCALE = 1.4;
+// Heights above the ground for things that sit on or over a unit.
+export const UNIT_H = { top: 1.8 * UNIT_SCALE, chest: 1.15 * UNIT_SCALE, hand: 1.3 * UNIT_SCALE };
+
 export const TEAM_RIM = [new THREE.Color('#4f8dff'), new THREE.Color('#ff5a4a')];
 export const TEAM_TRIM = [new THREE.Color('#2f6fe8'), new THREE.Color('#d63a2e')];
 const HAIR = ['#2a1c12', '#4a3020', '#6b4325', '#8a5a2b', '#b08850', '#c8a165', '#7a3b1e', '#9a9690'].map((c) => new THREE.Color(c));
@@ -194,7 +200,7 @@ export async function makeCharacter(cls: number, look: string, team: number, nth
     };
     mesh.material = Array.isArray(mesh.material) ? mesh.material.map(swap) : swap(mesh.material);
   });
-  root.scale.setScalar(0.96 + rnd() * 0.08);
+  root.scale.setScalar(UNIT_SCALE * (0.96 + rnd() * 0.08));
   root.userData.isCharacterRoot = true;
   // weapon in the right hand (sword, staff) or the left (bow), as in the prototype
   const weapon = cls === 1 ? makeBow() : cls === 2 ? makeStaff() : makeSword();

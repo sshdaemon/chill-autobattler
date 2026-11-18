@@ -9,11 +9,11 @@ import { useBattle } from '../store.ts';
 const PITCH = (56 * Math.PI) / 180, MIN = 10, MAX = 45, PAN = 28, EDGE = 14, LIM = 16;
 
 // Where the camera looks (read by the minimap without re-rendering React).
-export const camView = { x: 0, z: 4, dist: 30, aspect: 1.5 };
+export const camView = { x: 0, z: 4, dist: 26, aspect: 1.5 };
 
 export function RtsCamera() {
   const { camera, gl } = useThree();
-  const st = useRef({ tx: 0, tz: 4, dist: 30, keys: new Set<string>(), mouse: null as null | { x: number; y: number }, lastCenter: 0 });
+  const st = useRef({ tx: 0, tz: 4, dist: 26, keys: new Set<string>(), mouse: null as null | { x: number; y: number }, lastCenter: 0 });
 
   useEffect(() => {
     const s = st.current, el = gl.domElement;

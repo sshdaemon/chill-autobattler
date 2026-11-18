@@ -9,7 +9,7 @@ import { alpha, lerp } from './interp.ts';
 import { lookFor, makeCharacter, type Character } from './models.ts';
 import { FOGGED_FIGHT } from './Fog.tsx';
 import { feet, flinches, viewOf } from './effects.ts';
-import { TEAM_RIM } from './models.ts';
+import { TEAM_RIM, UNIT_H, UNIT_SCALE } from './models.ts';
 import { Euler, Quaternion, Vector3 } from 'three';
 
 const GOLD = TEAM_RIM[0].clone().setStyle('#ffd23f');
@@ -172,22 +172,22 @@ function Unit({ index }: { index: number }) {
       onPointerOut={() => { document.body.style.cursor = ''; }}>
       <group ref={sink}>
         {ch ? <primitive object={ch.root} /> : (
-          <mesh position-y={0.8} castShadow>
+          <mesh position-y={0.8 * UNIT_SCALE} scale={UNIT_SCALE} castShadow>
             <capsuleGeometry args={[0.32, 0.9]} />
             <meshStandardMaterial color={TEAM[info.team]} transparent opacity={0.6} />
           </mesh>
         )}
       </group>
       {selected && !hidden && (
-        <mesh position-y={0.04} rotation-x={-Math.PI / 2}><ringGeometry args={[0.55, 0.66, 32]} /><meshBasicMaterial color="#ffd23f" /></mesh>
+        <mesh position-y={0.04} rotation-x={-Math.PI / 2}><ringGeometry args={[0.64, 0.76, 32]} /><meshBasicMaterial color="#ffd23f" /></mesh>
       )}
       {!dead && !hidden && <>
         {/* drawn over the ground, grass and water, like a selection circle */}
         <mesh position-y={0.06} rotation-x={-Math.PI / 2} renderOrder={6}>
-          <ringGeometry args={[0.4, 0.5, 28]} />
+          <ringGeometry args={[0.46, 0.58, 28]} />
           <meshBasicMaterial color={TEAM[info.team]} transparent opacity={0.85} depthWrite={false} depthTest={false} />
         </mesh>
-        <Billboard position-y={2.15}>
+        <Billboard position-y={UNIT_H.top + 0.35} scale={1.15}>
           {/* always on top: drawn last, never hidden by trees, grass or units */}
           <mesh renderOrder={20}><planeGeometry args={[0.96, 0.16]} /><meshBasicMaterial color="#fff" transparent depthTest={false} depthWrite={false} /></mesh>
           <mesh position-z={0.001} renderOrder={21}><planeGeometry args={[0.92, 0.12]} /><meshBasicMaterial color="#1a1a1a" transparent depthTest={false} depthWrite={false} /></mesh>
@@ -196,13 +196,13 @@ function Unit({ index }: { index: number }) {
           </group>
         </Billboard>
         {info.skills > 0 && (
-          <Html position={[0, 2.45, 0]} center style={{ pointerEvents: 'none' }}>
+          <Html position={[0, UNIT_H.top + 0.7, 0]} center style={{ pointerEvents: 'none' }}>
             <div className="stars">{'★'.repeat(info.skills)}</div>
           </Html>
         )}
       </>}
       {!!(info.flags & UF.slowed) && !dead && (
-        <mesh position-y={0.05} rotation-x={-Math.PI / 2}><ringGeometry args={[0.52, 0.62, 24]} /><meshBasicMaterial color="#9fd8ff" /></mesh>
+        <mesh position-y={0.05} rotation-x={-Math.PI / 2}><ringGeometry args={[0.6, 0.7, 24]} /><meshBasicMaterial color="#9fd8ff" /></mesh>
       )}
     </group>
   );

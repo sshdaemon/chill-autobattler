@@ -4,6 +4,7 @@
 import { EF, EV, UF, type SimEvent, type Snapshot, type UnitSnap } from '../sim/snapshot.ts';
 import { shockwave, spawn, type PoolKind, type Spawn } from './Particles.tsx';
 import { addShake } from './shake.ts';
+import { UNIT_SCALE as S } from './models.ts';
 
 // Recent hits per unit (direction away from the attacker), for the flinch in Units.
 export const flinches = new Map<number, { dx: number; dz: number; t: number }>();
@@ -34,7 +35,7 @@ function sparks(u: UnitSnap, from: UnitSnap | undefined, n: number, col: [number
   emit('glow', n, () => {
     const a = rnd(0, Math.PI * 2), s = rnd(0.4, 1) * speed;
     return {
-      x: u.x + rnd(-0.1, 0.1), y: rnd(0.9, 1.3), z: u.z + rnd(-0.1, 0.1),
+      x: u.x + rnd(-0.1, 0.1), y: rnd(0.9, 1.3) * S, z: u.z + rnd(-0.1, 0.1),
       vx: Math.cos(a) * s * 0.55 + dx * s, vy: rnd(0.6, 2.4), vz: Math.sin(a) * s * 0.55 + dz * s,
       life: rnd(0.25, 0.45), size: rnd(0.22, 0.34), r: col[0], g: col[1], b: col[2], grav: -9, streak: 1,
     };
@@ -76,12 +77,12 @@ export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
         const flank = e.flags & EF.flank, strong = e.flags & EF.strong;
         const col: [number, number, number] = o?.cls === CLS_MAGE ? [1.6, 0.9, 2.6] : flank ? [3, 2.2, 0.6] : strong ? [3, 1.4, 0.4] : [2.2, 1.9, 1.5];
         sparks(u, o, flank ? 18 : strong ? 12 : 8, col, flank ? 5.5 : 4);
-        if (flank) burst('glow', u.x, 1.15, u.z, 1, [3, 2.2, 0.8], 0, 0.9, 0.18);
+        if (flank) burst('glow', u.x, 1.15 * S, u.z, 1, [3, 2.2, 0.8], 0, 0.9, 0.18);
         break;
       }
       case EV.execute:
-        burst('glow', u.x, 1.1, u.z, 22, [3, 0.5, 0.4], 3.5, 0.4, 0.55, -4);
-        burst('glow', u.x, 1.1, u.z, 1, [3, 0.6, 0.5], 0, 1.4, 0.25);
+        burst('glow', u.x, 1.1 * S, u.z, 22, [3, 0.5, 0.4], 3.5, 0.4, 0.55, -4);
+        burst('glow', u.x, 1.1 * S, u.z, 1, [3, 0.6, 0.5], 0, 1.4, 0.25);
         addShake(0.25);
         break;
       case EV.death:
@@ -91,18 +92,18 @@ export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
         dust(u.x, u.z, 8, 1, 0.8);
         break;
       case EV.blink:
-        burst('glow', u.x, 1, u.z, 18, [1.8, 1.1, 3], 2.5, 0.36, 0.5);
-        burst('glow', u.x, 1, u.z, 1, [1.6, 1, 3], 0, 1.6, 0.3);
+        burst('glow', u.x, S, u.z, 18, [1.8, 1.1, 3], 2.5, 0.36, 0.5);
+        burst('glow', u.x, S, u.z, 1, [1.6, 1, 3], 0, 1.6, 0.3);
         break;
       case EV.frost:
-        burst('glow', u.x, 1.1, u.z, 12, [1.2, 2.2, 3], 2, 0.3, 0.6, -3);
+        burst('glow', u.x, 1.1 * S, u.z, 12, [1.2, 2.2, 3], 2, 0.3, 0.6, -3);
         break;
       case EV.blast:
-        burst('glow', u.x, 0.9, u.z, 20, [3, 1.5, 0.5], 4, 0.38, 0.5, -2);
+        burst('glow', u.x, 0.9 * S, u.z, 20, [3, 1.5, 0.5], 4, 0.38, 0.5, -2);
         shockwave(u.x, u.z);
         break;
       case EV.shot:
-        if (u.cls === CLS_MAGE) burst('glow', u.x + u.fx * 0.5, 1.5, u.z + u.fz * 0.5, 6, [1.8, 1.2, 3], 0.8, 0.4, 0.4);
+        if (u.cls === CLS_MAGE) burst('glow', u.x + u.fx * 0.5 * S, 1.5 * S, u.z + u.fz * 0.5 * S, 6, [1.8, 1.2, 3], 0.8, 0.4, 0.4);
         break;
     }
   }
@@ -123,7 +124,7 @@ export function feet(index: number, x: number, z: number, flags: number, dt: num
   scale = v.high ? 1 : 0.5;
   if (wet && (moving || dashing)) splash(x, z, 3);
   else if (moving || dashing) dust(x, z, dashing ? 2 : 1, dashing ? 0.9 : 0.65, 0.4);
-  if (slowed) emit('glow', 1, () => ({ x: x + rnd(-0.3, 0.3), y: rnd(0.4, 1.6), z: z + rnd(-0.3, 0.3), vy: 0.35, life: 0.8, size: 0.2, r: 1.1, g: 1.9, b: 2.6 }));
+  if (slowed) emit('glow', 1, () => ({ x: x + rnd(-0.3, 0.3), y: rnd(0.4, 1.6) * S, z: z + rnd(-0.3, 0.3), vy: 0.35, life: 0.8, size: 0.2, r: 1.1, g: 1.9, b: 2.6 }));
 }
 
 // Projectile trails, dropped every frame at each shot's position.
