@@ -69,6 +69,9 @@ type partsManifest struct {
 }
 
 type unitLook struct {
+	UI struct {
+		Label, Icon, Blurb string
+	} `json:"ui"`
 	Recipes []recipe `json:"recipes"`
 	Anims   struct {
 		Idle, Move, Cheer  string
@@ -125,6 +128,9 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 		}
 		if len(look.Recipes) == 0 {
 			bad("%s: no recipes", d.Name)
+		}
+		if look.UI.Label == "" || look.UI.Icon == "" || look.UI.Blurb == "" {
+			bad("%s: the look needs ui label, icon and blurb", d.Name)
 		}
 		a := look.Anims
 		clip(d.Name+" idle", a.Idle, false)
@@ -409,6 +415,12 @@ func TestLooksCheckCatches(t *testing.T) {
 			return packed
 		},
 		"unknown preset": func(c *looksData) []string { c.Units["mage"].Skills["8"] = skillLook{Fx: "nope"}; return packed },
+		"no ui text": func(c *looksData) []string {
+			u := c.Units["archer"]
+			u.UI.Blurb = ""
+			c.Units["archer"] = u
+			return packed
+		},
 		"attack without hit": func(c *looksData) []string {
 			u := c.Units["warrior"]
 			u.Anims.Attack = []string{"Jog_Fwd_Loop"}

@@ -2,10 +2,10 @@
 
 ## 1. Roster-generic UI
 
-- [ ] 1.1 Add `ui: { label, icon, blurb }` to each look in `looks.json` (warrior, archer, mage, with today's texts), and remove `CLASS_ICON`, `CLASS_LABEL` and `CLASS_BLURB` from `gamedata.ts`. Make the picker, info panel, overlays and portraits read `lookOf(cls).ui`. Verify with the typecheck and the picker in the browser looking as before.
-- [ ] 1.2 Make the picker grid fit 3–6 cards and wrap on narrow screens. Verify with screenshots at 1280 px and 375 px, using a temporary fourth roster entry in dev.
-- [ ] 1.3 Replace class-number branches: the shot sound from `projectile`, upper-body aim from `ranged`, `fxDemo` from the roster. Verify that a search finds no `cls === <n>` or `cls !== <n>` in `web/src`, and that a battle plays and sounds as before.
-- [ ] 1.4 Extend `wasm/looks_test.go`: every look has a non-empty label, icon and blurb. Verify with `pnpm test:wasm`, including one failing case.
+- [x] 1.1 Add `ui: { label, icon, blurb }` to each look in `looks.json` (warrior, archer, mage, with today's texts), and remove `CLASS_ICON`, `CLASS_LABEL` and `CLASS_BLURB` from `gamedata.ts`. Make the picker, info panel, overlays and portraits read `lookOf(cls).ui`. Verify with the typecheck and the picker in the browser looking as before.
+- [x] 1.2 Make the picker grid fit 3–6 cards and wrap on narrow screens. Verify with screenshots at 1280 px and 375 px, using a temporary fourth roster entry in dev.
+- [x] 1.3 Replace class-number branches: the shot sound from `projectile`, upper-body aim from `ranged`, `fxDemo` from the roster. Verify that a search finds no `cls === <n>` or `cls !== <n>` in `web/src`, and that a battle plays and sounds as before.
+- [x] 1.4 Extend `wasm/looks_test.go`: every look has a non-empty label, icon and blurb. Verify with `pnpm test:wasm`, including one failing case.
 
 ## 2. Roster ids and versioning
 

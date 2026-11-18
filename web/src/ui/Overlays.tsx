@@ -1,6 +1,6 @@
 import { useBattle, resultText } from '../store.ts';
 import { UF } from '../sim/snapshot.ts';
-import { CLASS_ICON, CLASS_LABEL } from '../gamedata.ts';
+import { uiOf } from '../units/looks.ts';
 import { RunState } from '../gen/chill/v1/runstate_pb.ts';
 import { useState } from 'react';
 import { setSound, soundPrefs } from '../sound.ts';
@@ -56,7 +56,7 @@ function SkillPicks() {
         return (
           <div className="pickrow" key={v}>
             <span className="who" title={known.length ? `Knows: ${known.join(', ')}` : 'No skills yet'}>
-              {CLASS_ICON[cls]} {CLASS_LABEL[cls]} <i>{'★'.repeat(vet.skills.length)}</i>
+              {uiOf(cls).icon} {uiOf(cls).label} <i>{'★'.repeat(vet.skills.length)}</i>
             </span>
             {data.classes[cls].skills.filter((s) => !vet.skills.includes(s.id)).map((s) => (
               <button key={s.id} className={picks[v] === s.id ? 'on' : ''} onClick={() => choosePick(v, s.id)}
@@ -104,8 +104,8 @@ export function Result() {
         {outcome && curr && <>
           <div className="sub">after {(outcome.ticks / 20).toFixed(1)} s</div>
           <div className="surv">
-            <div><span className="b">Blue</span> {survivors(0).map((u, i) => <span key={i}>{CLASS_ICON[u.cls]}</span>)}{survivors(0).length === 0 && '—'}</div>
-            <div><span className="r">Red</span> {survivors(1).map((u, i) => <span key={i}>{CLASS_ICON[u.cls]}</span>)}{survivors(1).length === 0 && '—'}</div>
+            <div><span className="b">Blue</span> {survivors(0).map((u, i) => <span key={i}>{uiOf(u.cls).icon}</span>)}{survivors(0).length === 0 && '—'}</div>
+            <div><span className="r">Red</span> {survivors(1).map((u, i) => <span key={i}>{uiOf(u.cls).icon}</span>)}{survivors(1).length === 0 && '—'}</div>
           </div>
         </>}
         {verdict && (

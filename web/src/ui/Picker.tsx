@@ -1,5 +1,5 @@
-import { armySpecs, useBattle, vetCounts } from '../store.ts';
-import { CLASS_BLURB, CLASS_ICON, CLASS_LABEL } from '../gamedata.ts';
+import { armySpecs, total as sum, useBattle, vetCounts } from '../store.ts';
+import { uiOf } from '../units/looks.ts';
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 
@@ -7,7 +7,7 @@ const pct = (v: number) => `${Math.round(v * 100)}%`;
 export function Picker() {
   const { data, counts, setCount, toDeploy, error, run } = useBattle();
   if (!data || !run) return <div className="overlay"><div className="panel">{error ?? 'Loading…'}</div></div>;
-  const total = counts[0] + counts[1] + counts[2], size = data.armySize;
+  const total = sum(counts), size = data.armySize;
   const vets = vetCounts(run), army = armySpecs({ run, counts });
   return (
     <div className="overlay">
@@ -19,9 +19,9 @@ export function Picker() {
         <div className="cards">
           {data.classes.map((c, i) => (
             <div className="card" key={c.name}>
-              <div className="icon">{CLASS_ICON[i]}</div>
-              <div className="name">{CLASS_LABEL[i]}</div>
-              <div className="blurb">{CLASS_BLURB[i]}</div>
+              <div className="icon">{uiOf(i).icon}</div>
+              <div className="name">{uiOf(i).label}</div>
+              <div className="blurb">{uiOf(i).blurb}</div>
               <table><tbody>
                 <tr><td>Health</td><td>{c.hp}</td></tr>
                 <tr><td>Damage</td><td>{c.dmgLo}–{c.dmgHi}</td></tr>
@@ -30,12 +30,12 @@ export function Picker() {
                 <tr><td>Speed</td><td>{c.speed} m/s</td></tr>
                 <tr><td>Sight</td><td>{c.sight} m</td></tr>
               </tbody></table>
-              <div className="takes">Damage taken<br />{data.classes.map((a, j) => `${CLASS_ICON[j]} ${pct(a.matchup[i])}`).join(' · ')}</div>
+              <div className="takes">Damage taken<br />{data.classes.map((a, j) => `${uiOf(j).icon} ${pct(a.matchup[i])}`).join(' · ')}</div>
               <div className="count">
-                <button aria-label={`fewer ${CLASS_LABEL[i]}s`} disabled={counts[i] <= vets[i]}
+                <button aria-label={`fewer ${uiOf(i).label}s`} disabled={(counts[i] ?? 0) <= (vets[i] ?? 0)}
                   title={vets[i] ? `${vets[i]} veteran${vets[i] === 1 ? '' : 's'} can't be dismissed` : undefined} onClick={() => setCount(i, -1)}>−</button>
-                <b>{counts[i]}</b>
-                <button aria-label={`more ${CLASS_LABEL[i]}s`} disabled={total >= size} onClick={() => setCount(i, 1)}>+</button>
+                <b>{counts[i] ?? 0}</b>
+                <button aria-label={`more ${uiOf(i).label}s`} disabled={total >= size} onClick={() => setCount(i, 1)}>+</button>
               </div>
             </div>
           ))}
@@ -46,7 +46,7 @@ export function Picker() {
             if (!u) return <span key={k} className="empty" />;
             const names = u.skills.map((id) => data.classes[u.cls].skills.find((s) => s.id === id)?.name).join(', ');
             return <span key={k} className={u.vet ? 'vet' : ''} title={u.vet ? `Veteran: ${names}` : 'Recruit'}>
-              {CLASS_ICON[u.cls]}{u.vet && <i>{'★'.repeat(u.skills.length)}</i>}
+              {uiOf(u.cls).icon}{u.vet && <i>{'★'.repeat(u.skills.length)}</i>}
             </span>;
           })}
         </div>

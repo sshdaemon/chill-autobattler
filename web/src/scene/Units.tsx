@@ -168,10 +168,10 @@ function Unit({ index }: { index: number }) {
     ch.rim.k.value = sel ? 0.9 + 0.3 * Math.sin(t * 4) : 0.55;
 
     if (b.flags & UF.dead) return;
-    // archers and mages turn their upper body toward the target (after the animation set the pose)
+    // ranged units turn their upper body toward the target (after the animation set the pose)
     const tgt = b.target >= 0 ? curr?.units[b.target] : undefined;
     let want = 0;
-    if (b.cls !== 0 && tgt && !(tgt.flags & UF.dead)) {
+    if (data?.classes[b.cls]?.ranged && tgt && !(tgt.flags & UF.dead)) {
       const face = Math.atan2(b.fx, b.fz), to = Math.atan2(tgt.x - b.x, tgt.z - b.z);
       want = Math.max(-AIM_MAX, Math.min(AIM_MAX, Math.atan2(Math.sin(to - face), Math.cos(to - face))));
     }

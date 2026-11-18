@@ -15,9 +15,7 @@ export type GameData = {
 // Every unit of the current battle (wasm units()), Red's generated army too.
 export type UnitLoadout = { cls: number; skills: number[] };
 
-export const CLASS_ICON = ['⚔️', '🏹', '✨'];
-export const CLASS_LABEL = ['Warrior', 'Archer', 'Mage'];
-export const CLASS_BLURB = ['Sturdy melee fighter', 'Fragile, shoots from range, backs off from melee', 'Magic bolts, strong vs warriors, holds ground'];
+// Unit labels, icons and blurbs come from each unit's look (units/looks.ts uiOf).
 
 // sim.Formation values (wasm/data().formations index); pb Formation = sim + 1
 export const PRESETS = [1, 2, 3, 4, 5, 6, 7];
