@@ -69,7 +69,7 @@ An archer SHALL retreat from melee enemies closer than 4.5 m, in bursts of at mo
 - **THEN** the archer steps away from it, still facing it, to a free spot it can walk to in a straight line
 
 ### Requirement: Skills
-Units SHALL apply the skills of their roster entry, each made of effects (unit-roster) and learned at most once per unit; for the first three units these are the 15 skills in docs/GAME_CONCEPT.md §10.1. Chance-based effects (such as Executioner, Headshot and Frost) SHALL roll the battle's seeded random generator. Instant kills SHALL only be possible against victims below 40% of their maximum health.
+Units SHALL apply the skills (abilities) of their roster entry, each made of effects (unit-roster) and learned at most once per unit. A unit in a battle SHALL have 1 to 3 abilities, one per level; an input with a unit outside that range SHALL be rejected. For the first three units the abilities are the 15 in docs/GAME_CONCEPT.md §10.1. Chance-based effects (such as Executioner, Headshot and Frost) SHALL roll the battle's seeded random generator. Instant kills SHALL only be possible against victims below 40% of their maximum health.
 
 #### Scenario: Executioner
 - **WHEN** a warrior with Executioner hits a victim below 40% health and its roll succeeds
@@ -83,12 +83,20 @@ Units SHALL apply the skills of their roster entry, each made of effects (unit-r
 - **WHEN** a melee enemy comes within 2.5 m of a mage with Blink off cooldown
 - **THEN** the mage teleports about 8 m away from the threats to a free spot, and Blink goes on an 8 s cooldown
 
+#### Scenario: Levels
+- **WHEN** a battle input has a unit with no ability, or with four
+- **THEN** the input is rejected
+
 ### Requirement: Red army
-When an input leaves Red's army empty, Red SHALL get 5 units of seeded random classes, a seeded random formation preset, and as many skills in total as the given count, spread at random among its units. All of this SHALL come from the seed.
+When an input leaves Red's army empty, Red SHALL get 5 units of seeded random types from its faction's units in Red's pool, a seeded random formation preset, one seeded random ability each (level 1), and then as many more abilities in total as the given count, spread at random among its units up to level 3. All of this SHALL come from the seed.
 
 #### Scenario: Matching skills
 - **WHEN** a battle input asks for 3 Red skills
-- **THEN** Red's units have exactly 3 skills in total, with no unit holding the same skill twice
+- **THEN** Red's units have exactly 8 abilities in total (one each, plus 3), with no unit holding the same ability twice or more than 3
+
+#### Scenario: Faction's units only
+- **WHEN** Red's faction fields only archers and mages
+- **THEN** Red's generated army has no warriors
 
 ### Requirement: Formations
 Formation presets (Spread, 3-2, 2-3, 4-1, 1-4, 0-5, 5-0) SHALL place a team's units inside its zone, melee in front and ranged behind. Any slot that falls on a blocked cell SHALL move to the nearest free cell.
@@ -103,3 +111,21 @@ The battle SHALL end on the tick when one team has no living units, and that tea
 #### Scenario: Mutual wipe
 - **WHEN** the last Blue and the last Red unit die on the same tick
 - **THEN** the outcome is a draw
+
+### Requirement: Factions
+A faction SHALL list the unit types it fields, with at least one in Red's pool. A battle input SHALL name Blue's faction, and every Blue unit SHALL be of a type that faction fields; any other input SHALL be rejected. Red's faction SHALL be drawn from the map seed among all factions, so it may be the same as Blue's.
+
+#### Scenario: Unit outside the faction
+- **WHEN** a battle input's Blue army has a unit type its faction doesn't field
+- **THEN** the input is rejected
+
+#### Scenario: Red's faction
+- **WHEN** two battles share a map seed
+- **THEN** Red plays the same faction in both
+
+### Requirement: Draft order
+The sim SHALL derive a battle's draft from its map seed alone: which side picks first (a fair coin flip) and the order Red's generated units are revealed in (a permutation of its five units). The same seed SHALL always give the same draft.
+
+#### Scenario: Same seed, same draft
+- **WHEN** the draft is derived twice from one map seed
+- **THEN** both give the same first side and the same reveal order

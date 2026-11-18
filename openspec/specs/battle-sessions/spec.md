@@ -6,10 +6,10 @@ Server-issued battles: the server fixes a battle's randomness before it is playe
 ## Requirements
 
 ### Requirement: Start a battle
-For an active run with no picks owed and no unfinished battle, the server SHALL create and store the run's next battle with new random map and combat seeds. Red's skill count SHALL be the veterans' total skills; Red's health % SHALL follow the match number (see runs). It SHALL return the battle id, map seed, Red's skill count and health %, and the deploy deadline, but NOT the combat seed.
+For an active run with no picks owed and no unfinished battle, the server SHALL create and store the run's next battle with new random map and combat seeds. Red's skill count SHALL be the veterans' abilities above level 1; Red's health % SHALL follow the match number (see runs). It SHALL return the battle id, map seed, Red's skill count and health %, and the deploy deadline, but NOT the combat seed.
 
 #### Scenario: New battle
-- **WHEN** a client starts a battle for its active run whose veterans have 2 skills in total
+- **WHEN** a client starts a battle for its active run whose veterans have 2 abilities above level 1 in total
 - **THEN** it receives a battle id, a map seed, a Red skill count of 2, a Red health percentage and a deploy deadline, but no combat seed
 
 #### Scenario: Unknown sim version
@@ -25,7 +25,7 @@ For an active run with no picks owed and no unfinished battle, the server SHALL 
 - **THEN** the server refuses
 
 ### Requirement: Lock a deployment once
-The server SHALL accept Blue's army for a battle once, before its deploy deadline (default 2 minutes after start). It SHALL validate the army against the battle rules and the run's veterans, store it, and only then reveal the combat seed.
+The server SHALL accept Blue's army for a battle once, before its deploy deadline (default 3 minutes after start, room for the draft and deployment). It SHALL validate the army against the battle rules and the run's veterans, store it, and only then reveal the combat seed.
 
 #### Scenario: Lock and reveal
 - **WHEN** a client locks a valid army with the run's veterans before the deadline
