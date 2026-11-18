@@ -128,10 +128,13 @@ func (b *Battle) think(u *Unit) {
 	}
 	if u.Target < 0 {
 		u.Kiting = false
-		engageRules[u.Temper.Engage].idle(b, u)
+		b.idle(u)
 		return
 	}
 	t := b.Units[u.Target]
+	if b.behave(u, t) {
+		return
+	}
 
 	if u.Temper.Kite && b.kite(u) {
 		return

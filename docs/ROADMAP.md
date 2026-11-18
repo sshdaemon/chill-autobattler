@@ -262,6 +262,10 @@ into the plan before anything is built.
 
 ## Phase 3: shared effects and behaviours (one session)
 
+Progress: 3.1 temperament done (OpenSpec `temperaments`: target rules wounded,
+ranged first, strongest, focus, protect; engage rules line and hold; trigger,
+leash, keep, fall back, stay near).
+
 Once the plan is approved, one session adds every new effect kind and behaviour
 field the nine units need (each a file from step 0.3, each with rules tests and
 lab presets), and allocates the nine unit ids and the effect ids. Units can then

@@ -118,12 +118,15 @@ func Dir64(i int) Vec {
 
 // Arena geometry.
 var (
-	ArenaHalf = I(14)     // arena is 28 × 28 m around the origin
-	Cell      = Half      // nav grid cell size
-	EdgeLimit = I(14 - 1) // dash/blink targets must stay inside this
-	ClampLim  = I(14) - UnitRadius - Ratio(2, 10)
-	EnemyEdge = I(14 - 2) // units without a target march to this z on the enemy side
-	Zones     = [2]Zone{  // deployment: Blue at the bottom (+z), Red at the top (-z)
+	ArenaHalf    = I(14)     // arena is 28 × 28 m around the origin
+	Cell         = Half      // nav grid cell size
+	EdgeLimit    = I(14 - 1) // dash/blink targets must stay inside this
+	ClampLim     = I(14) - UnitRadius - Ratio(2, 10)
+	EnemyEdge    = I(14 - 2) // units without a target march to this z on the enemy side
+	WoundedReach = I(4)      // TargetWounded looks for the most wounded enemy this close
+	ProtectReach = I(8)      // TargetProtect: enemies this close to a ranged or caster ally
+	LineSlack    = I(2)      // EngageLine: how far ahead of its allies' centre a unit may get
+	Zones        = [2]Zone{  // deployment: Blue at the bottom (+z), Red at the top (-z)
 		{XMin: I(-10), XMax: I(10), ZMin: I(7), ZMax: I(13)},
 		{XMin: I(-10), XMax: I(10), ZMin: I(-13), ZMax: I(-7)},
 	}
