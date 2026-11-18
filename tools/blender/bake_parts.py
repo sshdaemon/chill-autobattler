@@ -48,7 +48,7 @@ ITEMS = [
     ('Wand', os.path.join(KAYKIT, 'wand.gltf'), 'hand_r'),
     ('Sword_Long', os.path.join(KAYKIT, 'sword_2handed_color.gltf'), 'hand_r'),
 ]
-MODELLED = [('Wizard_Hat', 'Head'), ('Helmet', 'Head')]
+MODELLED = [('Wizard_Hat', 'Head'), ('Helmet', 'Head'), ('Spear', 'hand_r')]
 # Mount poses in the character's own space at rest (Y up, facing +Z, its left
 # is +X): offset from the attach bone's origin (metres), rotation (radians, XYZ)
 # and scale. The client places the item there, then attaches it to the bone
@@ -66,6 +66,7 @@ ITEM_POSE = {
     'Wand': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 0.6},
     'Helmet': {'pos': [0, 0.11, 0.01], 'rot': [0, 0, 0], 'scale': 1.0},
     'Wizard_Hat': {'pos': [0, 0.2, -0.01], 'rot': [0, 0, 0], 'scale': 1.0},
+    'Spear': {'pos': [0, 0, 0], 'rot': [H, 0, 0], 'scale': 1.0},
 }
 # team masks: outfit -> (variant base colours, rule); 'cloth' also drops pixels
 # that are brownish in every variant (leather and wood recolour between variants too)
@@ -312,7 +313,22 @@ def model_items():
     for o in (dome, rim, nose):
         o.data.materials.append(steel)
     export('Helmet', [dome, rim, nose])
-    for name in ('Wizard_Hat', 'Helmet'):
+    # spear: a long shaft (grip at the origin, point along +Y like the sword), steel head
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    wood = mat('MI_SpearShaft', lin(0x6b4a2a), 0.75)
+    steel2 = mat('MI_SpearHead', lin(0xb8bec6), 0.3, 0.85)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.018, depth=2.0, location=(0, 0, 0.55))
+    shaft = bpy.context.object
+    bpy.ops.mesh.primitive_cone_add(vertices=8, radius1=0.045, depth=0.24, location=(0, 0, 1.67))
+    head = bpy.context.object
+    head.scale = (1, 0.35, 1)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.028, depth=0.06, location=(0, 0, 1.53))
+    collar = bpy.context.object
+    shaft.data.materials.append(wood)
+    for o in (head, collar):
+        o.data.materials.append(steel2)
+    export('Spear', [shaft, head, collar])
+    for name in ('Wizard_Hat', 'Helmet', 'Spear'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 

@@ -184,16 +184,22 @@ func skillShape(d SkillDef) string {
 // stats), so a new kind of skill takes the next free id. Neither needs a proto
 // change: the wire enums are open and the roster is the check.
 func ValidateRoster(r []UnitDef) error {
+	if err := validateEntries(r); err != nil {
+		return err
+	}
 	shapes := map[Skill]string{}
 	for _, d := range r {
 		for _, s := range d.Skills {
-			if prev, ok := shapes[s.Skill]; ok && prev != skillShape(s) && s.Skill != 0 && len(s.Effects) > 0 {
+			if prev, ok := shapes[s.Skill]; ok && prev != skillShape(s) {
 				return fmt.Errorf("skill id %d means different things (%s vs %s, in %s): give the new skill the next free id", s.Skill, prev, skillShape(s), d.Name)
-			} else if !ok && s.Skill != 0 && len(s.Effects) > 0 {
-				shapes[s.Skill] = skillShape(s)
 			}
+			shapes[s.Skill] = skillShape(s)
 		}
 	}
+	return nil
+}
+
+func validateEntries(r []UnitDef) error {
 	var declared Tag
 	for _, t := range Tags {
 		declared |= t.Tag

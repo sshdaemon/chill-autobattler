@@ -89,7 +89,7 @@ func TestDataAndSlots(t *testing.T) {
 	if err := json.Unmarshal([]byte(api.Call("data").String()), &d); err != nil {
 		t.Fatal(err)
 	}
-	if len(d.Classes) != 3 || d.Classes[0].HP != 100 || len(d.Classes[2].Skills) != 5 || d.Formations[sim.F3x2] != "3-2" {
+	if len(d.Classes) < 3 || d.Classes[0].HP != 100 || len(d.Classes[2].Skills) != 5 || d.Formations[sim.F3x2] != "3-2" {
 		t.Errorf("data %+v", d)
 	}
 	w, ar, m := d.Classes[sim.Warrior], d.Classes[sim.Archer], d.Classes[sim.Mage]

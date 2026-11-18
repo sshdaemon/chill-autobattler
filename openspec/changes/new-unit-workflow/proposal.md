@@ -22,7 +22,7 @@ Writing those by hand is still slow and easy to get wrong. A new unit also has t
 ## Out of scope
 
 - New effect kinds (heal, summon, shield, aura…). The skill detects the need and stops; each is its own OpenSpec change.
-- Creatures or non-humanoid rigs, and new parts (the skill only combines the existing parts library).
+- Creatures or non-humanoid rigs, and new outfit parts. The skill combines the existing parts library, and may only add simple items modelled from primitives in the bake (as the dry run did with a spear).
 - Generating meshes or textures from the reference pictures.
 - Letting players create units in the game.
 - The first actual new unit. That is the first run of `/new-unit`, from the user's own brief, in its own PR.

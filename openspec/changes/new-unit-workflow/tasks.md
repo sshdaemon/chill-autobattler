@@ -14,7 +14,7 @@
 
 ## 3. Balance check
 
-- [ ] 3.1 Generalise `tools/balance` tables from `[3]` and class constants to the roster, with no change to the existing report. Verify that `pnpm balance` rewrites `docs/balance-report.md` byte for byte.
+- [x] 3.1 Generalise `tools/balance` tables from `[3]` and class constants to the roster, with no change to the existing report. Verify that `pnpm balance` rewrites `docs/balance-report.md` byte for byte.
 - [x] 3.2 Add `pnpm balance:unit <name>` (head-to-head, swap and skill checks, bands, non-zero exit on fail). Verify by running it on the test-only "frost ranger" entry swapped in, and checking the table and exit code.
 
 ## 4. Preview
@@ -24,12 +24,12 @@
 ## 5. The skill
 
 - [x] 5.1 Write `.claude/skills/new-unit/SKILL.md` (steps, the two checkpoints, the stop rule, tuning limits, privacy of references, the PR contents), `checklist.md` and the effect cookbook. Add `design/units/_template/brief.md` and the `.gitignore` entry for `design/units/*/refs/`. Verify by reading it against the unit-authoring spec, and with `git check-ignore` on a sample refs file.
-- [ ] 5.2 Dry run: run `/new-unit` on a sample brief ("Spearman: a sturdy melee unit with reach, good against charging melee") on a scratch branch, through to a ready PR body, without opening the PR. Verify every spec scenario was met, then delete the scratch branch and note what the run changed in the skill.
+- [x] 5.2 Dry run: run `/new-unit` on a sample brief ("Spearman: a sturdy melee unit with reach, good against charging melee") on a scratch branch, through to a ready PR body, without opening the PR. Verify every spec scenario was met, then delete the scratch branch and note what the run changed in the skill. (Done: 3 tuning rounds to land the spearman; the run fixed roster-size assumptions in tests, check ordering, effect-only preview poses, added preview saving and a modelled spear, and refined the skill's tuning and preview steps.)
 
 ## 6. Docs and checks
 
-- [ ] 6.1 Update CLAUDE.md and the README: how to add a unit, the brief, `/new-unit`, `balance:unit`, the preview, and the id and versioning rules. Verify by reading them against the code.
-- [ ] 6.2 Run `pnpm test` and play a battle. Verify golden replays are untouched and the server reports the battle verified.
+- [x] 6.1 Update CLAUDE.md and the README: how to add a unit, the brief, `/new-unit`, `balance:unit`, the preview, and the id and versioning rules. Verify by reading them against the code.
+- [x] 6.2 Run `pnpm test` and play a battle. Verify golden replays are untouched and the server reports the battle verified.
 
 ## Workflow follow-up
 

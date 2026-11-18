@@ -32,10 +32,10 @@ export function Picker() {
               </tbody></table>
               <div className="takes">Damage taken<br />{data.classes.map((a, j) => `${uiOf(j).icon} ${pct(a.matchup[i])}`).join(' · ')}</div>
               <div className="count">
-                <button aria-label={`fewer ${uiOf(i).label}s`} disabled={(counts[i] ?? 0) <= (vets[i] ?? 0)}
+                <button aria-label={`Remove one ${uiOf(i).label}`} disabled={(counts[i] ?? 0) <= (vets[i] ?? 0)}
                   title={vets[i] ? `${vets[i]} veteran${vets[i] === 1 ? '' : 's'} can't be dismissed` : undefined} onClick={() => setCount(i, -1)}>−</button>
                 <b>{counts[i] ?? 0}</b>
-                <button aria-label={`more ${uiOf(i).label}s`} disabled={total >= size} onClick={() => setCount(i, 1)}>+</button>
+                <button aria-label={`Add one ${uiOf(i).label}`} disabled={total >= size} onClick={() => setCount(i, 1)}>+</button>
               </div>
             </div>
           ))}

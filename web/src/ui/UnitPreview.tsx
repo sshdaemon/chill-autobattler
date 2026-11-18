@@ -27,7 +27,7 @@ function stepsFor(cls: number, info: ClassInfo): Step[] {
     const l = look.skills[String(s.id)] ?? {};
     const clip = l.action ?? l.attack;
     if (!clip && !l.fx && !l.pitch) continue;
-    steps.push({ name: `skill:${s.name}`, clip, at: clip ? (CLIPS[clip]?.hit ?? 0.35) : undefined, fx: l.fx, note: `${s.name}: ${[l.action && `action ${l.action}`, l.attack && `attack ${l.attack}`, l.fx && `effect ${l.fx}`, l.pitch && `lean ${l.pitch}`].filter(Boolean).join(', ')}` });
+    steps.push({ name: `skill:${s.name}`, clip: clip ?? a.idle, at: clip ? (CLIPS[clip]?.hit ?? 0.35) : 0.5, fx: l.fx, note: `${s.name}: ${[l.action && `action ${l.action}`, l.attack && `attack ${l.attack}`, l.fx && `effect ${l.fx}`, l.pitch && `lean ${l.pitch}`].filter(Boolean).join(', ')}` });
   }
   steps.push({ name: 'hit', clip: a.hit[0], at: 0.15, note: 'hit reaction' });
   steps.push({ name: 'death', clip: a.death[0], at: 9, note: 'death (end)' });
@@ -89,15 +89,30 @@ export function UnitPreview({ name }: { name: string }) {
       previewSteps: steps.map((s) => s.name),
       previewShot: (n: string | number) => { const i = typeof n === 'number' ? n : steps.findIndex((s) => s.name === n); if (i >= 0) setStep(i); return steps[i]?.note ?? 'no such step'; },
       previewReady: () => chars.length > 0 && faces.length > 0,
+      // saves the current step to design/units/<unit>/preview/<nn>-<step>.png (dev server)
+      previewSave: async () => {
+        const s = steps[step], file = `${String(step + 1).padStart(2, '0')}-${s.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.png`;
+        let canvas = document.querySelector('canvas') as HTMLCanvasElement;
+        if (s.name === 'portraits') { // the faces are HTML, not in the 3D canvas: draw them onto one
+          canvas = document.createElement('canvas');
+          canvas.width = faces.length * 118; canvas.height = 118;
+          const g = canvas.getContext('2d')!;
+          g.fillStyle = '#cfd8e0'; g.fillRect(0, 0, canvas.width, canvas.height);
+          await Promise.all(faces.map((f, i) => new Promise<void>((done) => { const im = new Image(); im.onload = () => { g.drawImage(im, i * 118 + 5, 5, 108, 108); done(); }; im.src = f; })));
+        }
+        const blob = await new Promise<Blob>((ok) => canvas.toBlob((b) => ok(b!), 'image/png'));
+        const r = await fetch(`/__preview-shot/${name}/${file}`, { method: 'POST', body: blob });
+        return r.ok ? file : `failed: ${r.status}`;
+      },
     });
-  }, [steps, chars, faces]);
+  }, [steps, chars, faces, step, name]);
 
   if (!data) return <div style={{ padding: 20 }}>Loading the roster…</div>;
   if (cls < 0) return <div style={{ padding: 20 }}>No roster entry “{name}”. Units: {data.classes.map((c) => c.name).join(', ')}</div>;
   const s = steps[step];
   return (
     <div style={{ position: 'fixed', inset: 0, background: '#cfd8e0' }}>
-      <Canvas shadows camera={{ position: [0, 2.2, 6.2], fov: 38 }} onCreated={({ camera }) => camera.lookAt(0, 0.9, -0.9)}>
+      <Canvas shadows gl={{ preserveDrawingBuffer: true }} camera={{ position: [0, 2.2, 6.2], fov: 38 }} onCreated={({ camera }) => camera.lookAt(0, 0.9, -0.9)}>
         <hemisphereLight args={['#ffffff', '#667766', 1.8]} />
         <directionalLight position={[3, 6, 4]} intensity={2.4} castShadow />
         <mesh rotation-x={-Math.PI / 2} receiveShadow position-z={-0.9}><planeGeometry args={[14, 7]} /><meshStandardMaterial color="#9fb08a" /></mesh>

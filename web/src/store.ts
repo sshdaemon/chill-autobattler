@@ -147,7 +147,9 @@ const preview = () => send({ type: 'preview', input: inputBytes(useBattle.getSta
 // Counts the picker should show: the remembered army, raised to cover the veterans.
 function pickerCounts(run?: Run): Counts {
   const c = savedCounts(), v = vetCounts(run);
-  const out: Counts = Array.from({ length: Math.max(c.length, v.length) }, (_, i) => Math.max(c[i] ?? 0, v[i] ?? 0));
+  // a remembered army may name unit types this build's roster lacks: those slots just open up
+  const types = useBattle.getState().data?.classes.length ?? Math.max(c.length, v.length);
+  const out: Counts = Array.from({ length: types }, (_, i) => Math.max(c[i] ?? 0, v[i] ?? 0));
   for (let i = out.length - 1; i >= 0; i--) while (out[i] > (v[i] ?? 0) && total(out) > 5) out[i]--; // trim newest types first
   return out;
 }

@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { previewShots } from './preview-shots.mjs';
 
 // Big libraries in their own chunks, so they cache across app updates.
 const CHUNKS: [string, RegExp][] = [
@@ -9,7 +10,7 @@ const CHUNKS: [string, RegExp][] = [
 ];
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), previewShots()],
   // Pre-bundle the 3D stack together at startup: if Vite discovers one of these
   // mid-session it re-optimises, and the page ends up with two copies of React.
   optimizeDeps: {

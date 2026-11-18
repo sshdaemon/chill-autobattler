@@ -35,6 +35,9 @@ Unit roster (`sim/roster.go`, one `sim/unit_*.go` per unit type):
 - A unit type is data: stats, traits (ranged, kite, projectile), matchup tags and bonuses, and five skills.
 - A skill is a list of effects from a fixed set (`EffectKind`). The battle code reads a loadout folded at spawn and never checks units or skills by name.
 - Adding a unit means adding a roster file; `ValidateRoster` (run by the tests) checks it. A new kind of behaviour means a new effect kind, which is a rule change.
+- New units: use the `/new-unit <name>` skill (`.claude/skills/new-unit/`): brief in `design/units/<name>/brief.md` (template in `design/units/_template/`), reference pictures in `design/units/<name>/refs/` (git-ignored, never committed or shared), design checkpoint with the user, then roster file + look + golden case, `pnpm balance:unit <name>` (bands: 25–75% head-to-head, ±10 pts swapped into the standard army, 0..+15 pts per skill), preview screenshots, PR.
+- Ids: a unit's id is its roster position (append, never reuse); a skill id shared across units must mean the same (same effect kinds and stats), else take the next free id. No proto change needed (proto3 enums are open; the roster is the check). A unit outside Red's pool (`InRedPool: false`) needs no version bump; changing the pool does.
+- Restart `pnpm start` after adding a unit: the Go server is compiled with the roster.
 - Changing `InRedPool` changes Red's generated armies, so it needs a `sim.Version` bump.
 - `wasm data()` publishes the roster; the web client reads units and skills only from there.
 
@@ -43,6 +46,8 @@ Golden replays (`sim/testdata/golden.json`):
 - The update refuses to run without the version bump.
 
 The snapshot layout is defined in `sim/snapshot.go` and decoded in `web/src/sim/snapshot.ts`. Keep them in sync; `TestSnapshotLayout` pins it.
+
+Unit preview (dev only): `http://localhost:5173/?preview=<unit>` shows a unit type's recipes on both teams, steps through its animations, skills, effects and portraits (`window.previewSteps`, `previewShot(step)`, `previewSave()` writes `design/units/<unit>/preview/*.png` through a dev-server endpoint in `web/preview-shots.mjs`). Unit UI text (label, icon, blurb) comes from `looks.json` `ui`; nothing in the UI assumes three unit types.
 
 Fog of war comes from the sim: `Battle.SeenCells` (exported by `wasm fog()`) and the snapshot's `UFSeen` flag. Never re-implement vision in TS. The camera is `scene/RtsCamera.tsx`; portraits are `scene/portraits.ts` and `ui/Portraits.tsx`.
 

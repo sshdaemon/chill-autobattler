@@ -69,10 +69,15 @@ func cloneRoster() []UnitDef {
 	return r
 }
 
-// withRoster swaps in extra roster entries for one test.
+// withRoster swaps in extra roster entries for one test, appended after the
+// real ones (their ids follow, whatever the real roster's size).
 func withRoster(t *testing.T, extra ...UnitDef) {
 	old := Roster
-	Roster = append(append([]UnitDef(nil), old...), extra...)
+	Roster = append([]UnitDef(nil), old...)
+	for _, d := range extra {
+		d.ID = Class(len(Roster))
+		Roster = append(Roster, d)
+	}
 	t.Cleanup(func() { Roster = old })
 	if err := ValidateRoster(Roster); err != nil {
 		t.Fatal(err)
@@ -82,7 +87,7 @@ func withRoster(t *testing.T, extra ...UnitDef) {
 // A unit made only of existing effects with new numbers: no battle code knows
 // about it, yet it dashes in, slows what it hits and fights to the end.
 var testRanger = UnitDef{
-	ID: 3, Name: "frost ranger",
+	Name: "frost ranger", // ID set by withRoster
 	Stats: Stats{HP: I(70), DmgLo: I(8), DmgHi: I(12), Cooldown: sec(15), Range: I(6), Speed: I(3), Sight: I(10),
 		Ranged: true, SwingTicks: sec(6), ShotSpeed: I(16)},
 	Projectile: Arrow,
@@ -99,16 +104,17 @@ var testRanger = UnitDef{
 
 func TestDataOnlyUnit(t *testing.T) {
 	withRoster(t, testRanger)
-	u := newUnit(0, 0, UnitSpec{Class: 3, Skills: []Skill{SkillHealth, SkillFrost}}, Vec{})
+	ranger := Class(len(Roster) - 1)
+	u := newUnit(0, 0, UnitSpec{Class: ranger, Skills: []Skill{SkillHealth, SkillFrost}}, Vec{})
 	if u.MaxHP != I(105) || u.kit.slow == nil || u.kit.slow.Factor != Half {
 		t.Fatalf("loadout: hp %v slow %+v", u.MaxHP, u.kit.slow)
 	}
-	if m := MatchupOf(&Roster[Warrior], &Roster[3]); m != Ratio(145, 100) {
+	if m := MatchupOf(&Roster[Warrior], &Roster[ranger]); m != Ratio(145, 100) {
 		t.Errorf("warrior vs a ranged-tagged unit: %v, want 1.45", m)
 	}
-	ranger := UnitSpec{Class: 3, Skills: []Skill{SkillDash, SkillFrost, SkillHealth, SkillExecute, SkillBlast}}
+	spec := UnitSpec{Class: ranger, Skills: []Skill{SkillDash, SkillFrost, SkillHealth, SkillExecute, SkillBlast}}
 	in := Input{Version: Version, Seed: 7, CombatSeed: 8,
-		Blue: Army{Formation: Spread, Units: []UnitSpec{ranger, ranger, ranger, ranger, ranger}},
+		Blue: Army{Formation: Spread, Units: []UnitSpec{spec, spec, spec, spec, spec}},
 		Red:  Army{Formation: F3x2, Units: mix()}}
 	b, err := New(in)
 	if err != nil {
@@ -118,7 +124,7 @@ func TestDataOnlyUnit(t *testing.T) {
 	for b.Result == Ongoing {
 		b.Step()
 		for _, e := range b.TakeEvents() {
-			dashed = dashed || e.Kind == EvDash && b.Units[e.Unit].Class == 3
+			dashed = dashed || e.Kind == EvDash && b.Units[e.Unit].Class == ranger
 			if e.Kind == EvFrost {
 				slowed = true
 				if v := b.Units[e.Unit]; v.slowFactor != Half {
@@ -134,7 +140,7 @@ func TestDataOnlyUnit(t *testing.T) {
 }
 
 func TestUnknownUnitRejected(t *testing.T) {
-	in := Input{Version: Version, Seed: 1, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: 7}}}}
+	in := Input{Version: Version, Seed: 1, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Class(len(Roster) + 3)}}}}
 	if err := in.Validate(); !errors.Is(err, ErrInvalid) {
 		t.Errorf("class 7 accepted: %v", err)
 	}
