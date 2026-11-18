@@ -12,7 +12,8 @@
     "test:go": "go test ./sim/... ./pb/... ./server/... ./tools/balance/...",
     "test:wasm": "for m in sim wasm; do (cd $m && GOOS=js GOARCH=wasm go test -exec=\"$(go env GOROOT)/lib/wasm/go_js_wasm_exec\" ./...) || exit 1; done",
     "lint:proto": "buf lint",
-    "balance": "go run ./tools/balance > docs/balance-report.md && echo wrote docs/balance-report.md"
+    "balance": "go run ./tools/balance > docs/balance-report.md && echo wrote docs/balance-report.md",
+    "balance:unit": "go run ./tools/balance -unit"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.75.0",

@@ -21,7 +21,8 @@ const FX = 65536;
 export type Float = { id: number; x: number; z: number; text: string; color: string; born: number };
 // loading → picker → starting → deploying → locking → countdown → fighting → done (result, picks or run over)
 export type Phase = 'loading' | 'picker' | 'starting' | 'deploying' | 'locking' | 'countdown' | 'fighting' | 'done';
-export type Counts = [number, number, number]; // warriors, archers, mages (veterans included)
+export type Counts = number[]; // per roster entry (sim class), veterans included; missing entries are 0
+export const total = (c: Counts) => c.reduce((a, n) => a + (n ?? 0), 0);
 type Pt = { x: number; z: number };
 export type { Run, ScoreRow };
 
@@ -92,7 +93,7 @@ const errMsg = (e: unknown) => (e as Error).message;
 const savedCounts = (): Counts => {
   try {
     const c = JSON.parse(localStorage.getItem('army') ?? '');
-    if (Array.isArray(c) && c.length === 3 && c.every((n) => Number.isInteger(n) && n >= 0)) return c as Counts;
+    if (Array.isArray(c) && c.length >= 1 && c.every((n) => Number.isInteger(n) && n >= 0)) return c as Counts;
   } catch { /* first visit or storage blocked */ }
   return [2, 2, 1];
 };
@@ -102,18 +103,18 @@ const savedQuality = (): 'high' | 'low' => {
 };
 
 export const vetCounts = (run?: Run): Counts => {
-  const c: Counts = [0, 0, 0];
-  for (const v of run?.veterans ?? []) c[v.unitClass - 1]++;
-  return c;
+  const c: Counts = [];
+  for (const v of run?.veterans ?? []) c[v.unitClass - 1] = (c[v.unitClass - 1] ?? 0) + 1;
+  return Array.from(c, (n) => n ?? 0);
 };
 
 // The army in the order the server requires: veterans first (exactly as
-// stored), then recruits by class. cls is the sim class (0..2).
+// stored), then recruits by class. cls is the sim class (roster index).
 export function armySpecs(s: { run?: Run; counts: Counts }): { cls: number; skills: Skill[]; vet: boolean }[] {
   const vets = s.run?.veterans ?? [];
   const out = vets.map((v: UnitSpec) => ({ cls: v.unitClass - 1, skills: [...v.skills], vet: true }));
   const vc = vetCounts(s.run);
-  s.counts.forEach((n, cls) => { for (let i = vc[cls]; i < n; i++) out.push({ cls, skills: [], vet: false }); });
+  s.counts.forEach((n, cls) => { for (let i = vc[cls] ?? 0; i < (n ?? 0); i++) out.push({ cls, skills: [], vet: false }); });
   return out;
 }
 export const armyClasses = (s: { run?: Run; counts: Counts }) => armySpecs(s).map((u) => u.cls);
@@ -146,8 +147,10 @@ const preview = () => send({ type: 'preview', input: inputBytes(useBattle.getSta
 // Counts the picker should show: the remembered army, raised to cover the veterans.
 function pickerCounts(run?: Run): Counts {
   const c = savedCounts(), v = vetCounts(run);
-  const out = c.map((n, i) => Math.max(n, v[i])) as Counts;
-  for (let i = 2; i >= 0; i--) while (out[i] > v[i] && out[0] + out[1] + out[2] > 5) out[i]--;
+  // a remembered army may name unit types this build's roster lacks: those slots just open up
+  const types = useBattle.getState().data?.classes.length ?? Math.max(c.length, v.length);
+  const out: Counts = Array.from({ length: types }, (_, i) => Math.max(c[i] ?? 0, v[i] ?? 0));
+  for (let i = out.length - 1; i >= 0; i--) while (out[i] > (v[i] ?? 0) && total(out) > 5) out[i]--; // trim newest types first
   return out;
 }
 
@@ -233,10 +236,9 @@ export const useBattle = create<State>((set, get) => {
     },
 
     setCount(cls, delta) {
-      const counts = [...get().counts] as Counts;
-      const total = counts[0] + counts[1] + counts[2];
-      if (delta > 0 && total >= (get().data?.armySize ?? 5)) return;
-      counts[cls] = Math.max(vetCounts(get().run)[cls], counts[cls] + delta); // veterans can't be dismissed
+      const counts = Array.from({ length: Math.max(get().counts.length, cls + 1) }, (_, i) => get().counts[i] ?? 0);
+      if (delta > 0 && total(counts) >= (get().data?.armySize ?? 5)) return;
+      counts[cls] = Math.max(vetCounts(get().run)[cls] ?? 0, counts[cls] + delta); // veterans can't be dismissed
       set({ counts });
       send({ type: 'slots', classes: armyClasses(get()) });
     },
@@ -341,15 +343,17 @@ export const resultText = (r?: BattleResult) =>
 
 // Sound for one sim event (presentation only).
 function sound(snap: Snapshot, e: SimEvent) {
-  const by = snap.units[e.other]?.cls; // attacker / shooter class
+  // by the roster's projectile: none (melee), arrow or bolt
+  const shot = (u?: { cls: number }) => (u ? useBattle.getState().data?.classes[u.cls]?.projectile : undefined);
+  const by = shot(snap.units[e.other]); // attacker / shooter
   switch (e.kind) {
-    case 1: playSound(by === 0 ? 'sword' : by === 1 ? 'arrowHit' : 'boltHit'); break;
+    case 1: playSound(by === 'arrow' ? 'arrowHit' : by === 'bolt' ? 'boltHit' : 'sword'); break;
     case 2: playSound('death'); break;
     case 3: playSound('dash'); break;
     case 4: playSound('blink'); break;
     case 5: playSound('frost'); break;
     case 7: playSound('execute'); break;
-    case 8: playSound(snap.units[e.unit]?.cls === 2 ? 'cast' : 'bow'); break;
+    case 8: playSound(shot(snap.units[e.unit]) === 'bolt' ? 'cast' : 'bow'); break;
   }
 }
 

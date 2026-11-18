@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useBattle } from '../store.ts';
 import { UF, type UnitSnap } from '../sim/snapshot.ts';
-import { CLASS_ICON } from '../gamedata.ts';
+import { uiOf } from '../units/looks.ts';
 import { lookFor } from '../scene/models.ts';
 import { portrait } from '../scene/portraits.ts';
 import { FOGGED_FIGHT } from '../scene/Fog.tsx';
@@ -32,7 +32,7 @@ function Card({ index }: { index: number }) {
     <div className={`pcard ${dead ? 'dead' : ''} ${selected ? 'sel' : ''} t${u.team}`} title={lookFor(u.cls, nth)}
       onClick={() => select(index)} onDoubleClick={() => center(index)}>
       {u.skills > 0 && <span className="vet">{'★'.repeat(u.skills)}</span>}
-      {img ? <img src={img} alt="" /> : <div className="ph">{CLASS_ICON[u.cls]}</div>}
+      {img ? <img src={img} alt="" /> : <div className="ph">{uiOf(u.cls).icon}</div>}
       {dead && <span className="cross">✝</span>}
       <div className="bar"><i style={{ width: unseen || dead ? 0 : `${(u.hp / u.maxHp) * 100}%` }} /></div>
       <div className="num">{dead ? '—' : unseen ? '?' : Math.ceil(u.hp)}</div>

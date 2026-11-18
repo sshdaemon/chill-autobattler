@@ -21,7 +21,9 @@ export type Recipe = {
 // Body builds: girth in metres per bone (pushed out along the surface), shoulder
 // width, head size and height factors.
 export type Build = { girth: Record<string, number>; shoulders: number; head: number; height: number };
-export type UnitLook = { recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook> };
+// What the UI shows for the unit type: name, a short glyph (emoji) and a one-line description.
+export type UnitUI = { label: string; icon: string; blurb: string };
+export type UnitLook = { ui: UnitUI; recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook> };
 
 export const CLIPS = raw.clips as Record<string, ClipInfo>;
 const LOOKS = raw.units as Record<string, UnitLook>;
@@ -46,6 +48,7 @@ export function lookOf(cls: number): UnitLook {
 
 const recipeFor = (cls: number, nth: number) => { const r = lookOf(cls).recipes; return r[nth % r.length]; };
 // the recipe's name doubles as the unit's display name
+export const uiOf = (cls: number): UnitUI => lookOf(cls).ui;
 export const modelFor = (cls: number, nth: number) => recipeFor(cls, nth).name;
 export const recipeNamed = (cls: number, name: string) => lookOf(cls).recipes.find((r) => r.name === name) ?? recipeFor(cls, 0);
 

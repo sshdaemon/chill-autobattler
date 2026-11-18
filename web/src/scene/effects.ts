@@ -165,9 +165,12 @@ export function lastKill() { addShake(0.55); }
 if (import.meta.env.DEV) {
   Object.assign(window, {
     fxDemo: () => {
-      const v: View = { fogOn: false, fogged: false, speed: 1, high: true, units: [], bolt: (cls) => cls === 2 };
+      // the roster's first bolt caster (the mage) for the magic cues
+      const classes = (window as unknown as { battle: { getState(): { data?: { classes: { projectile?: string }[] } } } }).battle.getState().data?.classes ?? [];
+      const caster = Math.max(0, classes.findIndex((c) => c.projectile === 'bolt'));
+      const v: View = { fogOn: false, fogged: false, speed: 1, high: true, units: [], bolt: (cls) => classes[cls]?.projectile === 'bolt' };
       const unit = (x: number, cls = 0): UnitSnap => ({ team: 0, cls, x, z: 4, fx: 0, fz: -1, hp: 1, maxHp: 1, flags: 0, target: -1, skills: 0, kills: 0, dealt: 0 });
-      const units = [-9, -6, -3, 0, 3, 6, 9].map((x) => unit(x)).concat([unit(-9, 2), unit(-6, 2), unit(3, 2)]);
+      const units = [-9, -6, -3, 0, 3, 6, 9].map((x) => unit(x)).concat([unit(-9, caster), unit(-6, caster), unit(3, caster)]);
       const ev = (kind: number, u: number, other = -1, flags = 0): SimEvent => ({ kind, unit: u, other, amount: 10, flags });
       const snap = { tick: 0, result: 0, units, shots: [], events: [] } as Snapshot;
       units[7].z = units[8].z = units[9].z = 6;

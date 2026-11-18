@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useBattle } from '../store.ts';
 import { UF, type UnitSnap } from '../sim/snapshot.ts';
-import { CLASS_ICON, CLASS_LABEL } from '../gamedata.ts';
+import { uiOf } from '../units/looks.ts';
 import { lookFor } from '../scene/models.ts';
 import { FOGGED_FIGHT } from '../scene/Fog.tsx';
 import { nthOfClass } from './Portraits.tsx';
@@ -35,7 +35,7 @@ export function InfoPanel() {
       <div className="title">
         <span className={u.team ? 'r' : 'b'}>{lookFor(u.cls, nthOfClass(curr.units, selected))}</span>
         {u.skills > 0 && <span className="vetstars"> {'★'.repeat(u.skills)}</span>}
-        <span className="dim"> · {CLASS_ICON[u.cls]} {CLASS_LABEL[u.cls]}{u.team ? ' (Red)' : ''}</span>
+        <span className="dim"> · {uiOf(u.cls).icon} {uiOf(u.cls).label}{u.team ? ' (Red)' : ''}</span>
       </div>
       <div className="hp"><i style={{ width: `${(u.hp / u.maxHp) * 100}%` }} /><span>{Math.ceil(u.hp)} / {u.maxHp}</span></div>
       <div className="st">{unseen ? 'Out of sight' : status(u.flags)}</div>
@@ -43,7 +43,7 @@ export function InfoPanel() {
         <tr><td>Kills</td><td>{u.kills}</td><td>Damage dealt</td><td>{Math.round(u.dealt)}</td></tr>
         <tr><td>Damage</td><td>{cls.dmgLo}–{cls.dmgHi}</td><td>Range</td><td>{cls.range} m</td></tr>
       </tbody></table>
-      <div className="takes">Takes from: {data.classes.map((a, j) => `${CLASS_ICON[j]} ${Math.round(a.matchup[u.cls] * 100)}%`).join(' · ')}</div>
+      <div className="takes">Takes from: {data.classes.map((a, j) => `${uiOf(j).icon} ${Math.round(a.matchup[u.cls] * 100)}%`).join(' · ')}</div>
       <div className="skills">{u.skills === 0 ? 'No skills' : skills || `${u.skills} skill${u.skills === 1 ? '' : 's'}`}</div>
       <div className="dim keys">F {follow ? 'stop following' : 'follow'} · Space centre · double-click a portrait to centre</div>
     </div>

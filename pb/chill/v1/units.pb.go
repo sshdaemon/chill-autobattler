@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Unit types: the first three of the sim's unit roster (sim/roster.go). The
+// roster may add more; their ids (roster position + 1) need no new value here,
+// since proto3 enums are open and the sim rejects ids its roster lacks.
 type UnitClass int32
 
 const (
@@ -73,7 +76,8 @@ func (UnitClass) EnumDescriptor() ([]byte, []int) {
 	return file_chill_v1_units_proto_rawDescGZIP(), []int{0}
 }
 
-// Skills by effect; which ones a class can learn is in docs/GAME_CONCEPT.md §10.1.
+// Skills by id; which ones a unit can learn is in its roster entry (sim/unit_*.go).
+// New skills take the next free id from the roster, with no new value needed here.
 type Skill int32
 
 const (

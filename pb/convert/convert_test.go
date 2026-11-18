@@ -71,3 +71,36 @@ func TestOutcome(t *testing.T) {
 		t.Error("result numbering")
 	}
 }
+
+// A unit added to the roster after the proto was written still travels: its
+// id is just a number on the wire, and the roster decides whether it exists.
+func TestNewUnitIDs(t *testing.T) {
+	newUnit := chillv1.UnitClass(len(sim.Roster) + 1) // next roster position, +1 for the proto's UNSPECIFIED
+	newSkill := chillv1.Skill(40)
+	in := func() *chillv1.BattleInput {
+		units := five()
+		units[4] = &chillv1.UnitSpec{UnitClass: newUnit, Skills: []chillv1.Skill{newSkill}}
+		return &chillv1.BattleInput{SimVersion: sim.Version, Seed: 3, Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_SPREAD, Units: units}}
+	}
+	if _, err := Input(in()); !errors.Is(err, sim.ErrInvalid) { // Input validates against the roster
+		t.Errorf("unknown unit accepted: %v", err)
+	}
+
+	old := sim.Roster
+	t.Cleanup(func() { sim.Roster = old })
+	extra := old[sim.Warrior]
+	extra.ID, extra.Name, extra.InRedPool = sim.Class(len(old)), "test spearman", false
+	extra.Skills[0].Skill = sim.Skill(newSkill)
+	extra.Skills[0].Effects = []sim.Effect{{Kind: sim.StatBonus, Stat: sim.StatRange, Pct: 20}}
+	sim.Roster = append(append([]sim.UnitDef(nil), old...), extra)
+	if err := sim.ValidateRoster(sim.Roster); err != nil {
+		t.Fatal(err)
+	}
+	si, err := Input(in())
+	if err != nil {
+		t.Fatalf("new unit and skill rejected: %v", err)
+	}
+	if _, err := sim.Run(si); err != nil {
+		t.Errorf("battle with the new unit: %v", err)
+	}
+}
