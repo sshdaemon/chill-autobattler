@@ -14,3 +14,6 @@ web/public/wasm_exec.js
 *.tsbuildinfo
 tools/blender/out/
 tools/blender/previews/
+
+# new-unit reference pictures stay local (never committed)
+design/units/*/refs/

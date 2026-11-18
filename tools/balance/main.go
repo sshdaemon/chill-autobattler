@@ -1,6 +1,7 @@
 // balance: batch-simulate seeded battles and print a Markdown report.
 //
 //	go run ./tools/balance -n 2000 > docs/balance-report.md   (or: pnpm balance)
+//	go run ./tools/balance -unit <name>                       (or: pnpm balance:unit <name>)
 package main
 
 import (
@@ -16,8 +17,22 @@ import (
 func main() {
 	n := flag.Int("n", 2000, "battles per experiment row")
 	exp := flag.String("exp", "", "only these experiments, comma separated (side,matchups,comps,skills); for quick tuning")
+	unit := flag.String("unit", "", "check one roster entry against the new-unit balance bands (pnpm balance:unit <name>)")
 	flag.Parse()
 	start := time.Now()
+	if *unit != "" {
+		report, ok, err := UnitReport(*unit, *n/2)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(2)
+		}
+		fmt.Print(report)
+		fmt.Fprintf(os.Stderr, "done in %s\n", time.Since(start).Round(time.Second))
+		if !ok {
+			os.Exit(1)
+		}
+		return
+	}
 	if *exp != "" { // tuning mode: just the tables asked for
 		for _, e := range strings.Split(*exp, ",") {
 			switch e {

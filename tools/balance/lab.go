@@ -99,7 +99,18 @@ func mix(w, a, m int) []sim.Class {
 
 func mixName(w, a, m int) string { return fmt.Sprintf("%dW %dA %dM", w, a, m) }
 
-var className = [...]string{"Warrior", "Archer", "Mage"}
+// title is a roster entry's name for tables ("warrior" -> "Warrior").
+func title(c sim.Class) string {
+	n := sim.Roster[c].Name
+	return strings.ToUpper(n[:1]) + n[1:]
+}
+
+// core is the game's core roster: the units Red's armies are built from. The
+// whole-game experiments (compositions, runs) are about these; a unit outside
+// the pool is measured on its own with -unit.
+func core() []sim.Class { return sim.RedPool() }
+
+func five(c sim.Class) []sim.Class { return []sim.Class{c, c, c, c, c} }
 
 // ---------- experiments ----------
 
@@ -122,36 +133,40 @@ func SideBias(n int) (string, tally) {
 	return b.String(), t
 }
 
-// Matchups: 5×A (Blue) vs 5×B (Red), both explicit, Spread.
-func Matchups(n int) (string, [3][3]tally) {
-	var all [3][3]tally
+// headToHead plays 5×a (Blue) against 5×c (Red), Spread on both sides.
+func headToHead(a, c sim.Class, n int) tally {
+	var ins []sim.Input
+	for i := 0; i < n; i++ {
+		in := input(200_000 + uint64(i))
+		in.Blue = army(sim.Spread, five(a)...)
+		in.Red = army(sim.Spread, five(c)...)
+		ins = append(ins, in)
+	}
+	return count(play(ins))
+}
+
+// Matchups: 5×A (Blue) vs 5×B (Red), both explicit, Spread, over the core roster.
+func Matchups(n int) (string, [][]tally) {
+	cs := core()
+	all := make([][]tally, len(cs))
 	var b strings.Builder
-	b.WriteString("Blue win rate, rows = Blue's class (5 units), columns = Red's class (5 units), Spread formation.\n\n| Blue \\ Red | Warrior | Archer | Mage |\n|---|---|---|---|\n")
-	for a := sim.Warrior; a <= sim.Mage; a++ {
-		fmt.Fprintf(&b, "| **%s** |", className[a])
-		for c := sim.Warrior; c <= sim.Mage; c++ {
-			var ins []sim.Input
-			for i := 0; i < n; i++ {
-				in := input(200_000 + uint64(i))
-				in.Blue = army(sim.Spread, mix(cnt(a, sim.Warrior), cnt(a, sim.Archer), cnt(a, sim.Mage))...)
-				in.Red = army(sim.Spread, mix(cnt(c, sim.Warrior), cnt(c, sim.Archer), cnt(c, sim.Mage))...)
-				ins = append(ins, in)
-			}
-			t := count(play(ins))
-			all[a][c] = t
+	b.WriteString("Blue win rate, rows = Blue's class (5 units), columns = Red's class (5 units), Spread formation.\n\n| Blue \\ Red |")
+	for _, c := range cs {
+		fmt.Fprintf(&b, " %s |", title(c))
+	}
+	b.WriteString("\n|---|" + strings.Repeat("---|", len(cs)) + "\n")
+	for i, a := range cs {
+		fmt.Fprintf(&b, "| **%s** |", title(a))
+		all[i] = make([]tally, len(cs))
+		for j, c := range cs {
+			t := headToHead(a, c, n)
+			all[i][j] = t
 			fmt.Fprintf(&b, " %s |", pct(t.win()))
 		}
 		b.WriteString("\n")
 	}
 	fmt.Fprintf(&b, "\n%d battles per cell (±%s at worst).\n", n, pct(margin(0.5, n)))
 	return b.String(), all
-}
-
-func cnt(c, of sim.Class) int {
-	if c == of {
-		return 5
-	}
-	return 0
 }
 
 type compRow struct {
@@ -226,7 +241,7 @@ func Skills(n int) (string, []skillRow) {
 	baseT := count(play(bins))
 	first := map[sim.Class]int{sim.Warrior: 0, sim.Archer: 2, sim.Mage: 4}
 	var rows []skillRow
-	for c := sim.Warrior; c <= sim.Mage; c++ {
+	for _, c := range core() {
 		for _, d := range sim.Roster[c].Skills {
 			var ins []sim.Input
 			for i := 0; i < n; i++ {
@@ -243,7 +258,7 @@ func Skills(n int) (string, []skillRow) {
 	fmt.Fprintf(&b, "Baseline: 2W 2A 1M in 3-2 against the seeded Red army, **%s** win rate (%d battles). One unit of the skill's class learns the skill; same seeds and armies, so Δ is the skill's effect.\n\n", pct(baseT.win()), baseT.n)
 	b.WriteString("| Skill | Class | Win rate | Δ vs baseline |\n|---|---|---|---|\n")
 	for _, r := range rows {
-		fmt.Fprintf(&b, "| %s | %s | %s | %+.1f pts |\n", r.name, className[r.class], pct(r.with.win()), 100*(r.with.win()-r.base.win()))
+		fmt.Fprintf(&b, "| %s | %s | %s | %+.1f pts |\n", r.name, title(r.class), pct(r.with.win()), 100*(r.with.win()-r.base.win()))
 	}
 	fmt.Fprintf(&b, "\nPaired seeds make Δ much tighter than ±%s; treat |Δ| < 2 pts as noise.\n", pct(margin(0.5, n)))
 	return b.String(), rows
