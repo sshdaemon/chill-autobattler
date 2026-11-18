@@ -34,6 +34,8 @@ const (
 	RunServicePickSkillsProcedure = "/chill.v1.RunService/PickSkills"
 	// RunServiceGetScoreboardProcedure is the procedure name of the RunService's GetScoreboard RPC.
 	RunServiceGetScoreboardProcedure = "/chill.v1.RunService/GetScoreboard"
+	// RunServiceSurrenderRunProcedure is the procedure name of the RunService's SurrenderRun RPC.
+	RunServiceSurrenderRunProcedure = "/chill.v1.RunService/SurrenderRun"
 )
 
 var (
@@ -72,6 +74,13 @@ var (
 			Procedure:  RunServiceGetScoreboardProcedure,
 		}
 	})
+	runServiceSurrenderRunSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_chill_v1_run_proto.Services().ByName("RunService").Methods().ByName("SurrenderRun"),
+			Procedure:  RunServiceSurrenderRunProcedure,
+		}
+	})
 )
 
 // RunServiceClient is a client for the chill.v1.RunService service.
@@ -85,6 +94,8 @@ type RunServiceClient interface {
 	// One new skill for every veteran owed one, all at once.
 	PickSkills(context.Context, *v1.PickSkillsRequest) (*v1.PickSkillsResponse, error)
 	GetScoreboard(context.Context, *v1.GetScoreboardRequest) (*v1.GetScoreboardResponse, error)
+	// Gives up the player's active run: it ends (surrendered) with its score kept.
+	SurrenderRun(context.Context, *v1.SurrenderRunRequest) (*v1.SurrenderRunResponse, error)
 }
 
 // NewRunServiceClient constructs a client for the chill.v1.RunService service. Multiple service
@@ -104,6 +115,8 @@ type RunServiceHandler interface {
 	// One new skill for every veteran owed one, all at once.
 	PickSkills(context.Context, *v1.PickSkillsRequest) (*v1.PickSkillsResponse, error)
 	GetScoreboard(context.Context, *v1.GetScoreboardRequest) (*v1.GetScoreboardResponse, error)
+	// Gives up the player's active run: it ends (surrendered) with its score kept.
+	SurrenderRun(context.Context, *v1.SurrenderRunRequest) (*v1.SurrenderRunResponse, error)
 }
 
 // RegisterRunServiceHandler registers svc as the chill.v1.RunService implementation on server.
@@ -115,6 +128,7 @@ func RegisterRunServiceHandler(server *connect.Server, svc RunServiceHandler) {
 		connect.Method{Spec: runServiceGetRunSpec(), Handler: adapter.getRun},
 		connect.Method{Spec: runServicePickSkillsSpec(), Handler: adapter.pickSkills},
 		connect.Method{Spec: runServiceGetScoreboardSpec(), Handler: adapter.getScoreboard},
+		connect.Method{Spec: runServiceSurrenderRunSpec(), Handler: adapter.surrenderRun},
 	)
 }
 
@@ -139,6 +153,10 @@ func (UnimplementedRunServiceHandler) PickSkills(context.Context, *v1.PickSkills
 
 func (UnimplementedRunServiceHandler) GetScoreboard(context.Context, *v1.GetScoreboardRequest) (*v1.GetScoreboardResponse, error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, "chill.v1.RunService.GetScoreboard is not implemented")
+}
+
+func (UnimplementedRunServiceHandler) SurrenderRun(context.Context, *v1.SurrenderRunRequest) (*v1.SurrenderRunResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "chill.v1.RunService.SurrenderRun is not implemented")
 }
 
 type runServiceClient struct {
@@ -180,6 +198,14 @@ func (c *runServiceClient) PickSkills(ctx context.Context, req *v1.PickSkillsReq
 func (c *runServiceClient) GetScoreboard(ctx context.Context, req *v1.GetScoreboardRequest) (*v1.GetScoreboardResponse, error) {
 	var res v1.GetScoreboardResponse
 	if err := c.client.CallUnary(ctx, runServiceGetScoreboardSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *runServiceClient) SurrenderRun(ctx context.Context, req *v1.SurrenderRunRequest) (*v1.SurrenderRunResponse, error) {
+	var res v1.SurrenderRunResponse
+	if err := c.client.CallUnary(ctx, runServiceSurrenderRunSpec(), req, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -241,6 +267,18 @@ func (h runServiceHandler) getScoreboard(ctx context.Context, _ connect.Spec, st
 		return err
 	}
 	res, err := h.svc.GetScoreboard(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h runServiceHandler) surrenderRun(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.SurrenderRunRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.SurrenderRun(ctx, &req)
 	if err != nil {
 		return err
 	}

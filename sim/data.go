@@ -127,6 +127,8 @@ var (
 	WoundedReach = I(4)      // TargetWounded looks for the most wounded enemy this close
 	ProtectReach = I(8)      // TargetProtect: enemies this close to a ranged or caster ally
 	LineSlack    = I(2)      // EngageLine: how far ahead of its allies' centre a unit may get
+	StayReach    = I(4)      // StayNear (bodyguard): how far it may get from its ward
+	HoldPatience = sec(40)   // EngageHold: how long it waits for a seen enemy before going in
 	Zones        = [2]Zone{  // deployment: Blue at the bottom (+z), Red at the top (-z)
 		{XMin: I(-10), XMax: I(10), ZMin: I(7), ZMax: I(13)},
 		{XMin: I(-10), XMax: I(10), ZMin: I(-13), ZMax: I(-7)},

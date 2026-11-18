@@ -40,7 +40,7 @@ message Run {
   // Indexes into veterans that owe a pick (state PICKING).
   repeated uint32 owed_picks = 8;
   CurrentBattle battle = 9;
-  // Set when over: defeat, draw, not fair, abandoned or restarted.
+  // Set when over: defeat, draw, not fair, abandoned, restarted or surrendered.
   string end_reason = 10;
   // Total skills of the veterans: Red's skill count for the next match.
   uint32 red_skills = 11;

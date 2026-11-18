@@ -67,6 +67,14 @@ func TestNewRun(t *testing.T) {
 	if e.getRun().Id != r2.Id {
 		t.Error("a refused start must leave the active run alone")
 	}
+	// surrender: the run ends with its score, and can't be surrendered twice
+	sr, err := e.runs.SurrenderRun(e.ctx, &chillv1.SurrenderRunRequest{RunId: r2.Id})
+	if err != nil || sr.Run.State != chillv1.RunState_RUN_STATE_OVER || sr.Run.EndReason != "surrendered" {
+		t.Fatalf("surrender: %v %v", err, sr)
+	}
+	if _, err := e.runs.SurrenderRun(e.ctx, &chillv1.SurrenderRunRequest{RunId: r2.Id}); connect.CodeOf(err) != connect.CodeFailedPrecondition {
+		t.Errorf("surrendering a finished run: %v", err)
+	}
 }
 
 func TestWinPicksAndNextMatch(t *testing.T) {

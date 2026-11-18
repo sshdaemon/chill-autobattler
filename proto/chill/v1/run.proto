@@ -17,6 +17,16 @@ service RunService {
   // One new skill for every veteran owed one, all at once.
   rpc PickSkills(PickSkillsRequest) returns (PickSkillsResponse);
   rpc GetScoreboard(GetScoreboardRequest) returns (GetScoreboardResponse);
+  // Gives up the player's active run: it ends (surrendered) with its score kept.
+  rpc SurrenderRun(SurrenderRunRequest) returns (SurrenderRunResponse);
+}
+
+message SurrenderRunRequest {
+  string run_id = 1;
+}
+
+message SurrenderRunResponse {
+  Run run = 1;
 }
 
 message CreatePlayerRequest {}

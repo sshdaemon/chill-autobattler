@@ -1,22 +1,22 @@
 {
-  "version": "0.7.0+c9ade72a",
+  "version": "0.8.0+c9ade72a",
   "case": "volva skills",
   "outcome": {
     "result": 2,
-    "ticks": 229,
-    "checksum": "148945180875615219",
+    "ticks": 232,
+    "checksum": "16926629238563988075",
     "survivors": [
       {
         "Index": 5,
-        "HP": 2188510
+        "HP": 2372765
       },
       {
         "Index": 6,
-        "HP": 2073132
+        "HP": 1444200
       },
       {
         "Index": 7,
-        "HP": 4325376
+        "HP": 3549168
       },
       {
         "Index": 8,

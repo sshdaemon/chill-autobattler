@@ -99,10 +99,18 @@ func checkTemperament(d *UnitDef) error {
 
 // allyCentre is the mean position of a unit's living allies (not itself); ok
 // is false when it has none.
-func (b *Battle) allyCentre(u *Unit) (Vec, bool) {
+func (b *Battle) allyCentre(u *Unit) (Vec, bool) { return b.centreOf(u, false) }
+
+// centreOf is allyCentre, without the allies that follow the front line
+// (StayNear melee) when leaders is set: those wait for the front, so the front
+// mustn't wait for them.
+func (b *Battle) centreOf(u *Unit, leaders bool) (Vec, bool) {
 	var sum Vec
 	n := 0
 	for _, a := range b.Units {
+		if leaders && a.Temper.StayNear&TagMelee != 0 {
+			continue
+		}
 		if a != u && !a.Dead && a.Team == u.Team {
 			sum = sum.Add(a.Pos)
 			n++
@@ -198,8 +206,11 @@ func (b *Battle) behave(u, t *Unit) bool {
 	return false
 }
 
-// idle moves a unit without a target: near its StayNear allies if it has
-// any, otherwise as its engage rule says.
+// idle moves a unit without a target as its engage rule says, kept near its
+// StayNear allies: a unit that stays behind the front line (melee) follows its
+// nearest melee ally, 3 m behind it; a bodyguard (any other tag) advances
+// normally but turns back when it gets further than StayReach from its ward.
+// Wards never wait for their guards, so an army always moves.
 func (b *Battle) idle(u *Unit) {
 	if tag := u.Temper.StayNear; tag != 0 {
 		best, bd := (*Unit)(nil), Fx(0)
@@ -210,16 +221,16 @@ func (b *Battle) idle(u *Unit) {
 				}
 			}
 		}
-		if best != nil {
-			goal := best.Pos
-			if tag&TagMelee != 0 { // behind the front line
-				goal = goal.Add(back(u).Scale(I(3)))
-			}
-			if !Within(u.Pos, goal, I(2)) {
+		if best != nil && tag&TagMelee != 0 { // behind the front line: the melee leads
+			if goal := best.Pos.Add(back(u).Scale(I(3))); !Within(u.Pos, goal, Ratio(15, 10)) {
 				b.moveToward(u, goal)
 			} else {
 				u.moveTarget, u.path = nil, nil
 			}
+			return
+		}
+		if best != nil && !Within(u.Pos, best.Pos, StayReach) { // a bodyguard too far from its ward
+			b.moveToward(u, best.Pos)
 			return
 		}
 	}

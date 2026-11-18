@@ -12,7 +12,41 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file chill/v1/run.proto.
  */
 export const file_chill_v1_run: GenFile = /*@__PURE__*/
-  fileDesc("ChJjaGlsbC92MS9ydW4ucHJvdG8SCGNoaWxsLnYxIhUKE0NyZWF0ZVBsYXllclJlcXVlc3QiLAoUQ3JlYXRlUGxheWVyUmVzcG9uc2USFAoMcGxheWVyX3Rva2VuGAEgASgJIiIKD1N0YXJ0UnVuUmVxdWVzdBIPCgdmYWN0aW9uGAEgASgNIi4KEFN0YXJ0UnVuUmVzcG9uc2USGgoDcnVuGAEgASgLMg0uY2hpbGwudjEuUnVuIg8KDUdldFJ1blJlcXVlc3QiLAoOR2V0UnVuUmVzcG9uc2USGgoDcnVuGAEgASgLMg0uY2hpbGwudjEuUnVuIisKCVNraWxsUGljaxIPCgd2ZXRlcmFuGAEgASgNEg0KBXNraWxsGAIgASgNIkcKEVBpY2tTa2lsbHNSZXF1ZXN0Eg4KBnJ1bl9pZBgBIAEoCRIiCgVwaWNrcxgCIAMoCzITLmNoaWxsLnYxLlNraWxsUGljayIwChJQaWNrU2tpbGxzUmVzcG9uc2USGgoDcnVuGAEgASgLMg0uY2hpbGwudjEuUnVuIhYKFEdldFNjb3JlYm9hcmRSZXF1ZXN0IlEKCFNjb3JlUm93EgwKBHJhbmsYASABKA0SDAoEbmFtZRgCIAEoCRINCgVzY29yZRgDIAEoDRIMCgR3aW5zGAQgASgNEgwKBG1pbmUYBSABKAgiZQoVR2V0U2NvcmVib2FyZFJlc3BvbnNlEh8KA3RvcBgBIAMoCzISLmNoaWxsLnYxLlNjb3JlUm93EhQKDG15X2Jlc3RfcmFuaxgCIAEoDRIVCg1teV9iZXN0X3Njb3JlGAMgASgNMvYCCgpSdW5TZXJ2aWNlEk0KDENyZWF0ZVBsYXllchIdLmNoaWxsLnYxLkNyZWF0ZVBsYXllclJlcXVlc3QaHi5jaGlsbC52MS5DcmVhdGVQbGF5ZXJSZXNwb25zZRJBCghTdGFydFJ1bhIZLmNoaWxsLnYxLlN0YXJ0UnVuUmVxdWVzdBoaLmNoaWxsLnYxLlN0YXJ0UnVuUmVzcG9uc2USOwoGR2V0UnVuEhcuY2hpbGwudjEuR2V0UnVuUmVxdWVzdBoYLmNoaWxsLnYxLkdldFJ1blJlc3BvbnNlEkcKClBpY2tTa2lsbHMSGy5jaGlsbC52MS5QaWNrU2tpbGxzUmVxdWVzdBocLmNoaWxsLnYxLlBpY2tTa2lsbHNSZXNwb25zZRJQCg1HZXRTY29yZWJvYXJkEh4uY2hpbGwudjEuR2V0U2NvcmVib2FyZFJlcXVlc3QaHy5jaGlsbC52MS5HZXRTY29yZWJvYXJkUmVzcG9uc2VCdAoMY29tLmNoaWxsLnYxQghSdW5Qcm90b1ABWhljaGlsbC9wYi9jaGlsbC92MTtjaGlsbHYxogIDQ1hYqgIIQ2hpbGwuVjHKAghDaGlsbFxWMeICFENoaWxsXFYxXEdQQk1ldGFkYXRh6gIJQ2hpbGw6OlYxYgZwcm90bzM", [file_chill_v1_runstate]);
+  fileDesc("ChJjaGlsbC92MS9ydW4ucHJvdG8SCGNoaWxsLnYxIiUKE1N1cnJlbmRlclJ1blJlcXVlc3QSDgoGcnVuX2lkGAEgASgJIjIKFFN1cnJlbmRlclJ1blJlc3BvbnNlEhoKA3J1bhgBIAEoCzINLmNoaWxsLnYxLlJ1biIVChNDcmVhdGVQbGF5ZXJSZXF1ZXN0IiwKFENyZWF0ZVBsYXllclJlc3BvbnNlEhQKDHBsYXllcl90b2tlbhgBIAEoCSIiCg9TdGFydFJ1blJlcXVlc3QSDwoHZmFjdGlvbhgBIAEoDSIuChBTdGFydFJ1blJlc3BvbnNlEhoKA3J1bhgBIAEoCzINLmNoaWxsLnYxLlJ1biIPCg1HZXRSdW5SZXF1ZXN0IiwKDkdldFJ1blJlc3BvbnNlEhoKA3J1bhgBIAEoCzINLmNoaWxsLnYxLlJ1biIrCglTa2lsbFBpY2sSDwoHdmV0ZXJhbhgBIAEoDRINCgVza2lsbBgCIAEoDSJHChFQaWNrU2tpbGxzUmVxdWVzdBIOCgZydW5faWQYASABKAkSIgoFcGlja3MYAiADKAsyEy5jaGlsbC52MS5Ta2lsbFBpY2siMAoSUGlja1NraWxsc1Jlc3BvbnNlEhoKA3J1bhgBIAEoCzINLmNoaWxsLnYxLlJ1biIWChRHZXRTY29yZWJvYXJkUmVxdWVzdCJRCghTY29yZVJvdxIMCgRyYW5rGAEgASgNEgwKBG5hbWUYAiABKAkSDQoFc2NvcmUYAyABKA0SDAoEd2lucxgEIAEoDRIMCgRtaW5lGAUgASgIImUKFUdldFNjb3JlYm9hcmRSZXNwb25zZRIfCgN0b3AYASADKAsyEi5jaGlsbC52MS5TY29yZVJvdxIUCgxteV9iZXN0X3JhbmsYAiABKA0SFQoNbXlfYmVzdF9zY29yZRgDIAEoDTLFAwoKUnVuU2VydmljZRJNCgxDcmVhdGVQbGF5ZXISHS5jaGlsbC52MS5DcmVhdGVQbGF5ZXJSZXF1ZXN0Gh4uY2hpbGwudjEuQ3JlYXRlUGxheWVyUmVzcG9uc2USQQoIU3RhcnRSdW4SGS5jaGlsbC52MS5TdGFydFJ1blJlcXVlc3QaGi5jaGlsbC52MS5TdGFydFJ1blJlc3BvbnNlEjsKBkdldFJ1bhIXLmNoaWxsLnYxLkdldFJ1blJlcXVlc3QaGC5jaGlsbC52MS5HZXRSdW5SZXNwb25zZRJHCgpQaWNrU2tpbGxzEhsuY2hpbGwudjEuUGlja1NraWxsc1JlcXVlc3QaHC5jaGlsbC52MS5QaWNrU2tpbGxzUmVzcG9uc2USUAoNR2V0U2NvcmVib2FyZBIeLmNoaWxsLnYxLkdldFNjb3JlYm9hcmRSZXF1ZXN0Gh8uY2hpbGwudjEuR2V0U2NvcmVib2FyZFJlc3BvbnNlEk0KDFN1cnJlbmRlclJ1bhIdLmNoaWxsLnYxLlN1cnJlbmRlclJ1blJlcXVlc3QaHi5jaGlsbC52MS5TdXJyZW5kZXJSdW5SZXNwb25zZUJ0Cgxjb20uY2hpbGwudjFCCFJ1blByb3RvUAFaGWNoaWxsL3BiL2NoaWxsL3YxO2NoaWxsdjGiAgNDWFiqAghDaGlsbC5WMcoCCENoaWxsXFYx4gIUQ2hpbGxcVjFcR1BCTWV0YWRhdGHqAglDaGlsbDo6VjFiBnByb3RvMw", [file_chill_v1_runstate]);
+
+/**
+ * @generated from message chill.v1.SurrenderRunRequest
+ */
+export type SurrenderRunRequest = Message<"chill.v1.SurrenderRunRequest"> & {
+  /**
+   * @generated from field: string run_id = 1;
+   */
+  runId: string;
+};
+
+/**
+ * Describes the message chill.v1.SurrenderRunRequest.
+ * Use `create(SurrenderRunRequestSchema)` to create a new message.
+ */
+export const SurrenderRunRequestSchema: GenMessage<SurrenderRunRequest> = /*@__PURE__*/
+  messageDesc(file_chill_v1_run, 0);
+
+/**
+ * @generated from message chill.v1.SurrenderRunResponse
+ */
+export type SurrenderRunResponse = Message<"chill.v1.SurrenderRunResponse"> & {
+  /**
+   * @generated from field: chill.v1.Run run = 1;
+   */
+  run?: Run | undefined;
+};
+
+/**
+ * Describes the message chill.v1.SurrenderRunResponse.
+ * Use `create(SurrenderRunResponseSchema)` to create a new message.
+ */
+export const SurrenderRunResponseSchema: GenMessage<SurrenderRunResponse> = /*@__PURE__*/
+  messageDesc(file_chill_v1_run, 1);
 
 /**
  * @generated from message chill.v1.CreatePlayerRequest
@@ -25,7 +59,7 @@ export type CreatePlayerRequest = Message<"chill.v1.CreatePlayerRequest"> & {
  * Use `create(CreatePlayerRequestSchema)` to create a new message.
  */
 export const CreatePlayerRequestSchema: GenMessage<CreatePlayerRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 0);
+  messageDesc(file_chill_v1_run, 2);
 
 /**
  * @generated from message chill.v1.CreatePlayerResponse
@@ -42,7 +76,7 @@ export type CreatePlayerResponse = Message<"chill.v1.CreatePlayerResponse"> & {
  * Use `create(CreatePlayerResponseSchema)` to create a new message.
  */
 export const CreatePlayerResponseSchema: GenMessage<CreatePlayerResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 1);
+  messageDesc(file_chill_v1_run, 3);
 
 /**
  * @generated from message chill.v1.StartRunRequest
@@ -61,7 +95,7 @@ export type StartRunRequest = Message<"chill.v1.StartRunRequest"> & {
  * Use `create(StartRunRequestSchema)` to create a new message.
  */
 export const StartRunRequestSchema: GenMessage<StartRunRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 2);
+  messageDesc(file_chill_v1_run, 4);
 
 /**
  * @generated from message chill.v1.StartRunResponse
@@ -78,7 +112,7 @@ export type StartRunResponse = Message<"chill.v1.StartRunResponse"> & {
  * Use `create(StartRunResponseSchema)` to create a new message.
  */
 export const StartRunResponseSchema: GenMessage<StartRunResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 3);
+  messageDesc(file_chill_v1_run, 5);
 
 /**
  * @generated from message chill.v1.GetRunRequest
@@ -91,7 +125,7 @@ export type GetRunRequest = Message<"chill.v1.GetRunRequest"> & {
  * Use `create(GetRunRequestSchema)` to create a new message.
  */
 export const GetRunRequestSchema: GenMessage<GetRunRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 4);
+  messageDesc(file_chill_v1_run, 6);
 
 /**
  * @generated from message chill.v1.GetRunResponse
@@ -110,7 +144,7 @@ export type GetRunResponse = Message<"chill.v1.GetRunResponse"> & {
  * Use `create(GetRunResponseSchema)` to create a new message.
  */
 export const GetRunResponseSchema: GenMessage<GetRunResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 5);
+  messageDesc(file_chill_v1_run, 7);
 
 /**
  * @generated from message chill.v1.SkillPick
@@ -136,7 +170,7 @@ export type SkillPick = Message<"chill.v1.SkillPick"> & {
  * Use `create(SkillPickSchema)` to create a new message.
  */
 export const SkillPickSchema: GenMessage<SkillPick> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 6);
+  messageDesc(file_chill_v1_run, 8);
 
 /**
  * @generated from message chill.v1.PickSkillsRequest
@@ -158,7 +192,7 @@ export type PickSkillsRequest = Message<"chill.v1.PickSkillsRequest"> & {
  * Use `create(PickSkillsRequestSchema)` to create a new message.
  */
 export const PickSkillsRequestSchema: GenMessage<PickSkillsRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 7);
+  messageDesc(file_chill_v1_run, 9);
 
 /**
  * @generated from message chill.v1.PickSkillsResponse
@@ -175,7 +209,7 @@ export type PickSkillsResponse = Message<"chill.v1.PickSkillsResponse"> & {
  * Use `create(PickSkillsResponseSchema)` to create a new message.
  */
 export const PickSkillsResponseSchema: GenMessage<PickSkillsResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 8);
+  messageDesc(file_chill_v1_run, 10);
 
 /**
  * @generated from message chill.v1.GetScoreboardRequest
@@ -188,7 +222,7 @@ export type GetScoreboardRequest = Message<"chill.v1.GetScoreboardRequest"> & {
  * Use `create(GetScoreboardRequestSchema)` to create a new message.
  */
 export const GetScoreboardRequestSchema: GenMessage<GetScoreboardRequest> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 9);
+  messageDesc(file_chill_v1_run, 11);
 
 /**
  * @generated from message chill.v1.ScoreRow
@@ -225,7 +259,7 @@ export type ScoreRow = Message<"chill.v1.ScoreRow"> & {
  * Use `create(ScoreRowSchema)` to create a new message.
  */
 export const ScoreRowSchema: GenMessage<ScoreRow> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 10);
+  messageDesc(file_chill_v1_run, 12);
 
 /**
  * @generated from message chill.v1.GetScoreboardResponse
@@ -256,7 +290,7 @@ export type GetScoreboardResponse = Message<"chill.v1.GetScoreboardResponse"> & 
  * Use `create(GetScoreboardResponseSchema)` to create a new message.
  */
 export const GetScoreboardResponseSchema: GenMessage<GetScoreboardResponse> = /*@__PURE__*/
-  messageDesc(file_chill_v1_run, 11);
+  messageDesc(file_chill_v1_run, 13);
 
 /**
  * Runs chain matches: survivors become veterans who learn skills, Red grows to
@@ -313,6 +347,16 @@ export const RunService: GenService<{
     methodKind: "unary";
     input: typeof GetScoreboardRequestSchema;
     output: typeof GetScoreboardResponseSchema;
+  },
+  /**
+   * Gives up the player's active run: it ends (surrendered) with its score kept.
+   *
+   * @generated from rpc chill.v1.RunService.SurrenderRun
+   */
+  surrenderRun: {
+    methodKind: "unary";
+    input: typeof SurrenderRunRequestSchema;
+    output: typeof SurrenderRunResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_chill_v1_run, 0);
