@@ -3,7 +3,6 @@ syntax = "proto3";
 package chill.v1;
 
 import "chill/v1/runstate.proto";
-import "chill/v1/units.proto";
 
 // Runs chain matches: survivors become veterans who learn skills, Red grows to
 // match them, and the run ends at the first loss. The server decides all of it.

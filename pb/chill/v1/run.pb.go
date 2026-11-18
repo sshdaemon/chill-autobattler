@@ -586,7 +586,7 @@ var File_chill_v1_run_proto protoreflect.FileDescriptor
 
 const file_chill_v1_run_proto_rawDesc = "" +
 	"\n" +
-	"\x12chill/v1/run.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\x1a\x14chill/v1/units.proto\"\x15\n" +
+	"\x12chill/v1/run.proto\x12\bchill.v1\x1a\x17chill/v1/runstate.proto\"\x15\n" +
 	"\x13CreatePlayerRequest\"9\n" +
 	"\x14CreatePlayerResponse\x12!\n" +
 	"\fplayer_token\x18\x01 \x01(\tR\vplayerToken\"\x11\n" +
@@ -683,7 +683,6 @@ func file_chill_v1_run_proto_init() {
 		return
 	}
 	file_chill_v1_runstate_proto_init()
-	file_chill_v1_units_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
