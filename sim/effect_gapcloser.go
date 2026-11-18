@@ -30,6 +30,11 @@ func init() {
 			a.cd = g.Ticks
 			u.path = nil
 			b.emit(Event{Kind: EvDash, Unit: u.Index, Other: -1})
+			for i := range t.kit.active { // the target may brace against it
+				if ta := &t.kit.active[i]; ta.kind.onCharged != nil {
+					ta.kind.onCharged(b, t, u, ta)
+				}
+			}
 			return true
 		},
 	})

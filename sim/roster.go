@@ -47,9 +47,10 @@ const (
 	StatRange
 	StatSpeed
 	StatAttackSpeed
+	StatAuraRadius // the reach of the unit's auras, +Pct%
 )
 
-var statNames = [...]string{"", "hp", "damage", "range", "speed", "attackSpeed"}
+var statNames = [...]string{"", "hp", "damage", "range", "speed", "attackSpeed", "auraRadius"}
 
 func (s StatKind) String() string {
 	if int(s) < len(statNames) {
@@ -60,14 +61,20 @@ func (s StatKind) String() string {
 
 // Effect is one building block of a skill. Which fields matter depends on Kind.
 type Effect struct {
-	Kind   EffectKind
-	Stat   StatKind // StatBonus
-	Pct    int      // bonus %, chance % or splash %
-	Value  Fx       // reach or distance, metres
-	Radius Fx       // metres
-	Speed  Fx       // metres per second
-	Factor Fx       // speed multiplier
-	Ticks  int      // cooldown or duration
+	Kind      EffectKind
+	Stat      StatKind // StatBonus
+	Pct       int      // bonus %, chance % or splash %
+	Value     Fx       // reach or distance, metres
+	Radius    Fx       // metres
+	Speed     Fx       // metres per second
+	Factor    Fx       // speed or damage multiplier
+	Ticks     int      // cooldown or duration
+	Duration  int      // ticks an effect lasts, when Ticks is its cooldown
+	Mod       ModKind  // auras, buffs: which modifier
+	Tag       Tag      // which units it concerns (bonus against, guarded allies)
+	Cond      Cond     // DamageTaken: when it applies
+	Threshold int      // a % of health, or a count of units
+	Foes      bool     // Aura: on enemies instead of allies
 }
 
 // SkillDef is a learnable skill: its number within the unit (1..MaxSkills, in
@@ -94,6 +101,8 @@ type UnitDef struct {
 	Tags       Tag
 	Bonus      []TagBonus // first bonus whose tag the victim has wins
 	Skills     [MaxSkills]SkillDef
+	// Traits: effects every unit of the type has, learned or not (a song, a cone attack).
+	Traits []Effect
 	// InRedPool: Red's generated armies draw from these, in roster order.
 	// Changing the pool changes Red's armies (and sim.Version, through the roster fingerprint).
 	InRedPool bool
@@ -210,6 +219,14 @@ func validateEntries(r []UnitDef) error {
 			pool++
 		}
 		var kinds [len(effectKinds)]bool
+		for _, e := range d.Traits {
+			if err := checkEffect(e, &d); err != nil {
+				return fail("trait: %v", err)
+			}
+			if e.Kind != StatBonus && !effectKinds[e.Kind].stacks {
+				kinds[e.Kind] = true
+			}
+		}
 		for si, s := range d.Skills {
 			if s.Name == "" || len(s.Effects) == 0 {
 				return fail("skill %d: needs a name and at least one effect (five skills per unit)", si+1)
@@ -221,7 +238,7 @@ func validateEntries(r []UnitDef) error {
 				if err := checkEffect(e, &d); err != nil {
 					return fail("skill %s: %v", s.Name, err)
 				}
-				if e.Kind != StatBonus {
+				if e.Kind != StatBonus && !effectKinds[e.Kind].stacks {
 					if kinds[e.Kind] {
 						return fail("more than one %v effect", e.Kind)
 					}

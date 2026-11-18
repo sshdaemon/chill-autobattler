@@ -9,7 +9,7 @@ func init() {
 		if e.Stat == StatAttackSpeed {
 			return pctIn(e, 1, 100)
 		}
-		if e.Stat < StatHP || e.Stat > StatAttackSpeed {
+		if e.Stat < StatHP || e.Stat > StatAuraRadius {
 			return fmt.Errorf("stat bonus on unknown stat %d", e.Stat)
 		}
 		return pctIn(e, -90, 400)
@@ -19,17 +19,20 @@ func init() {
 // statOrder is the fixed order stat bonuses apply in. Within one stat they
 // apply in the roster's skill order, each as its own MulDiv, so roundings
 // (and replays) never depend on the order skills were learned.
-var statOrder = [...]StatKind{StatHP, StatDamage, StatRange, StatSpeed, StatAttackSpeed}
+var statOrder = [...]StatKind{StatHP, StatDamage, StatRange, StatSpeed, StatAttackSpeed, StatAuraRadius}
 
 // foldStats applies the stat bonuses of the unit's skills to its base stats.
 func foldStats(def *UnitDef, skills []Skill) Stats {
 	st := def.Stats
 	for _, stat := range statOrder {
-		for _, sd := range def.Skills {
-			if !hasSkill(skills, sd.Skill) {
-				continue
+		for k := -1; k < len(def.Skills); k++ { // the type's traits, then its learned skills
+			var effects []Effect
+			if k < 0 {
+				effects = def.Traits
+			} else if hasSkill(skills, def.Skills[k].Skill) {
+				effects = def.Skills[k].Effects
 			}
-			for _, e := range sd.Effects {
+			for _, e := range effects {
 				if e.Kind != StatBonus || e.Stat != stat {
 					continue
 				}
@@ -43,6 +46,8 @@ func foldStats(def *UnitDef, skills []Skill) Stats {
 					st.Range = st.Range.MulDiv(100+e.Pct, 100)
 				case StatSpeed:
 					st.Speed = st.Speed.MulDiv(100+e.Pct, 100)
+				case StatAuraRadius:
+					st.AuraPct += e.Pct
 				case StatAttackSpeed: // faster blows: cooldown and swing ×Pct%
 					st.Cooldown = st.Cooldown * e.Pct / 100
 					st.SwingTicks = st.SwingTicks * e.Pct / 100

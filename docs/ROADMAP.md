@@ -264,7 +264,8 @@ into the plan before anything is built.
 
 Progress: 3.1 temperament done (OpenSpec `temperaments`: target rules wounded,
 ranged first, strongest, focus, protect; engage rules line and hold; trigger,
-leash, keep, fall back, stay near).
+leash, keep, fall back, stay near). 3.2 effect kinds done (OpenSpec `effect-kinds`: per-tick
+modifiers, new hook points, traits, and 15 kinds with ids 8–22).
 
 Once the plan is approved, one session adds every new effect kind and behaviour
 field the nine units need (each a file from step 0.3, each with rules tests and
