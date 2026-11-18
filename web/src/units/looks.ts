@@ -27,7 +27,9 @@ export type Build = { girth: Record<string, number>; shoulders: number; head: nu
 // What the UI shows for the unit type: name, a short glyph (emoji) and a one-line description.
 // placeholder: the unit's look is borrowed until its unit session dresses it (roadmap Phase 4)
 export type UnitUI = { label: string; icon: string; blurb: string; placeholder?: boolean };
-export type UnitLook = { ui: UnitUI; recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook> };
+// shot: how its bolts look: 'smoke' (dark smoke and the `.smoke` hit and shot
+// presets, for curses) instead of the default glowing orb
+export type UnitLook = { ui: UnitUI; recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook>; shot?: 'smoke' };
 
 type LookFile = UnitLook & { clips?: Record<string, ClipInfo> };
 type SharedFile = { clips: Record<string, ClipInfo>; builds: Record<string, Build> };
@@ -87,6 +89,9 @@ export function skillLooks(cls: number, learned: number[]): { info: SkillInfo; l
 }
 
 // The look of the unit's skill with an effect of this kind (e.g. 'gapCloser'), if it has one.
+// Its bolts are drawn as smoke (the look's `shot`).
+export const smokeShots = (cls: number) => { const info = roster[cls]; return !!info && LOOKS[info.name]?.shot === 'smoke'; };
+
 export function skillWith(cls: number, learned: number[], kind: string) {
   return skillLooks(cls, learned).find((s) => s.info.effects.some((e) => e.kind === kind));
 }

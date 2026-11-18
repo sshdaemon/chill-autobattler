@@ -6,7 +6,7 @@
 // it causes (units/looks/<unit>.json).
 import { EF, EV, UF, type SimEvent, type Snapshot, type UnitSnap } from '../sim/snapshot.ts';
 import type { UnitLoadout } from '../gamedata.ts';
-import { skillWith } from '../units/looks.ts';
+import { skillWith, smokeShots } from '../units/looks.ts';
 import { shockwave, spawn, type PoolKind, type Spawn } from './Particles.tsx';
 import { addShake } from './shake.ts';
 
@@ -104,26 +104,29 @@ function presetFor(units: UnitLoadout[], unit: number | undefined, kind: string,
   return (l && skillWith(l.cls, l.skills, kind)?.look.fx) || fallback;
 }
 
-// Events that play the causing skill's action clip on the unit (by effect kind).
-const ACTIONS: Record<number, string> = { [EV.dash]: 'gapCloser', [EV.blink]: 'escape', [EV.brace]: 'brace' };
+// Events that play the causing skill's action clip on the unit (by effect
+// kind); for fear the one acting is the event's other unit (who caused it).
+const ACTIONS: Record<number, string> = { [EV.dash]: 'gapCloser', [EV.blink]: 'escape', [EV.brace]: 'brace', [EV.fear]: 'fear' };
+const actorOf = (e: SimEvent) => (e.kind === EV.fear ? e.other : e.unit);
 
 export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
   budget = SNAP_BUDGET;
   scale = (v.high ? 1 : 0.5) / Math.sqrt(v.speed);
+  const dreaded = new Set<number>(); // a fear pulse plays once per caster, whoever it struck
   for (const e of events) {
     const u = snap.units[e.unit], o = e.other >= 0 ? snap.units[e.other] : undefined;
     if (!u) continue;
     const acting = ACTIONS[e.kind];
     if (acting) { // animation state is kept for hidden units too
-      const l = v.units[e.unit], s = l && skillWith(l.cls, l.skills, acting);
-      if (s?.look.action) skillActions.set(e.unit, { clip: s.look.action, rate: s.look.rate ?? 1 });
+      const a = actorOf(e), l = v.units[a], s = l && skillWith(l.cls, l.skills, acting);
+      if (s?.look.action) skillActions.set(a, { clip: s.look.action, rate: s.look.rate ?? 1 });
     }
     if (!visible(u, v)) continue;
     switch (e.kind) {
       case EV.hit: {
         if (o) { const l = Math.hypot(u.x - o.x, u.z - o.z) || 1; flinches.set(e.unit, { dx: (u.x - o.x) / l, dz: (u.z - o.z) / l, t: performance.now() / 1000 }); }
         const kind = e.flags & EF.flank ? '.flank' : e.flags & EF.strong ? '.strong' : '';
-        play((o && v.bolt(o.cls) ? 'hit.magic' : 'hit') + kind, u, o);
+        play((o && v.bolt(o.cls) ? (smokeShots(o.cls) ? 'hit.smoke' : 'hit.magic') : 'hit') + kind, u, o);
         break;
       }
       case EV.execute: play(presetFor(v.units, e.other, 'finisher', 'execute'), u, o); break;
@@ -132,7 +135,13 @@ export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
       case EV.blink: play(presetFor(v.units, e.unit, 'escape', 'blink'), u); break;
       case EV.frost: play(presetFor(v.units, e.other, 'slowOnHit', 'frost'), u, o); break;
       case EV.blast: play(presetFor(v.units, e.other, 'splashOnHit', 'blast'), u, o); break;
-      case EV.shot: if (v.bolt(u.cls)) play('shot.bolt', u); break;
+      case EV.shot: if (v.bolt(u.cls)) play(smokeShots(u.cls) ? 'shot.smoke' : 'shot.bolt', u); break;
+      case EV.curse: play(presetFor(v.units, e.other, 'curse', 'curse'), u, o); break; // o cursed u
+      case EV.fear: // o struck u with dread: a pulse at o (once), a flinch on u
+        if (o && !dreaded.has(e.other) && visible(o, v)) { dreaded.add(e.other); play(presetFor(v.units, e.other, 'fear', 'dread'), o); }
+        play('fear', u, o);
+        break;
+      case EV.miss: play('miss', u, o); break; // u dodged o's blow
       case EV.guard: play(presetFor(v.units, e.unit, 'guard', 'guard'), u, o); break; // the guard takes part of a blow aimed at o
       case EV.brace: play(presetFor(v.units, e.unit, 'brace', 'brace'), u, o); break; // u stopped o's dash
     }
@@ -158,9 +167,14 @@ export function feet(index: number, x: number, z: number, flags: number, dt: num
 }
 
 // Projectile trails, dropped every frame at each shot's position.
-export function trail(x: number, y: number, z: number, bolt: boolean, v: View) {
+export function trail(x: number, y: number, z: number, kind: 'arrow' | 'bolt' | 'smoke', v: View) {
   if (!v.high && Math.random() < 0.5) return;
-  spawn(bolt ? 'glow' : 'soft', bolt
+  if (kind === 'smoke') { // dark curling smoke, no glow
+    spawn('soft', { x: x + rnd(-0.06, 0.06), y, z: z + rnd(-0.06, 0.06), vx: rnd(-0.2, 0.2), vy: rnd(0.1, 0.35), vz: rnd(-0.2, 0.2),
+      life: rnd(0.45, 0.7), size: rnd(0.28, 0.42), r: 0.13, g: 0.11, b: 0.14, grav: -0.2 });
+    return;
+  }
+  spawn(kind === 'bolt' ? 'glow' : 'soft', kind === 'bolt'
     ? { x, y, z, life: 0.3, size: 0.32, r: 1.5, g: 1, b: 2.6 }
     : { x, y, z, life: 0.25, size: 0.12, r: 0.92, g: 0.92, b: 0.9 });
 }
@@ -181,7 +195,8 @@ if (import.meta.env.DEV) {
       const ev = (kind: number, u: number, other = -1, flags = 0): SimEvent => ({ kind, unit: u, other, amount: 10, flags });
       const snap = { tick: 0, result: 0, units, shots: [], events: [] } as Snapshot;
       units[7].z = units[8].z = units[9].z = 6;
-      onSnapshot(snap, [ev(EV.hit, 0, 7), ev(EV.hit, 1, 8, EF.flank), ev(EV.execute, 2, 0), ev(EV.blink, 3), ev(EV.frost, 4, 9), ev(EV.blast, 5, 9), ev(EV.death, 6), ev(EV.shot, 9), ev(EV.guard, 10, 7), ev(EV.brace, 11, 8)], v);
+      onSnapshot(snap, [ev(EV.hit, 0, 7), ev(EV.hit, 1, 8, EF.flank), ev(EV.execute, 2, 0), ev(EV.blink, 3), ev(EV.frost, 4, 9), ev(EV.blast, 5, 9), ev(EV.death, 6), ev(EV.shot, 9), ev(EV.guard, 10, 7), ev(EV.brace, 11, 8),
+        ev(EV.curse, 0, 7), ev(EV.fear, 2, 10), ev(EV.miss, 4, 9)], v);
       for (let i = 0; i < 6; i++) { feet(100, -9, 8, UF.moving, 1, v, unit(-9)); feet(101, 0, 8, UF.moving | UF.wet, 1, v, unit(0)); feet(102, 9, 8, UF.dashing, 1, v, unit(9)); }
     },
   });
