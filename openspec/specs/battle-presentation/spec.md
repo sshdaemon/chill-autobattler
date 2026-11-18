@@ -17,9 +17,9 @@ Each unit SHALL be drawn with a character model for its class (warrior, archer o
 - **THEN** it is drawn with an archer model in Red's colours, holding a bow
 
 ### Requirement: Animation follows the sim
-Each unit's animation SHALL follow its state in the latest sim snapshot:
-- walking or dashing → jog;
-- attacking → sword attack (melee) or spell shot (ranged), stretched to the attack's duration;
+Each unit's animation SHALL follow its state in the latest sim snapshot, using the animation set of its look (unit-looks):
+- walking → move; dashing → the gap-closer's action animation if it has one, otherwise a faster move;
+- attacking → one of its attack variants, or its skill's attack animation, timed so the blow lands with the sim's hit;
 - staggered → hit reaction;
 - dead → death, held on the last frame;
 - otherwise → idle.
@@ -28,11 +28,19 @@ When the battle ends, the winning side's survivors SHALL cheer.
 
 #### Scenario: A warrior swings
 - **WHEN** a warrior starts an attack in the sim
-- **THEN** its sword attack animation plays once, ending as the attack ends
+- **THEN** one of its attack variants plays once, its blow landing as the sim's hit lands
 
 #### Scenario: Death
 - **WHEN** a unit dies
 - **THEN** it plays its death animation, stays on the ground, and later sinks out of view
+
+#### Scenario: Dash
+- **WHEN** a warrior with Dash starts a dash
+- **THEN** it plays Dash's leap-and-rush animation for the length of the dash
+
+#### Scenario: Blink
+- **WHEN** a mage blinks
+- **THEN** it plays Blink's action animation where it lands
 
 ### Requirement: Projectiles look like what they are
 Arrows SHALL be drawn as arrows pointing along their flight path, higher for Arcing shot. Magic bolts SHALL be drawn as glowing orbs flying straight.
@@ -146,7 +154,7 @@ Every rock, tree and pond SHALL be drawn where the sim places it, with a visible
 - **THEN** ripples spread around it
 
 ### Requirement: Combat effects
-Every sim event SHALL have a visible cue for units the player can see: hits, flank hits, executes, deaths, dashes, Blink, Frost, Blast and shots. Running and wading units SHALL kick up dust or splashes. Effects SHALL NOT hide units or floating numbers, SHALL be limited at faster playback, and SHALL NOT affect the battle.
+Every sim event SHALL have a visible cue for units the player can see: hits, flank hits, executes, deaths, dashes, Blink, Frost, Blast and shots. Each cue SHALL be a named effect preset (particles, rings, camera shake), chosen by the event and, for skill events, by the skill's preset in the unit's look. Running and wading units SHALL kick up dust or splashes. Effects SHALL NOT hide units or floating numbers, SHALL be limited at faster playback, and SHALL NOT affect the battle.
 
 #### Scenario: Flank hit
 - **WHEN** a unit lands a flank hit on a visible enemy
@@ -163,6 +171,10 @@ Every sim event SHALL have a visible cue for units the player can see: hits, fla
 #### Scenario: Last kill
 - **WHEN** the battle's last unit falls
 - **THEN** the camera shakes briefly
+
+#### Scenario: Execute
+- **WHEN** a warrior's Executioner kills a visible enemy
+- **THEN** the effect preset named by Executioner plays (a heavy red burst and a short shake) on top of the hit sparks
 
 ### Requirement: Units read at a glance
 Each unit SHALL show its team through a team-coloured rim light and team-coloured trims, in addition to its ring and health bar. The selected unit SHALL stand out with a gold rim. Units of the same class SHALL differ in hair, clothing tint and height, stable for a given army. None of this SHALL affect the battle.
