@@ -51,5 +51,14 @@
   ],
   "fear": [{ "type": "burst", "pool": "soft", "n": 4, "y": 1.7, "color": [0.15, 0.13, 0.17], "speed": 0.4, "size": 0.4, "life": 0.8, "grav": 0.4 }],
   "miss": [{ "type": "burst", "pool": "soft", "n": 4, "y": 1.1, "color": [0.75, 0.75, 0.72], "speed": 1.6, "size": 0.25, "life": 0.3 }],
-  "burst": [{ "type": "dust", "n": 5, "size": 0.7, "up": 0.5 }]
+  "burst": [{ "type": "dust", "n": 5, "size": 0.7, "up": 0.5 }],
+  "jet": [
+    { "type": "jet", "pool": "glow", "n": 22, "y": 1.0, "forward": 0.6, "spread": 0.5, "color": [1.7, 0.55, 0.1], "size": 0.36, "life": 0.42, "up": 0.3 },
+    { "type": "jet", "pool": "glow", "n": 8, "y": 1.0, "forward": 0.6, "spread": 0.2, "color": [2.0, 1.2, 0.35], "size": 0.24, "life": 0.3 },
+    { "type": "jet", "pool": "soft", "n": 10, "y": 1.2, "forward": 1.2, "spread": 0.55, "color": [0.12, 0.1, 0.09], "size": 0.75, "life": 0.9, "up": 0.6, "grav": 0.4 }
+  ],
+  "burn": [
+    { "type": "burst", "pool": "glow", "n": 2, "y": 0.15, "color": [1.8, 0.6, 0.12], "speed": 0.3, "size": 0.34, "life": 0.5, "grav": 2 },
+    { "type": "burst", "pool": "soft", "n": 1, "y": 0.5, "color": [0.13, 0.11, 0.1], "speed": 0.2, "size": 0.55, "life": 1.0, "grav": 0.8 }
+  ]
 }
