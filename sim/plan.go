@@ -3,6 +3,7 @@ package sim
 import (
 	"fmt"
 	"hash/fnv"
+	"reflect"
 )
 
 // PlanDef is a battle plan: an army-wide stance a side picks before the
@@ -28,6 +29,10 @@ type Stance struct {
 	FallBack int
 	StayNear Tag
 	Kite     Toggle
+	// Effects the role's units get for the battle, as if learned: a plan's
+	// edge and its cost (Shield wall's braced front, All-out charge's reckless
+	// speed). Applied after the unit's own traits and skills.
+	Effects []Effect
 }
 
 // Toggle is a yes/no field a stance may leave alone.
@@ -116,7 +121,7 @@ func (s Stance) apply(t *Temperament) {
 // valid (no kiting melee, no holding without a trigger). Ids must match
 // positions, starting with Instinct at 0.
 func ValidatePlans(plans []PlanDef, roster []UnitDef) error {
-	if len(plans) == 0 || plans[0] != (PlanDef{ID: PlanInstinct, Name: plans[0].Name}) {
+	if len(plans) == 0 || !reflect.DeepEqual(plans[0], PlanDef{ID: PlanInstinct, Name: plans[0].Name}) {
 		return fmt.Errorf("plan 0 must be Instinct and change nothing")
 	}
 	for i := range plans {
@@ -131,8 +136,14 @@ func ValidatePlans(plans []PlanDef, roster []UnitDef) error {
 				if k >= 0 {
 					skills = []Skill{def.Skills[k].Skill}
 				}
+				extra := p.stanceFor(&def).Effects
+				for _, e := range extra {
+					if err := checkEffect(e, &def); err != nil {
+						return fmt.Errorf("plan %s on %s: %v", p.Name, def.Name, err)
+					}
+				}
 				var kit loadout
-				kit.learn(&def, skills)
+				kit.learn(&def, skills, extra...)
 				d := def
 				d.Temper = temperOf(&def, p, &kit)
 				if err := checkTemperament(&d); err != nil {

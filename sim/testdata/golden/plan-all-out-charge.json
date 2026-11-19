@@ -1,18 +1,26 @@
 {
-  "version": "0.9.0+9cf2dc35.a03dfb35",
+  "version": "0.10.0+9cf2dc35.edb80a72",
   "case": "plan all-out charge",
   "outcome": {
     "result": 1,
-    "ticks": 317,
-    "checksum": "7983640034818545166",
+    "ticks": 266,
+    "checksum": "7790432633586642854",
     "survivors": [
+      {
+        "Index": 0,
+        "HP": 484503
+      },
       {
         "Index": 1,
         "HP": 3604480
       },
       {
         "Index": 3,
-        "HP": 2136475
+        "HP": 3604480
+      },
+      {
+        "Index": 4,
+        "HP": 2310963
       }
     ]
   }

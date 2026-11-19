@@ -44,6 +44,11 @@ func TestBadPlanRejected(t *testing.T) {
 	if ValidatePlans(holdNoTrigger, r) == nil {
 		t.Error("a plan that makes units hold without a trigger was accepted")
 	}
+	rangedOnMelee := append([]PlanDef(nil), Plans...)
+	rangedOnMelee[PlanCharge].Melee.Effects = []Effect{{Kind: OverCover}}
+	if ValidatePlans(rangedOnMelee, Roster) == nil {
+		t.Error("a plan that gives melee units a ranged-only effect was accepted")
+	}
 	changesInstinct := append([]PlanDef(nil), Plans...)
 	changesInstinct[PlanInstinct].Melee.Engage = EngageCharge
 	if ValidatePlans(changesInstinct, Roster) == nil {
@@ -92,6 +97,22 @@ func TestPlanChangesTemperament(t *testing.T) {
 	}
 	if u := newUnitPlan(0, 0, UnitSpec{Class: Mage}, Vec{}, PlanShieldWall); u.Temper.StayNear != TagMelee {
 		t.Error("Shield wall should keep casters near the melee")
+	}
+}
+
+func TestPlanEffects(t *testing.T) {
+	for _, d := range Roster {
+		own := newUnitPlan(0, 0, UnitSpec{Class: d.ID}, Vec{}, PlanInstinct)
+		rush := newUnitPlan(0, 0, UnitSpec{Class: d.ID}, Vec{}, PlanCharge)
+		if rush.Stats.Speed <= own.Stats.Speed {
+			t.Errorf("%s under All-out charge: speed %v, under Instinct %v", d.Name, rush.Stats.Speed, own.Stats.Speed)
+		}
+	}
+	// effects come after the unit's own: a skill's stat bonus and the plan's both apply
+	c := Archer
+	base := newUnitPlan(0, 0, UnitSpec{Class: c}, Vec{}, PlanInstinct).Stats.Range
+	if got := newUnitPlan(0, 0, UnitSpec{Class: c}, Vec{}, PlanSkirmish).Stats.Range; got <= base {
+		t.Errorf("Skirmish should lengthen an archer's range: %v vs %v", got, base)
 	}
 }
 
