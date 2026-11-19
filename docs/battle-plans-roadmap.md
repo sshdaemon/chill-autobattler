@@ -1,6 +1,6 @@
 # Battle plans roadmap
 
-Status: November 2026. Steps 1 and 2 are done (#85, #87); the rest is planned.
+Status: November 2026. Steps 1–3 are done (#85, #87, #89); the rest is planned.
 
 The goal: give the player a say in **how** their army fights, not only what it
 is. Today every unit fights by its own temperament (`sim/temperament.go`), so
@@ -96,7 +96,12 @@ Built in OpenSpec change `battle-plan-picker`.
   wall"), not during the draft.
 - Plan names and descriptions are presentation, in `web/src/`.
 
-## Step 3: Balance pass
+## Step 3: Balance pass (done, #89)
+
+Built in OpenSpec change `plan-balance`: plans may grant effects for the
+battle (an edge and a cost), and no plan dominates in any faction. Results in
+`docs/balance-findings.md`. Step 5's custom plans must limit which effects a
+player can pick, or they become a free buff.
 
 - Run the plan-vs-plan matrix across the four factions.
 - Aim: no plan wins against everything. Each plan has at least one plan it

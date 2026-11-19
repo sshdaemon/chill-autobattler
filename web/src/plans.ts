@@ -3,11 +3,11 @@
 // description. A plan without words here shows its sim name.
 const WORDS: Record<string, { title: string; desc: string }> = {
   instinct: { title: 'Instinct', desc: 'Every unit fights its own way.' },
-  'shield wall': { title: 'Shield wall', desc: 'Melee hold and guard the back line; ranged shoot from behind them.' },
-  'all-out charge': { title: 'All-out charge', desc: 'Everyone rushes the nearest enemy. No kiting.' },
-  'hunt the archers': { title: 'Hunt the archers', desc: "Melee charge the enemy's archers and casters first." },
-  'focus fire': { title: 'Focus fire', desc: 'Advance together and gang up on one enemy at a time.' },
-  skirmish: { title: 'Skirmish', desc: 'Melee hold and fall back when hurt; ranged kite at a distance.' },
+  'shield wall': { title: 'Shield wall', desc: 'Melee hold, braced against blows from the front; ranged shoot from behind them. Gives up the first move.' },
+  'all-out charge': { title: 'All-out charge', desc: 'Everyone rushes the nearest enemy, faster than usual. No kiting, a little reckless.' },
+  'hunt the archers': { title: 'Hunt the archers', desc: "Melee sprint past the front for the enemy's archers and casters, exposed while they do." },
+  'focus fire': { title: 'Focus fire', desc: 'Advance together, gang up on one enemy at a time and hit harder. Slow to close in.' },
+  skirmish: { title: 'Skirmish', desc: 'Melee screen the back line; ranged kite, quicker and with longer reach.' },
 };
 
 export const planWords = (name: string | undefined) =>

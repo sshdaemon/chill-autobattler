@@ -111,12 +111,15 @@ type loadout struct {
 	kiteShoot bool
 }
 
-// learn adds the non-stat effects of the unit's skills to its loadout.
-func (kit *loadout) learn(def *UnitDef, skills []Skill) {
-	for k := -1; k < len(def.Skills); k++ { // the type's traits, then its learned skills
+// learn adds the non-stat effects of the unit's skills to its loadout, then
+// the extras (its side's plan).
+func (kit *loadout) learn(def *UnitDef, skills []Skill, extra ...Effect) {
+	for k := -1; k <= len(def.Skills); k++ { // the type's traits, its learned skills, then the extras
 		var effects []Effect
 		if k < 0 {
 			effects = def.Traits
+		} else if k == len(def.Skills) {
+			effects = extra
 		} else if hasSkill(skills, def.Skills[k].Skill) {
 			effects = def.Skills[k].Effects
 		}

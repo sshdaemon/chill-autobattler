@@ -59,15 +59,20 @@ func newUnit(index, team int, spec UnitSpec, pos Vec) *Unit {
 // newUnitPlan is newUnit for a side fighting by a plan.
 func newUnitPlan(index, team int, spec UnitSpec, pos Vec, plan Plan) *Unit {
 	def := RosterOf(spec.Class)
-	st := foldStats(def, spec.Skills)
+	p := PlanOf(plan)
+	var extra []Effect
+	if p != nil {
+		extra = p.stanceFor(def).Effects
+	}
+	st := foldStats(def, spec.Skills, extra...)
 	var kit loadout
-	kit.learn(def, spec.Skills)
+	kit.learn(def, spec.Skills, extra...)
 	face := V(0, -One) // Blue faces up the field (-z), Red down
 	if team == 1 {
 		face = V(0, One)
 	}
 	return &Unit{
-		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st, Temper: temperOf(def, PlanOf(plan), &kit),
+		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st, Temper: temperOf(def, p, &kit),
 		Pos: pos, Face: face, MaxHP: st.HP, HP: st.HP, Target: -1, kit: kit,
 	}
 }

@@ -22,13 +22,16 @@ func init() {
 var statOrder = [...]StatKind{StatHP, StatDamage, StatRange, StatSpeed, StatAttackSpeed, StatAuraRadius}
 
 // foldStats applies the stat bonuses of the unit's skills to its base stats.
-func foldStats(def *UnitDef, skills []Skill) Stats {
+// Extra effects (its side's plan) apply last.
+func foldStats(def *UnitDef, skills []Skill, extra ...Effect) Stats {
 	st := def.Stats
 	for _, stat := range statOrder {
-		for k := -1; k < len(def.Skills); k++ { // the type's traits, then its learned skills
+		for k := -1; k <= len(def.Skills); k++ { // the type's traits, its learned skills, then the extras
 			var effects []Effect
 			if k < 0 {
 				effects = def.Traits
+			} else if k == len(def.Skills) {
+				effects = extra
 			} else if hasSkill(skills, def.Skills[k].Skill) {
 				effects = def.Skills[k].Effects
 			}

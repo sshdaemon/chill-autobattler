@@ -2,6 +2,71 @@
 
 The current numbers are in [`balance-report.md`](balance-report.md) (generated with `pnpm balance`). This file says what they mean.
 
+## Battle plans: balance pass (sim 0.10.0, change plan-balance)
+
+Plans now trade an edge for a cost (`docs/battle-plans-roadmap.md` step 3;
+values in `openspec/changes/archive/*-plan-balance/design.md`). Rerun with
+`go run ./tools/balance -exp plans`; the matrix now swaps sides every other
+battle, so the diagonal side bias is gone.
+
+- **No plan dominates in any faction** (the goal): every plan loses to or ties
+  with at least one other.
+- **Every faction has at least four plans averaging 45% or better**, so the
+  pick is a real choice. The Romans are tightest (45–55%).
+- **Shield wall was held back by the Protect target rule**, not by its numbers:
+  its melee chased enemies near their own archers. With Nearest it now beats
+  Charge and Hunt for most factions and loses to Focus fire.
+- **Known weak spots, kept as faction character:** Hunt the archers for the
+  Rus (17%: druzhynnyk shield their archers, so hunters run into a wall) and
+  Instinct for the Varangians (34%: huskarls left to themselves are reckless).
+- Instinct stays the strongest Classic plan (59%); Classic is to be retired.
+
+Row plan's win rate against the column plan; the same army (the faction's units 2-2-1, recruits) on both sides, sides swapped every other battle, 1000 battles per pair. Beats: 55% or more.
+
+#### classic
+
+| Plan | instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | Avg | Beats |
+|---|---|---|---|---|---|---|---|---|
+| **instinct** | — | 57.1% | 62.2% | 59.3% | 52.8% | 62.5% | 58.8% | 4 |
+| **shield wall** | 42.9% | — | 54.9% | 58.5% | 30.1% | 47.9% | 46.8% | 1 |
+| **all-out charge** | 37.8% | 45.1% | — | 65.5% | 46.7% | 56.5% | 50.3% | 2 |
+| **hunt the archers** | 40.7% | 41.5% | 34.5% | — | 41.2% | 55.9% | 42.8% | 1 |
+| **focus fire** | 47.2% | 69.8% | 53.3% | 58.8% | — | 65.5% | 58.9% | 3 |
+| **skirmish** | 37.5% | 52.1% | 43.5% | 44.1% | 34.5% | — | 42.4% | 0 |
+
+#### rus
+
+| Plan | instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | Avg | Beats |
+|---|---|---|---|---|---|---|---|---|
+| **instinct** | — | 37.4% | 30.1% | 77.5% | 33.2% | 57.0% | 47.1% | 2 |
+| **shield wall** | 62.6% | — | 57.2% | 91.5% | 44.3% | 64.3% | 64.0% | 4 |
+| **all-out charge** | 69.8% | 42.8% | — | 84.5% | 49.2% | 72.8% | 63.8% | 3 |
+| **hunt the archers** | 22.5% | 8.5% | 15.5% | — | 20.6% | 19.8% | 17.4% | 0 |
+| **focus fire** | 66.8% | 55.7% | 50.8% | 79.4% | — | 70.2% | 64.6% | 4 |
+| **skirmish** | 43.0% | 35.7% | 27.2% | 80.2% | 29.8% | — | 43.2% | 1 |
+
+#### varangians
+
+| Plan | instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | Avg | Beats |
+|---|---|---|---|---|---|---|---|---|
+| **instinct** | — | 25.0% | 32.3% | 31.5% | 43.6% | 37.8% | 34.0% | 0 |
+| **shield wall** | 75.0% | — | 63.4% | 47.3% | 53.1% | 69.4% | 61.6% | 3 |
+| **all-out charge** | 67.7% | 36.6% | — | 40.8% | 50.5% | 62.9% | 51.7% | 2 |
+| **hunt the archers** | 68.5% | 52.7% | 59.2% | — | 62.3% | 74.6% | 63.5% | 4 |
+| **focus fire** | 56.4% | 46.9% | 49.5% | 37.7% | — | 45.9% | 47.3% | 1 |
+| **skirmish** | 62.3% | 30.6% | 37.1% | 25.4% | 54.1% | — | 41.9% | 1 |
+
+#### romans
+
+| Plan | instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | Avg | Beats |
+|---|---|---|---|---|---|---|---|---|
+| **instinct** | — | 49.8% | 61.5% | 40.7% | 51.3% | 54.1% | 51.5% | 1 |
+| **shield wall** | 50.2% | — | 60.5% | 50.9% | 52.8% | 48.9% | 52.6% | 1 |
+| **all-out charge** | 38.5% | 39.5% | — | 45.5% | 56.7% | 47.1% | 45.5% | 1 |
+| **hunt the archers** | 59.3% | 49.1% | 54.5% | — | 52.2% | 57.6% | 54.5% | 2 |
+| **focus fire** | 48.7% | 47.2% | 43.3% | 47.8% | — | 52.8% | 47.9% | 0 |
+| **skirmish** | 45.9% | 51.2% | 52.9% | 42.4% | 47.2% | — | 47.9% | 0 |
+
 ## Battle plans: first matrix (sim 0.9.0, change battle-plans)
 
 Starting values from `docs/battle-plans-roadmap.md` step 1, before any tuning
