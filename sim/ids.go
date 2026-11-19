@@ -69,7 +69,8 @@ const (
 	TargetStrongest   TargetRule = 4 // the enemy that hits hardest, else the nearest
 	TargetFocus       TargetRule = 5 // the enemy most allies are already fighting, else the nearest
 	TargetProtect     TargetRule = 6 // the enemy closest to its own ranged and caster allies, else the nearest
-	// next free: 7
+	TargetFocusReach  TargetRule = 7 // like TargetFocus, among enemies within its reach (range + FocusSlack); else the nearest
+	// next free: 8
 )
 
 type EngageRule uint8
