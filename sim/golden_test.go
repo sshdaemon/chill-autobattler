@@ -164,7 +164,7 @@ func goldenCases() []struct {
 	eased := in(31, Army{Formation: F3x2, Units: mix()}, 1)
 	eased.RedHealthPct = 85 // a run's first match
 	add("red at 85% health", eased)
-	for _, s := range []uint64{1248, 1656} { // these end with both armies dying on the same tick
+	for _, s := range []uint64{1248, 1748} { // these end with both armies dying on the same tick
 		add("mutual wipe", in(s, Army{Formation: Presets[s%7], Units: mix()}, int(s%6)))
 		cases[len(cases)-1].name += " " + itoa(int(s))
 	}

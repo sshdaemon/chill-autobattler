@@ -1,26 +1,30 @@
 {
-  "version": "0.8.0+7b296492",
+  "version": "0.8.0+9cf2dc35",
   "case": "veterans 3 stars",
   "outcome": {
     "result": 2,
     "ticks": 188,
-    "checksum": "3370843193315303513",
+    "checksum": "14083629686130755038",
     "survivors": [
       {
         "Index": 3,
-        "HP": 6475101
+        "HP": 2438394
       },
       {
         "Index": 4,
-        "HP": 1289042
+        "HP": 393512
       },
       {
         "Index": 5,
-        "HP": 3735552
+        "HP": 3604480
+      },
+      {
+        "Index": 6,
+        "HP": 3603096
       },
       {
         "Index": 7,
-        "HP": 7208960
+        "HP": 2078605
       }
     ]
   }

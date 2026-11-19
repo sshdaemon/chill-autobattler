@@ -59,11 +59,16 @@ func TestNewRun(t *testing.T) {
 	if _, err := e.runs.StartRun(t.Context(), &chillv1.StartRunRequest{}); connect.CodeOf(err) != connect.CodeUnauthenticated {
 		t.Errorf("no token: %v", err)
 	}
+	// every faction is playable now: take one out for the "not playable yet" case
+	saved := sim.Factions
+	sim.Factions = append([]sim.FactionDef(nil), saved...)
+	sim.FactionOf(sim.FactionRomans).Playable = false
 	for _, f := range []sim.Faction{0, sim.FactionRomans, 200} { // missing, not playable yet, unknown
 		if _, err := e.runs.StartRun(e.ctx, &chillv1.StartRunRequest{Faction: uint32(f)}); connect.CodeOf(err) != connect.CodeInvalidArgument {
 			t.Errorf("faction %d: %v", f, err)
 		}
 	}
+	sim.Factions = saved
 	if e.getRun().Id != r2.Id {
 		t.Error("a refused start must leave the active run alone")
 	}
