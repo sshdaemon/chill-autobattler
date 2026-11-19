@@ -30,7 +30,7 @@
 ## 5. Balance tool
 
 - [x] 5.1 Add a `plans` experiment to `tools/balance`: for each faction, the same army on both sides, every plan against every plan, win % for the row's plan. Verify: `go run ./tools/balance -exp plans -n 200` prints a 6×6 matrix per faction.
-- [ ] 5.2 Run the matrix with the default count and add the result to `docs/balance-findings.md` as the starting point for step 3. Verify: the doc has the matrix and any plan that wins against every other plan is called out.
+- [x] 5.2 Run the matrix with the default count and add the result to `docs/balance-findings.md` as the starting point for step 3. Verify: the doc has the matrix and any plan that wins against every other plan is called out.
 
 ## 6. Docs
 
