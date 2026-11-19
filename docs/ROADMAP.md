@@ -293,7 +293,12 @@ Red now draws Classic or Rus.
 
 **Varangians done and playable** (huskarl #72, bowman #74, völva #76; shared:
 escape runs #70, thrown spears #71, curse, fear and miss cues #73, parts
-budget #75). Red now draws Classic, Rus or Varangians. Next: Romans.
+budget #75). Red now draws Classic, Rus or Varangians.
+
+**Romans done and playable** (skoutatos #81, toxotes #80, siphonarios #82;
+shared: focus-within-reach target rule #78, fire jet, burning ground and fire
+pot visuals #79). All three Dnipro-road factions are playable; Red draws any
+of the four.
 
 Each unit goes through `/new-unit`: brief, design checkpoint with the user,
 roster file, look, golden case, balance band, previews, PR. Suggested waves,
