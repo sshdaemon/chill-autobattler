@@ -2,12 +2,11 @@
   "ui": {
     "label": "Siphonarios",
     "icon": "🔥",
-    "blurb": "Greek fire: a short jet that burns everyone in front",
-    "placeholder": true
+    "blurb": "Greek fire: waits behind the shields, then a short jet burns everyone in front"
   },
   "recipes": [
     {
-      "name": "Siphonarios 1",
+      "name": "Theodoros",
       "sex": "male",
       "head": "Head_Male",
       "build": "normal",
@@ -21,70 +20,74 @@
         "Hair_Beard",
         "Eyebrows_Regular"
       ],
-      "variant": 0,
+      "variant": 1,
       "items": [
-        "Staff",
-        "Wizard_Hat"
+        "Hand_Siphon",
+        "Fire_Pots",
+        "Felt_Cap"
       ],
-      "team": 0.6,
-      "tint": "#9a80ff"
+      "team": 0.55,
+      "tint": "#3d5378"
     },
     {
-      "name": "Siphonarios 2",
-      "sex": "female",
-      "head": "Head_Female",
-      "build": "slim",
-      "parts": [
-        "Female_Peasant_Body",
-        "Female_Peasant_Arms",
-        "Female_Peasant_Legs",
-        "Female_Peasant_Feet"
-      ],
-      "hair": [
-        "Hair_Long",
-        "Eyebrows_Female"
-      ],
-      "variant": 0,
-      "items": [
-        "Staff",
-        "Wizard_Hat"
-      ],
-      "team": 0.6,
-      "tint": "#9a80ff"
-    },
-    {
-      "name": "Siphonarios 3",
+      "name": "Niketas",
       "sex": "male",
       "head": "Head_Male",
       "build": "stout",
       "parts": [
-        "Male_Peasant_Body",
+        "Male_Ranger_Body",
         "Male_Peasant_Arms",
         "Male_Peasant_Legs",
-        "Male_Peasant_Feet"
+        "Male_Ranger_Feet_Boots"
       ],
       "hair": [
         "Hair_SimpleParted",
         "Hair_Beard",
         "Eyebrows_Regular"
       ],
-      "variant": 1,
+      "variant": 0,
       "items": [
-        "Staff",
-        "Wizard_Hat"
+        "Hand_Siphon",
+        "Fire_Pots",
+        "Felt_Cap"
       ],
-      "team": 0.6,
-      "tint": "#7f9cff"
+      "team": 0.55,
+      "tint": "#46603f"
+    },
+    {
+      "name": "Leon",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "slim",
+      "parts": [
+        "Male_Peasant_Body",
+        "Male_Ranger_Arms",
+        "Male_Peasant_Legs",
+        "Male_Peasant_Feet"
+      ],
+      "hair": [
+        "Hair_Buzzed",
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 0,
+      "items": [
+        "Hand_Siphon",
+        "Fire_Pots",
+        "Felt_Cap"
+      ],
+      "team": 0.55,
+      "tint": "#3d5378"
     }
   ],
   "anims": {
-    "idle": "Spell_Simple_Idle_Loop",
+    "idle": "Pistol_Idle_Loop",
     "walk": "Walk_Loop",
     "move": "Jog_Fwd_Loop",
     "sprint": "Sprint_Loop",
     "cheer": "Yes",
     "attack": [
-      "Spell_Simple_Shoot"
+      "Pistol_Shoot"
     ],
     "hit": [
       "Hit_Chest",
@@ -95,12 +98,28 @@
       "Hit_Knockback"
     ]
   },
+  "jet": "siphonarios.jet",
   "skills": {
-    "1": {},
-    "2": {},
+    "1": {
+      "fx": "siphonarios.burn"
+    },
+    "2": {
+      "action": "OverhandThrow",
+      "fx": "siphonarios.throw",
+      "missile": "pot"
+    },
     "3": {},
     "4": {},
-    "5": {}
+    "5": {
+      "fx": "siphonarios.falter"
+    }
   },
-  "clips": {}
+  "clips": {
+    "Pistol_Idle_Loop": {
+      "loop": true
+    },
+    "Pistol_Shoot": {
+      "hit": 0.12
+    }
+  }
 }
