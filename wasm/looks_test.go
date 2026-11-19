@@ -526,7 +526,7 @@ func TestLooksCheckCatches(t *testing.T) {
 			c.Units["archer"] = u
 			return packed
 		},
-		"unknown preset": func(c *looksData) []string { c.Units["mage"].Skills["4"] = skillLook{Fx: "nope"}; return packed },
+		"unknown preset":           func(c *looksData) []string { c.Units["mage"].Skills["4"] = skillLook{Fx: "nope"}; return packed },
 		"pot on a non-burst skill": func(c *looksData) []string { c.Units["mage"].Skills["4"] = skillLook{Missile: "pot"}; return packed },
 		"jet without a cone": func(c *looksData) []string {
 			u := c.Units["warrior"]
