@@ -1,11 +1,11 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { CylinderGeometry, ConeGeometry, InstancedMesh, Object3D, Vector3 } from 'three';
+import { CylinderGeometry, ConeGeometry, InstancedMesh, LatheGeometry, Object3D, Vector2, Vector3 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { useBattle } from '../store.ts';
 import { alpha } from './interp.ts';
-import { trail, viewOf } from './effects.ts';
-import { smokeShots } from '../units/looks.ts';
+import { fires, trail, viewOf } from './effects.ts';
+import { skillWith, smokeShots } from '../units/looks.ts';
 
 const MAX = 64, dummy = new Object3D(), ahead = new Vector3();
 
@@ -17,10 +17,13 @@ function at(s: { sx: number; sz: number; ax: number; az: number; bolt: boolean; 
 }
 
 // Arrows (shaft + tip, nose first along the arc), thrown spears (burst shots: a
-// longer, thicker shaft with an iron head), magic bolts (glowing orbs) and
-// curses (bolts of a unit whose look draws them as smoke: a trail only).
+// longer, thicker shaft with an iron head), fire pots (burst shots of a skill
+// whose look says missile 'pot': a tumbling clay pot trailing fire), magic
+// bolts (glowing orbs) and curses (bolts of a unit whose look draws them as
+// smoke: a trail only). Also ticks the burning ground (effects.ts fires).
+const potOf = (cls: number, skills: number[]) => skillWith(cls, skills, 'burst')?.look.missile === 'pot';
 export function Shots() {
-  const arrows = useRef<InstancedMesh>(null), shafts = useRef<InstancedMesh>(null), heads = useRef<InstancedMesh>(null), boltsOuter = useRef<InstancedMesh>(null), boltsInner = useRef<InstancedMesh>(null);
+  const pots = useRef<InstancedMesh>(null), arrows = useRef<InstancedMesh>(null), shafts = useRef<InstancedMesh>(null), heads = useRef<InstancedMesh>(null), boltsOuter = useRef<InstancedMesh>(null), boltsInner = useRef<InstancedMesh>(null);
   const arrowGeo = useMemo(() => {
     const shaft = new CylinderGeometry(0.014, 0.014, 0.7, 5).rotateX(Math.PI / 2);
     const tip = new ConeGeometry(0.035, 0.1, 5).rotateX(Math.PI / 2).translate(0, 0, 0.4);
@@ -30,16 +33,27 @@ export function Shots() {
     new CylinderGeometry(0.022, 0.022, 1.5, 6).rotateX(Math.PI / 2).translate(0, 0, -0.2),
     new ConeGeometry(0.045, 0.22, 4).rotateX(Math.PI / 2).translate(0, 0, 0.66),
   ], []);
-  useFrame(() => {
+  const potGeo = useMemo(() => new LatheGeometry( // a round-bellied clay pot with a narrow neck
+    [[0, -0.13], [0.09, -0.11], [0.13, -0.03], [0.12, 0.06], [0.05, 0.12], [0.045, 0.16], [0.06, 0.17]].map(([x, y]) => new Vector2(x, y)), 8), []);
+  useFrame((_, delta) => {
     const st = useBattle.getState(), shots = st.curr?.shots ?? [], view = viewOf(st);
+    fires(delta, view, st.curr?.units ?? []);
     const k = alpha();
-    let na = 0, nb = 0, ns = 0;
+    let na = 0, nb = 0, ns = 0, np = 0;
     for (const s of shots) {
       const f = Math.min(1, (s.t + k) / s.dur);
       at(s, f, dummy.position);
+      const shooter = st.units[s.shooter];
       const smoke = s.bolt && smokeShots(st.curr?.units[s.shooter]?.cls ?? -1);
-      if (f < 1) trail(dummy.position.x, dummy.position.y, dummy.position.z, smoke ? 'smoke' : s.bolt ? 'bolt' : 'arrow', view);
+      const pot = s.burst && !!shooter && potOf(shooter.cls, shooter.skills);
+      if (f < 1) trail(dummy.position.x, dummy.position.y, dummy.position.z, smoke ? 'smoke' : pot ? 'fire' : s.bolt ? 'bolt' : 'arrow', view);
       if (smoke) continue;
+      if (pot) {
+        dummy.rotation.set(f * 9, 0, f * 5); // tumbling
+        dummy.updateMatrix();
+        if (np < MAX) pots.current?.setMatrixAt(np++, dummy.matrix);
+        continue;
+      }
       if (s.bolt) {
         dummy.rotation.set(0, 0, 0);
         dummy.updateMatrix();
@@ -54,7 +68,7 @@ export function Shots() {
         if (na < MAX) arrows.current?.setMatrixAt(na++, dummy.matrix);
       }
     }
-    for (const [m, c] of [[arrows.current, na], [shafts.current, ns], [heads.current, ns], [boltsOuter.current, nb], [boltsInner.current, nb]] as const) {
+    for (const [m, c] of [[pots.current, np], [arrows.current, na], [shafts.current, ns], [heads.current, ns], [boltsOuter.current, nb], [boltsInner.current, nb]] as const) {
       if (!m) continue;
       m.count = c;
       m.instanceMatrix.needsUpdate = true;
@@ -62,6 +76,7 @@ export function Shots() {
   });
   return (
     <>
+      <instancedMesh ref={pots} args={[potGeo, undefined, MAX]} castShadow frustumCulled={false}><meshStandardMaterial color="#a0583a" roughness={0.9} /></instancedMesh>
       <instancedMesh ref={arrows} args={[arrowGeo, undefined, MAX]} castShadow frustumCulled={false}><meshStandardMaterial color="#d8c08a" /></instancedMesh>
       <instancedMesh ref={shafts} args={[shaftGeo, undefined, MAX]} castShadow frustumCulled={false}><meshStandardMaterial color="#7a5634" /></instancedMesh>
       <instancedMesh ref={heads} args={[headGeo, undefined, MAX]} castShadow frustumCulled={false}><meshStandardMaterial color="#b8bec6" metalness={0.8} roughness={0.35} /></instancedMesh>

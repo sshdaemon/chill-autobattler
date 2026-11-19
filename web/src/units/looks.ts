@@ -10,8 +10,9 @@ import type { ClassInfo, SkillInfo } from '../gamedata.ts';
 export type ClipInfo = { loop?: boolean; hit?: number; speed?: number; from?: string[] };
 // action: played when the skill acts (gap-closer, escape); attack: replaces the
 // unit's attacks while it has the skill; pitch: upper body tilts back while
-// attacking (radians); rate: action playback speed; fx: effect preset name.
-export type SkillLook = { action?: string; rate?: number; attack?: string; pitch?: number; fx?: string };
+// attacking (radians); rate: action playback speed; fx: effect preset name;
+// missile: how its burst throws are drawn ('pot': a clay fire pot; default a spear).
+export type SkillLook = { action?: string; rate?: number; attack?: string; pitch?: number; fx?: string; missile?: 'pot' };
 // walk and move (a jog) are blended by ground speed; sprint plays for dashes without a skill action
 export type AnimSet = { idle: string; walk: string; move: string; sprint?: string; cheer: string; attack: string[]; hit: string[]; death: string[] };
 // A character recipe (unit-looks): outfit parts (the first one's skeleton is the
@@ -28,8 +29,9 @@ export type Build = { girth: Record<string, number>; shoulders: number; head: nu
 // placeholder: the unit's look is borrowed until its unit session dresses it (roadmap Phase 4)
 export type UnitUI = { label: string; icon: string; blurb: string; placeholder?: boolean };
 // shot: how its bolts look: 'smoke' (dark smoke and the `.smoke` hit and shot
-// presets, for curses) instead of the default glowing orb
-export type UnitLook = { ui: UnitUI; recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook>; shot?: 'smoke' };
+// presets, for curses) instead of the default glowing orb; jet: the effect
+// preset of its cone attack (EV.jet, default 'jet')
+export type UnitLook = { ui: UnitUI; recipes: Recipe[]; anims: AnimSet; skills: Record<string, SkillLook>; shot?: 'smoke'; jet?: string };
 
 type LookFile = UnitLook & { clips?: Record<string, ClipInfo> };
 type SharedFile = { clips: Record<string, ClipInfo>; builds: Record<string, Build> };
@@ -91,6 +93,8 @@ export function skillLooks(cls: number, learned: number[]): { info: SkillInfo; l
 // The look of the unit's skill with an effect of this kind (e.g. 'gapCloser'), if it has one.
 // Its bolts are drawn as smoke (the look's `shot`).
 export const smokeShots = (cls: number) => { const info = roster[cls]; return !!info && LOOKS[info.name]?.shot === 'smoke'; };
+// The effect preset of its cone attack (a fire jet).
+export const jetPreset = (cls: number) => { const info = roster[cls]; return (info && LOOKS[info.name]?.jet) || 'jet'; };
 
 export function skillWith(cls: number, learned: number[], kind: string) {
   return skillLooks(cls, learned).find((s) => s.info.effects.some((e) => e.kind === kind));

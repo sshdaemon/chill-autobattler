@@ -44,6 +44,8 @@ type skillLook struct {
 	Attack string  `json:"attack"`
 	Pitch  float64 `json:"pitch"`
 	Fx     string  `json:"fx"`
+	// Missile: "" or "pot" (its burst throws drawn as clay fire pots)
+	Missile string `json:"missile"`
 }
 
 type recipe struct {
@@ -82,6 +84,7 @@ type unitLook struct {
 	} `json:"anims"`
 	Skills map[string]skillLook `json:"skills"`
 	Shot   string               `json:"shot"` // "" or "smoke" (its bolts drawn as smoke)
+	Jet    string               `json:"jet"`  // effect preset of its cone attack ("" = "jet")
 }
 
 type clipInfo struct {
@@ -159,6 +162,14 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 		if look.Shot != "" && (look.Shot != "smoke" || d.Projectile != sim.Bolt) {
 			bad("%s: shot %q: only \"smoke\", for a unit that fires bolts", d.Name, look.Shot)
 		}
+		if look.Jet != "" {
+			if _, ok := fx[look.Jet]; !ok {
+				bad("%s: jet names effect preset %q, which no fx file has", d.Name, look.Jet)
+			}
+			if !slices.ContainsFunc(d.Traits, func(e sim.Effect) bool { return e.Kind == sim.Cone }) {
+				bad("%s: jet: only for a unit with a cone attack", d.Name)
+			}
+		}
 		for set, list := range map[string][]string{"attack": a.Attack, "hit": a.Hit, "death": a.Death} {
 			if len(list) == 0 {
 				bad("%s: no %s animation", d.Name, set)
@@ -183,6 +194,9 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 			}
 			if _, ok := fx[sl.Fx]; sl.Fx != "" && !ok {
 				bad("%s: skill %s names effect preset %q, which no fx file has", d.Name, s.Name, sl.Fx)
+			}
+			if sl.Missile != "" && (sl.Missile != "pot" || !slices.ContainsFunc(s.Effects, func(e sim.Effect) bool { return e.Kind == sim.Burst })) {
+				bad("%s: skill %s: missile %q: only \"pot\", for a burst skill", d.Name, s.Name, sl.Missile)
 			}
 		}
 		for id := range look.Skills {
@@ -513,6 +527,13 @@ func TestLooksCheckCatches(t *testing.T) {
 			return packed
 		},
 		"unknown preset": func(c *looksData) []string { c.Units["mage"].Skills["4"] = skillLook{Fx: "nope"}; return packed },
+		"pot on a non-burst skill": func(c *looksData) []string { c.Units["mage"].Skills["4"] = skillLook{Missile: "pot"}; return packed },
+		"jet without a cone": func(c *looksData) []string {
+			u := c.Units["warrior"]
+			u.Jet = "jet"
+			c.Units["warrior"] = u
+			return packed
+		},
 		"move clip without speed": func(c *looksData) []string {
 			jog := c.Clips["Jog_Fwd_Loop"]
 			jog.Speed = 0
