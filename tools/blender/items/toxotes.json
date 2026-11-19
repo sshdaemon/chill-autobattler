@@ -1,0 +1,17 @@
+{
+ "Kamelaukion": {
+  "modelled": true,
+  "bone": "Head",
+  "pos": [
+   0,
+   0.14,
+   0.0
+  ],
+  "rot": [
+   -0.08,
+   0,
+   0
+  ],
+  "scale": 1.0
+ }
+}

@@ -641,6 +641,20 @@
    ],
    "scale": 1.0
   },
+  "Kamelaukion": {
+   "bone": "Head",
+   "pos": [
+    0,
+    0.14,
+    0.0
+   ],
+   "rot": [
+    -0.08,
+    0,
+    0
+   ],
+   "scale": 1.0
+  },
   "Iron_Staff": {
    "bone": "hand_r",
    "pos": [

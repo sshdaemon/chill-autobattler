@@ -2,21 +2,19 @@
   "ui": {
     "label": "Toxotes",
     "icon": "🏹",
-    "blurb": "Archer of the line: shoots together from behind the shields",
-    "placeholder": true
+    "blurb": "Roman archer of the line: the whole line shoots at one target"
   },
   "recipes": [
     {
-      "name": "Toxotes 1",
+      "name": "Theodoros",
       "sex": "male",
       "head": "Head_Male",
-      "build": "slim",
+      "build": "normal",
       "parts": [
-        "Male_Ranger_Body",
+        "Male_Peasant_Body",
         "Male_Ranger_Arms",
-        "Male_Ranger_Legs",
-        "Male_Ranger_Feet_Boots",
-        "Male_Ranger_Head_Hood"
+        "Male_Peasant_Legs",
+        "Male_Ranger_Feet_Boots"
       ],
       "hair": [
         "Hair_Beard",
@@ -24,32 +22,58 @@
       ],
       "variant": 0,
       "items": [
-        "Bow",
-        "Quiver"
+        "Composite_Bow",
+        "Quiver",
+        "Kamelaukion"
       ],
-      "team": 0.85
+      "team": 0.6
     },
     {
-      "name": "Toxotes 2",
+      "name": "Leon",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "slim",
+      "parts": [
+        "Male_Ranger_Body",
+        "Male_Ranger_Arms",
+        "Male_Ranger_Legs",
+        "Male_Ranger_Feet_Boots"
+      ],
+      "hair": [
+        "Hair_Buzzed",
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 1,
+      "items": [
+        "Composite_Bow",
+        "Quiver",
+        "Kamelaukion"
+      ],
+      "team": 0.6
+    },
+    {
+      "name": "Anna",
       "sex": "female",
       "head": "Head_Female",
       "build": "slim",
       "parts": [
-        "Female_Ranger_Body",
+        "Female_Peasant_Body",
         "Female_Ranger_Arms",
-        "Female_Ranger_Legs",
-        "Female_Ranger_Feet",
-        "Female_Ranger_Head_Hood"
+        "Female_Peasant_Legs",
+        "Female_Ranger_Feet"
       ],
       "hair": [
+        "Hair_BuzzedFemale",
         "Eyebrows_Female"
       ],
       "variant": 0,
       "items": [
-        "Bow",
-        "Quiver"
+        "Composite_Bow",
+        "Quiver",
+        "Kamelaukion"
       ],
-      "team": 0.85
+      "team": 0.6
     }
   ],
   "anims": {
@@ -74,7 +98,9 @@
     "1": {},
     "2": {},
     "3": {},
-    "4": {},
+    "4": {
+      "pitch": 0.45
+    },
     "5": {}
   },
   "clips": {}
