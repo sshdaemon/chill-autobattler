@@ -6,14 +6,18 @@
 // it causes (units/looks/<unit>.json).
 import { EF, EV, UF, type SimEvent, type Snapshot, type UnitSnap } from '../sim/snapshot.ts';
 import type { UnitLoadout } from '../gamedata.ts';
-import { skillWith, smokeShots } from '../units/looks.ts';
+import { jetPreset, skillWith, smokeShots } from '../units/looks.ts';
 import { shockwave, spawn, type PoolKind, type Spawn } from './Particles.tsx';
 import { addShake } from './shake.ts';
 
+// jet: n particles from `forward` m in front of the unit toward the target (or
+// straight ahead, `reach` m, without one), fanned within ±spread radians, each
+// travelling the whole way over its life.
 type Emitter = {
-  type: 'sparks' | 'burst' | 'dust' | 'ring' | 'shake';
+  type: 'sparks' | 'burst' | 'dust' | 'ring' | 'shake' | 'jet';
   pool?: PoolKind; n?: number; y?: number; forward?: number; color?: [number, number, number];
   speed?: number; size?: number; life?: number; grav?: number; up?: number; amount?: number;
+  spread?: number; reach?: number;
 };
 export const PRESETS: Record<string, Emitter[]> = Object.assign({}, ...Object.values(
   import.meta.glob<Record<string, Emitter[]>>('./fx/*.json', { eager: true, import: 'default' })));
@@ -79,8 +83,21 @@ function splash(x: number, z: number, n: number) {
   }));
 }
 
-// Plays a preset at a unit; `from` is where the blow came from (sparks fly away from it).
-export function play(name: string, u: UnitSnap, from?: UnitSnap) {
+// A fan of particles from the unit's front toward `to` (a fire jet).
+function jet(u: UnitSnap, to: UnitSnap | undefined, e: Emitter, col: [number, number, number]) {
+  let dx = u.fx, dz = u.fz, reach = e.reach ?? 4;
+  if (to) { dx = to.x - u.x; dz = to.z - u.z; const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l; reach = l + 0.6; }
+  const fwd = e.forward ?? 0.6, life = e.life ?? 0.45, spread = e.spread ?? 0.5, y = e.y ?? 1;
+  const x0 = u.x + dx * fwd, z0 = u.z + dz * fwd, base = Math.atan2(dz, dx);
+  emit(e.pool ?? 'glow', e.n ?? 20, () => {
+    const a = base + rnd(-spread, spread) * Math.sqrt(Math.random()), s = (reach - fwd) / life * rnd(0.75, 1.1);
+    return { x: x0, y, z: z0, vx: Math.cos(a) * s, vy: rnd(-0.3, 0.6) + (e.up ?? 0), vz: Math.sin(a) * s,
+      life: rnd(0.8, 1) * life, size: rnd(0.7, 1.2) * (e.size ?? 0.4), r: col[0], g: col[1], b: col[2], grav: e.grav ?? 0 };
+  });
+}
+
+// Plays a preset at a unit; `from` is where the blow came from (sparks fly away from it), `to` where a jet aims.
+export function play(name: string, u: UnitSnap, from?: UnitSnap, to?: UnitSnap) {
   const list = PRESETS[name];
   if (!list) {
     if (import.meta.env.DEV) console.warn(`no effect preset ${name}`);
@@ -94,6 +111,7 @@ export function play(name: string, u: UnitSnap, from?: UnitSnap) {
       case 'dust': dust(u.x, u.z, e.n ?? 8, e.size ?? 0.8, e.up ?? 0.6); break;
       case 'ring': shockwave(u.x, u.z); break;
       case 'shake': addShake(e.amount ?? 0.2); break;
+      case 'jet': jet(u, to, e, col); break;
     }
   }
 }
@@ -109,8 +127,43 @@ function presetFor(units: UnitLoadout[], unit: number | undefined, kind: string,
 const ACTIONS: Record<number, string> = { [EV.dash]: 'gapCloser', [EV.blink]: 'escape', [EV.brace]: 'brace', [EV.burst]: 'burst', [EV.fear]: 'fear' };
 const actorOf = (e: SimEvent) => (e.kind === EV.fear ? e.other : e.unit);
 
+// Burning ground: fires on the ground (sim seconds left), refreshed by each EV.burn
+// of their source close by; puffs of the burning skill's preset (default 'burn').
+type Fire = { src: number; x: number; z: number; r: number; left: number; preset: string; next: number };
+let fireList: Fire[] = [];
+let lastTick = -1;
+
+function burn(u: UnitSnap, src: number, v: View) {
+  const l = v.units[src], s = l && skillWith(l.cls, l.skills, 'burningGround');
+  const eff = s?.info.effects.find((e) => e.kind === 'burningGround');
+  const r = eff?.radius ?? 1.2, secs = eff?.duration ?? 3;
+  const f = fireList.find((f) => f.src === src && Math.hypot(f.x - u.x, f.z - u.z) <= f.r);
+  if (f) { f.left = secs; return; }
+  fireList.push({ src, x: u.x, z: u.z, r, left: secs, preset: s?.look.fx || 'burn', next: 0 });
+}
+
+// Per frame: puffs of flame and smoke over each burning patch (hidden while
+// fog hides the unit that lit it: it is never far from it).
+export function fires(dt: number, v: View, units: UnitSnap[]) {
+  if (!fireList.length) return;
+  budget = Math.max(budget, 6);
+  scale = v.high ? 1 : 0.5;
+  const step = dt * v.speed;
+  fireList = fireList.filter((f) => (f.left -= step) > 0);
+  for (const f of fireList) {
+    if ((f.next -= step) > 0) continue;
+    f.next = (v.high ? 0.09 : 0.18) / Math.max(1, f.r);
+    const src = units[f.src];
+    if (src && !visible(src, v)) continue;
+    const a = rnd(0, Math.PI * 2), d = f.r * Math.sqrt(Math.random());
+    play(f.preset, { team: 0, cls: 0, x: f.x + Math.cos(a) * d, z: f.z + Math.sin(a) * d, fx: 0, fz: 1, hp: 1, maxHp: 1, flags: 0, target: -1, skills: 0, kills: 0, dealt: 0 });
+  }
+}
+
 export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
   budget = SNAP_BUDGET;
+  if (snap.tick < lastTick) fireList = []; // a new battle
+  lastTick = snap.tick;
   scale = (v.high ? 1 : 0.5) / Math.sqrt(v.speed);
   const dreaded = new Set<number>(); // a fear pulse plays once per caster, whoever it struck
   for (const e of events) {
@@ -121,6 +174,7 @@ export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
       const a = actorOf(e), l = v.units[a], s = l && skillWith(l.cls, l.skills, acting);
       if (s?.look.action) skillActions.set(a, { clip: s.look.action, rate: s.look.rate ?? 1 });
     }
+    if (e.kind === EV.burn) { burn(u, e.other, v); continue; } // o's fire lit (or refreshed) under u, kept even while fogged
     if (!visible(u, v)) continue;
     switch (e.kind) {
       case EV.hit: {
@@ -145,6 +199,7 @@ export function onSnapshot(snap: Snapshot, events: SimEvent[], v: View) {
       case EV.guard: play(presetFor(v.units, e.unit, 'guard', 'guard'), u, o); break; // the guard takes part of a blow aimed at o
       case EV.brace: play(presetFor(v.units, e.unit, 'brace', 'brace'), u, o); break; // u stopped o's dash
       case EV.burst: play(presetFor(v.units, e.unit, 'burst', 'burst'), u, o); break; // u throws at o
+      case EV.jet: play(jetPreset(u.cls), u, undefined, o); break; // u's cone attack toward o
     }
   }
 }
@@ -168,8 +223,13 @@ export function feet(index: number, x: number, z: number, flags: number, dt: num
 }
 
 // Projectile trails, dropped every frame at each shot's position.
-export function trail(x: number, y: number, z: number, kind: 'arrow' | 'bolt' | 'smoke', v: View) {
+export function trail(x: number, y: number, z: number, kind: 'arrow' | 'bolt' | 'smoke' | 'fire', v: View) {
   if (!v.high && Math.random() < 0.5) return;
+  if (kind === 'fire') { // flame licking from the pot's neck, and its smoke
+    spawn('glow', { x, y: y + 0.1, z, vx: rnd(-0.2, 0.2), vy: rnd(0.2, 0.6), vz: rnd(-0.2, 0.2), life: rnd(0.15, 0.3), size: rnd(0.2, 0.32), r: 3, g: 1.3, b: 0.35 });
+    if (Math.random() < 0.5) spawn('soft', { x, y: y + 0.15, z, vx: rnd(-0.15, 0.15), vy: rnd(0.3, 0.6), vz: rnd(-0.15, 0.15), life: rnd(0.5, 0.8), size: rnd(0.25, 0.4), r: 0.15, g: 0.13, b: 0.12, grav: -0.2 });
+    return;
+  }
   if (kind === 'smoke') { // dark curling smoke, no glow
     spawn('soft', { x: x + rnd(-0.06, 0.06), y, z: z + rnd(-0.06, 0.06), vx: rnd(-0.2, 0.2), vy: rnd(0.1, 0.35), vz: rnd(-0.2, 0.2),
       life: rnd(0.45, 0.7), size: rnd(0.28, 0.42), r: 0.13, g: 0.11, b: 0.14, grav: -0.2 });
@@ -197,7 +257,7 @@ if (import.meta.env.DEV) {
       const snap = { tick: 0, result: 0, units, shots: [], events: [] } as Snapshot;
       units[7].z = units[8].z = units[9].z = 6;
       onSnapshot(snap, [ev(EV.hit, 0, 7), ev(EV.hit, 1, 8, EF.flank), ev(EV.execute, 2, 0), ev(EV.blink, 3), ev(EV.frost, 4, 9), ev(EV.blast, 5, 9), ev(EV.death, 6), ev(EV.shot, 9), ev(EV.guard, 10, 7), ev(EV.brace, 11, 8), ev(EV.burst, 12, 0),
-        ev(EV.curse, 0, 7), ev(EV.fear, 2, 10), ev(EV.miss, 4, 9)], v);
+        ev(EV.curse, 0, 7), ev(EV.fear, 2, 10), ev(EV.miss, 4, 9), ev(EV.jet, 7, 0), ev(EV.burn, 9, 12)], v);
       for (let i = 0; i < 6; i++) { feet(100, -9, 8, UF.moving, 1, v, unit(-9)); feet(101, 0, 8, UF.moving | UF.wet, 1, v, unit(0)); feet(102, 9, 8, UF.dashing, 1, v, unit(9)); }
     },
   });

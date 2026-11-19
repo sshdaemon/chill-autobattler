@@ -126,6 +126,7 @@ var (
 	EnemyEdge    = I(14 - 2) // units without a target march to this z on the enemy side
 	WoundedReach = I(4)      // TargetWounded looks for the most wounded enemy this close
 	ProtectReach = I(8)      // TargetProtect: enemies this close to a ranged or caster ally
+	FocusSlack   = I(2)      // TargetFocusReach: how far beyond its range it still joins a shared target
 	LineSlack    = I(2)      // EngageLine: how far ahead of its allies' centre a unit may get
 	StayReach    = I(4)      // StayNear (bodyguard): how far it may get from its ward
 	HoldPatience = sec(40)   // EngageHold: how long it waits for a seen enemy before going in
