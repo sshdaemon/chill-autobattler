@@ -19,6 +19,12 @@ func randArmy(r *rand.Rand) *chillv1.Army {
 		return nil
 	}
 	a := &chillv1.Army{Formation: chillv1.Formation(r.IntN(11))}
+	switch r.IntN(4) { // battle plan: mostly a real one, sometimes unknown or out of range
+	case 0, 1:
+		a.Plan = uint32(r.IntN(len(sim.Plans)))
+	case 2:
+		a.Plan = uint32(r.IntN(300))
+	}
 	for i, n := 0, r.IntN(7); i < n; i++ {
 		u := &chillv1.UnitSpec{UnitClass: chillv1.UnitClass(r.IntN(5))}
 		for k, m := 0, 1+r.IntN(3); k < m; k++ { // mostly valid: 1..3 abilities, sometimes unknown or repeated

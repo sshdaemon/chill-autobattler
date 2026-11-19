@@ -41,6 +41,13 @@
       .slots span.empty { border-style: dashed; background: transparent; }
       .go { background: #3a8cff; color: #fff; border: 0; border-radius: 8px; padding: 10px 18px; font-weight: 600; }
       .deploybar { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 12px; align-items: stretch; background: #0b1420b8; padding: 10px; border-radius: 12px; color: #fff; z-index: 5; max-width: calc(100vw - 32px); overflow-x: auto; }
+      .deploymain { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+      .plans { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+      .plans .lbl { font-size: 11px; opacity: .7; margin-right: 2px; }
+      .pbtn { background: #ffffff14; border: 1px solid #ffffff30; color: #fff; border-radius: 6px; padding: 3px 8px; font-size: 12px; }
+      .pbtn.on { border-color: #ffd23f; background: #ffd23f22; } .pbtn:disabled.on { opacity: 1; }
+      .plandesc { font-size: 11px; opacity: .75; min-height: 14px; }
+      .banner small.plan { display: block; font-size: .45em; margin-top: 4px; color: #ff8a8a; }
       .formations { display: flex; gap: 6px; }
       .fbtn { display: flex; flex-direction: column; align-items: center; gap: 2px; background: #ffffff14; border: 1px solid #ffffff30; color: #fff; border-radius: 8px; padding: 4px; font-size: 11px; }
       .fbtn svg { width: 72px; height: 42px; } .fbtn.on { border-color: #ffd23f; background: #ffd23f22; } .fbtn:disabled.on { opacity: 1; }

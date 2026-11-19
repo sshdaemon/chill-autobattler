@@ -1,6 +1,6 @@
 # Battle plans roadmap
 
-Status: November 2026. Step 1 is done (#85); the rest is planned.
+Status: November 2026. Steps 1 and 2 are done (#85, #87); the rest is planned.
 
 The goal: give the player a say in **how** their army fights, not only what it
 is. Today every unit fights by its own temperament (`sim/temperament.go`), so
@@ -85,7 +85,9 @@ charge dominates, and Skirmish and Shield wall are weak, which step 3 tunes.
 - **Balance tool:** `tools/balance` can fix a plan per side and report a
   plan-vs-plan win matrix.
 
-## Step 2: Plan picker in the client
+## Step 2: Plan picker in the client (done, #87)
+
+Built in OpenSpec change `battle-plan-picker`.
 
 - A plan picker next to the formation in the deploy bar
   (`web/src/ui/DeployBar.tsx`), with a one-line description per plan. The

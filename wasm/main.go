@@ -12,6 +12,8 @@
 //	chillSim.data(): string                balance data as JSON (stats, matchups, skills), for the UI
 //	chillSim.units(): string               after create: every unit's class and skill ids as JSON
 //	                                       ([{cls, skills}] in unit index order, Red's generated army too)
+//	chillSim.plans(): string               after create: [blue, red] battle plan ids as JSON (Red's is
+//	                                       drawn from the combat seed when generated)
 //	chillSim.formationSlots(f, classes)    Blue's preset positions (Int32 LE x, z per unit, raw fixed-point);
 //	                                       f is a sim.Formation (1..7), classes are sim.Class values (0..2)
 package main
@@ -136,6 +138,10 @@ func dataJSON() string {
 		Units    []int  `json:"units"`
 		Playable bool   `json:"playable"`
 	}
+	type plan struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	}
 	var out struct {
 		Version    string     `json:"version"`
 		Classes    []class    `json:"classes"`    // the unit roster, index = sim.Class
@@ -144,6 +150,7 @@ func dataJSON() string {
 		HitAt      float64    `json:"hitAt"`      // share of a swing at which the blow lands or the shot leaves
 		DeployZone [4]float64 `json:"deployZone"` // Blue: xMin, xMax, zMin, zMax
 		Factions   []faction  `json:"factions"`   // by id; units are roster ids
+		Plans      []plan     `json:"plans"`      // battle plans, index = sim.Plan
 	}
 	tagNames := func(t sim.Tag) []string {
 		names := []string{}
@@ -205,6 +212,9 @@ func dataJSON() string {
 			fa.Units = append(fa.Units, int(c))
 		}
 		out.Factions = append(out.Factions, fa)
+	}
+	for _, p := range sim.Plans {
+		out.Plans = append(out.Plans, plan{int(p.ID), p.Name})
 	}
 	z := sim.Zones[0]
 	out.DeployZone = [4]float64{fx(z.XMin), fx(z.XMax), fx(z.ZMin), fx(z.ZMax)}
@@ -291,6 +301,12 @@ func register() {
 	api.Set("data", js.FuncOf(func(js.Value, []js.Value) any { return dataJSON() }))
 	api.Set("units", js.FuncOf(func(js.Value, []js.Value) any { return unitsJSON() }))
 	api.Set("draft", js.FuncOf(draftJSON))
+	api.Set("plans", js.FuncOf(func(js.Value, []js.Value) any {
+		if battle == nil {
+			return js.Null()
+		}
+		return "[" + strconv.Itoa(int(battle.Plans[0])) + "," + strconv.Itoa(int(battle.Plans[1])) + "]"
+	}))
 	api.Set("fog", js.FuncOf(func(js.Value, []js.Value) any {
 		if battle == nil {
 			return js.Null()

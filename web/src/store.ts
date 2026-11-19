@@ -42,6 +42,8 @@ type State = {
   army: ArmyUnit[]; // Blue's army for the current battle, in the order the server requires (veterans first)
   draft?: Draft; // the draft in progress (phase drafting)
   formation: number; // sim.Formation; 0 = Custom
+  plan: number; // Blue's battle plan (sim.Plan; 0 = Instinct), kept for the run
+  battlePlans?: [number, number]; // the battle's [Blue, Red] plans from the sim; Red's is real only after the lock
   positions?: Pt[]; // Custom: Blue's positions
   slots: Record<number, Pt[]>; // preset → positions for the current army (from the sim)
   deployLeft: number;
@@ -81,6 +83,7 @@ type State = {
   draftPick(cls: number, skill: Skill): void;
   retryDraft(): void;
   setFormation(f: number): void;
+  setPlan(p: number): void;
   beginDrag(index: number, at: Pt): void;
   dragTo(at: Pt): void;
   endDrag(): void;
@@ -111,6 +114,7 @@ function blueArmy(s: State): Army {
   if (s.battle?.lockedBlue) return s.battle.lockedBlue; // replaying a locked battle after a reload
   return createMsg(ArmySchema, {
     formation: s.formation + 1, // pb Formation = sim Formation + 1
+    plan: s.plan,
     units: armySpecs(s).map((u, i) => ({
       unitClass: u.cls + 1, // pb UnitClass = sim Class + 1
       skills: u.skills,
@@ -151,7 +155,9 @@ export const useBattle = create<State>((set, get) => {
     }, 250);
   };
   const fight = (combatSeed: bigint) => {
-    set({ phase: 'countdown' });
+    // set the battle up with the real combat seed now, so the countdown can name Red's plan
+    set({ phase: 'countdown', battlePlans: undefined });
+    send({ type: 'preview', input: inputBytes(get(), combatSeed) });
     playSound('fight');
     setTimeout(() => {
       set({ phase: 'fighting' });
@@ -207,7 +213,7 @@ export const useBattle = create<State>((set, get) => {
   };
 
   return {
-    phase: 'loading', army: [], formation: 2 /* 3-2 */, slots: {}, deployLeft: DEPLOY_SECONDS,
+    phase: 'loading', army: [], formation: 2 /* 3-2 */, plan: 0, slots: {}, deployLeft: DEPLOY_SECONDS,
     obstacles: [], units: [], currAt: 0, speed: 1, floats: [], picks: {}, fogOn: true, follow: false,
     quality: savedQuality(), autoLowered: false, lowDpr: false, qualityChosen: false, tiltShift: false,
     setQuality(quality, auto = false) {
@@ -255,6 +261,7 @@ export const useBattle = create<State>((set, get) => {
     async startRun(faction) {
       try {
         const { run } = await authed(() => runApi.startRun({ faction }));
+        set({ plan: 0 }); // a new run starts on Instinct
         if (run) await toDraft(run);
       } catch (e) {
         set({ error: `Couldn't start a run: ${errMsg(e)}` });
@@ -290,6 +297,12 @@ export const useBattle = create<State>((set, get) => {
     setFormation(formation) {
       if (get().phase !== 'deploying' || formation === CUSTOM) return;
       set({ formation, positions: undefined });
+      preview();
+    },
+
+    setPlan(plan) {
+      if (get().phase !== 'deploying') return;
+      set({ plan });
       preview();
     },
 
@@ -422,7 +435,8 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
     case 'error': useBattle.setState({ error: m.message }); break;
     case 'started': {
       const s = decodeSnapshot(m.snapshot);
-      useBattle.setState({ obstacles: decodeMap(m.map), units: JSON.parse(m.units) as UnitLoadout[], prev: s, curr: s, currAt: performance.now() });
+      useBattle.setState({ obstacles: decodeMap(m.map), units: JSON.parse(m.units) as UnitLoadout[], prev: s, curr: s, currAt: performance.now(),
+        battlePlans: m.plans ? JSON.parse(m.plans) as [number, number] : undefined });
       break;
     }
     case 'snapshot': {

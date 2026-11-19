@@ -1,5 +1,6 @@
 import { armyClasses, DEPLOY_SECONDS, useBattle } from '../store.ts';
 import { CUSTOM, PRESETS } from '../gamedata.ts';
+import { planWords } from '../plans.ts';
 
 // Mini-diagram of where your own units would stand (top = toward the enemy).
 function Diagram({ f }: { f: number }) {
@@ -21,11 +22,22 @@ function Diagram({ f }: { f: number }) {
 }
 
 export function DeployBar() {
-  const { formation, setFormation, deployLeft, ready, data, phase } = useBattle();
+  const { formation, setFormation, plan, setPlan, deployLeft, ready, data, phase } = useBattle();
   if (!data) return null;
   const locking = phase === 'locking';
   return (
     <div className="deploybar">
+      <div className="deploymain">
+      <div className="plans">
+        <span className="lbl">Plan</span>
+        {data.plans.map((p) => {
+          const w = planWords(p.name);
+          return (
+            <button key={p.id} className={`pbtn ${plan === p.id ? 'on' : ''}`} disabled={locking} title={w.desc} onClick={() => setPlan(p.id)}>{w.title}</button>
+          );
+        })}
+      </div>
+      <div className="plandesc">{planWords(data.plans[plan]?.name).desc}</div>
       <div className="formations">
         {[...PRESETS, CUSTOM].map((f) => (
           <button key={f} className={`fbtn ${formation === f ? 'on' : ''}`} disabled={f === CUSTOM || locking}
@@ -34,6 +46,7 @@ export function DeployBar() {
             {f === 1 ? 'Fully spread' : data.formations[f]}
           </button>
         ))}
+      </div>
       </div>
       <div className="deployside">
         <div className="timer"><b>{Math.ceil(deployLeft)}</b> s</div>
