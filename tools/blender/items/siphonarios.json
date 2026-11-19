@@ -1,0 +1,47 @@
+{
+ "Hand_Siphon": {
+  "modelled": true,
+  "bone": "hand_r",
+  "pos": [
+   0,
+   0,
+   0
+  ],
+  "rot": [
+   0,
+   0,
+   -1.5707963267948966
+  ],
+  "scale": 1.0
+ },
+ "Fire_Pots": {
+  "modelled": true,
+  "bone": "pelvis",
+  "pos": [
+   0.2,
+   0.02,
+   0.0
+  ],
+  "rot": [
+   0,
+   1.5707963267948966,
+   0
+  ],
+  "scale": 1.0
+ },
+ "Felt_Cap": {
+  "modelled": true,
+  "bone": "Head",
+  "pos": [
+   0,
+   0.135,
+   -0.005
+  ],
+  "rot": [
+   -0.08,
+   0,
+   0
+  ],
+  "scale": 0.95
+ }
+}

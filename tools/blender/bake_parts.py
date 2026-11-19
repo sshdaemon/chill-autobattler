@@ -693,9 +693,75 @@ def model_items():
         bundle.append(band)
     export('Throwing_Spears', bundle)
 
+    # siphonarios: a bronze hand siphon (cheirosiphon), grip at the origin and
+    # the nozzle along +Z (glTF +Y, like the spear): a bronze barrel with a
+    # narrowing mouth, a pump cylinder slung under it on two bands, a wooden
+    # grip and a pump rod with a T-handle out the back.
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    brass = mat('MI_SiphonBronze', lin(0xa8783a), 0.38, 0.85)
+    sooty = mat('MI_SiphonSoot', lin(0x2a2420), 0.8, 0.3)
+    grip_wood = mat('MI_SiphonGrip', lin(0x5a3d24), 0.8)
+
+    def srod(a, b, r, m, verts=8):
+        a, b = Vector(a), Vector(b)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=r, depth=(b - a).length, location=(a + b) / 2)
+        o = bpy.context.object
+        o.rotation_mode = 'QUATERNION'; o.rotation_quaternion = (b - a).to_track_quat('Z', 'Y')
+        o.data.materials.append(m)
+        bpy.ops.object.shade_smooth()
+        return o
+    siphon = [srod((0, 0, -0.12), (0, 0, 0.5), 0.022, brass),
+              srod((0, 0, -0.07), (0, 0, 0.07), 0.027, grip_wood),
+              srod((0, -0.065, -0.04), (0, -0.065, 0.26), 0.045, brass, 10),
+              srod((0, -0.065, -0.2), (0, -0.065, -0.04), 0.008, brass, 6),
+              srod((-0.05, -0.065, -0.2), (0.05, -0.065, -0.2), 0.012, grip_wood, 6)]
+    bpy.ops.mesh.primitive_cone_add(vertices=10, radius1=0.03, radius2=0.016, depth=0.1, location=(0, 0, 0.55))
+    mouth = bpy.context.object; mouth.data.materials.append(brass); bpy.ops.object.shade_smooth()
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.018, minor_radius=0.006, major_segments=10, minor_segments=4, location=(0, 0, 0.6))
+    lip = bpy.context.object; lip.data.materials.append(sooty)
+    siphon += [mouth, lip]
+    for z in (0.02, 0.22):  # bands holding the pump under the barrel
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.05, minor_radius=0.007, major_segments=12, minor_segments=4, location=(0, -0.065, z))
+        band = bpy.context.object; band.data.materials.append(sooty)
+        siphon += [band, srod((0, -0.02, z), (0, -0.03, z), 0.009, brass, 6)]
+    export('Hand_Siphon', siphon)
+
+    # siphonarios: three clay fire pots hanging from a strap, mouths stopped
+    # with oily rags; a row along X, hung down -Z from the strap at the origin.
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    clay = mat('MI_PotClay', lin(0xa0583a), 0.9)
+    rag = mat('MI_PotRag', lin(0xc9b48a), 1.0)
+    cord = mat('MI_PotCord', lin(0x3e2a1c), 0.9)
+    pots = []
+    for x, z in ((-0.075, -0.1), (0.0, -0.12), (0.075, -0.1)):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=10, ring_count=6, radius=0.045, location=(x, 0, z))
+        body = bpy.context.object; body.scale = (1, 1, 0.9); body.data.materials.append(clay); bpy.ops.object.shade_smooth()
+        neck = srod((x, 0, z + 0.03), (x, 0, z + 0.065), 0.018, clay, 8)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=6, ring_count=4, radius=0.02, location=(x, 0, z + 0.07))
+        top = bpy.context.object; top.data.materials.append(rag)
+        pots += [body, neck, top, srod((x, 0, z + 0.07), (x * 0.6, 0, 0), 0.004, cord, 4)]
+    pots.append(srod((-0.11, 0, 0), (0.11, 0, 0), 0.008, cord, 4))
+    export('Fire_Pots', pots)
+
+    # siphonarios: a rounded felt cap (pilos-like), sat like the helmet, with a
+    # thin rolled edge
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    felt = mat('MI_FeltCap', lin(0x5b4a36), 1.0)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=20, ring_count=10, radius=0.12, location=(0, 0, 0))
+    crown = bpy.context.object
+    crown.scale = (0.97, 1.02, 1.25)
+    bpy.ops.object.mode_set(mode='EDIT')
+    bm = bmesh.from_edit_mesh(crown.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -0.01], context='VERTS')
+    bmesh.update_edit_mesh(crown.data); bpy.ops.object.mode_set(mode='OBJECT')
+    crown.data.materials.append(felt); bpy.ops.object.shade_smooth()
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.117, minor_radius=0.009, major_segments=20, minor_segments=4, location=(0, 0, 0.0))
+    rim = bpy.context.object; rim.scale = (1, 1.04, 1); rim.data.materials.append(felt); bpy.ops.object.shade_smooth()
+    export('Felt_Cap', [crown, rim])
+
     for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap',
                  'Dane_Axe', 'Shield_Gokstad', 'Shield_Gokstad_Back', 'Spangenhelm', 'Iron_Staff', 'Volva_Beads',
-                 'Yew_Longbow', 'Throwing_Spears'):
+                 'Yew_Longbow', 'Throwing_Spears', 'Hand_Siphon', 'Fire_Pots', 'Felt_Cap'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
