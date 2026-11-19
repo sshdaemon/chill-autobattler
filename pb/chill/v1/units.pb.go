@@ -262,9 +262,12 @@ func (x *UnitSpec) GetPosition() *Point {
 }
 
 type Army struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Formation     Formation              `protobuf:"varint,1,opt,name=formation,proto3,enum=chill.v1.Formation" json:"formation,omitempty"`
-	Units         []*UnitSpec            `protobuf:"bytes,2,rep,name=units,proto3" json:"units,omitempty"`
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Formation Formation              `protobuf:"varint,1,opt,name=formation,proto3,enum=chill.v1.Formation" json:"formation,omitempty"`
+	Units     []*UnitSpec            `protobuf:"bytes,2,rep,name=units,proto3" json:"units,omitempty"`
+	// Battle plan: the sim's plan id (sim/ids.go, Plan). 0 is Instinct, the
+	// default: every unit fights by its own temperament.
+	Plan          uint32 `protobuf:"varint,3,opt,name=plan,proto3" json:"plan,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -313,6 +316,13 @@ func (x *Army) GetUnits() []*UnitSpec {
 	return nil
 }
 
+func (x *Army) GetPlan() uint32 {
+	if x != nil {
+		return x.Plan
+	}
+	return 0
+}
+
 var File_chill_v1_units_proto protoreflect.FileDescriptor
 
 const file_chill_v1_units_proto_rawDesc = "" +
@@ -325,10 +335,11 @@ const file_chill_v1_units_proto_rawDesc = "" +
 	"\n" +
 	"unit_class\x18\x01 \x01(\x0e2\x13.chill.v1.UnitClassR\tunitClass\x12\x16\n" +
 	"\x06skills\x18\x02 \x03(\rR\x06skills\x12+\n" +
-	"\bposition\x18\x03 \x01(\v2\x0f.chill.v1.PointR\bposition\"c\n" +
+	"\bposition\x18\x03 \x01(\v2\x0f.chill.v1.PointR\bposition\"w\n" +
 	"\x04Army\x121\n" +
 	"\tformation\x18\x01 \x01(\x0e2\x13.chill.v1.FormationR\tformation\x12(\n" +
-	"\x05units\x18\x02 \x03(\v2\x12.chill.v1.UnitSpecR\x05units*k\n" +
+	"\x05units\x18\x02 \x03(\v2\x12.chill.v1.UnitSpecR\x05units\x12\x12\n" +
+	"\x04plan\x18\x03 \x01(\rR\x04plan*k\n" +
 	"\tUnitClass\x12\x1a\n" +
 	"\x16UNIT_CLASS_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12UNIT_CLASS_WARRIOR\x10\x01\x12\x15\n" +

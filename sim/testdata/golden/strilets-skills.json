@@ -1,26 +1,18 @@
 {
-  "version": "0.8.0+715d311f",
+  "version": "0.9.0+715d311f.a03dfb35",
   "case": "strilets skills",
   "outcome": {
     "result": 2,
-    "ticks": 234,
-    "checksum": "1852215813406350381",
+    "ticks": 306,
+    "checksum": "2637018700634415098",
     "survivors": [
       {
-        "Index": 5,
-        "HP": 4016411
-      },
-      {
         "Index": 7,
-        "HP": 3604480
-      },
-      {
-        "Index": 8,
-        "HP": 598004
+        "HP": 2900156
       },
       {
         "Index": 9,
-        "HP": 3475937
+        "HP": 2047864
       }
     ]
   }

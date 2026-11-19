@@ -1,22 +1,30 @@
 {
-  "version": "0.8.0+06cdea04",
+  "version": "0.9.0+06cdea04.a03dfb35",
   "case": "toxotes skills",
   "outcome": {
     "result": 1,
-    "ticks": 387,
-    "checksum": "5085882935038268442",
+    "ticks": 377,
+    "checksum": "1923082305742307628",
     "survivors": [
       {
         "Index": 0,
-        "HP": 2894864
+        "HP": 2391400
+      },
+      {
+        "Index": 1,
+        "HP": 2684100
       },
       {
         "Index": 2,
-        "HP": 3105260
+        "HP": 1420840
       },
       {
         "Index": 3,
-        "HP": 2385676
+        "HP": 437696
+      },
+      {
+        "Index": 4,
+        "HP": 3735552
       }
     ]
   }

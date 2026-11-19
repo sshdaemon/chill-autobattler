@@ -45,7 +45,10 @@ func army(a *chillv1.Army, name string, required bool) (sim.Army, error) {
 	if a.Formation == chillv1.Formation_FORMATION_UNSPECIFIED {
 		return sim.Army{}, fmt.Errorf("%w: %s formation not set", sim.ErrInvalid, name)
 	}
-	out := sim.Army{Formation: sim.Formation(a.Formation - chillv1.Formation_FORMATION_CUSTOM)}
+	if a.Plan > 255 {
+		return sim.Army{}, fmt.Errorf("%w: %s plan %d", sim.ErrInvalid, name, a.Plan)
+	}
+	out := sim.Army{Formation: sim.Formation(a.Formation - chillv1.Formation_FORMATION_CUSTOM), Plan: sim.Plan(a.Plan)} // sim checks the plan exists
 	for i, u := range a.Units {
 		if u.UnitClass == chillv1.UnitClass_UNIT_CLASS_UNSPECIFIED {
 			return sim.Army{}, fmt.Errorf("%w: %s unit %d has no class", sim.ErrInvalid, name, i)

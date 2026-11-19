@@ -1,18 +1,18 @@
 {
-  "version": "0.8.0+557ba4f7",
+  "version": "0.9.0+557ba4f7.a03dfb35",
   "case": "druzhynnyk skills",
   "outcome": {
-    "result": 1,
-    "ticks": 311,
-    "checksum": "11522524084831170325",
+    "result": 2,
+    "ticks": 325,
+    "checksum": "2992693418731027172",
     "survivors": [
       {
-        "Index": 1,
-        "HP": 1545553
+        "Index": 6,
+        "HP": 3604480
       },
       {
-        "Index": 4,
-        "HP": 1648858
+        "Index": 7,
+        "HP": 3604480
       }
     ]
   }

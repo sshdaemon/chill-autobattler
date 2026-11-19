@@ -185,7 +185,10 @@ func RedPool() []Class {
 // id is its position, allocated in ids.go (ids are never reused); a unit's
 // skills are numbered 1..MaxSkills in order. Neither needs a proto change.
 func ValidateRoster(r []UnitDef) error {
-	return validateEntries(r)
+	if err := validateEntries(r); err != nil {
+		return err
+	}
+	return ValidatePlans(Plans, r) // every plan must suit every unit
 }
 
 func validateEntries(r []UnitDef) error {

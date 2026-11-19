@@ -25,6 +25,23 @@ func TestInput(t *testing.T) {
 		got.Blue.Units[0].Skills[0] != sim.WarriorDash || got.RedSkills != 2 || got.CombatSeed != 1<<63 || len(got.Red.Units) != 0 {
 		t.Errorf("converted %+v", got)
 	}
+	if got.Blue.Plan != sim.PlanInstinct {
+		t.Errorf("no plan should be Instinct, got %v", got.Blue.Plan)
+	}
+	// the plan passes through; the sim rejects an unknown one
+	in.Blue.Plan = uint32(sim.PlanSkirmish)
+	if got, err := Input(in); err != nil || got.Blue.Plan != sim.PlanSkirmish {
+		t.Errorf("plan: %v %v", got.Blue.Plan, err)
+	}
+	for _, p := range []uint32{200, 1 << 20} {
+		in.Blue.Plan = p
+		if got, err := Input(in); err == nil {
+			if _, err = sim.Run(got); !errors.Is(err, sim.ErrInvalid) {
+				t.Errorf("plan %d accepted", p)
+			}
+		}
+	}
+	in.Blue.Plan = 0
 	// ability numbers pass through unchanged
 	for _, s := range []sim.Skill{sim.ArcherArcingShot, sim.MageBlast} {
 		if uint32(s) != uint32(sim.Skill(uint32(s))) {

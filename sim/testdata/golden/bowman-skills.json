@@ -1,22 +1,18 @@
 {
-  "version": "0.8.0+966d3214",
+  "version": "0.9.0+966d3214.a03dfb35",
   "case": "bowman skills",
   "outcome": {
     "result": 1,
-    "ticks": 435,
-    "checksum": "2298035397139711726",
+    "ticks": 609,
+    "checksum": "16291486804903610390",
     "survivors": [
       {
-        "Index": 0,
-        "HP": 2587618
-      },
-      {
         "Index": 2,
-        "HP": 1507172
+        "HP": 3407872
       },
       {
-        "Index": 3,
-        "HP": 3407872
+        "Index": 4,
+        "HP": 1576204
       }
     ]
   }

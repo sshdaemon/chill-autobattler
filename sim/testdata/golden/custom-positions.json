@@ -1,14 +1,22 @@
 {
-  "version": "0.8.0+9cf2dc35",
+  "version": "0.9.0+9cf2dc35.a03dfb35",
   "case": "custom positions",
   "outcome": {
     "result": 2,
-    "ticks": 350,
-    "checksum": "4840416644901241609",
+    "ticks": 361,
+    "checksum": "2925153132248235781",
     "survivors": [
       {
         "Index": 7,
-        "HP": 1243623
+        "HP": 1899212
+      },
+      {
+        "Index": 8,
+        "HP": 2222167
+      },
+      {
+        "Index": 9,
+        "HP": 566471
       }
     ]
   }

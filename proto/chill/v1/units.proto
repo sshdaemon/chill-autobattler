@@ -46,5 +46,8 @@ message UnitSpec {
 message Army {
   Formation formation = 1;
   repeated UnitSpec units = 2;
+  // Battle plan: the sim's plan id (sim/ids.go, Plan). 0 is Instinct, the
+  // default: every unit fights by its own temperament.
+  uint32 plan = 3;
 }
 

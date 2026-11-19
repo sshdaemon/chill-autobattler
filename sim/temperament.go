@@ -237,9 +237,13 @@ func (b *Battle) idle(u *Unit) {
 	engageRules[u.Temper.Engage].idle(b, u)
 }
 
-// temperOf is the unit's temperament with its learned abilities applied.
-func temperOf(def *UnitDef, kit *loadout) Temperament {
+// temperOf is the unit's temperament: its roster entry's, changed by its
+// side's plan (nil: none), then by its learned abilities.
+func temperOf(def *UnitDef, plan *PlanDef, kit *loadout) Temperament {
 	t := def.Temper
+	if plan != nil {
+		plan.stanceFor(def).apply(&t)
+	}
 	for i := range kit.active {
 		if a := &kit.active[i]; a.kind.temper != nil {
 			a.kind.temper(&t, *a.e)

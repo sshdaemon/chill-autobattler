@@ -53,6 +53,11 @@ type dash struct {
 }
 
 func newUnit(index, team int, spec UnitSpec, pos Vec) *Unit {
+	return newUnitPlan(index, team, spec, pos, PlanInstinct)
+}
+
+// newUnitPlan is newUnit for a side fighting by a plan.
+func newUnitPlan(index, team int, spec UnitSpec, pos Vec, plan Plan) *Unit {
 	def := RosterOf(spec.Class)
 	st := foldStats(def, spec.Skills)
 	var kit loadout
@@ -62,7 +67,7 @@ func newUnit(index, team int, spec UnitSpec, pos Vec) *Unit {
 		face = V(0, One)
 	}
 	return &Unit{
-		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st, Temper: temperOf(def, &kit),
+		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st, Temper: temperOf(def, PlanOf(plan), &kit),
 		Pos: pos, Face: face, MaxHP: st.HP, HP: st.HP, Target: -1, kit: kit,
 	}
 }
