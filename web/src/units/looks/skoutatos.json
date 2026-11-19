@@ -2,12 +2,11 @@
   "ui": {
     "label": "Skoutatos",
     "icon": "🛡️",
-    "blurb": "Heavy infantry: holds the line behind a long shield",
-    "placeholder": true
+    "blurb": "Heavy infantry: waits in line behind a long shield, then advances together"
   },
   "recipes": [
     {
-      "name": "Skoutatos 1",
+      "name": "Theodoros",
       "sex": "male",
       "head": "Head_Male",
       "build": "heavy",
@@ -25,15 +24,40 @@
       ],
       "variant": 1,
       "items": [
-        "Sword",
-        "Shield_Round",
-        "Great_Helm",
-        "Cape"
+        "Spear",
+        "Skoutarion",
+        "Domed_Helm"
       ],
-      "team": 1.0
+      "team": 1.0,
+      "tint": "#9fb0cf"
     },
     {
-      "name": "Skoutatos 2",
+      "name": "Ioannes",
+      "sex": "male",
+      "head": "Head_Male",
+      "build": "stout",
+      "parts": [
+        "Male_Peasant_Body",
+        "Male_Peasant_Arms",
+        "Male_Peasant_Legs",
+        "Male_Ranger_Feet_Boots"
+      ],
+      "hair": [
+        "Hair_SimpleParted",
+        "Hair_Beard",
+        "Eyebrows_Regular"
+      ],
+      "variant": 0,
+      "items": [
+        "Spear",
+        "Skoutarion",
+        "Domed_Helm"
+      ],
+      "team": 1.0,
+      "tint": "#a9c2ad"
+    },
+    {
+      "name": "Eirene",
       "sex": "female",
       "head": "Head_Female",
       "build": "heavy",
@@ -50,36 +74,12 @@
       ],
       "variant": 1,
       "items": [
-        "Sword",
-        "Shield_Wooden",
-        "Helmet",
-        "Cape"
+        "Spear",
+        "Skoutarion",
+        "Domed_Helm"
       ],
-      "team": 1.0
-    },
-    {
-      "name": "Skoutatos 3",
-      "sex": "male",
-      "head": "Head_Male",
-      "build": "stout",
-      "parts": [
-        "Male_Peasant_Body",
-        "Male_Peasant_Arms",
-        "Male_Peasant_Legs",
-        "Male_Ranger_Feet_Boots",
-        "Male_Ranger_Acc_Pauldron"
-      ],
-      "hair": [
-        "Hair_SimpleParted",
-        "Hair_Beard",
-        "Eyebrows_Regular"
-      ],
-      "variant": 1,
-      "items": [
-        "Sword_Long",
-        "Helmet"
-      ],
-      "team": 1.0
+      "team": 1.0,
+      "tint": "#9fb0cf"
     }
   ],
   "anims": {
@@ -90,7 +90,7 @@
     "cheer": "Yes",
     "attack": [
       "Sword_Attack",
-      "Sword_Slash_A",
+      "Sword_Regular_C",
       "Sword_Slash_B"
     ],
     "hit": [
