@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import type { ClassInfo, GameData } from '../gamedata.ts';
 import type { FromWorker } from '../sim/sim.worker.ts';
-import { CLIPS, lookOf, setRoster, uiOf } from '../units/looks.ts';
+import { CLIPS, jetPreset, lookOf, setRoster, uiOf } from '../units/looks.ts';
 import { makeCharacter, type Character } from '../scene/models.ts';
 import { Particles } from '../scene/Particles.tsx';
 import { onSnapshot, play } from '../scene/effects.ts';
@@ -22,7 +22,8 @@ function stepsFor(cls: number, info: ClassInfo): Step[] {
     { name: 'idle', clip: a.idle, at: 0.5, note: 'idle' },
     { name: 'move', clip: a.move, at: 0.3, note: 'move' },
   ];
-  for (const c of a.attack) steps.push({ name: `attack:${c}`, clip: c, at: CLIPS[c]?.hit, note: `attack ${c} at the blow` });
+  const jet = info.traits.some((t) => t.kind === 'cone') ? jetPreset(cls) : undefined; // a cone attack shows its jet
+  for (const c of a.attack) steps.push({ name: `attack:${c}`, clip: c, at: CLIPS[c]?.hit, fx: jet, note: `attack ${c} at the blow${jet ? `, effect ${jet}` : ''}` });
   for (const s of info.skills) {
     const l = look.skills[String(s.id)] ?? {};
     const clip = l.action ?? l.attack;
