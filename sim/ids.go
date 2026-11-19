@@ -82,6 +82,21 @@ const (
 	// next free: 4
 )
 
+// Plan is a battle plan id (plan.go): an army-wide stance a side picks
+// before the battle. 0 is Instinct (no change), so an army without a plan
+// fights as it always did.
+type Plan uint8
+
+const (
+	PlanInstinct   Plan = 0 // every unit fights by its own temperament
+	PlanShieldWall Plan = 1 // melee hold and protect the back line; ranged focus behind them
+	PlanCharge     Plan = 2 // everyone charges the nearest enemy, no kiting
+	PlanHunt       Plan = 3 // melee charge the enemy's ranged and casters first
+	PlanFocusFire  Plan = 4 // advance together and fight the enemy most allies fight
+	PlanSkirmish   Plan = 5 // melee hold and fall back when hurt; ranged kite at a distance
+	// next free: 6
+)
+
 // Faction is a faction id (faction.go): which units a side may field.
 type Faction uint8
 

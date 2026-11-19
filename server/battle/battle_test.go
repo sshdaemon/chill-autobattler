@@ -269,3 +269,25 @@ func TestRestartBetweenLockAndVerify(t *testing.T) {
 		t.Errorf("after restart: %v %v", err, res)
 	}
 }
+
+// Blue's battle plan is part of the locked army: an honest claim with it is
+// fair, and an unknown plan is refused at lock.
+func TestBattlePlan(t *testing.T) {
+	e := newEnv(t)
+	planned := mix()
+	planned.Plan = uint32(sim.PlanSkirmish)
+	st := e.mustStart(e.startRun(e.ctx).Id)
+	r, err := e.lock(st.BattleId, planned)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res, err := e.verify(st.BattleId, play(t, st, r.CombatSeed, planned)); err != nil || !res.Fair {
+		t.Errorf("honest claim with a plan: %v %v", res, err)
+	}
+	unknown := mix()
+	unknown.Plan = 200
+	st = e.mustStart(e.startRun(e.ctx).Id)
+	if _, err := e.lock(st.BattleId, unknown); code(err) != connect.CodeInvalidArgument {
+		t.Errorf("unknown plan: %v", err)
+	}
+}

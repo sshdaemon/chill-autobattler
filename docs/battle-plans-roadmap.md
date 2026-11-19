@@ -1,6 +1,6 @@
 # Battle plans roadmap
 
-Status: plan, November 2026. Nothing here is built yet.
+Status: November 2026. Step 1 is done (#85); the rest is planned.
 
 The goal: give the player a say in **how** their army fights, not only what it
 is. Today every unit fights by its own temperament (`sim/temperament.go`), so
@@ -50,7 +50,11 @@ Each step is its own OpenSpec change and PR.
 
 ---
 
-## Step 1: Plans in the sim
+## Step 1: Plans in the sim (done, #85)
+
+Built in OpenSpec change `battle-plans`. Red's plan is drawn from the combat
+seed. The first plan-vs-plan matrix is in `docs/balance-findings.md`: All-out
+charge dominates, and Skirmish and Shield wall are weak, which step 3 tunes.
 
 - **Data:** `PlanDef { ID, Name, Melee, Ranged, Caster Stance }`. A `Stance` is
   optional overrides of the `Temperament` fields: target rule, engage rule,

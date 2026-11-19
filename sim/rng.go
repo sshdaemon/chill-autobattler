@@ -16,6 +16,7 @@ const (
 	StreamCombat
 	StreamRedFaction
 	StreamDraft
+	StreamRedPlan // from the combat seed: Red's plan stays unknown until Blue's army is locked
 )
 
 // Sub derives an independent stream for a tag from the battle seed.

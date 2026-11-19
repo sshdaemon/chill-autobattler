@@ -1,0 +1,15 @@
+{
+  "version": "0.9.0+9cf2dc35.a03dfb35",
+  "case": "plan shield wall",
+  "outcome": {
+    "result": 2,
+    "ticks": 488,
+    "checksum": "8430393985088940892",
+    "survivors": [
+      {
+        "Index": 8,
+        "HP": 773524
+      }
+    ]
+  }
+}

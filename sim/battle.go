@@ -13,7 +13,7 @@ import (
 // RulesVersion must change whenever the rules code changes, so old replays
 // are checked with the logic that produced them. Changes to units' data need
 // no bump: Version carries a fingerprint of the roster.
-const RulesVersion = "0.8.0"
+const RulesVersion = "0.9.0"
 
 // Version is RulesVersion plus a fingerprint of the roster and the factions
 // ("0.7.0+1a2b3c4d"), so changing any unit's numbers changes it without
@@ -22,7 +22,7 @@ var Version = RulesVersion
 
 func refreshVersion() {
 	h := fnv.New32a()
-	fmt.Fprintf(h, "%s;%#v", Fingerprint(Roster...), Factions)
+	fmt.Fprintf(h, "%s;%#v;%s", Fingerprint(Roster...), Factions, plansFingerprint())
 	Version = fmt.Sprintf("%s+%08x", RulesVersion, h.Sum32())
 }
 
@@ -52,7 +52,7 @@ func VersionFor(classes ...Class) string {
 			defs = append(defs, *d)
 		}
 	}
-	return RulesVersion + "+" + Fingerprint(defs...)
+	return RulesVersion + "+" + Fingerprint(defs...) + "." + plansFingerprint()
 }
 
 type Result int8
@@ -71,12 +71,16 @@ type Battle struct {
 	Shots  []*Shot
 	Tick   int
 	Result Result
+	Plans  [2]Plan // each side's plan; a generated Red's is drawn (RedPlanFor)
 
 	rng     *RNG
 	spotted [2][]int // enemies each team sees, in unit order
 	zones   []zone   // burning ground
 	events  []Event
 }
+
+// redPlanFor is RedPlanFor; tests may pin it.
+var redPlanFor = RedPlanFor
 
 // New validates the input and sets up the battle at tick 0.
 func New(in Input) (*Battle, error) {
@@ -87,7 +91,9 @@ func New(in Input) (*Battle, error) {
 	red := in.Red
 	if len(red.Units) == 0 {
 		red = RedArmy(in.Seed, in.RedSkills)
+		red.Plan = redPlanFor(in.CombatSeed)
 	}
+	b.Plans = [2]Plan{in.Blue.Plan, red.Plan}
 	for team, army := range [2]Army{in.Blue, red} {
 		classes := make([]Class, len(army.Units))
 		for i, s := range army.Units {
@@ -108,7 +114,7 @@ func New(in Input) (*Battle, error) {
 			if !b.Map.FreeAt(pos) { // nudge off rocks and trees
 				pos = b.Map.FreeSpot(pos)
 			}
-			u := newUnit(len(b.Units), team, s, pos)
+			u := newUnitPlan(len(b.Units), team, s, pos, army.Plan)
 			if team == 1 && in.RedHealthPct > 0 && in.RedHealthPct < 100 {
 				u.MaxHP = u.MaxHP.MulDiv(in.RedHealthPct, 100)
 				u.HP = u.MaxHP

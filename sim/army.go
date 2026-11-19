@@ -46,6 +46,7 @@ type UnitSpec struct {
 type Army struct {
 	Formation Formation
 	Units     []UnitSpec
+	Plan      Plan // its battle plan (plan.go); 0 is Instinct. A generated Red draws its own.
 }
 
 // Input is everything that decides a battle. Seed (the map seed) decides the
@@ -100,6 +101,9 @@ func (in Input) Validate() error {
 	for team, a := range [2]Army{in.Blue, in.Red} {
 		if len(a.Units) > ArmySize {
 			return invalid("team %d has %d units, max %d", team, len(a.Units), ArmySize)
+		}
+		if PlanOf(a.Plan) == nil {
+			return invalid("team %d: unknown plan %d", team, a.Plan)
 		}
 		if a.Formation > F5x0 {
 			return invalid("team %d: unknown formation %d", team, a.Formation)
