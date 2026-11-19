@@ -693,6 +693,51 @@ def model_items():
         bundle.append(band)
     export('Throwing_Spears', bundle)
 
+    # skoutatos: the skoutarion, a tall oval board painted red with a white
+    # cross, iron rim and boss (the frame of Shield_Crimson: face toward glTF
+    # +Z, height along glTF +Y), and a plain domed Roman helmet with a brow
+    # band, a small finial ring and a mail aventail open at the face
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    red = mat('MI_SkoutarionRed', lin(0x8e1f1c), 0.8)
+    white = mat('MI_SkoutarionWhite', lin(0xe6dfcf), 0.75)
+    riron = mat('MI_SkoutarionIron', lin(0x5a5f66), 0.45, 0.7)
+    # the board sits low on the arm (glTF -Y is up the forearm's mount), so the
+    # top edge stays below the face
+    sw, sh, dz = 0.25, 0.47, 0.14
+    bpy.ops.mesh.primitive_cylinder_add(vertices=28, radius=1, depth=0.025, location=(0, 0.0175, dz), rotation=(math.radians(90), 0, 0))
+    sboard = bpy.context.object; sboard.scale = (sw, sh, 1); sboard.data.materials.append(red)
+    bpy.ops.mesh.primitive_torus_add(major_radius=1, minor_radius=0.045, major_segments=28, minor_segments=4, location=(0, 0.0175, dz), rotation=(math.radians(90), 0, 0))
+    srim2 = bpy.context.object; srim2.scale = (sw, sh, 0.27); srim2.data.materials.append(riron)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0.003, dz - 0.03), scale=(0.05, 0.004, 0.74))
+    upright = bpy.context.object; upright.data.materials.append(white)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0.003, dz - 0.15), scale=(0.38, 0.004, 0.05))
+    arm = bpy.context.object; arm.data.materials.append(white)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=6, radius=0.055, location=(0, 0.005, 0))
+    sboss = bpy.context.object; sboss.scale = (1, 0.7, 1); sboss.data.materials.append(riron)
+    for o in (sboard, srim2, sboss):
+        for f in o.data.polygons:
+            f.use_smooth = True
+    export('Skoutarion', [sboard, srim2, upright, arm, sboss])
+
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    diron = mat('MI_DomedHelm', lin(0x969ca4), 0.36, 0.8)
+    dband = mat('MI_DomedHelmBand', lin(0x8a6a3a), 0.45, 0.8)
+    dmail = mat('MI_DomedHelmMail', lin(0x5f646b), 0.55, 0.65)
+    dbowl = lathe('DomedBowl', [(0.136, -0.025), (0.137, 0.025), (0.131, 0.075), (0.114, 0.12), (0.086, 0.155),
+                                (0.05, 0.176), (0.0, 0.183)], segs=20)
+    dbowl.data.materials.append(diron)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.138, minor_radius=0.012, major_segments=20, minor_segments=4, location=(0, 0, -0.02))
+    dbrow = bpy.context.object; dbrow.data.materials.append(dband)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.016, minor_radius=0.005, major_segments=8, minor_segments=4, location=(0, 0, 0.195), rotation=(math.radians(90), 0, 0))
+    dring = bpy.context.object; dring.data.materials.append(dband)
+    daven = lathe('DomedMail', [(0.138, -0.025), (0.146, -0.08), (0.156, -0.15)], segs=20,
+                  skip=lambda a: a < math.radians(50) or a > math.radians(310))
+    daven.data.materials.append(dmail)
+    for o in (dbowl, daven):
+        for f in o.data.polygons:
+            f.use_smooth = True
+    export('Domed_Helm', [dbowl, dbrow, dring, daven])
+
     # toxotes: a kamelaukion, a low round felt cap with a rolled brim, sat like the fur cap
     bpy.ops.wm.read_factory_settings(use_empty=True)
     felt = mat('MI_FeltCap', lin(0xd8ccb0), 0.95)
@@ -714,7 +759,7 @@ def model_items():
 
     for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap',
                  'Dane_Axe', 'Shield_Gokstad', 'Shield_Gokstad_Back', 'Spangenhelm', 'Iron_Staff', 'Volva_Beads',
-                 'Yew_Longbow', 'Throwing_Spears', 'Kamelaukion'):
+                 'Yew_Longbow', 'Throwing_Spears', 'Skoutarion', 'Domed_Helm', 'Kamelaukion'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
