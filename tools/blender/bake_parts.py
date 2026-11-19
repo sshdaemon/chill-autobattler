@@ -693,9 +693,28 @@ def model_items():
         bundle.append(band)
     export('Throwing_Spears', bundle)
 
+    # toxotes: a kamelaukion, a low round felt cap with a rolled brim, sat like the fur cap
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    felt = mat('MI_FeltCap', lin(0xd8ccb0), 0.95)
+    roll = mat('MI_FeltRoll', lin(0x8e3326), 0.95)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=8, radius=0.124, location=(0, 0, 0))
+    crown = bpy.context.object
+    crown.scale = (1, 1, 0.85)
+    bpy.ops.object.mode_set(mode='EDIT')
+    bm = bmesh.from_edit_mesh(crown.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -0.01], context='VERTS')
+    bmesh.update_edit_mesh(crown.data); bpy.ops.object.mode_set(mode='OBJECT')
+    crown.data.materials.append(felt)
+    bpy.ops.object.shade_smooth()
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.126, minor_radius=0.017, major_segments=16, minor_segments=6, location=(0, 0, 0.0))
+    band = bpy.context.object
+    band.data.materials.append(roll)
+    bpy.ops.object.shade_smooth()
+    export('Kamelaukion', [crown, band])
+
     for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap',
                  'Dane_Axe', 'Shield_Gokstad', 'Shield_Gokstad_Back', 'Spangenhelm', 'Iron_Staff', 'Volva_Beads',
-                 'Yew_Longbow', 'Throwing_Spears'):
+                 'Yew_Longbow', 'Throwing_Spears', 'Kamelaukion'):
         g = json.load(open(os.path.join(OUT, name + '.gltf')))
         json.dump(g, open(os.path.join(OUT, name + '.gltf'), 'w'), separators=(',', ':'))
 
