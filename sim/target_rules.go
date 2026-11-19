@@ -51,6 +51,27 @@ func init() {
 		}
 		return best
 	}})
+	registerTarget(TargetFocusReach, &targetRule{name: "focusReach", pick: func(b *Battle, u *Unit) int {
+		best, most := -1, 0
+		for _, i := range b.spotted[u.Team] { // among those within reach, the enemy most allies target; ties: the nearer
+			if !Within(u.Pos, b.Units[i].Pos, u.Stats.Range+FocusSlack) {
+				continue
+			}
+			n := 0
+			for _, a := range b.Units {
+				if a != u && !a.Dead && a.Team == u.Team && a.Target == i {
+					n++
+				}
+			}
+			if n > most || n == most && n > 0 && Dist(u.Pos, b.Units[i].Pos) < Dist(u.Pos, b.Units[best].Pos) {
+				best, most = i, n
+			}
+		}
+		if best < 0 {
+			return b.nearestSpotted(u, nil)
+		}
+		return best
+	}})
 	registerTarget(TargetProtect, &targetRule{name: "protect", pick: func(b *Battle, u *Unit) int {
 		best, bd := -1, Fx(0)
 		for _, a := range b.Units { // the enemy closest to one of its ranged or caster allies

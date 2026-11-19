@@ -28,9 +28,18 @@ func TestTargetRules(t *testing.T) {
 	u := b.Units[0]
 	for rule, want := range map[TargetRule]int{
 		TargetNearest: 2, TargetWounded: 4, TargetRangedFirst: 4, TargetStrongest: 4, TargetFocus: 3, TargetProtect: 5,
+		TargetFocusReach: 2, // Red's archer is beyond a warrior's reach
 	} {
 		if got := targetRules[rule].pick(b, u); got != want {
 			t.Errorf("%v picked unit %d, want %d", rule, got, want)
+		}
+	}
+	// Blue's archer (9 m range, +2 m slack) joins a shared target within reach, not beyond it
+	a := b.Units[1]
+	for target, want := range map[int]int{4: 4, 3: 5} { // the mage is 9.8 m away, Red's archer 12.8 m
+		b.Units[0].Target = target
+		if got := targetRules[TargetFocusReach].pick(b, a); got != want {
+			t.Errorf("focusReach with the warrior on %d picked unit %d, want %d", target, got, want)
 		}
 	}
 }
