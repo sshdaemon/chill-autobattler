@@ -73,6 +73,7 @@ type army struct {
 	present   bool
 	formation int32
 	units     []unitSpec
+	plan      uint32 // battle plan (field 3)
 }
 
 func decodePoint(b []byte) (point, error) {
@@ -159,6 +160,10 @@ func decodeArmy(b []byte) (army, error) {
 			}
 			a.units = append(a.units, u)
 			return n
+		case 3:
+			n := varint(typ, b, &v)
+			a.plan = uint32(v) // proto uint32: the low 32 bits
+			return n
 		}
 		return skip
 	})
@@ -241,6 +246,9 @@ func mergeArmy(prev army, b []byte) (army, error) {
 		if a.formation == 0 {
 			a.formation = prev.formation
 		}
+		if a.plan == 0 {
+			a.plan = prev.plan
+		}
 		a.units = append(prev.units, a.units...)
 	}
 	return a, nil
@@ -256,7 +264,10 @@ func toSim(a army, name string, required bool) (sim.Army, error) {
 	if a.formation == 0 {
 		return sim.Army{}, fmt.Errorf("%w: %s formation not set", sim.ErrInvalid, name)
 	}
-	out := sim.Army{Formation: sim.Formation(a.formation - 1)} // pb FORMATION_CUSTOM = 1
+	if a.plan > 255 {
+		return sim.Army{}, fmt.Errorf("%w: %s plan %d", sim.ErrInvalid, name, a.plan)
+	}
+	out := sim.Army{Formation: sim.Formation(a.formation - 1), Plan: sim.Plan(a.plan)} // pb FORMATION_CUSTOM = 1
 	for i, u := range a.units {
 		if u.class == 0 {
 			return sim.Army{}, fmt.Errorf("%w: %s unit %d has no class", sim.ErrInvalid, name, i)

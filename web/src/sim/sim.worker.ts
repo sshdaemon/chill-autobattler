@@ -9,6 +9,7 @@ type SimApi = {
   outcome(): Uint8Array;
   data(): string;
   units(): string;
+  plans(): string | null; // after create: [blue, red] plan ids
   draft(seed: string, redSkills: number): string | null;
   formationSlots(formation: number, classes: number[]): Uint8Array | null;
   fog(): Uint8Array | null;
@@ -24,7 +25,7 @@ export type FromWorker =
   | { type: 'ready'; version: string; data: string }
   | { type: 'slots'; slots: Record<number, { x: number; z: number }[]> } // keyed by sim formation (1..7)
   | { type: 'draft'; plan: string | null } // JSON DraftPlan (draft.ts)
-  | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer; units: string } // units: JSON UnitLoadout[]
+  | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer; units: string; plans: string | null } // units: JSON UnitLoadout[]; plans: JSON [blue, red]
   | { type: 'snapshot'; snapshot: ArrayBuffer }
   | { type: 'fog'; seen: ArrayBuffer } // Blue's visible cells, 56×56, every 2 ticks
   | { type: 'done'; outcome: Uint8Array }
@@ -71,7 +72,7 @@ self.onmessage = async (e: MessageEvent<ToWorker>) => {
     const err = sim.create(msg.input);
     if (err) return post({ type: 'error', message: err });
     const map = buf(sim.map()), snapshot = buf(sim.step(0));
-    post({ type: 'started', map, snapshot, units: sim.units() }, [map, snapshot]);
+    post({ type: 'started', map, snapshot, units: sim.units(), plans: sim.plans() }, [map, snapshot]);
     if (msg.type === 'start') loop(sim);
   } else if (msg.type === 'draft') {
     post({ type: 'draft', plan: sim.draft(msg.seed, msg.redSkills) });

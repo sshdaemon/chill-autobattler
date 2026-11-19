@@ -16,6 +16,7 @@ export type FactionInfo = { id: number; name: string; units: number[]; playable:
 export type GameData = {
   version: string; classes: ClassInfo[]; formations: string[]; armySize: number; deployZone: [number, number, number, number];
   factions: FactionInfo[];
+  plans: { id: number; name: string }[]; // battle plans, index = sim.Plan; words in plans.ts
   hitAt: number; // share of a swing at which the blow lands or the shot leaves
 };
 // Every unit of the current battle (wasm units()), Red's generated army too.

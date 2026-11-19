@@ -7,15 +7,17 @@ import { useState } from 'react';
 import { setSound, soundPrefs } from '../sound.ts';
 import { useEffect } from 'react';
 import { fps } from '../scene/perfStats.ts';
+import { shownPlan } from '../plans.ts';
 
 export function Banner() {
   const phase = useBattle((s) => s.phase);
   const error = useBattle((s) => s.error);
+  const red = useBattle((s) => shownPlan(s, 1));
   // the sim can refuse a battle (an invalid input): say so instead of a frozen field
   if (error && (phase === 'starting' || phase === 'countdown' || phase === 'fighting')) return <div className="banner small err">{error}</div>;
   if (phase === 'loading') return <div className="banner small">Loading…</div>;
   if (phase === 'starting') return <div className="banner small">Preparing the battlefield…</div>;
-  if (phase === 'countdown') return <div className="banner">Fight!</div>;
+  if (phase === 'countdown') return <div className="banner">Fight!{red && <small className="plan">Red: {red}</small>}</div>;
   return null;
 }
 
@@ -43,11 +45,13 @@ export function RunBar() {
 // Unit counts during deployment and the fight.
 export function Status() {
   const { curr, phase } = useBattle();
+  const bluePlan = useBattle((s) => shownPlan(s, 0));
+  const redPlan = useBattle((s) => shownPlan(s, 1));
   if (!curr || phase === 'drafting' || phase === 'faction' || phase === 'loading') return null;
   const alive = (team: number) => curr.units.filter((u) => u.team === team && !(u.flags & UF.dead)).length;
   return (
     <div className="status">
-      <span className="b">Blue {alive(0)}</span> vs <span className="r">{phase === 'deploying' || phase === 'locking' ? '?' : alive(1)} Red</span>
+      <span className="b">Blue {alive(0)}{bluePlan && <i> ({bluePlan})</i>}</span> vs <span className="r">{phase === 'deploying' || phase === 'locking' ? '?' : alive(1)} Red{redPlan && <i> ({redPlan})</i>}</span>
       {curr.tick > 0 && <span className="dim"> · {(curr.tick / 20).toFixed(1)} s</span>}
     </div>
   );
