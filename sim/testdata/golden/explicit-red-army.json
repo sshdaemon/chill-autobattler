@@ -1,18 +1,26 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+b4201ec6.0e752100",
   "case": "explicit red army",
   "outcome": {
     "result": 2,
-    "ticks": 370,
-    "checksum": "9265940990544675818",
+    "ticks": 389,
+    "checksum": "709791152141912591",
     "survivors": [
       {
-        "Index": 6,
-        "HP": 251514
+        "Index": 5,
+        "HP": 706217
+      },
+      {
+        "Index": 7,
+        "HP": 2731859
+      },
+      {
+        "Index": 8,
+        "HP": 4275570
       },
       {
         "Index": 9,
-        "HP": 1565444
+        "HP": 1986942
       }
     ]
   }

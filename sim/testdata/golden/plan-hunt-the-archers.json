@@ -1,14 +1,22 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+28ab8a42.0e752100",
   "case": "plan hunt the archers",
   "outcome": {
     "result": 2,
-    "ticks": 549,
-    "checksum": "15969733605148248055",
+    "ticks": 332,
+    "checksum": "3057357007084572299",
     "survivors": [
       {
-        "Index": 8,
-        "HP": 617609
+        "Index": 5,
+        "HP": 6097033
+      },
+      {
+        "Index": 7,
+        "HP": 6162016
+      },
+      {
+        "Index": 9,
+        "HP": 3792731
       }
     ]
   }

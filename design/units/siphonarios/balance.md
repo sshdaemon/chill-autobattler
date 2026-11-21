@@ -1,5 +1,9 @@
 # Balance: siphonarios
 
+> Recorded before the Classic faction was retired (November 2026, OpenSpec
+> `retire-classic`): rows and notes about the warrior, archer and mage are
+> history; `pnpm balance:unit <name>` measures against today's roster.
+
 The siphonarios is a special: by the roster triangle he beats massed melee and
 loses to ranged units and casters that outrange him. The bands agreed at the
 design checkpoint (2026-11-19), the same as the völva's:

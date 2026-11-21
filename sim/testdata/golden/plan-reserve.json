@@ -1,14 +1,26 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+28ab8a42.0e752100",
   "case": "plan reserve",
   "outcome": {
     "result": 1,
-    "ticks": 384,
-    "checksum": "9216873783847421599",
+    "ticks": 406,
+    "checksum": "14091608651353962966",
     "survivors": [
       {
+        "Index": 0,
+        "HP": 531093
+      },
+      {
+        "Index": 1,
+        "HP": 3735552
+      },
+      {
         "Index": 3,
-        "HP": 2502296
+        "HP": 1332115
+      },
+      {
+        "Index": 4,
+        "HP": 265167
       }
     ]
   }

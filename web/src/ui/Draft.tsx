@@ -2,7 +2,7 @@ import { useBattle, factionUnits } from '../store.ts';
 import { uiOf } from '../units/looks.ts';
 import { factionLook } from '../factions/factions.ts';
 import { BLUE, bluesChoice, current, done, leftInTurn, type DraftUnit } from '../draft.ts';
-import type { GameData } from '../gamedata.ts';
+import { classOf, type GameData } from '../gamedata.ts';
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 
@@ -35,14 +35,14 @@ export function DraftScreen() {
         </div>
         <div className="cards">
           {factionUnits(data, run).map((i) => {
-            const c = data.classes[i];
+            const c = classOf(data, i);
             return (
               <div className={`card ${yours ? '' : 'waiting'}`} key={c.name}>
                 <div className="icon">{uiOf(i).icon}</div>
                 <div className="name">{uiOf(i).label}</div>
                 <div className="blurb">{uiOf(i).blurb}</div>
                 <div className="stats">{c.hp} HP · {c.dmgLo}–{c.dmgHi} dmg · {c.range} m · {c.speed} m/s</div>
-                <div className="takes">Damage taken: {factionUnits(data, run).map((j) => `${uiOf(j).icon} ${pct(data.classes[j].matchup[i])}`).join(' · ')}</div>
+                <div className="takes">Damage taken: {factionUnits(data, run).map((j) => `${uiOf(j).icon} ${pct(classOf(data, j).matchup[i])}`).join(' · ')}</div>
                 <div className="abilities">
                   {c.skills.map((s) => (
                     <button key={s.id} disabled={!yours} title={s.pct ? `${s.name}: ${s.pct}%` : s.name} onClick={() => draftPick(i, s.id)}>{s.name}</button>
@@ -66,7 +66,7 @@ function Side({ label, units, data, team }: { label: string; units: DraftUnit[];
         {Array.from({ length: data.armySize }, (_, k) => {
           const u = units[k];
           if (!u) return <span key={k} className="empty" />;
-          const names = u.skills.map((id) => data.classes[u.cls].skills.find((s) => s.id === id)?.name).join(', ');
+          const names = u.skills.map((id) => classOf(data, u.cls).skills.find((s) => s.id === id)?.name).join(', ');
           return <span key={k} className={u.vet ? 'vet' : ''} title={`${uiOf(u.cls).label}${u.vet ? ' (veteran)' : ''}: ${names}`}>
             {uiOf(u.cls).icon}<i>{'★'.repeat(u.skills.length)}</i>
           </span>;

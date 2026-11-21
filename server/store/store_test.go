@@ -3,7 +3,9 @@ package store
 import (
 	"context"
 	"database/sql"
+	"io/fs"
 	"path/filepath"
+	"sort"
 	"testing"
 )
 
@@ -67,8 +69,8 @@ func TestMigrations(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if v := userVersion(t, fresh); v != 6 {
-		t.Errorf("fresh db at version %d, want 6", v)
+	if v := userVersion(t, fresh); v != 7 {
+		t.Errorf("fresh db at version %d, want 7", v)
 	}
 	if err := fresh.CreatePlayer(ctx, CreatePlayerParams{ID: "p", TokenHash: []byte{1}, CreatedAt: 1}); err != nil {
 		t.Fatalf("players table missing: %v", err)
@@ -108,7 +110,56 @@ func TestMigrations(t *testing.T) {
 	if err != nil || b.MapSeed != 1 || b.RunID.Valid {
 		t.Errorf("old battle after upgrade: %v %+v", err, b)
 	}
-	if v := userVersion(t, up); v != 6 {
+	if v := userVersion(t, up); v != 7 {
 		t.Errorf("upgraded db at version %d", v)
+	}
+}
+
+// Retiring Classic (0007) ends its unfinished runs and leaves every other run alone.
+func TestRetireClassicMigration(t *testing.T) {
+	ctx := context.Background()
+	path := filepath.Join(t.TempDir(), "v6.db")
+	raw, err := sql.Open("sqlite", "file:"+path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	files, _ := fs.Glob(migrations, "migrations/*.sql")
+	sort.Strings(files)
+	for _, f := range files[:6] {
+		q, _ := migrations.ReadFile(f)
+		if _, err := raw.Exec(string(q)); err != nil {
+			t.Fatalf("%s: %v", f, err)
+		}
+	}
+	if _, err := raw.Exec(`PRAGMA user_version = 6;
+		INSERT INTO players (id, token_hash, created_at) VALUES ('p', x'01', 1);
+		INSERT INTO runs (id, player_id, name, state, match_no, wins, score, current_battle_id, created_at, faction) VALUES
+			('classic-active', 'p', 'a', 'picking', 4, 3, 120, 'b', 1, 1),
+			('classic-over', 'p', 'b', 'over', 2, 1, 40, NULL, 1, 1),
+			('rus-active', 'p', 'c', 'ready', 2, 1, 30, NULL, 1, 2);`); err != nil {
+		t.Fatal(err)
+	}
+	raw.Close()
+	db, err := Open(ctx, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	want := map[string]struct{ state, reason string }{
+		"classic-active": {"over", "faction retired"},
+		"classic-over":   {"over", ""},
+		"rus-active":     {"ready", ""},
+	}
+	for id, w := range want {
+		r, err := db.GetRun(ctx, id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if r.State != w.state || r.EndReason.String != w.reason {
+			t.Errorf("%s: state %q reason %q, want %q %q", id, r.State, r.EndReason.String, w.state, w.reason)
+		}
+		if id == "classic-active" && (r.CurrentBattleID.Valid || !r.EndedAt.Valid || r.Score != 120) {
+			t.Errorf("ended classic run: %+v", r)
+		}
 	}
 }

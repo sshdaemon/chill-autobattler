@@ -17,7 +17,7 @@ the toxotai pick the target their comrades are already shooting, as long as it
 is within their reach, and bring it down together. In the Roman army they stand
 behind the skoutatoi, which keep melee off them.
 
-- **Beats:** melee that walks into concentrated fire (warrior, druzhynnyk,
+- **Beats:** melee that walks into concentrated fire (druzhynnyk,
   skoutatos) more often than other archers do, and casters through range.
 - **Beaten by:** fast melee that reaches the line (huskarl), and archers with
   more mobility in an open duel (close to even).

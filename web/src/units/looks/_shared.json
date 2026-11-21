@@ -25,6 +25,25 @@
     "Sprint_Loop": {
       "loop": true,
       "speed": 9.57
+    },
+    "Idle_Loop": {
+      "loop": true
+    },
+    "Idle_Shield_Loop": {
+      "loop": true
+    },
+    "Sword_Attack": {
+      "hit": 0.5
+    },
+    "Sword_Slash_B": {
+      "hit": 0.3,
+      "from": [
+        "Sword_Regular_B",
+        "Sword_Regular_B_Rec"
+      ]
+    },
+    "OverhandThrow": {
+      "hit": 0.42
     }
   },
   "builds": {

@@ -104,8 +104,8 @@ export function UnitLab({ initial }: { initial: string }) {
       const d = JSON.parse(e.data.data) as GameData;
       setRoster(d.classes);
       setData(d);
-      const i = d.classes.findIndex((c) => c.name === initial);
-      if (i >= 0) setCls(i);
+      const i = d.classes.findIndex((c) => c?.name === initial);
+      setCls(i >= 0 ? i : d.classes.findIndex((c) => c)); // else the first unit (retired ids are empty)
       w.terminate();
     };
     void loadClips().then((c) => setClipNames(Object.keys(c).sort()));
@@ -226,7 +226,7 @@ export function UnitLab({ initial }: { initial: string }) {
           <div style={h}>Unit</div>
           <div style={row}>
             <select value={cls} onChange={(e) => { setCls(+e.target.value); setRecipe(ALL); setBuild(''); }}>
-              {data.classes.map((c, i) => <option key={c.name} value={i}>{uiOf(i).label}</option>)}
+              {data.classes.map((c, i) => c && <option key={c.name} value={i}>{uiOf(i).label}</option>)}
             </select>
             <select value={recipe} onChange={(e) => setRecipe(e.target.value)} style={{ flex: 1 }}>
               <option value={ALL}>all recipes</option>

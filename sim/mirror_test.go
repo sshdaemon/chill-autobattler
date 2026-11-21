@@ -10,7 +10,6 @@ import "testing"
 // Blue's so both start in step.
 func TestMirrorImageBattles(t *testing.T) {
 	armies := map[Faction][]Class{
-		FactionClassic:    {Warrior, Archer, Mage, Archer, Warrior},
 		FactionVarangians: {Huskarl, Bowman, Volva, Bowman, Huskarl},
 		FactionRomans:     {Skoutatos, Toxotes, Siphonarios, Toxotes, Skoutatos},
 		FactionRus:        {Druzhynnyk, Strilets, Huslyar, Strilets, Druzhynnyk},

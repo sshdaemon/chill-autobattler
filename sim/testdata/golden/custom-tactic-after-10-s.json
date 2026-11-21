@@ -1,14 +1,26 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+28ab8a42.0e752100",
   "case": "custom tactic after 10 s",
   "outcome": {
     "result": 2,
-    "ticks": 370,
-    "checksum": "17509314749009847247",
+    "ticks": 389,
+    "checksum": "6813568024407255396",
     "survivors": [
       {
+        "Index": 5,
+        "HP": 814357
+      },
+      {
         "Index": 6,
-        "HP": 1964342
+        "HP": 2861023
+      },
+      {
+        "Index": 7,
+        "HP": 3978104
+      },
+      {
+        "Index": 9,
+        "HP": 1242310
       }
     ]
   }

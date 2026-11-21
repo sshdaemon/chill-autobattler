@@ -58,7 +58,7 @@ func TestBadPlanRejected(t *testing.T) {
 
 func TestUnknownPlanRejected(t *testing.T) {
 	for team := 0; team < 2; team++ {
-		in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 1, CombatSeed: 2, Blue: Army{Formation: F3x2, Units: mix()}}
+		in := Input{Version: Version, BlueFaction: FactionRus, Seed: 1, CombatSeed: 2, Blue: Army{Formation: F3x2, Units: mix()}}
 		if team == 0 {
 			in.Blue.Plan = 200
 		} else {
@@ -86,22 +86,22 @@ func TestPlanChangesTemperament(t *testing.T) {
 		t.Errorf("All-out charge changed the huslyar's own fields: %+v", u.Temper)
 	}
 	// Instinct changes nothing
-	for _, d := range Roster {
+	for d := range Units() {
 		if got := newUnitPlan(0, 0, UnitSpec{Class: d.ID}, Vec{}, PlanInstinct).Temper; got != d.Temper {
 			t.Errorf("%s under Instinct: %+v, want %+v", d.Name, got, d.Temper)
 		}
 	}
 	// ranged roles
-	if u := newUnitPlan(0, 0, UnitSpec{Class: Archer}, Vec{}, PlanCharge); u.Temper.Kite {
+	if u := newUnitPlan(0, 0, UnitSpec{Class: Toxotes}, Vec{}, PlanCharge); u.Temper.Kite {
 		t.Error("All-out charge should stop archers kiting")
 	}
-	if u := newUnitPlan(0, 0, UnitSpec{Class: Mage}, Vec{}, PlanShieldWall); u.Temper.StayNear != TagMelee {
+	if u := newUnitPlan(0, 0, UnitSpec{Class: Volva}, Vec{}, PlanShieldWall); u.Temper.StayNear != TagMelee {
 		t.Error("Shield wall should keep casters near the melee")
 	}
 }
 
 func TestPlanEffects(t *testing.T) {
-	for _, d := range Roster {
+	for d := range Units() {
 		own := newUnitPlan(0, 0, UnitSpec{Class: d.ID}, Vec{}, PlanInstinct)
 		rush := newUnitPlan(0, 0, UnitSpec{Class: d.ID}, Vec{}, PlanCharge)
 		if rush.Stats.Speed <= own.Stats.Speed {
@@ -109,7 +109,7 @@ func TestPlanEffects(t *testing.T) {
 		}
 	}
 	// effects come after the unit's own: a skill's stat bonus and the plan's both apply
-	c := Archer
+	c := Toxotes
 	base := newUnitPlan(0, 0, UnitSpec{Class: c}, Vec{}, PlanInstinct).Stats.Range
 	if got := newUnitPlan(0, 0, UnitSpec{Class: c}, Vec{}, PlanSkirmish).Stats.Range; got <= base {
 		t.Errorf("Skirmish should lengthen an archer's range: %v vs %v", got, base)
@@ -117,8 +117,8 @@ func TestPlanEffects(t *testing.T) {
 }
 
 func TestAbilityOnTopOfPlan(t *testing.T) {
-	hunter := Roster[Warrior]
-	hunter.Name = "hunting warrior"
+	hunter := Roster[Druzhynnyk]
+	hunter.Name = "hunting druzhynnyk"
 	hunter.Skills[0].Effects = []Effect{{Kind: testHunter}}
 	withRoster(t, hunter)
 	c := Class(len(Roster) - 1)
@@ -143,7 +143,7 @@ func TestRedPlan(t *testing.T) {
 		t.Errorf("200 seeds drew %d of %d plans", len(seen), len(Plans))
 	}
 	// a generated Red gets the drawn plan; a given Red keeps its own
-	in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 7, CombatSeed: 9, Blue: Army{Formation: F3x2, Units: mix(), Plan: PlanSkirmish}}
+	in := Input{Version: Version, BlueFaction: FactionRus, Seed: 7, CombatSeed: 9, Blue: Army{Formation: F3x2, Units: mix(), Plan: PlanSkirmish}}
 	b, err := New(in)
 	if err != nil {
 		t.Fatal(err)

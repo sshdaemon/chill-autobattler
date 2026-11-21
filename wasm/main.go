@@ -16,7 +16,7 @@
 //	                                       drawn from the combat seed when generated; 255 = custom)
 //	chillSim.checkPlan(json): string       "" if a custom plan (data().plans[i].chips shape) is valid, else why not
 //	chillSim.formationSlots(f, classes)    Blue's preset positions (Int32 LE x, z per unit, raw fixed-point);
-//	                                       f is a sim.Formation (1..7), classes are sim.Class values (0..2)
+//	                                       f is a sim.Formation (1..7), classes are sim.Class values
 package main
 
 import (
@@ -169,7 +169,7 @@ func dataJSON() string {
 	}
 	var out struct {
 		Version    string     `json:"version"`
-		Classes    []class    `json:"classes"`    // the unit roster, index = sim.Class
+		Classes    []*class   `json:"classes"`    // the unit roster, index = sim.Class; null at a retired id
 		Formations []string   `json:"formations"` // index = sim.Formation
 		ArmySize   int        `json:"armySize"`
 		HitAt      float64    `json:"hitAt"`      // share of a swing at which the blow lands or the shot leaves
@@ -204,7 +204,11 @@ func dataJSON() string {
 		return ef
 	}
 	for i := range sim.Roster {
-		d := &sim.Roster[i]
+		d := sim.RosterOf(sim.Class(i))
+		if d == nil { // a retired id: its slot stays, empty
+			out.Classes = append(out.Classes, nil)
+			continue
+		}
 		st := d.Stats
 		cl := class{Name: d.Name, HP: fx(st.HP), DmgLo: fx(st.DmgLo), DmgHi: fx(st.DmgHi),
 			Cooldown: float64(st.Cooldown) / sim.TicksPerSecond, Range: fx(st.Range), Speed: fx(st.Speed), Sight: fx(st.Sight),
@@ -214,7 +218,11 @@ func dataJSON() string {
 			cl.Bonus = append(cl.Bonus, bonus{strings.Join(tagNames(b.Tag), "|"), fx(b.Mult)})
 		}
 		for v := range sim.Roster {
-			cl.Matchup = append(cl.Matchup, fx(sim.MatchupOf(d, &sim.Roster[v])))
+			m := 0.0 // none against a retired id
+			if vd := sim.RosterOf(sim.Class(v)); vd != nil {
+				m = fx(sim.MatchupOf(d, vd))
+			}
+			cl.Matchup = append(cl.Matchup, m)
 		}
 		cl.Traits = []effect{}
 		for _, e := range d.Traits {
@@ -227,7 +235,7 @@ func dataJSON() string {
 			}
 			cl.Skills = append(cl.Skills, sk)
 		}
-		out.Classes = append(out.Classes, cl)
+		out.Classes = append(out.Classes, &cl)
 	}
 	for f := sim.Custom; f <= sim.F5x0; f++ {
 		out.Formations = append(out.Formations, f.String())

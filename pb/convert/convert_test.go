@@ -10,19 +10,22 @@ import (
 
 func five() []*chillv1.UnitSpec {
 	l1 := []uint32{1}
-	w, a, m := chillv1.UnitClass_UNIT_CLASS_WARRIOR, chillv1.UnitClass_UNIT_CLASS_ARCHER, chillv1.UnitClass_UNIT_CLASS_MAGE
-	return []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.WarriorDash)}}, {UnitClass: w, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: m, Skills: l1}}
+	w, a, m := wireClass(sim.Druzhynnyk), wireClass(sim.Strilets), wireClass(sim.Huslyar)
+	return []*chillv1.UnitSpec{{UnitClass: w, Skills: []uint32{uint32(sim.DruzhynnykBracedSpear)}}, {UnitClass: w, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: a, Skills: l1}, {UnitClass: m, Skills: l1}}
 }
 
+// wireClass is a unit's value on the wire: its class id + 1.
+func wireClass(c sim.Class) chillv1.UnitClass { return chillv1.UnitClass(c + 1) }
+
 func TestInput(t *testing.T) {
-	in := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 9, CombatSeed: 1 << 63, RedSkillCount: 2,
+	in := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionRus), Seed: 9, CombatSeed: 1 << 63, RedSkillCount: 2,
 		Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_3_2, Units: five()}}
 	got, err := Input(in)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Blue.Formation != sim.F3x2 || got.Blue.Units[0].Class != sim.Warrior || got.Blue.Units[4].Class != sim.Mage ||
-		got.Blue.Units[0].Skills[0] != sim.WarriorDash || got.RedSkills != 2 || got.CombatSeed != 1<<63 || len(got.Red.Units) != 0 {
+	if got.Blue.Formation != sim.F3x2 || got.Blue.Units[0].Class != sim.Druzhynnyk || got.Blue.Units[4].Class != sim.Huslyar ||
+		got.Blue.Units[0].Skills[0] != sim.DruzhynnykBracedSpear || got.RedSkills != 2 || got.CombatSeed != 1<<63 || len(got.Red.Units) != 0 {
 		t.Errorf("converted %+v", got)
 	}
 	if got.Blue.Plan != sim.PlanInstinct {
@@ -43,7 +46,7 @@ func TestInput(t *testing.T) {
 	}
 	in.Blue.Plan = 0
 	// ability numbers pass through unchanged
-	for _, s := range []sim.Skill{sim.ArcherArcingShot, sim.MageBlast} {
+	for _, s := range []sim.Skill{sim.StriletsArcingShot, sim.HuslyarLament} {
 		if uint32(s) != uint32(sim.Skill(uint32(s))) {
 			t.Errorf("skill %v", s)
 		}
@@ -52,7 +55,7 @@ func TestInput(t *testing.T) {
 		t.Error("formation numbering")
 	}
 
-	custom := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_CUSTOM, Units: five()}}
+	custom := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionRus), Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_CUSTOM, Units: five()}}
 	for i, u := range custom.Blue.Units {
 		u.Position = &chillv1.Point{XRaw: int64(sim.I(i*2 - 4)), ZRaw: int64(sim.I(10))}
 	}
@@ -97,7 +100,7 @@ func TestNewUnitIDs(t *testing.T) {
 	in := func() *chillv1.BattleInput {
 		units := five()
 		units[4] = &chillv1.UnitSpec{UnitClass: newUnit, Skills: []uint32{newSkill}}
-		return &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 3, Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_SPREAD, Units: units}}
+		return &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionRus), Seed: 3, Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_SPREAD, Units: units}}
 	}
 	if _, err := Input(in()); !errors.Is(err, sim.ErrInvalid) { // Input validates against the roster
 		t.Errorf("unknown unit accepted: %v", err)
@@ -105,8 +108,8 @@ func TestNewUnitIDs(t *testing.T) {
 
 	old, oldF := sim.Roster, sim.Factions
 	t.Cleanup(func() { sim.Roster, sim.Factions = old, oldF })
-	sim.Factions = []sim.FactionDef{{ID: sim.FactionClassic, Name: "classic", Units: []sim.Class{sim.Warrior, sim.Archer, sim.Mage, sim.Class(len(old))}, Playable: true}}
-	extra := old[sim.Warrior]
+	sim.Factions = []sim.FactionDef{{ID: sim.FactionRus, Name: "rus", Units: []sim.Class{sim.Druzhynnyk, sim.Strilets, sim.Huslyar, sim.Class(len(old))}, Playable: true}}
+	extra := old[sim.Druzhynnyk]
 	extra.ID, extra.Name, extra.InRedPool = sim.Class(len(old)), "test spearman", false
 	extra.Skills[0].Effects = []sim.Effect{{Kind: sim.StatBonus, Stat: sim.StatRange, Pct: 20}}
 	sim.Roster = append(append([]sim.UnitDef(nil), old...), extra)

@@ -1,5 +1,9 @@
 # Balance: volva
 
+> Recorded before the Classic faction was retired (November 2026, OpenSpec
+> `retire-classic`): rows and notes about the warrior, archer and mage are
+> history; `pnpm balance:unit <name>` measures against today's roster.
+
 The völva is a special: by the roster triangle she beats massed melee and
 loses to ranged units and casters that outrange or outdamage her. The bands
 agreed at the design checkpoint (2026-11-18):

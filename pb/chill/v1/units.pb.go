@@ -21,31 +21,22 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Unit types: the first three of the sim's unit roster (sim/roster.go). The
-// roster may add more; their ids (roster position + 1) need no new value here,
-// since proto3 enums are open and the sim rejects ids its roster lacks.
+// Unit types: a unit's value is its sim.Class id + 1 (sim/ids.go). No values
+// are named: proto3 enums are open, and the sim rejects ids its roster lacks.
+// 1-3 were the retired Classic units (warrior, archer, mage).
 type UnitClass int32
 
 const (
 	UnitClass_UNIT_CLASS_UNSPECIFIED UnitClass = 0
-	UnitClass_UNIT_CLASS_WARRIOR     UnitClass = 1
-	UnitClass_UNIT_CLASS_ARCHER      UnitClass = 2
-	UnitClass_UNIT_CLASS_MAGE        UnitClass = 3
 )
 
 // Enum value maps for UnitClass.
 var (
 	UnitClass_name = map[int32]string{
 		0: "UNIT_CLASS_UNSPECIFIED",
-		1: "UNIT_CLASS_WARRIOR",
-		2: "UNIT_CLASS_ARCHER",
-		3: "UNIT_CLASS_MAGE",
 	}
 	UnitClass_value = map[string]int32{
 		"UNIT_CLASS_UNSPECIFIED": 0,
-		"UNIT_CLASS_WARRIOR":     1,
-		"UNIT_CLASS_ARCHER":      2,
-		"UNIT_CLASS_MAGE":        3,
 	}
 )
 
@@ -667,12 +658,9 @@ const file_chill_v1_units_proto_rawDesc = "" +
 	"\n" +
 	"CustomPlan\x12)\n" +
 	"\x05roles\x18\x01 \x01(\v2\x13.chill.v1.PlanRolesR\x05roles\x12+\n" +
-	"\x06groups\x18\x02 \x03(\v2\x13.chill.v1.PlanGroupR\x06groups*k\n" +
+	"\x06groups\x18\x02 \x03(\v2\x13.chill.v1.PlanGroupR\x06groups*e\n" +
 	"\tUnitClass\x12\x1a\n" +
-	"\x16UNIT_CLASS_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12UNIT_CLASS_WARRIOR\x10\x01\x12\x15\n" +
-	"\x11UNIT_CLASS_ARCHER\x10\x02\x12\x13\n" +
-	"\x0fUNIT_CLASS_MAGE\x10\x03*\xc4\x01\n" +
+	"\x16UNIT_CLASS_UNSPECIFIED\x10\x00\"\x04\b\x01\x10\x03*\x12UNIT_CLASS_WARRIOR*\x11UNIT_CLASS_ARCHER*\x0fUNIT_CLASS_MAGE*\xc4\x01\n" +
 	"\tFormation\x12\x19\n" +
 	"\x15FORMATION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10FORMATION_CUSTOM\x10\x01\x12\x14\n" +

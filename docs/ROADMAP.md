@@ -314,7 +314,8 @@ Factions become selectable as soon as they have all three units.
 
 Maps that fit the setting (river banks, portages, forest edges, Balkan hills),
 names and texts in the UI, run names, faction banners, then the Classic faction
-is retired.
+is retired. Done for Classic (OpenSpec `retire-classic`, November 2026): the
+faction and its warrior, archer and mage are gone; their ids stay reserved.
 
 ---
 
@@ -327,6 +328,7 @@ Decided (November 2026):
 3. **Red's faction:** seeded random each battle, mirrors allowed.
 4. **Old units:** a temporary "Classic" faction (warrior, archer, mage) so the
    new flow ships early; retired once all three new factions are playable.
+   Retired in November 2026 (OpenSpec `retire-classic`).
 
 Open:
 5. Is the second drafter always Red (single player)? The draft is built so a

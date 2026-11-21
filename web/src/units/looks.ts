@@ -2,9 +2,10 @@
 // One file per unit, looks/<unit>.json, matched to the roster by name, plus
 // looks/_shared.json (body builds and the clips several units use); each unit
 // file lists the clips only it uses. `wasm/looks_test.go` checks they stay in
-// sync with the roster. A missing look falls back to the warrior's (melee) or
-// the archer's (ranged) and warns once in dev.
-import type { ClassInfo, SkillInfo } from '../gamedata.ts';
+// sync with the roster. A missing look falls back to the look of the first
+// roster unit of the same role (melee, ranged, caster) that has one, and warns
+// once in dev.
+import { roleOf, type ClassInfo, type SkillInfo } from '../gamedata.ts';
 
 // speed: ground speed (m/s) a move clip covers at 1× (from the packs' root motion)
 export type ClipInfo = { loop?: boolean; hit?: number; speed?: number; from?: string[] };
@@ -52,19 +53,22 @@ for (const [path, f] of Object.entries(files)) {
 }
 export const BUILDS = shared.builds;
 
-let roster: ClassInfo[] = [];
+let roster: (ClassInfo | null)[] = [];
 const warned = new Set<string>();
 // called once the sim's data() arrives
-export function setRoster(classes: ClassInfo[]) { roster = classes; }
+export function setRoster(classes: (ClassInfo | null)[]) { roster = classes; }
 
 export function lookOf(cls: number): UnitLook {
   const info = roster[cls];
   const look = info && LOOKS[info.name];
   if (look) return look;
-  const fallback = info?.ranged ? LOOKS.archer : LOOKS.warrior;
+  // a stand-in: the first unit of the same role that has a look (any, if none does)
+  const role = info ? roleOf(info) : 0;
+  const stand = roster.find((c) => c && LOOKS[c.name] && roleOf(c) === role) ?? roster.find((c) => c && LOOKS[c.name]);
+  const fallback = (stand && LOOKS[stand.name]) || Object.values(LOOKS)[0];
   if (import.meta.env.DEV && !warned.has(`u${cls}`)) {
     warned.add(`u${cls}`);
-    console.warn(`no look for unit ${info?.name ?? cls}; using the ${info?.ranged ? 'archer' : 'warrior'}'s`);
+    console.warn(`no look for unit ${info?.name ?? cls}; using the ${stand?.name ?? 'first'}'s`);
   }
   return fallback;
 }

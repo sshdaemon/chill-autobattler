@@ -35,60 +35,6 @@
   ],
   "scale": 0.95
  },
- "Shield_Wooden": {
-  "source": [
-   "props",
-   "Shield_Wooden.gltf"
-  ],
-  "bone": "lowerarm_l",
-  "pos": [
-   0.18,
-   0.055,
-   0
-  ],
-  "rot": [
-   -1.5707963267948966,
-   0,
-   0
-  ],
-  "scale": 0.95
- },
- "Shield_Round": {
-  "source": [
-   "kaykit",
-   "shield_round_color.gltf"
-  ],
-  "bone": "lowerarm_l",
-  "pos": [
-   0.18,
-   0.125,
-   0
-  ],
-  "rot": [
-   -1.5707963267948966,
-   0,
-   0
-  ],
-  "scale": 0.62
- },
- "Bow": {
-  "source": [
-   "kaykit",
-   "bow_withString.gltf"
-  ],
-  "bone": "hand_l",
-  "pos": [
-   0,
-   0,
-   0
-  ],
-  "rot": [
-   1.5707963267948966,
-   0,
-   0
-  ],
-  "scale": 0.6
- },
  "Quiver": {
   "source": [
    "kaykit",
@@ -107,90 +53,6 @@
   ],
   "scale": 0.6
  },
- "Staff": {
-  "source": [
-   "kaykit",
-   "staff.gltf"
-  ],
-  "bone": "hand_r",
-  "pos": [
-   0,
-   0,
-   0
-  ],
-  "rot": [
-   0,
-   0,
-   0
-  ],
-  "scale": 0.8
- },
- "Wand": {
-  "source": [
-   "kaykit",
-   "wand.gltf"
-  ],
-  "bone": "hand_r",
-  "pos": [
-   0,
-   0,
-   0
-  ],
-  "rot": [
-   1.5707963267948966,
-   0,
-   0
-  ],
-  "scale": 0.6
- },
- "Sword_Long": {
-  "source": [
-   "kaykit",
-   "sword_2handed_color.gltf"
-  ],
-  "bone": "hand_r",
-  "pos": [
-   0,
-   0,
-   0
-  ],
-  "rot": [
-   1.5707963267948966,
-   0,
-   0
-  ],
-  "scale": 0.55
- },
- "Wizard_Hat": {
-  "modelled": true,
-  "bone": "Head",
-  "pos": [
-   0,
-   0.2,
-   -0.01
-  ],
-  "rot": [
-   0,
-   0,
-   0
-  ],
-  "scale": 1.0
- },
- "Helmet": {
-  "modelled": true,
-  "bone": "Head",
-  "pos": [
-   0,
-   0.11,
-   0.01
-  ],
-  "rot": [
-   0,
-   0,
-   0
-  ],
-  "scale": 1.0
- },
  "Spear": {
   "modelled": true,
   "bone": "hand_r",
@@ -201,21 +63,6 @@
   ],
   "rot": [
    1.5707963267948966,
-   0,
-   0
-  ],
-  "scale": 1.0
- },
- "Great_Helm": {
-  "modelled": true,
-  "bone": "Head",
-  "pos": [
-   0,
-   0.1,
-   0.01
-  ],
-  "rot": [
-   0,
    0,
    0
   ],

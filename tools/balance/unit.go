@@ -20,26 +20,28 @@ type check struct {
 	ok                 bool
 }
 
-// standard is today's default army (2W 2A 1M in 3-2) against the game's seeded
-// Red; swap replaces one unit of the same role (melee: a warrior, ranged: an archer).
-func standard(i int) sim.Input {
-	in := input(500_000 + uint64(i))
-	in.Blue = army(sim.F3x2, mix(2, 2, 1)...)
-	return in
+// standardFaction is the army a unit is measured in: its own faction's, or
+// the first playable faction's for a unit no faction fields yet.
+func standardFaction(u sim.Class) sim.Faction {
+	if f := sim.FactionWith(u); f != 0 && sim.FactionOf(f).Playable {
+		return f
+	}
+	return playable()[0]
 }
 
-func swapSlot(u sim.Class) int {
-	if sim.Roster[u].Stats.Ranged {
-		return 2 // the first archer
-	}
-	return 0 // the first warrior
+// standard is the default army (2·2·1 in 3-2) of faction f against the game's
+// seeded Red; swap replaces the first unit of the same role.
+func standard(f sim.Faction, i int) sim.Input {
+	in := input(500_000 + uint64(i))
+	in.Blue = army(sim.F3x2, mix(f, 2, 2, 1)...)
+	return in
 }
 
 // UnitReport measures a roster entry against the bands. ok is false if any
 // band fails.
 func UnitReport(name string, n int) (string, bool, error) {
 	u := sim.Class(255)
-	for _, d := range sim.Roster {
+	for d := range sim.Units() {
 		if d.Name == name {
 			u = d.ID
 		}
@@ -48,7 +50,7 @@ func UnitReport(name string, n int) (string, bool, error) {
 		return "", false, fmt.Errorf("no roster entry %q", name)
 	}
 	var checks []check
-	for _, d := range sim.Roster {
+	for d := range sim.Units() {
 		if d.ID == u {
 			continue
 		}
@@ -57,17 +59,18 @@ func UnitReport(name string, n int) (string, bool, error) {
 		checks = append(checks, check{"5× " + name + " vs 5× " + d.Name, pct(w), "25–75%", w >= h2hLo && w <= h2hHi})
 	}
 
-	slot := swapSlot(u)
+	fa := standardFaction(u)
+	slot := slotOf(roleOf(u))
 	var base, swapped []sim.Input
 	for i := 0; i < n; i++ {
-		base = append(base, standard(i))
-		in := standard(i)
+		base = append(base, standard(fa, i))
+		in := standard(fa, i)
 		in.Blue.Units[slot] = recruit(u, i) // its abilities in turn, so the swap measures the unit, not one ability
 		swapped = append(swapped, in)
 	}
 	bt, st := count(play(base)), count(play(swapped))
 	d := st.win() - bt.win()
-	checks = append(checks, check{fmt.Sprintf("standard army with one %s swapped for %s", title(mix(2, 2, 1)[slot]), name),
+	checks = append(checks, check{fmt.Sprintf("%s standard army with one %s swapped for %s", factionTitle(fa), title(mix(fa, 2, 2, 1)[slot]), name),
 		fmt.Sprintf("%s (base %s, %+.1f pts)", pct(st.win()), pct(bt.win()), 100*d), "±10 pts", d >= -swapBand && d <= swapBand})
 
 	// each ability as its level-1 pick, against the average of all five: none
@@ -77,7 +80,7 @@ func UnitReport(name string, n int) (string, bool, error) {
 	for k, sd := range sim.Roster[u].Skills {
 		var with []sim.Input
 		for i := 0; i < n; i++ {
-			in := standard(i)
+			in := standard(fa, i)
 			in.Blue.Units[slot] = sim.UnitSpec{Class: u, Skills: []sim.Skill{sd.Skill}}
 			with = append(with, in)
 		}

@@ -72,13 +72,13 @@ func margin(p float64, n int) float64 { return 1.96 * math.Sqrt(p*(1-p)/float64(
 func pct(p float64) string { return fmt.Sprintf("%.1f%%", 100*p) }
 
 // labFaction fields every unit type, so the lab can mix any of them in one
-// army (a new unit swapped into the classic army). Lab-only: never playable,
-// so Red keeps drawing from the game's playable factions.
+// army (a new unit swapped into another faction's army). Lab-only: never
+// playable, so Red keeps drawing from the game's playable factions.
 const labFaction sim.Faction = 255
 
 func init() {
 	var all []sim.Class
-	for _, d := range sim.Roster {
+	for d := range sim.Units() {
 		all = append(all, d.ID)
 	}
 	sim.Factions = append(sim.Factions, sim.FactionDef{ID: labFaction, Name: "lab", Units: all})
@@ -105,23 +105,22 @@ func recruit(c sim.Class, k int) sim.UnitSpec {
 	return sim.UnitSpec{Class: c, Skills: []sim.Skill{sim.Roster[c].Skills[k%sim.MaxSkills].Skill}}
 }
 
-func mix(w, a, m int) []sim.Class {
+// mix is a faction's army of w melee, a ranged and m caster units.
+func mix(f sim.Faction, w, a, m int) []sim.Class {
+	t := trio(f)
 	var out []sim.Class
-	for i := 0; i < w; i++ {
-		out = append(out, sim.Warrior)
-	}
-	for i := 0; i < a; i++ {
-		out = append(out, sim.Archer)
-	}
-	for i := 0; i < m; i++ {
-		out = append(out, sim.Mage)
+	for r, k := range [3]int{w, a, m} {
+		for i := 0; i < k; i++ {
+			out = append(out, t[r])
+		}
 	}
 	return out
 }
 
-func mixName(w, a, m int) string { return fmt.Sprintf("%dW %dA %dM", w, a, m) }
+// mixName: melee·ranged·caster counts ("2·2·1").
+func mixName(w, a, m int) string { return fmt.Sprintf("%d·%d·%d", w, a, m) }
 
-// title is a roster entry's name for tables ("warrior" -> "Warrior").
+// title is a roster entry's name for tables ("druzhynnyk" -> "Druzhynnyk").
 func title(c sim.Class) string {
 	n := sim.Roster[c].Name
 	return strings.ToUpper(n[:1]) + n[1:]
@@ -137,22 +136,31 @@ func five(c sim.Class) []sim.Class { return []sim.Class{c, c, c, c, c} }
 // ---------- experiments ----------
 
 // SideBias: identical armies and presets on both sides.
+// One row per playable faction, n battles each; the tally is all of them.
 func SideBias(n int) (string, tally) {
-	var ins []sim.Input
-	mixes := [][3]int{{2, 2, 1}, {5, 0, 0}, {0, 5, 0}}
-	for i := 0; i < n; i++ {
-		m := mixes[i%len(mixes)]
-		f := sim.Presets[(i/len(mixes))%len(sim.Presets)]
-		in := input(100_000 + uint64(i))
-		in.Blue = army(f, mix(m[0], m[1], m[2])...)
-		in.Red = army(f, mix(m[0], m[1], m[2])...)
-		ins = append(ins, in)
-	}
-	t := count(play(ins))
 	var b strings.Builder
-	fmt.Fprintf(&b, "| Battles | Blue wins | Red wins | Draws |\n|---|---|---|---|\n")
-	fmt.Fprintf(&b, "| %d | %s ± %s | %s | %s |\n", t.n, pct(t.win()), pct(margin(t.win(), t.n)), pct(float64(t.red)/float64(t.n)), pct(float64(t.draw)/float64(t.n)))
-	return b.String(), t
+	fmt.Fprintf(&b, "| Faction | Battles | Blue wins | Red wins | Draws |\n|---|---|---|---|---|\n")
+	var all tally
+	row := func(name string, t tally) {
+		fmt.Fprintf(&b, "| %s | %d | %s ± %s | %s | %s |\n", name, t.n, pct(t.win()), pct(margin(t.win(), t.n)), pct(float64(t.red)/float64(t.n)), pct(float64(t.draw)/float64(t.n)))
+	}
+	for _, fa := range playable() {
+		var ins []sim.Input
+		mixes := [][3]int{{2, 2, 1}, {5, 0, 0}, {0, 5, 0}}
+		for i := 0; i < n; i++ {
+			m := mixes[i%len(mixes)]
+			f := sim.Presets[(i/len(mixes))%len(sim.Presets)]
+			in := input(100_000 + uint64(i))
+			in.Blue = army(f, mix(fa, m[0], m[1], m[2])...)
+			in.Red = army(f, mix(fa, m[0], m[1], m[2])...)
+			ins = append(ins, in)
+		}
+		t := count(play(ins))
+		row(factionTitle(fa), t)
+		all.n, all.blue, all.red, all.draw, all.ticks = all.n+t.n, all.blue+t.blue, all.red+t.red, all.draw+t.draw, all.ticks+t.ticks
+	}
+	row("**All**", all)
+	return b.String(), all
 }
 
 // headToHead plays 5×a (Blue) against 5×c (Red), Spread on both sides.
@@ -200,17 +208,19 @@ type compRow struct {
 // Compositions: every mix × preset vs the game's seeded Red (no skills).
 func Compositions(n int) (string, []compRow) {
 	var rows []compRow
-	for w := 0; w <= 5; w++ {
-		for a := 0; a <= 5-w; a++ {
-			m := 5 - w - a
-			for _, f := range sim.Presets {
-				var ins []sim.Input
-				for i := 0; i < n; i++ {
-					in := input(300_000 + uint64(i))
-					in.Blue = army(f, mix(w, a, m)...)
-					ins = append(ins, in)
+	for _, fa := range playable() {
+		for w := 0; w <= 5; w++ {
+			for a := 0; a <= 5-w; a++ {
+				m := 5 - w - a
+				for _, f := range sim.Presets {
+					var ins []sim.Input
+					for i := 0; i < n; i++ {
+						in := input(300_000 + uint64(i))
+						in.Blue = army(f, mix(fa, w, a, m)...)
+						ins = append(ins, in)
+					}
+					rows = append(rows, compRow{factionTitle(fa) + " " + mixName(w, a, m), f, count(play(ins))})
 				}
-				rows = append(rows, compRow{mixName(w, a, m), f, count(play(ins))})
 			}
 		}
 	}
@@ -234,7 +244,7 @@ func Compositions(n int) (string, []compRow) {
 		return names[i] < names[j]
 	})
 	var b strings.Builder
-	b.WriteString("Blue win rate against the game's seeded random Red army (no skills, like match 1), averaged over the 7 formations, and with the best formation.\n\n| Mix | Avg win | Best formation | Best win |\n|---|---|---|---|\n")
+	b.WriteString("Blue win rate against the game's seeded random Red army (no skills, like match 1), averaged over the 7 formations, and with the best formation. Mixes are melee·ranged·caster units of the faction.\n\n| Mix | Avg win | Best formation | Best win |\n|---|---|---|---|\n")
 	for _, k := range names {
 		fmt.Fprintf(&b, "| %s | %s | %s | %s |\n", k, pct(avg[k]), best[k].formation, pct(best[k].t.win()))
 	}
@@ -243,47 +253,51 @@ func Compositions(n int) (string, []compRow) {
 }
 
 type skillRow struct {
+	faction    sim.Faction
 	class      sim.Class
 	name       string
 	base, with tally
 }
 
-// Skills: baseline 2W 2A 1M (3-2) of recruits vs seeded Red; variant: the
-// first unit of the skill's class takes it as its level-1 ability instead.
-// Same seeds, so the difference is the choice of ability.
+// Skills, per playable faction: baseline 2·2·1 (3-2) of recruits vs seeded
+// Red; variant: the first unit of the skill's class takes it as its level-1
+// ability instead. Same seeds, so the difference is the choice of ability.
 func Skills(n int) (string, []skillRow) {
-	base := func(i int) sim.Input {
-		in := input(400_000 + uint64(i))
-		in.Blue = army(sim.F3x2, mix(2, 2, 1)...)
-		return in
-	}
-	var bins []sim.Input
-	for i := 0; i < n; i++ {
-		bins = append(bins, base(i))
-	}
-	baseT := count(play(bins))
-	first := map[sim.Class]int{sim.Warrior: 0, sim.Archer: 2, sim.Mage: 4}
 	var rows []skillRow
-	for _, c := range core() {
-		for _, d := range sim.Roster[c].Skills {
-			var ins []sim.Input
-			for i := 0; i < n; i++ {
-				in := base(i)
-				u := &in.Blue.Units[first[c]]
-				u.Skills = []sim.Skill{d.Skill}
-				ins = append(ins, in)
-			}
-			rows = append(rows, skillRow{c, d.Name, baseT, count(play(ins))})
-		}
-	}
-	sort.SliceStable(rows, func(i, j int) bool { return rows[i].with.win() > rows[j].with.win() })
 	var b strings.Builder
-	fmt.Fprintf(&b, "Baseline: 2W 2A 1M in 3-2 against the seeded Red army, **%s** win rate (%d battles). Every unit is a recruit with one ability; in each row one unit of the skill's class takes that skill as its ability instead of its default. Same seeds and armies, so Δ is the choice of ability.\n\n", pct(baseT.win()), baseT.n)
-	b.WriteString("| Skill | Class | Win rate | Δ vs baseline |\n|---|---|---|---|\n")
-	for _, r := range rows {
-		fmt.Fprintf(&b, "| %s | %s | %s | %+.1f pts |\n", r.name, title(r.class), pct(r.with.win()), 100*(r.with.win()-r.base.win()))
+	for _, fa := range playable() {
+		base := func(i int) sim.Input {
+			in := input(400_000 + uint64(i))
+			in.Blue = army(sim.F3x2, mix(fa, 2, 2, 1)...)
+			return in
+		}
+		var bins []sim.Input
+		for i := 0; i < n; i++ {
+			bins = append(bins, base(i))
+		}
+		baseT := count(play(bins))
+		var fr []skillRow
+		for _, c := range trio(fa) {
+			for _, d := range sim.RosterOf(c).Skills {
+				var ins []sim.Input
+				for i := 0; i < n; i++ {
+					in := base(i)
+					u := &in.Blue.Units[slotOf(roleOf(c))]
+					u.Skills = []sim.Skill{d.Skill}
+					ins = append(ins, in)
+				}
+				fr = append(fr, skillRow{fa, c, d.Name, baseT, count(play(ins))})
+			}
+		}
+		sort.SliceStable(fr, func(i, j int) bool { return fr[i].with.win() > fr[j].with.win() })
+		fmt.Fprintf(&b, "### %s\n\nBaseline: 2·2·1 in 3-2 against the seeded Red army, **%s** win rate (%d battles).\n\n| Skill | Class | Win rate | Δ vs baseline |\n|---|---|---|---|\n", factionTitle(fa), pct(baseT.win()), baseT.n)
+		for _, r := range fr {
+			fmt.Fprintf(&b, "| %s | %s | %s | %+.1f pts |\n", r.name, title(r.class), pct(r.with.win()), 100*(r.with.win()-r.base.win()))
+		}
+		b.WriteString("\n")
+		rows = append(rows, fr...)
 	}
-	fmt.Fprintf(&b, "\nPaired seeds make Δ much tighter than ±%s; treat |Δ| < 2 pts as noise.\n", pct(margin(0.5, n)))
+	fmt.Fprintf(&b, "Every unit is a recruit with one ability; in each row one unit of the skill's class takes that skill as its ability instead of its default. Same seeds and armies, so Δ is the choice of ability. Paired seeds make Δ much tighter than ±%s; treat |Δ| < 2 pts as noise.\n", pct(margin(0.5, n)))
 	return b.String(), rows
 }
 

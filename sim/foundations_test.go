@@ -11,68 +11,6 @@ import (
 	"testing"
 )
 
-// 1.1: the data tables match docs/GAME_CONCEPT.md §4 and §10.1.
-func TestDataMatchesConcept(t *testing.T) {
-	type row struct {
-		hp, lo, hi               int
-		cdTenths                 int
-		rangeTenths, speedTenths int
-		sight                    int
-		ranged, kite             bool
-	}
-	want := [...]row{
-		Warrior: {100, 10, 16, 13, 15, 32, 7, false, false},
-		Archer:  {55, 9, 14, 17, 90, 36, 11, true, true},
-		Mage:    {55, 14, 20, 22, 70, 30, 9, true, false},
-	}
-	for c, w := range want {
-		s := Roster[c].Stats
-		if s.HP != I(w.hp) || s.DmgLo != I(w.lo) || s.DmgHi != I(w.hi) || s.Cooldown != sec(w.cdTenths) ||
-			s.Range != Ratio(w.rangeTenths, 10) || s.Speed != Ratio(w.speedTenths, 10) || s.Sight != I(w.sight) ||
-			s.Ranged != w.ranged || Roster[c].Temper.Kite != w.kite {
-			t.Errorf("%v stats = %+v, want %+v", Class(c), s, w)
-		}
-	}
-	pct := map[[2]Class]int{
-		{Warrior, Archer}: 145, {Warrior, Mage}: 95, {Mage, Warrior}: 135,
-	}
-	for a := Warrior; a <= Mage; a++ {
-		for v := Warrior; v <= Mage; v++ {
-			p, ok := pct[[2]Class{a, v}]
-			if !ok {
-				p = 100
-			}
-			if m := MatchupOf(&Roster[a], &Roster[v]); m != Ratio(p, 100) {
-				t.Errorf("matchup %v>%v = %v, want %d%%", a, v, m, p)
-			}
-		}
-	}
-	skills := map[Class]string{
-		Warrior: "Toughness Swift Strength Dash Executioner",
-		Archer:  "Long shot,Sharp arrows,Arcing shot,Headshot,Toughness",
-		Mage:    "Frost Power Blink Blast Toughness",
-	}
-	for c, names := range skills {
-		var got []string
-		for _, d := range Roster[c].Skills {
-			got = append(got, d.Name)
-		}
-		sep := " "
-		if strings.Contains(names, ",") {
-			sep = ","
-		}
-		if strings.Join(got, sep) != names {
-			t.Errorf("%v skills = %v, want %v", c, got, names)
-		}
-	}
-	if d, _ := SkillDefOf(Warrior, WarriorExecutioner); d.Main().Pct != 35 {
-		t.Errorf("executioner chance %v", d.Main().Pct)
-	}
-	if d, _ := SkillDefOf(Archer, ArcherHeadshot); d.Main().Pct != 25 {
-		t.Errorf("headshot chance %v", d.Main().Pct)
-	}
-}
-
 // 1.2: fixed-point vectors and the precomputed angle tables.
 func TestVectors(t *testing.T) {
 	if got := I(3).Mul(Ratio(1, 2)); got != I(3)/2 {

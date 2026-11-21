@@ -91,9 +91,9 @@ func TestPathAroundRock(t *testing.T) {
 }
 
 func TestMovement(t *testing.T) {
-	speed := perTick(Roster[Warrior].Stats.Speed)
+	speed := perTick(Roster[Druzhynnyk].Stats.Speed)
 	walked := func(obs []Obstacle, setup func(*Unit)) Fx {
-		b := testBattle(obs, tu{0, Warrior, V(0, 0), nil})
+		b := testBattle(obs, tu{0, Druzhynnyk, V(0, 0), nil})
 		u := b.Units[0]
 		u.Face = V(0, One)
 		target := V(0, I(10))
@@ -118,7 +118,7 @@ func TestMovement(t *testing.T) {
 	}
 
 	// turning is limited to 0.4 rad per tick
-	b := testBattle(nil, tu{0, Warrior, V(0, 0), nil})
+	b := testBattle(nil, tu{0, Druzhynnyk, V(0, 0), nil})
 	u := b.Units[0]
 	u.Face = V(0, One)
 	tgt := V(I(10), 0)
@@ -129,7 +129,7 @@ func TestMovement(t *testing.T) {
 	}
 
 	// separation pushes overlapping units apart
-	b = testBattle(nil, tu{0, Warrior, V(0, 0), nil}, tu{0, Warrior, p(2, 0), nil})
+	b = testBattle(nil, tu{0, Druzhynnyk, V(0, 0), nil}, tu{0, Druzhynnyk, p(2, 0), nil})
 	b.Step()
 	if d := Dist(b.Units[0].Pos, b.Units[1].Pos); d < Separation-Ratio(1, 100) {
 		t.Errorf("units still overlap: %v apart", d)
@@ -139,16 +139,16 @@ func TestMovement(t *testing.T) {
 // ---------- 4. Combat ----------
 
 func TestSpottedByTeammate(t *testing.T) {
-	// archer at the left, rock between it and the red warrior; a blue scout sees the warrior
+	// archer at the left, rock between it and the red druzhynnyk; a blue scout sees the druzhynnyk
 	b := testBattle([]Obstacle{{Kind: Rock, Pos: p(0, 0), R: I(1)}},
-		tu{0, Archer, p(-40, 0), nil}, tu{0, Warrior, p(30, 40), nil}, tu{1, Warrior, p(40, 0), nil})
+		tu{0, Toxotes, p(-40, 0), nil}, tu{0, Druzhynnyk, p(30, 40), nil}, tu{1, Druzhynnyk, p(40, 0), nil})
 	if b.canSee(b.Units[0], b.Units[2]) {
 		t.Fatal("setup: the archer itself should not see through the rock")
 	}
 	b.Units[1].cd, b.Units[2].cd = 1000, 1000 // keep them out of the fight
 	b.Step()
 	if b.Units[0].Target != 2 {
-		t.Fatalf("archer should target the warrior its teammate sees, got %d", b.Units[0].Target)
+		t.Fatalf("archer should target the druzhynnyk its teammate sees, got %d", b.Units[0].Target)
 	}
 	if !b.Units[0].Moving() {
 		t.Error("archer without a clear shot should move to get one")
@@ -156,7 +156,7 @@ func TestSpottedByTeammate(t *testing.T) {
 }
 
 func TestNothingInSight(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, p(0, 100), nil}, tu{1, Warrior, p(0, -125), nil})
+	b := testBattle(nil, tu{0, Druzhynnyk, p(0, 100), nil}, tu{1, Druzhynnyk, p(0, -125), nil})
 	b.Step()
 	u := b.Units[0]
 	if u.Target != -1 || u.advanceGoal == nil || u.advanceGoal.Z > -I(11) {
@@ -170,7 +170,7 @@ func TestNothingInSight(t *testing.T) {
 }
 
 func TestInvestigateLastSeen(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, p(0, 50), nil}, tu{1, Warrior, p(0, -10), nil})
+	b := testBattle(nil, tu{0, Druzhynnyk, p(0, 50), nil}, tu{1, Druzhynnyk, p(0, -10), nil})
 	b.Step()
 	if b.Units[0].Target != 1 {
 		t.Fatal("setup: should see the enemy")
@@ -184,7 +184,7 @@ func TestInvestigateLastSeen(t *testing.T) {
 }
 
 func TestMeleeHitTiming(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, p(0, 10), nil}, tu{1, Mage, p(0, 0), nil})
+	b := testBattle(nil, tu{0, Druzhynnyk, p(0, 10), nil}, tu{1, Volva, p(0, 0), nil})
 	b.Units[1].cd = 1000
 	for i := 0; i < 10; i++ { // first tick: target + start swing
 		b.Step()
@@ -194,7 +194,7 @@ func TestMeleeHitTiming(t *testing.T) {
 	}
 	s := b.Units[0].swing
 	if s == nil {
-		t.Fatal("warrior never swung")
+		t.Fatal("druzhynnyk never swung")
 	}
 	hitTick := (HitAtPct*s.dur + 99) / 100
 	for s.t < hitTick-1 {
@@ -210,7 +210,7 @@ func TestMeleeHitTiming(t *testing.T) {
 }
 
 func TestTargetDiesBeforeArrowLands(t *testing.T) {
-	b := testBattle(nil, tu{0, Archer, p(0, 80), nil}, tu{1, Warrior, p(0, 0), nil})
+	b := testBattle(nil, tu{0, Toxotes, p(0, 80), nil}, tu{1, Druzhynnyk, p(0, 0), nil})
 	b.Units[1].cd = 1000
 	for i := 0; i < 60 && len(b.Shots) == 0; i++ {
 		b.Step()
@@ -229,7 +229,7 @@ func TestTargetDiesBeforeArrowLands(t *testing.T) {
 
 func TestFlankAndMatchup(t *testing.T) {
 	hit := func(from Vec) (Fx, uint8) {
-		b := testBattle(nil, tu{0, Warrior, from, nil}, tu{1, Archer, V(0, 0), nil})
+		b := testBattle(nil, tu{0, Druzhynnyk, from, nil}, tu{1, Toxotes, V(0, 0), nil})
 		b.Units[1].Face = V(0, -One) // archer faces -z
 		b.rng = NewRNG(99)
 		b.damage(b.Units[0], b.Units[1], from, One)
@@ -239,7 +239,7 @@ func TestFlankAndMatchup(t *testing.T) {
 	front, ff := hit(p(0, -10))
 	back, bf := hit(p(0, 10))
 	roll := NewRNG(99).Between(I(10), I(16))
-	m := MatchupOf(&Roster[Warrior], &Roster[Archer])
+	m := MatchupOf(&Roster[Druzhynnyk], &Roster[Toxotes])
 	if front != roll.Mul(m) || ff != FlagStrong {
 		t.Errorf("front hit %v flags %b, want roll×%v = %v", front, ff, m, roll.Mul(m))
 	}
@@ -253,7 +253,7 @@ func TestFlankAndMatchup(t *testing.T) {
 }
 
 func TestStagger(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, p(0, 50), nil}, tu{1, Warrior, p(0, -60), nil})
+	b := testBattle(nil, tu{0, Druzhynnyk, p(0, 50), nil}, tu{1, Druzhynnyk, p(0, -60), nil})
 	b.Step() // red walks toward blue
 	r := b.Units[1]
 	b.damage(b.Units[0], r, b.Units[0].Pos, One)
@@ -271,16 +271,16 @@ func TestStagger(t *testing.T) {
 }
 
 func TestKiting(t *testing.T) {
-	b := testBattle(nil, tu{0, Archer, p(0, 0), nil}, tu{1, Warrior, p(0, -25), nil})
+	b := testBattle(nil, tu{0, Toxotes, p(0, 0), nil}, tu{1, Druzhynnyk, p(0, -25), nil})
 	b.Units[1].cd = 1000
 	b.Step()
 	a := b.Units[0]
 	if !a.Kiting {
-		t.Fatal("archer should back away from a warrior 2.5 m away")
+		t.Fatal("archer should back away from a druzhynnyk 2.5 m away")
 	}
 	b.steps(5)
 	if a.Pos.Z <= 0 {
-		t.Errorf("archer should retreat away from the warrior (+z), at %v", a.Pos)
+		t.Errorf("archer should retreat away from the druzhynnyk (+z), at %v", a.Pos)
 	}
 	for i := 0; i < KiteMaxTicks+2 && a.Kiting; i++ {
 		b.Step()
@@ -291,7 +291,7 @@ func TestKiting(t *testing.T) {
 }
 
 func TestCorneredArcherStands(t *testing.T) {
-	b := testBattle(nil, tu{0, Archer, V(ClampLim, ClampLim), nil}, tu{1, Warrior, V(ClampLim-I(2), ClampLim-I(2)), nil})
+	b := testBattle(nil, tu{0, Toxotes, V(ClampLim, ClampLim), nil}, tu{1, Druzhynnyk, V(ClampLim-I(2), ClampLim-I(2)), nil})
 	b.Units[1].cd = 1000
 	b.Units[0].Face = V(-One, 0)
 	b.Step()
@@ -311,15 +311,19 @@ func TestStatSkills(t *testing.T) {
 		s     Skill
 		check func(Stats) bool
 	}{
-		{Warrior, WarriorToughness, func(s Stats) bool { return s.HP == I(110) }},
-		{Archer, ArcherToughness, func(s Stats) bool { return s.HP == I(66) }},
-		{Mage, MageToughness, func(s Stats) bool { return s.HP == I(66) }},
-		{Warrior, WarriorSwift, func(s Stats) bool { // Swift: +40% speed, attacks 20% faster
-			return (s.Speed-Ratio(448, 100)).Abs() <= 2 && s.Cooldown == sec(13)*80/100 && s.SwingTicks == sec(9)*80/100
+		{Volva, VolvaStaff, func(s Stats) bool { return (s.HP - Ratio(744, 10)).Abs() <= 2 }}, // +20% health
+		{Druzhynnyk, DruzhynnykHeavyMail, func(s Stats) bool { // +20% health, −5% speed
+			return s.HP == I(120) && (s.Speed-Ratio(304, 100)).Abs() <= 2
 		}},
-		{Warrior, WarriorStrength, func(s Stats) bool { return s.DmgLo == Ratio(115, 10) && (s.DmgHi-Ratio(184, 10)).Abs() <= 2 }},
-		{Archer, ArcherLongShot, func(s Stats) bool { return s.Range == Ratio(1125, 100) }},
-		{Archer, ArcherArcingShot, func(s Stats) bool { return (s.DmgLo - Ratio(99, 10)).Abs() <= 2 }}, // Arcing shot: +10% damage
+		{Druzhynnyk, DruzhynnykAxeAndSword, func(s Stats) bool { // attacks 20% faster
+			return s.Cooldown == sec(13)*80/100 && s.SwingTicks == sec(9)*80/100
+		}},
+		{Strilets, StriletsSteppeShooting, func(s Stats) bool { return (s.Speed - Ratio(396, 100)).Abs() <= 2 }}, // +10% speed
+		{Toxotes, ToxotesSharpArrows, func(s Stats) bool {
+			return (s.DmgLo-Ratio(1035, 100)).Abs() <= 2 && (s.DmgHi-Ratio(161, 10)).Abs() <= 2
+		}},
+		{Toxotes, ToxotesSolenarion, func(s Stats) bool { return s.Range == Ratio(117, 10) }},              // +30% range
+		{Strilets, StriletsArcingShot, func(s Stats) bool { return (s.DmgLo - Ratio(99, 10)).Abs() <= 2 }}, // +10% damage
 	}
 	for _, c := range cases {
 		u := newUnit(0, 0, UnitSpec{Class: c.c, Skills: []Skill{c.s}}, Vec{})
@@ -330,44 +334,45 @@ func TestStatSkills(t *testing.T) {
 }
 
 func TestDash(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, p(0, 60), []Skill{WarriorDash}}, tu{1, Mage, p(0, 0), nil})
+	b := testBattle(nil, tu{0, Huskarl, p(0, 60), []Skill{HuskarlCharge}}, tu{1, Volva, p(0, 0), nil})
 	b.Units[1].cd = 1000
 	b.Step()
 	u := b.Units[0]
 	if u.dash == nil {
-		t.Fatal("warrior 6 m away should dash")
+		t.Fatal("a huskarl with Charge 6 m away should dash")
 	}
 	b.steps(u.dash.dur)
 	if d := Dist(u.Pos, b.Units[1].Pos); d > u.Stats.Range+Half {
-		t.Errorf("dash should stop at sword range, %v away", d)
+		t.Errorf("dash should stop at axe range, %v away", d)
 	}
 	if u.effect(GapCloser).cd <= 0 {
 		t.Error("dash should go on cooldown")
 	}
 }
 
+// An escape without a speed teleports (a blink).
 func TestBlink(t *testing.T) {
-	b := testBattle(nil, tu{0, Mage, p(0, 0), []Skill{MageBlink}}, tu{1, Warrior, p(0, -20), nil})
+	blinker := unitWith(t, Huslyar, "blinker", nil, Effect{Kind: Escape, Value: I(6), Radius: Ratio(25, 10), Ticks: sec(80)})
+	b := testBattle(nil, tu{0, blinker, p(0, 0), []Skill{1}}, tu{1, Druzhynnyk, p(0, -20), nil})
 	b.Units[1].cd = 1000
-	b.Step()
 	m := b.Units[0]
-	if d := Dist(m.Pos, p(0, 0)); d < I(7) {
-		t.Fatalf("mage should blink ~8 m away, moved %v", d)
+	b.Step()
+	if d := Dist(m.Pos, p(0, 0)); d < I(5) {
+		t.Fatalf("should blink ~6 m away, moved %v", d)
 	}
 	if m.Pos.Z <= 0 {
-		t.Errorf("blink should go away from the warrior, landed at %v", m.Pos)
+		t.Errorf("blink should go away from the druzhynnyk, landed at %v", m.Pos)
 	}
 	if cd := m.effect(Escape).cd; cd != 8*TicksPerSecond {
 		t.Errorf("blink cooldown %d", cd)
 	}
 }
 
-// An escape with a speed runs (a dash) instead of teleporting.
+// An escape with a speed (the volva's Slip away) runs instead of teleporting.
 func TestEscapeRun(t *testing.T) {
-	b := testBattle(nil, tu{0, Mage, p(0, 0), []Skill{MageBlink}}, tu{1, Warrior, p(0, -20), nil})
+	b := testBattle(nil, tu{0, Volva, p(0, 0), []Skill{VolvaSlipAway}}, tu{1, Druzhynnyk, p(0, -20), nil})
 	b.Units[1].cd = 1000
 	m := b.Units[0]
-	m.effect(Escape).e.Speed = I(6)
 	b.Step()
 	if m.dash == nil {
 		t.Fatal("an escape with a speed should start a run")
@@ -376,11 +381,11 @@ func TestEscapeRun(t *testing.T) {
 		t.Fatalf("a run shouldn't teleport, moved %v in one tick", d)
 	}
 	b.steps(m.dash.dur)
-	if d := Dist(m.Pos, p(0, 0)); d < I(7) {
-		t.Errorf("should run ~8 m away, moved %v", d)
+	if d := Dist(m.Pos, p(0, 0)); d < I(5) {
+		t.Errorf("should run ~6 m away, moved %v", d)
 	}
 	if m.Pos.Z <= 0 {
-		t.Errorf("should run away from the warrior, ended at %v", m.Pos)
+		t.Errorf("should run away from the druzhynnyk, ended at %v", m.Pos)
 	}
 	if cd := m.effect(Escape).cd; cd <= 0 {
 		t.Errorf("run cooldown %d", cd)
@@ -392,9 +397,9 @@ func TestLob(t *testing.T) {
 	for _, lob := range []bool{false, true} {
 		var skills []Skill
 		if lob {
-			skills = []Skill{ArcherArcingShot}
+			skills = []Skill{StriletsArcingShot}
 		}
-		b := testBattle(rock, tu{0, Archer, p(0, 80), skills}, tu{1, Warrior, p(0, 0), nil}, tu{0, Warrior, p(30, 0), nil})
+		b := testBattle(rock, tu{0, Strilets, p(0, 80), skills}, tu{1, Druzhynnyk, p(0, 0), nil}, tu{0, Druzhynnyk, p(30, 0), nil})
 		b.Units[1].cd, b.Units[2].cd = 1000, 1000
 		b.Units[0].cd = 0
 		start := b.Units[0].Pos
@@ -410,7 +415,7 @@ func TestExecute(t *testing.T) {
 	kills := func(hpPct int) int {
 		n := 0
 		for seed := uint64(0); seed < 400; seed++ {
-			b := testBattle(nil, tu{0, Warrior, V(0, 0), []Skill{WarriorExecutioner}}, tu{1, Warrior, p(0, -10), nil})
+			b := testBattle(nil, tu{0, Huskarl, V(0, 0), []Skill{HuskarlExecutioner}}, tu{1, Druzhynnyk, p(0, -10), nil})
 			v := b.Units[1]
 			v.HP = v.MaxHP.MulDiv(hpPct, 100)
 			v.Face = V(0, One) // facing the attacker: no flank bonus
@@ -423,18 +428,27 @@ func TestExecute(t *testing.T) {
 		return n
 	}
 	if k := kills(100); k != 0 {
-		t.Errorf("executioner killed %d/400 full-health warriors; it should only finish off the wounded", k)
+		t.Errorf("executioner killed %d/400 at full health; it should only finish off the wounded", k)
 	}
-	if k := kills(38); k < 110 || k > 170 { // below 40%: 35% chance, about 140 (a normal hit can't kill 38 HP)
-		t.Errorf("executioner killed %d/400 warriors at 38%% health, want about 140", k)
+	if k := kills(38); k < 70 || k > 130 { // below 40%: 25% chance, about 100 (a normal hit can't kill 38 HP)
+		t.Errorf("executioner killed %d/400 at 38%% health, want about 100", k)
 	}
 }
 
-func TestFrostAndBlast(t *testing.T) {
+// Slow and splash on one hit, from two skills learned splash first: the
+// victim is slowed and its neighbour splashed either way. No faction unit has
+// both, so a test unit does.
+func TestSlowAndSplash(t *testing.T) {
+	d := Roster[Volva]
+	d.Name, d.InRedPool = "frost and blast", false
+	d.Skills[0].Effects = []Effect{{Kind: SplashOnHit, Pct: 35, Radius: I(2)}}
+	d.Skills[1].Effects = []Effect{{Kind: SlowOnHit, Pct: 100, Ticks: 60, Factor: Ratio(6, 10)}}
+	withRoster(t, d)
+	c := Class(len(Roster) - 1)
 	slowed, splash := 0, 0
 	for seed := uint64(0); seed < 200; seed++ {
-		b := testBattle(nil, tu{0, Mage, p(0, 60), []Skill{MageFrost, MageBlast}},
-			tu{1, Warrior, p(0, 0), nil}, tu{1, Warrior, p(10, 0), nil})
+		b := testBattle(nil, tu{0, c, p(0, 60), []Skill{d.Skills[0].Skill, d.Skills[1].Skill}},
+			tu{1, Druzhynnyk, p(0, 0), nil}, tu{1, Druzhynnyk, p(10, 0), nil})
 		b.rng = NewRNG(seed)
 		b.Shots = []*Shot{{Shooter: 0, Victim: 1, Bolt: true, Start: p(0, 56), Aim: p(0, 0), Dur: 1}}
 		b.updateShots()
@@ -446,17 +460,17 @@ func TestFrostAndBlast(t *testing.T) {
 		}
 	}
 	if slowed != 200 {
-		t.Errorf("frost slowed %d/200, want every time", slowed)
+		t.Errorf("slowed %d/200, want every time", slowed)
 	}
 	if splash != 200 {
-		t.Errorf("blast hit the neighbour %d/200 times, want every time", splash)
+		t.Errorf("splash hit the neighbour %d/200 times, want every time", splash)
 	}
 }
 
 // ---------- 4.6 Battle end ----------
 
 func TestBattleEnd(t *testing.T) {
-	b := testBattle(nil, tu{0, Warrior, p(0, 10), nil}, tu{1, Archer, p(0, 0), nil})
+	b := testBattle(nil, tu{0, Druzhynnyk, p(0, 10), nil}, tu{1, Toxotes, p(0, 0), nil})
 	b.Units[1].HP = One
 	b.Units[1].cd = 1000
 	b.steps(100)
@@ -470,7 +484,7 @@ func TestBattleEnd(t *testing.T) {
 	}
 
 	// mutual wipe: two arrows kill the last two units on the same tick
-	b = testBattle(nil, tu{0, Archer, p(0, 80), nil}, tu{1, Archer, p(0, -80), nil})
+	b = testBattle(nil, tu{0, Toxotes, p(0, 80), nil}, tu{1, Toxotes, p(0, -80), nil})
 	b.Units[0].HP, b.Units[1].HP = One/2, One/2
 	b.Units[0].cd, b.Units[1].cd = 1000, 1000
 	b.Shots = []*Shot{
@@ -483,7 +497,7 @@ func TestBattleEnd(t *testing.T) {
 	}
 
 	// tick limit
-	b = testBattle(nil, tu{0, Warrior, V(0, I(13)), nil}, tu{1, Warrior, V(0, I(-13)), nil})
+	b = testBattle(nil, tu{0, Druzhynnyk, V(0, I(13)), nil}, tu{1, Druzhynnyk, V(0, I(-13)), nil})
 	for _, u := range b.Units {
 		u.HP = I(1 << 20)
 	}
@@ -496,7 +510,7 @@ func TestBattleEnd(t *testing.T) {
 // ---------- 5. Armies ----------
 
 func TestFormationPresets(t *testing.T) {
-	classes := []Class{Warrior, Warrior, Archer, Archer, Mage}
+	classes := []Class{Druzhynnyk, Druzhynnyk, Toxotes, Toxotes, Volva}
 	for _, f := range Presets {
 		for team := 0; team < 2; team++ {
 			slots := FormationSlots(f, classes, team)
@@ -510,7 +524,7 @@ func TestFormationPresets(t *testing.T) {
 					}
 				}
 			}
-			// melee in front: warriors no further back than any ranged unit
+			// melee in front: melee units no further back than any ranged unit
 			front := func(v Vec) Fx {
 				if team == 0 {
 					return v.Z
@@ -520,13 +534,13 @@ func TestFormationPresets(t *testing.T) {
 			for _, w := range []int{0, 1} {
 				for _, r := range []int{2, 3, 4} {
 					if f != Spread && sameFlank(slots[w], slots[r]) && front(slots[w]) > front(slots[r]) {
-						t.Errorf("%v team %d: warrior %d behind ranged %d", f, team, w, r)
+						t.Errorf("%v team %d: melee unit %d behind ranged %d", f, team, w, r)
 					}
 				}
 			}
 		}
 	}
-	// 5-0: everyone on the left flank, warriors in the front row
+	// 5-0: everyone on the left flank, melee units in the front row
 	s := FormationSlots(F5x0, classes, 0)
 	for i, v := range s {
 		if v.X >= 0 {
@@ -534,7 +548,7 @@ func TestFormationPresets(t *testing.T) {
 		}
 	}
 	if s[0].Z != s[1].Z || s[0].Z >= s[3].Z {
-		t.Errorf("5-0: warriors should share the front row: %v", s)
+		t.Errorf("5-0: melee units should share the front row: %v", s)
 	}
 }
 
@@ -559,7 +573,7 @@ func TestRedArmy(t *testing.T) {
 			}
 		}
 		if i > 0 && u.Class < a.Units[i-1].Class {
-			t.Error("red units should be listed warriors, archers, mages")
+			t.Error("red units should be listed in roster order")
 		}
 		if u.Class != b.Units[i].Class || len(u.Skills) != len(b.Units[i].Skills) {
 			t.Error("same seed gave a different red army")
@@ -584,8 +598,8 @@ func TestRedArmy(t *testing.T) {
 
 func TestValidate(t *testing.T) {
 	l1 := []Skill{1}
-	five := []UnitSpec{{Class: Warrior, Skills: l1}, {Class: Warrior, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Mage, Skills: l1}}
-	ok := Input{Version: Version, BlueFaction: FactionClassic, Seed: 1, Blue: Army{Formation: F3x2, Units: five}}
+	five := []UnitSpec{{Class: Druzhynnyk, Skills: l1}, {Class: Druzhynnyk, Skills: l1}, {Class: Strilets, Skills: l1}, {Class: Strilets, Skills: l1}, {Class: Huslyar, Skills: l1}}
+	ok := Input{Version: Version, BlueFaction: FactionRus, Seed: 1, Blue: Army{Formation: F3x2, Units: five}}
 	if err := ok.Validate(); err != nil {
 		t.Fatalf("valid input rejected: %v", err)
 	}
@@ -599,9 +613,9 @@ func TestValidate(t *testing.T) {
 	inside := V(0, I(10))
 	bad := map[string]Input{
 		"version":     in(func(c *Input) { c.Version = "0.0.1" }),
-		"six units":   in(func(c *Input) { c.Blue.Units = append(c.Blue.Units, UnitSpec{Class: Mage, Skills: l1}) }),
+		"six units":   in(func(c *Input) { c.Blue.Units = append(c.Blue.Units, UnitSpec{Class: Huslyar, Skills: l1}) }),
 		"no units":    in(func(c *Input) { c.Blue.Units = nil }),
-		"skill twice": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{WarriorDash, WarriorDash} }),
+		"skill twice": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{DruzhynnykShieldWall, DruzhynnykShieldWall} }),
 		"no ability":  in(func(c *Input) { c.Blue.Units[0].Skills = nil }),
 		"level 4":     in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{1, 2, 3, 4} }),
 		"wrong class": in(func(c *Input) { c.Blue.Units[0].Skills = []Skill{6} }),
@@ -636,7 +650,7 @@ func setPos(units []UnitSpec, v Vec) {
 }
 
 func TestRedHealthPct(t *testing.T) {
-	in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 3, RedSkills: 5, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Warrior, Skills: []Skill{1}}}}}
+	in := Input{Version: Version, BlueFaction: FactionRus, Seed: 3, RedSkills: 5, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Druzhynnyk, Skills: []Skill{1}}}}}
 	full, _ := New(in)
 	in.RedHealthPct = 85
 	eased, _ := New(in)

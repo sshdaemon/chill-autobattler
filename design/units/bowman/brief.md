@@ -19,7 +19,7 @@ Light kit, little armour: reckless, hits hard, dies fast.
 
 - **Beats:** archers and casters it can reach and outgun (mage, völva,
   strilets, toxotes) — a slight edge, not a hard counter.
-- **Beaten by:** melee that reaches it (warrior, druzhynnyk); it does not
+- **Beaten by:** melee that reaches it (druzhynnyk, huskarl); it does not
   kite away like the strilets.
 
 ## How it should feel

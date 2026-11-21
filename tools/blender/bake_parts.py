@@ -13,8 +13,8 @@
 # one the clips play on); only meshes are rewritten: unused vertex colours
 # and extra UV sets dropped, unreferenced vertices removed, and the base
 # bodies cut down to the head (outfits bring their own bodies and arms).
-# Blender is used only for images (resize, JPEG, masks) and for the few items
-# modelled here (wizard hat, helmet).
+# Blender is used only for images (resize, JPEG, masks) and for the items
+# modelled here (model_items).
 import bpy, glob, json, math, os, struct, sys
 import numpy as np
 
@@ -284,31 +284,7 @@ def model_items():
         c = [((h >> s) & 255) / 255 for s in (16, 8, 0)]
         return tuple(x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c)
 
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-    hat = mat('MI_WizardHat', lin(0x4a2a8a))
-    bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.2, depth=0.02, location=(0, 0, 0))
-    brim = bpy.context.object
-    bpy.ops.mesh.primitive_cone_add(vertices=20, radius1=0.12, depth=0.44, location=(0, 0.03, 0.22), rotation=(math.radians(-14), 0, 0))
-    cone = bpy.context.object
-    for o in (brim, cone):
-        o.data.materials.append(hat)
-    export('Wizard_Hat', [brim, cone])
-
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-    steel = mat('MI_Helmet', lin(0x9aa0a8), 0.35, 0.8)
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=12, radius=0.13, location=(0, 0, 0))
-    dome = bpy.context.object
-    bpy.ops.object.mode_set(mode='EDIT'); import bmesh
-    bm = bmesh.from_edit_mesh(dome.data)
-    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -0.02], context='VERTS')
-    bmesh.update_edit_mesh(dome.data); bpy.ops.object.mode_set(mode='OBJECT')
-    bpy.ops.mesh.primitive_torus_add(major_radius=0.13, minor_radius=0.012, location=(0, 0, -0.015))
-    rim = bpy.context.object
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, -0.13, -0.05), scale=(0.012, 0.01, 0.06))
-    nose = bpy.context.object
-    for o in (dome, rim, nose):
-        o.data.materials.append(steel)
-    export('Helmet', [dome, rim, nose])
+    import bmesh
     # spear: a long shaft (grip at the origin, point along +Y like the sword), steel head
     bpy.ops.wm.read_factory_settings(use_empty=True)
     wood = mat('MI_SpearShaft', lin(0x6b4a2a), 0.75)
@@ -324,23 +300,6 @@ def model_items():
     for o in (head, collar):
         o.data.materials.append(steel2)
     export('Spear', [shaft, head, collar])
-    # great helm: a closed barrel helm with a flat top, an eye slit and a short crest
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-    plate = mat('MI_GreatHelm', lin(0x8f969e), 0.32, 0.85)
-    dark = mat('MI_GreatHelmSlit', lin(0x15171a), 0.9)
-    bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.135, depth=0.26, location=(0, 0, 0.0))
-    barrel = bpy.context.object
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=20, ring_count=8, radius=0.135, location=(0, 0, 0.13))
-    top = bpy.context.object
-    top.scale = (1, 1, 0.45)
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, -0.132, 0.03), scale=(0.2, 0.012, 0.022))
-    slit = bpy.context.object
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0.0, 0.2), scale=(0.018, 0.2, 0.06))
-    crest = bpy.context.object
-    for o in (barrel, top, crest):
-        o.data.materials.append(plate)
-    slit.data.materials.append(dark)
-    export('Great_Helm', [barrel, top, slit, crest])
     # strilets: composite recurved bow of steppe type, in the KayKit bow's frame
     # (grip at the origin, length along Y here = glTF Z, string on -X), braced:
     # limbs curve back toward the string, then the stiff horn ears (siyahs) turn forward
@@ -823,7 +782,7 @@ def model_items():
     rim = bpy.context.object; rim.scale = (1, 1.04, 1); rim.data.materials.append(felt); bpy.ops.object.shade_smooth()
     export('Felt_Cap', [crown, rim])
 
-    for name in ('Wizard_Hat', 'Helmet', 'Spear', 'Great_Helm', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap',
+    for name in ('Spear', 'Shelom', 'Shield_Crimson', 'Husli', 'Composite_Bow', 'Fur_Cap',
                  'Dane_Axe', 'Shield_Gokstad', 'Shield_Gokstad_Back', 'Spangenhelm', 'Iron_Staff', 'Volva_Beads',
                  'Yew_Longbow', 'Throwing_Spears', 'Skoutarion', 'Domed_Helm', 'Kamelaukion',
                  'Hand_Siphon', 'Fire_Pots', 'Felt_Cap'):

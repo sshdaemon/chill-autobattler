@@ -1,9 +1,10 @@
 import { armyClasses, DEPLOY_SECONDS, useBattle } from '../store.ts';
-import { CUSTOM, PRESETS } from '../gamedata.ts';
+import { CUSTOM, PRESETS, classOf, roleOf } from '../gamedata.ts';
 import { CUSTOM_PLAN, CUSTOM_WORDS, planWords } from '../plans.ts';
 import { PlanEditor } from './PlanEditor.tsx';
 
-// Mini-diagram of where your own units would stand (top = toward the enemy).
+// Mini-diagram of where your own units would stand (top = toward the enemy),
+// marked by role: melee a filled circle, ranged a ring, casters a diamond.
 function Diagram({ f }: { f: number }) {
   const { slots, army, data } = useBattle();
   const frame = (inner: React.ReactNode, dashed = false) => (
@@ -13,11 +14,11 @@ function Diagram({ f }: { f: number }) {
   const z = data?.deployZone, pos = slots[f];
   if (!z || !pos) return frame(null);
   const sx = (x: number) => 4 + ((x - z[0]) / (z[1] - z[0])) * 88, sy = (v: number) => 4 + ((v - z[2]) / (z[3] - z[2])) * 48;
-  const classes = armyClasses({ army });
+  const roles = armyClasses({ army }).map((c) => roleOf(classOf(data, c)));
   return frame(pos.map((p, i) => {
     const x = sx(p.x), y = sy(p.z);
-    return classes[i] === 0 ? <circle key={i} cx={x} cy={y} r="4.2" fill="#3a8cff" stroke="#bfe0ff" />
-      : classes[i] === 1 ? <circle key={i} cx={x} cy={y} r="3.6" fill="none" stroke="#fff" strokeWidth="1.8" />
+    return roles[i] === 0 ? <circle key={i} cx={x} cy={y} r="4.2" fill="#3a8cff" stroke="#bfe0ff" />
+      : roles[i] === 1 ? <circle key={i} cx={x} cy={y} r="3.6" fill="none" stroke="#fff" strokeWidth="1.8" />
         : <rect key={i} x={x - 3.4} y={y - 3.4} width="6.8" height="6.8" fill="#b48cff" transform={`rotate(45 ${x} ${y})`} />;
   }));
 }

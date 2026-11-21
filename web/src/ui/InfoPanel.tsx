@@ -1,3 +1,4 @@
+import { classOf } from '../gamedata.ts';
 import { useRef } from 'react';
 import { useBattle } from '../store.ts';
 import { UF, type UnitSnap } from '../sim/snapshot.ts';
@@ -24,7 +25,7 @@ export function InfoPanel() {
   const unseen = now.team === 1 && fogOn && FOGGED_FIGHT.includes(phase) && !(now.flags & UF.seen);
   if (!unseen || last.current?.index !== selected) last.current = { index: selected, u: now };
   const u = unseen ? last.current.u : now;
-  const cls = data.classes[u.cls];
+  const cls = classOf(data, u.cls);
   // skill names from the sim's list of this battle's units; a Red unit's only while it is in sight
   const skills = !unseen && units[selected]?.cls === u.cls
     ? units[selected].skills.map((id) => cls.skills.find((s) => s.id === id)?.name).join(', ')
@@ -43,7 +44,7 @@ export function InfoPanel() {
         <tr><td>Kills</td><td>{u.kills}</td><td>Damage dealt</td><td>{Math.round(u.dealt)}</td></tr>
         <tr><td>Damage</td><td>{cls.dmgLo}–{cls.dmgHi}</td><td>Range</td><td>{cls.range} m</td></tr>
       </tbody></table>
-      <div className="takes">Takes from: {data.classes.map((a, j) => `${uiOf(j).icon} ${Math.round(a.matchup[u.cls] * 100)}%`).join(' · ')}</div>
+      <div className="takes">Takes from: {data.classes.flatMap((a, j) => (a ? [`${uiOf(j).icon} ${Math.round(a.matchup[u.cls] * 100)}%`] : [])).join(' · ')}</div>
       <div className="skills">{u.skills === 0 ? 'No skills' : skills || `${u.skills} skill${u.skills === 1 ? '' : 's'}`}</div>
       <div className="dim keys">F {follow ? 'stop following' : 'follow'} · Space centre · double-click a portrait to centre</div>
     </div>

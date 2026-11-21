@@ -2,6 +2,7 @@ package sim
 
 import (
 	"errors"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -11,7 +12,7 @@ func TestRosterIsValid(t *testing.T) {
 		t.Fatal(err)
 	}
 	var want []Class // the playable factions' units in Red's pool, in roster order
-	for _, d := range Roster {
+	for d := range Units() {
 		for _, f := range Factions {
 			if f.Playable && f.Has(d.ID) && d.InRedPool {
 				want = append(want, d.ID)
@@ -19,7 +20,7 @@ func TestRosterIsValid(t *testing.T) {
 			}
 		}
 	}
-	if got := RedPool(); len(got) < 3 || got[0] != Warrior || got[1] != Archer || got[2] != Mage || len(got) != len(want) {
+	if got := RedPool(); len(got) < 3 || !slices.Equal(got, want) || got[0] != Druzhynnyk {
 		t.Errorf("red pool %v, want %v", got, want)
 	}
 }
@@ -42,24 +43,37 @@ func TestRosterRejectsBadEntries(t *testing.T) {
 		"chance":       func(d *UnitDef) { d.Skills[3].Effects = []Effect{{Kind: Finisher, Pct: 150}} },
 		"slow factor":  func(d *UnitDef) { d.Skills[3].Effects = []Effect{{Kind: SlowOnHit, Pct: 50, Ticks: 10, Factor: One}} },
 		"unknown kind": func(d *UnitDef) { d.Skills[3].Effects = []Effect{{Kind: 99}} },
-		"kind twice":   func(d *UnitDef) { d.Skills[0].Effects = []Effect{{Kind: Finisher, Pct: 10}} },
-		"numbering":    func(d *UnitDef) { d.Skills[4].Skill = 7 },
+		"kind twice": func(d *UnitDef) {
+			d.Skills[0].Effects, d.Skills[1].Effects = []Effect{{Kind: OverCover}}, []Effect{{Kind: OverCover}}
+		},
+		"numbering": func(d *UnitDef) { d.Skills[4].Skill = 7 },
 	}
 	for name, breakIt := range cases {
 		r := cloneRoster()
-		breakIt(&r[Archer]) // archer: skill 3 is its finisher (Headshot)
+		breakIt(&r[Toxotes]) // a ranged unit, so the shot rules apply
 		if err := ValidateRoster(r); err == nil {
 			t.Errorf("%s: broken entry accepted", name)
 		}
 	}
 	r := cloneRoster()
-	r[Warrior].Skills[3].Effects = []Effect{{Kind: OverCover}}
+	r[Druzhynnyk].Skills[3].Effects = []Effect{{Kind: OverCover}}
 	if err := ValidateRoster(r); err == nil || !strings.Contains(err.Error(), "ranged") {
 		t.Errorf("arcing shots on a melee unit: %v", err)
 	}
-	r[Warrior].Skills[3].Effects = []Effect{{Kind: SlowOnHit, Pct: 50, Ticks: 10, Factor: Half}}
+	r[Druzhynnyk].Skills[3].Effects = []Effect{{Kind: SlowOnHit, Pct: 50, Ticks: 10, Factor: Half}}
 	if err := ValidateRoster(r); err != nil {
 		t.Errorf("slow on hit works for melee blows too: %v", err)
+	}
+	r = cloneRoster()
+	r[Toxotes] = UnitDef{ID: Toxotes}
+	if err := ValidateRoster(r); err == nil || !strings.Contains(err.Error(), "isn't retired") {
+		t.Errorf("an empty slot at a live id: %v", err)
+	}
+	r = cloneRoster()
+	r[retiredClasses[0]] = r[Druzhynnyk]
+	r[retiredClasses[0]].ID = retiredClasses[0]
+	if err := ValidateRoster(r); err == nil || !strings.Contains(err.Error(), "retired id") {
+		t.Errorf("a unit at a retired id: %v", err)
 	}
 	r = cloneRoster()
 	for i := range r {
@@ -130,11 +144,11 @@ func TestDataOnlyUnit(t *testing.T) {
 	if sl := u.effect(SlowOnHit); u.MaxHP != I(105) || sl == nil || sl.e.Factor != Half {
 		t.Fatalf("loadout: hp %v slow %+v", u.MaxHP, sl)
 	}
-	if m := MatchupOf(&Roster[Warrior], &Roster[ranger]); m != Ratio(145, 100) {
-		t.Errorf("warrior vs a ranged-tagged unit: %v, want 1.45", m)
+	if m := MatchupOf(&Roster[Druzhynnyk], &Roster[ranger]); m != Ratio(140, 100) {
+		t.Errorf("druzhynnyk vs a ranged-tagged unit: %v, want 1.40", m)
 	}
 	spec := UnitSpec{Class: ranger, Skills: []Skill{1, 2, 3}}
-	in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 7, CombatSeed: 8,
+	in := Input{Version: Version, BlueFaction: FactionRus, Seed: 7, CombatSeed: 8,
 		Blue: Army{Formation: Spread, Units: []UnitSpec{spec, spec, spec, spec, spec}},
 		Red:  Army{Formation: F3x2, Units: mix()}}
 	b, err := New(in)
@@ -146,7 +160,7 @@ func TestDataOnlyUnit(t *testing.T) {
 		b.Step()
 		for _, e := range b.TakeEvents() {
 			dashed = dashed || e.Kind == EvDash && b.Units[e.Unit].Class == ranger
-			if e.Kind == EvFrost && b.Units[e.Other].Class == ranger { // Red's mages may slow too
+			if e.Kind == EvFrost && b.Units[e.Other].Class == ranger {
 				slowed = true
 				if v := b.Units[e.Unit]; v.slowFactor != Half {
 					t.Errorf("slowed with factor %v, want 0.5", v.slowFactor)
@@ -161,9 +175,11 @@ func TestDataOnlyUnit(t *testing.T) {
 }
 
 func TestUnknownUnitRejected(t *testing.T) {
-	in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 1, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: Class(len(Roster) + 3)}}}}
-	if err := in.Validate(); !errors.Is(err, ErrInvalid) {
-		t.Errorf("class 7 accepted: %v", err)
+	for _, c := range append([]Class{Class(len(Roster) + 3)}, retiredClasses...) {
+		in := Input{Version: Version, BlueFaction: FactionRus, Seed: 1, Blue: Army{Formation: Spread, Units: []UnitSpec{{Class: c}}}}
+		if err := in.Validate(); !errors.Is(err, ErrInvalid) {
+			t.Errorf("class %d accepted: %v", c, err)
+		}
 	}
 }
 

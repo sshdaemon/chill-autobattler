@@ -135,6 +135,9 @@ func checkLooks(roster []sim.UnitDef, l looksData, fx map[string]json.RawMessage
 		}
 	}
 	for _, d := range roster {
+		if d.Retired() {
+			continue
+		}
 		look, ok := l.Units[d.Name]
 		if !ok {
 			bad("unit %s has no look", d.Name)
@@ -447,7 +450,7 @@ func TestRecipes(t *testing.T) {
 	}
 	seen := map[string]bool{}
 	var army int64
-	for _, d := range sim.Roster {
+	for d := range sim.Units() {
 		r := l.Units[d.Name].Recipes[0]
 		for _, p := range append(append(append([]string{}, r.Parts...), r.Head), r.Hair...) {
 			army += partFiles(t, p, seen)
@@ -485,7 +488,7 @@ func TestRecipeCheckCatches(t *testing.T) {
 		var c looksData
 		b, _ := json.Marshal(l)
 		json.Unmarshal(b, &c)
-		f(&c.Units["warrior"].Recipes[0])
+		f(&c.Units["druzhynnyk"].Recipes[0])
 		return c
 	}
 	cases := map[string]looksData{
@@ -517,21 +520,21 @@ func TestLooksCheckCatches(t *testing.T) {
 		return c
 	}
 	cases := map[string]func(c *looksData) []string{
-		"no look":       func(c *looksData) []string { delete(c.Units, "mage"); return packed },
-		"missing skill": func(c *looksData) []string { delete(c.Units["warrior"].Skills, "4"); return packed },
-		"foreign skill": func(c *looksData) []string { c.Units["warrior"].Skills["9"] = skillLook{}; return packed },
+		"no look":       func(c *looksData) []string { delete(c.Units, "volva"); return packed },
+		"missing skill": func(c *looksData) []string { delete(c.Units["druzhynnyk"].Skills, "4"); return packed },
+		"foreign skill": func(c *looksData) []string { c.Units["druzhynnyk"].Skills["9"] = skillLook{}; return packed },
 		"unknown clip": func(c *looksData) []string {
-			u := c.Units["archer"]
+			u := c.Units["strilets"]
 			u.Anims.Idle = "Nope"
-			c.Units["archer"] = u
+			c.Units["strilets"] = u
 			return packed
 		},
-		"unknown preset":           func(c *looksData) []string { c.Units["mage"].Skills["4"] = skillLook{Fx: "nope"}; return packed },
-		"pot on a non-burst skill": func(c *looksData) []string { c.Units["mage"].Skills["4"] = skillLook{Missile: "pot"}; return packed },
+		"unknown preset":           func(c *looksData) []string { c.Units["volva"].Skills["4"] = skillLook{Fx: "nope"}; return packed },
+		"pot on a non-burst skill": func(c *looksData) []string { c.Units["volva"].Skills["4"] = skillLook{Missile: "pot"}; return packed },
 		"jet without a cone": func(c *looksData) []string {
-			u := c.Units["warrior"]
+			u := c.Units["druzhynnyk"]
 			u.Jet = "jet"
-			c.Units["warrior"] = u
+			c.Units["druzhynnyk"] = u
 			return packed
 		},
 		"move clip without speed": func(c *looksData) []string {
@@ -541,15 +544,15 @@ func TestLooksCheckCatches(t *testing.T) {
 			return packed
 		},
 		"no ui text": func(c *looksData) []string {
-			u := c.Units["archer"]
+			u := c.Units["strilets"]
 			u.UI.Blurb = ""
-			c.Units["archer"] = u
+			c.Units["strilets"] = u
 			return packed
 		},
 		"attack without hit": func(c *looksData) []string {
-			u := c.Units["warrior"]
+			u := c.Units["druzhynnyk"]
 			u.Anims.Attack = []string{"Jog_Fwd_Loop"}
-			c.Units["warrior"] = u
+			c.Units["druzhynnyk"] = u
 			return packed
 		},
 		"not packed": func(c *looksData) []string {

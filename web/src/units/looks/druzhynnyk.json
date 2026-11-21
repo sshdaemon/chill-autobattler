@@ -121,6 +121,13 @@
     "Sword_Regular_C": {
       "hit": 0.68
     },
-    "Shield_OneShot": {}
+    "Shield_OneShot": {},
+    "Sword_Slash_A": {
+      "hit": 0.3,
+      "from": [
+        "Sword_Regular_A",
+        "Sword_Regular_A_Rec"
+      ]
+    }
   }
 }
