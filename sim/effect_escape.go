@@ -37,7 +37,7 @@ func init() {
 				base = V(0, One)
 			}
 			for _, turn := range BlinkTurns {
-				p := u.Pos.Add(base.Rot(turn).Scale(esc.Value))
+				p := u.Pos.Add(base.Rot(turn.For(u.Team)).Scale(esc.Value))
 				if p.X.Abs() > EdgeLimit || p.Z.Abs() > EdgeLimit || !b.Map.FreeAt(p) {
 					continue
 				}

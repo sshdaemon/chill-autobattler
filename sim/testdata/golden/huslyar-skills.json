@@ -1,18 +1,22 @@
 {
-  "version": "0.13.0+1efb1cda.39edb404",
+  "version": "0.14.0+1efb1cda.39edb404",
   "case": "huslyar skills",
   "outcome": {
     "result": 2,
-    "ticks": 333,
-    "checksum": "12284341885910878795",
+    "ticks": 277,
+    "checksum": "18262132027232905284",
     "survivors": [
       {
         "Index": 5,
-        "HP": 3143870
+        "HP": 993529
+      },
+      {
+        "Index": 6,
+        "HP": 4877333
       },
       {
         "Index": 7,
-        "HP": 6160384
+        "HP": 4968354
       },
       {
         "Index": 9,

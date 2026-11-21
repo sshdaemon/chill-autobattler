@@ -13,7 +13,7 @@ import (
 // RulesVersion must change whenever the rules code changes, so old replays
 // are checked with the logic that produced them. Changes to units' data need
 // no bump: Version carries a fingerprint of the roster.
-const RulesVersion = "0.13.0"
+const RulesVersion = "0.14.0"
 
 // Version is RulesVersion plus a fingerprint of the roster and the factions
 // ("0.7.0+1a2b3c4d"), so changing any unit's numbers changes it without
@@ -201,25 +201,34 @@ func (b *Battle) Step() {
 	b.checkTriggers()
 	b.updateVision()
 	b.computeMods()
-	for _, u := range b.Units {
-		if !u.Dead {
-			b.think(u)
+	first := b.rng.IntN(2)
+	for _, team := range [2]int{first, 1 - first} {
+		for _, u := range b.Units {
+			if u.Team == team && !u.Dead {
+				b.think(u)
+			}
 		}
 	}
 	live := b.alive(-1)
 	for _, u := range live {
 		b.move(u)
 	}
-	for i := 0; i < len(live); i++ { // units push apart, in index order
+	// units push apart: every push is worked out from where the units stand
+	// now and applied together, so the result doesn't depend on unit order
+	// (which would favour one side: Blue's units come first)
+	pushes := make([]Vec, len(live))
+	for i := 0; i < len(live); i++ {
 		for j := i + 1; j < len(live); j++ {
-			a, c := live[i], live[j]
-			d := c.Pos.Sub(a.Pos)
+			d := live[j].Pos.Sub(live[i].Pos)
 			dist := d.Len()
 			if dist > 0 && dist < Separation {
 				push := d.Norm().Scale((Separation - dist) / 2)
-				a.Pos, c.Pos = a.Pos.Sub(push), c.Pos.Add(push)
+				pushes[i], pushes[j] = pushes[i].Sub(push), pushes[j].Add(push)
 			}
 		}
+	}
+	for i, u := range live {
+		u.Pos = u.Pos.Add(pushes[i])
 	}
 	for _, u := range live {
 		u.Pos = b.Map.PushOut(u.Pos)
