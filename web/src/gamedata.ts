@@ -16,11 +16,11 @@ export type FactionInfo = { id: number; name: string; units: number[]; playable:
 export type GameData = {
   version: string; classes: ClassInfo[]; formations: string[]; armySize: number; deployZone: [number, number, number, number];
   factions: FactionInfo[];
-  plans: { id: number; name: string }[]; // battle plans, index = sim.Plan; words in plans.ts
+  plans: { id: number; name: string; tactic: boolean }[]; // battle plans, index = sim.Plan; tactics split the army in two groups; words in plans.ts
   hitAt: number; // share of a swing at which the blow lands or the shot leaves
 };
 // Every unit of the current battle (wasm units()), Red's generated army too.
-export type UnitLoadout = { cls: number; skills: number[] };
+export type UnitLoadout = { cls: number; skills: number[]; group: number }; // group: 0 left, 1 right in a tactic
 
 // Unit labels, icons and blurbs come from each unit's look (units/looks.ts uiOf).
 

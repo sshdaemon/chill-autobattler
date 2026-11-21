@@ -112,6 +112,8 @@ function Unit({ index }: { index: number }) {
   });
   const selected = useBattle((s) => s.selected === index);
   const draggable = useBattle((s) => info?.team === 0 && s.phase === 'deploying');
+  // while a tactic is chosen at deployment: which of the sim's groups the unit is in
+  const group = useBattle((s) => info?.team === 0 && s.phase === 'deploying' && s.data?.plans[s.plan]?.tactic ? s.units[index]?.group : undefined);
   const [ch, setCh] = useState<Character>();
   const anim = useRef<AnimState>({ name: '', flags: 0, deadAt: 0, faded: false, aim: 0, pitch: 0, swings: 0, hits: 0, actionNew: false, speed: 0 });
 
@@ -289,6 +291,11 @@ function Unit({ index }: { index: number }) {
             <mesh position-x={0.45} renderOrder={22}><planeGeometry args={[0.9, 0.1]} /><meshBasicMaterial color={TEAM[info.team]} transparent depthTest={false} depthWrite={false} /></mesh>
           </group>
         </Billboard>
+        {group !== undefined && (
+          <Html position={[0, 0.1, 0.75]} center style={{ pointerEvents: 'none' }}>
+            <div className="grouptag">{group === 0 ? 'L' : 'R'}</div>
+          </Html>
+        )}
         {info.skills > 0 && (
           <Html position={[0, 2.45, 0]} center style={{ pointerEvents: 'none' }}>
             <div className="stars">{'★'.repeat(info.skills)}</div>

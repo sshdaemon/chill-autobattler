@@ -1,10 +1,10 @@
 {
-  "version": "0.10.0+e4ba5c33.edb80a72",
+  "version": "0.11.0+e4ba5c33.39edb404",
   "case": "formation Spread",
   "outcome": {
     "result": 1,
-    "ticks": 327,
-    "checksum": "5620871764162245212",
+    "ticks": 415,
+    "checksum": "5790102271990731643",
     "survivors": [
       {
         "Index": 1,
@@ -12,7 +12,7 @@
       },
       {
         "Index": 3,
-        "HP": 2124087
+        "HP": 670998
       }
     ]
   }

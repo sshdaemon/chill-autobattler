@@ -13,7 +13,7 @@ import (
 // RulesVersion must change whenever the rules code changes, so old replays
 // are checked with the logic that produced them. Changes to units' data need
 // no bump: Version carries a fingerprint of the roster.
-const RulesVersion = "0.10.0"
+const RulesVersion = "0.11.0"
 
 // Version is RulesVersion plus a fingerprint of the roster and the factions
 // ("0.7.0+1a2b3c4d"), so changing any unit's numbers changes it without
@@ -73,6 +73,8 @@ type Battle struct {
 	Result Result
 	Plans  [2]Plan // each side's plan; a generated Red's is drawn (RedPlanFor)
 
+	switched [2][2]bool // a tactic's group has switched to its second stance, per team and group
+
 	rng     *RNG
 	spotted [2][]int // enemies each team sees, in unit order
 	zones   []zone   // burning ground
@@ -103,18 +105,27 @@ func New(in Input) (*Battle, error) {
 		if army.Formation != Custom {
 			slots = FormationSlots(army.Formation, classes, team)
 		}
+		pos := make([]Vec, len(army.Units))
 		for i, s := range army.Units {
-			p := slots
-			pos := Vec{}
-			if p != nil {
-				pos = p[i]
+			if slots != nil {
+				pos[i] = slots[i]
 			} else {
-				pos = *s.Pos
+				pos[i] = *s.Pos
 			}
-			if !b.Map.FreeAt(pos) { // nudge off rocks and trees
-				pos = b.Map.FreeSpot(pos)
+			if !b.Map.FreeAt(pos[i]) { // nudge off rocks and trees
+				pos[i] = b.Map.FreeSpot(pos[i])
 			}
-			u := newUnitPlan(len(b.Units), team, s, pos, army.Plan)
+		}
+		var groups []int
+		if p := PlanOf(army.Plan); p != nil && p.IsTactic() {
+			groups = GroupsOf(pos)
+		}
+		for i, s := range army.Units {
+			g := 0
+			if groups != nil {
+				g = groups[i]
+			}
+			u := newUnitGroup(len(b.Units), team, s, pos[i], army.Plan, g)
 			if team == 1 && in.RedHealthPct > 0 && in.RedHealthPct < 100 {
 				u.MaxHP = u.MaxHP.MulDiv(in.RedHealthPct, 100)
 				u.HP = u.MaxHP
@@ -129,12 +140,34 @@ func New(in Input) (*Battle, error) {
 	return b, nil
 }
 
+// GroupsOf splits an army into a tactic's two groups by starting position:
+// units at or left of the army's mean x (−x, the formation's first flank)
+// form group 0, the others group 1.
+func GroupsOf(pos []Vec) []int {
+	if len(pos) == 0 {
+		return nil
+	}
+	var sum Fx
+	for _, p := range pos {
+		sum += p.X
+	}
+	n := Fx(len(pos))
+	out := make([]int, len(pos))
+	for i, p := range pos {
+		if p.X*n > sum { // x > mean, without rounding the mean
+			out[i] = 1
+		}
+	}
+	return out
+}
+
 // Step advances the battle by one tick (1/20 s).
 func (b *Battle) Step() {
 	if b.Result != Ongoing {
 		return
 	}
 	b.Tick++
+	b.checkTriggers()
 	b.updateVision()
 	b.computeMods()
 	for _, u := range b.Units {

@@ -8,6 +8,9 @@ const WORDS: Record<string, { title: string; desc: string }> = {
   'hunt the archers': { title: 'Hunt the archers', desc: "Melee sprint past the front for the enemy's archers and casters, exposed while they do." },
   'focus fire': { title: 'Focus fire', desc: 'Advance together, gang up on one enemy at a time and hit harder. Slow to close in.' },
   skirmish: { title: 'Skirmish', desc: 'Melee screen the back line; ranged kite, quicker and with longer reach.' },
+  'hammer and anvil': { title: 'Hammer and anvil', desc: 'Left (L) holds as a braced shield wall. Right (R) waits, then swings round the enemy\'s side once the left is fighting.' },
+  reserve: { title: 'Reserve', desc: 'Left (L) advances and takes the first blows. Right (R) holds back and comes in a little stronger when the first ally falls.' },
+  'hold, then charge': { title: 'Hold, then charge', desc: 'Everyone holds, braced, for 10 seconds while the enemy comes, then charges the nearest enemy.' },
 };
 
 export const planWords = (name: string | undefined) =>

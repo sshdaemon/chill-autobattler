@@ -21,11 +21,14 @@ type Unit struct {
 	Kiting   bool
 	Slowed   bool
 	Swinging bool
+	Group    int // its group in a tactic (0 left, 1 right; 0 without one)
 
 	cd, busy, retarget, slow, fear int // tick counters
 	held                           int // ticks a holding unit has waited for an enemy
 	lineAhead                      Fx  // EngageLine: how far ahead of its allies' centre it stood at the start
 	lineSet                        bool
+	flankSide                      Fx   // EngageFlank: which side it goes round (+1/-1 in x; 0 not yet chosen)
+	flanked                        bool // EngageFlank: it has gone round, or got close
 	fearFrom                       Vec  // where dread drives it away from
 	mods                           mods // this tick's modifiers (mods.go)
 	buffs                          []buff
@@ -58,11 +61,16 @@ func newUnit(index, team int, spec UnitSpec, pos Vec) *Unit {
 
 // newUnitPlan is newUnit for a side fighting by a plan.
 func newUnitPlan(index, team int, spec UnitSpec, pos Vec, plan Plan) *Unit {
+	return newUnitGroup(index, team, spec, pos, plan, 0)
+}
+
+// newUnitGroup is newUnitPlan for a unit of a tactic's group g.
+func newUnitGroup(index, team int, spec UnitSpec, pos Vec, plan Plan, g int) *Unit {
 	def := RosterOf(spec.Class)
 	p := PlanOf(plan)
 	var extra []Effect
 	if p != nil {
-		extra = p.stanceFor(def).Effects
+		extra = p.effectsFor(def, g)
 	}
 	st := foldStats(def, spec.Skills, extra...)
 	var kit loadout
@@ -72,8 +80,8 @@ func newUnitPlan(index, team int, spec UnitSpec, pos Vec, plan Plan) *Unit {
 		face = V(0, One)
 	}
 	return &Unit{
-		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st, Temper: temperOf(def, p, &kit),
-		Pos: pos, Face: face, MaxHP: st.HP, HP: st.HP, Target: -1, kit: kit,
+		Index: index, Team: team, Class: spec.Class, Def: def, Skills: append([]Skill(nil), spec.Skills...), Stats: st, Temper: temperOf(def, p, g, false, &kit),
+		Pos: pos, Face: face, MaxHP: st.HP, HP: st.HP, Target: -1, kit: kit, Group: g,
 	}
 }
 
@@ -179,7 +187,9 @@ func (b *Battle) think(u *Unit) {
 	// ranged units need a clear line of fire (unless they lob over); otherwise they walk until they have one
 	canHit := d <= u.Stats.Range && (!u.Stats.Ranged || u.kit.overCover || b.Map.LineOfFire(u.Pos, t.Pos))
 	if !canHit {
-		b.moveToward(u, t.Pos)
+		if r := engageRules[u.Temper.Engage]; r.chase == nil || !r.chase(b, u, t) {
+			b.moveToward(u, t.Pos)
+		}
 		return
 	}
 	u.moveTarget, u.path = nil, nil

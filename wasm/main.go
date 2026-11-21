@@ -10,8 +10,8 @@
 //	chillSim.outcome(): Uint8Array         protobuf chill.v1.BattleOutcome
 //	chillSim.fog(): Uint8Array            Blue's visible grid cells (56×56, row = z cell), for fog of war
 //	chillSim.data(): string                balance data as JSON (stats, matchups, skills), for the UI
-//	chillSim.units(): string               after create: every unit's class and skill ids as JSON
-//	                                       ([{cls, skills}] in unit index order, Red's generated army too)
+//	chillSim.units(): string               after create: every unit's class, skill ids and tactic group as JSON
+//	                                       ([{cls, skills, group}] in unit index order, Red's generated army too)
 //	chillSim.plans(): string               after create: [blue, red] battle plan ids as JSON (Red's is
 //	                                       drawn from the combat seed when generated)
 //	chillSim.formationSlots(f, classes)    Blue's preset positions (Int32 LE x, z per unit, raw fixed-point);
@@ -139,8 +139,9 @@ func dataJSON() string {
 		Playable bool   `json:"playable"`
 	}
 	type plan struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
+		ID     int    `json:"id"`
+		Name   string `json:"name"`
+		Tactic bool   `json:"tactic"` // splits the army into a left and a right group
 	}
 	var out struct {
 		Version    string     `json:"version"`
@@ -214,7 +215,7 @@ func dataJSON() string {
 		out.Factions = append(out.Factions, fa)
 	}
 	for _, p := range sim.Plans {
-		out.Plans = append(out.Plans, plan{int(p.ID), p.Name})
+		out.Plans = append(out.Plans, plan{int(p.ID), p.Name, p.IsTactic()})
 	}
 	z := sim.Zones[0]
 	out.DeployZone = [4]float64{fx(z.XMin), fx(z.XMax), fx(z.ZMin), fx(z.ZMax)}
@@ -228,6 +229,7 @@ func unitsJSON() string {
 	type unit struct {
 		Cls    int   `json:"cls"`
 		Skills []int `json:"skills"`
+		Group  int   `json:"group"` // its group in a tactic: 0 left, 1 right (0 without one)
 	}
 	out := []unit{}
 	if battle != nil {
@@ -236,7 +238,7 @@ func unitsJSON() string {
 			for _, s := range u.Skills {
 				skills = append(skills, int(s))
 			}
-			out = append(out, unit{int(u.Class), skills})
+			out = append(out, unit{int(u.Class), skills, u.Group})
 		}
 	}
 	b, _ := json.Marshal(out)

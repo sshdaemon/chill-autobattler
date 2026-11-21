@@ -28,15 +28,17 @@ export function DeployBar() {
   return (
     <div className="deploybar">
       <div className="deploymain">
-      <div className="plans">
-        <span className="lbl">Plan</span>
-        {data.plans.map((p) => {
-          const w = planWords(p.name);
-          return (
-            <button key={p.id} className={`pbtn ${plan === p.id ? 'on' : ''}`} disabled={locking} title={w.desc} onClick={() => setPlan(p.id)}>{w.title}</button>
-          );
-        })}
-      </div>
+      {([['Plan', false], ['Tactic', true]] as const).map(([label, tactic]) => (
+        <div className="plans" key={label}>
+          <span className="lbl">{label}</span>
+          {data.plans.filter((p) => p.tactic === tactic).map((p) => {
+            const w = planWords(p.name);
+            return (
+              <button key={p.id} className={`pbtn ${plan === p.id ? 'on' : ''}`} disabled={locking} title={w.desc} onClick={() => setPlan(p.id)}>{w.title}</button>
+            );
+          })}
+        </div>
+      ))}
       <div className="plandesc">{planWords(data.plans[plan]?.name).desc}</div>
       <div className="formations">
         {[...PRESETS, CUSTOM].map((f) => (

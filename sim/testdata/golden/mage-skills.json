@@ -1,18 +1,18 @@
 {
-  "version": "0.10.0+2ed9ff98.edb80a72",
+  "version": "0.11.0+2ed9ff98.39edb404",
   "case": "mage skills",
   "outcome": {
     "result": 2,
-    "ticks": 284,
-    "checksum": "4413206273045478001",
+    "ticks": 261,
+    "checksum": "7604260857525283491",
     "survivors": [
       {
-        "Index": 6,
-        "HP": 3407872
+        "Index": 8,
+        "HP": 4063232
       },
       {
-        "Index": 8,
-        "HP": 1579252
+        "Index": 9,
+        "HP": 2100778
       }
     ]
   }
