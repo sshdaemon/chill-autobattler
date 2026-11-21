@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from 'react';
 import { useTexture } from '@react-three/drei';
+import { GROUND_TEXTURES } from './arenaFiles.ts';
 import * as THREE from 'three';
 import { useBattle } from '../store.ts';
 import { NOISE_GLSL, POND_GLSL, pondUniforms } from './natureShader.ts';
 
-const T = '/assets/nature/';
 const SIZE = 120;
 
 // The ground: CC0 grass, dirt and mud (ambientCG) blended in world space,
@@ -12,10 +12,7 @@ const SIZE = 120;
 // around the ponds. It runs past the arena so the field sits in a landscape.
 export function Ground() {
   const obstacles = useBattle((s) => s.obstacles);
-  const tex = useTexture({
-    grass: T + 'Grass004_color.jpg', dirt: T + 'Ground037_color.jpg', mud: T + 'Ground054_color.jpg',
-    grassN: T + 'Grass004_normal.jpg', dirtN: T + 'Ground037_normal.jpg', mudN: T + 'Ground054_normal.jpg',
-  });
+  const tex = useTexture(GROUND_TEXTURES);
   const uniforms = useMemo(() => ({ ...pondUniforms([]), ...Object.fromEntries(Object.entries(tex).map(([k, t]) => [k, { value: t }])) }), [tex]);
 
   useMemo(() => {

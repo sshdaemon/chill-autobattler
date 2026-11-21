@@ -1,6 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
+// Production: the service worker keeps versioned assets across visits (sw.template.js).
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  void navigator.serviceWorker.register('/sw.js').catch((e) => console.warn('service worker:', e));
+}
+
 const root = createRoot(document.getElementById('root')!);
 const params = new URLSearchParams(location.search);
 const preview = import.meta.env.DEV ? params.get('preview') : null;

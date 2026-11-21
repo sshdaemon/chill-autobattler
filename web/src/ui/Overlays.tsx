@@ -15,8 +15,7 @@ export function Banner() {
   const red = useBattle((s) => shownPlan(s, 1));
   // the sim can refuse a battle (an invalid input): say so instead of a frozen field
   if (error && (phase === 'starting' || phase === 'countdown' || phase === 'fighting')) return <div className="banner small err">{error}</div>;
-  if (phase === 'loading') return <div className="banner small">Loading…</div>;
-  if (phase === 'starting') return <div className="banner small">Preparing the battlefield…</div>;
+  if (phase === 'starting') return <div className="banner small">Starting the battle…</div>;
   if (phase === 'countdown') return <div className="banner">Fight!{red && <small className="plan">Red: {red}</small>}</div>;
   return null;
 }

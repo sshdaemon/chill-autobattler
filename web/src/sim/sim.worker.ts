@@ -1,5 +1,7 @@
 // Runs the Go sim (WASM) off the main thread at a fixed 20 Hz (× speed), so
 // the battle never depends on the frame rate. Posts a snapshot every tick.
+import { assetBytes, assetUrl } from '../assets.ts';
+
 declare const Go: new () => { importObject: WebAssembly.Imports; run(i: WebAssembly.Instance): Promise<void> };
 type SimApi = {
   version: string;
@@ -25,6 +27,7 @@ export type ToWorker =
   | { type: 'checkPlan'; id: number; plan: string }; // replies planCheck: a custom plan (JSON) checked by the sim
 export type FromWorker =
   | { type: 'ready'; version: string; data: string }
+  | { type: 'progress'; loaded: number; total: number } // the sim's download, for the start loading screen
   | { type: 'slots'; slots: Record<number, { x: number; z: number }[]> } // keyed by sim formation (1..7)
   | { type: 'draft'; plan: string | null } // JSON DraftPlan (draft.ts)
   | { type: 'started'; map: ArrayBuffer; snapshot: ArrayBuffer; units: string; plans: string | null } // units: JSON UnitLoadout[]; plans: JSON [blue, red]
@@ -38,10 +41,32 @@ const TICK_MS = 50;
 const post = (m: FromWorker, transfer: Transferable[] = []) => (self as unknown as Worker).postMessage(m, transfer);
 const buf = (u: Uint8Array) => u.buffer.slice(u.byteOffset, u.byteOffset + u.byteLength) as ArrayBuffer;
 
+// download reads a file and reports progress (bytes after decompression, so
+// the total is the manifest's size, not a gzipped Content-Length).
+async function download(path: string): Promise<ArrayBuffer> {
+  const res = await fetch(assetUrl(path));
+  if (!res.ok || !res.body) throw new Error(`${path}: ${res.status}`);
+  const total = assetBytes(path) || Number(res.headers.get('content-length')) || 0;
+  const reader = res.body.getReader(), parts: Uint8Array[] = [];
+  let loaded = 0, last = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    parts.push(value);
+    loaded += value.length;
+    if (loaded - last > 256 * 1024) { last = loaded; post({ type: 'progress', loaded, total }); }
+  }
+  post({ type: 'progress', loaded, total: Math.max(total, loaded) });
+  const out = new Uint8Array(loaded);
+  let at = 0;
+  for (const p of parts) { out.set(p, at); at += p.length; }
+  return out.buffer;
+}
+
 const ready = (async () => {
-  await import(/* @vite-ignore */ `${self.location.origin}/wasm_exec.js`); // defines globalThis.Go
+  await import(/* @vite-ignore */ `${self.location.origin}${assetUrl('/wasm_exec.js')}`); // defines globalThis.Go
   const go = new Go();
-  const { instance } = await WebAssembly.instantiateStreaming(fetch('/sim.wasm'), go.importObject);
+  const { instance } = await WebAssembly.instantiate(await download('/sim.wasm'), go.importObject);
   void go.run(instance); // never resolves; main() blocks to keep the API alive
   const sim = (globalThis as unknown as { chillSim: SimApi }).chillSim;
   post({ type: 'ready', version: sim.version, data: sim.data() });

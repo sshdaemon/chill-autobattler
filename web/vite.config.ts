@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { previewShots } from './preview-shots.mjs';
+import { assetManifest } from './asset-manifest.mjs';
 
 // Big libraries in their own chunks, so they cache across app updates.
 const CHUNKS: [string, RegExp][] = [
@@ -10,7 +11,9 @@ const CHUNKS: [string, RegExp][] = [
 ];
 
 export default defineConfig({
-  plugins: [react(), previewShots()],
+  plugins: [react(), previewShots(), assetManifest()],
+  // the sim worker resolves its WASM through the same manifest
+  worker: { format: 'es', plugins: () => [assetManifest({ sw: false })] },
   // Pre-bundle the 3D stack together at startup: if Vite discovers one of these
   // mid-session it re-optimises, and the page ends up with two copies of React.
   optimizeDeps: {
@@ -22,6 +25,7 @@ export default defineConfig({
     proxy: { '/chill.v1.': 'http://localhost:8080' },
   },
   build: {
+    manifest: true, // dist/.vite/manifest.json: the chunk graph, for the bundle check
     // three.js (+ react-three) alone is ~975 kB (~260 kB gzipped) and can't be split usefully
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
