@@ -21,8 +21,8 @@ func TestPlansValid(t *testing.T) {
 			t.Fatalf("plan %s has id %d at %d", p.Name, p.ID, i)
 		}
 	}
-	if len(Plans) != 6 {
-		t.Errorf("%d built-in plans, want 6", len(Plans))
+	if len(Plans) != 9 {
+		t.Errorf("%d built-in plans, want 9", len(Plans))
 	}
 }
 

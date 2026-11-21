@@ -1,6 +1,6 @@
 # Battle plans roadmap
 
-Status: November 2026. Steps 1–3 are done (#85, #87, #89); the rest is planned.
+Status: November 2026. Steps 1–4 are done (#85, #87, #89 and step 4's PR); the rest is planned.
 
 The goal: give the player a say in **how** their army fights, not only what it
 is. Today every unit fights by its own temperament (`sim/temperament.go`), so
@@ -108,7 +108,16 @@ player can pick, or they become a free buff.
   beats and one it loses to, roughly rock-paper-scissors.
 - Write up the findings in `docs/balance-findings.md`.
 
-## Step 4: Tactics
+## Step 4: Tactics (done)
+
+Built in OpenSpec change `battle-tactics`. A tactic is a plan with groups, so
+it travels in the same `Army.plan` field: three built-in tactics (Hammer and
+anvil, Reserve, Hold, then charge), groups split left and right at the army's
+mean x, three triggers (time, ally falls, other group fighting) and a Flank
+engage rule. A trigger switches behaviour only; a tactic's effects are fixed
+at spawn. Holding units wait for their own group. The deploy view tags Blue's
+units L or R. Results in `docs/balance-findings.md`. Triggers on enemy
+distance or group health are left for step 5's chips.
 
 - **Groups:** the army splits into two or three groups, by default the
   formation's flanks. Each group gets its own stance. This makes classic

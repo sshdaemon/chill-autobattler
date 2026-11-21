@@ -32,6 +32,9 @@ type engageRule struct {
 	idle func(b *Battle, u *Unit)
 	// engage reports whether the unit goes for the target it has (nil: always).
 	engage func(b *Battle, u, t *Unit) bool
+	// chase moves a unit toward a target it can't hit yet its own way and
+	// reports whether it did (nil or false: straight at it).
+	chase func(b *Battle, u, t *Unit) bool
 }
 
 var (
@@ -122,10 +125,17 @@ func (b *Battle) centreOf(u *Unit, leaders bool) (Vec, bool) {
 	return V(sum.X/Fx(n), sum.Z/Fx(n)), true
 }
 
-// teamFighting reports whether any living ally of u is within reach of its target.
+// teamFighting reports whether any living ally of u in its group is within
+// reach of its target (without a tactic the whole army is one group).
 func (b *Battle) teamFighting(u *Unit) bool {
+	return b.groupFighting(u.Team, u.Group, u)
+}
+
+// groupFighting reports whether a living unit of the team's group g, other
+// than skip, is within reach of its target.
+func (b *Battle) groupFighting(team, g int, skip *Unit) bool {
 	for _, a := range b.Units {
-		if a != u && !a.Dead && a.Team == u.Team && a.Target >= 0 && Within(a.Pos, b.Units[a.Target].Pos, a.Stats.Range+One) {
+		if a != skip && !a.Dead && a.Team == team && a.Group == g && a.Target >= 0 && Within(a.Pos, b.Units[a.Target].Pos, a.Stats.Range+One) {
 			return true
 		}
 	}
@@ -238,11 +248,14 @@ func (b *Battle) idle(u *Unit) {
 }
 
 // temperOf is the unit's temperament: its roster entry's, changed by its
-// side's plan (nil: none), then by its learned abilities.
-func temperOf(def *UnitDef, plan *PlanDef, kit *loadout) Temperament {
+// side's plan (nil: none) for its group g, before or after the group's
+// trigger, then by its learned abilities.
+func temperOf(def *UnitDef, plan *PlanDef, g int, switched bool, kit *loadout) Temperament {
 	t := def.Temper
 	if plan != nil {
-		plan.stanceFor(def).apply(&t)
+		for _, s := range plan.stances(def, g, switched) {
+			s.apply(&t)
+		}
 	}
 	for i := range kit.active {
 		if a := &kit.active[i]; a.kind.temper != nil {

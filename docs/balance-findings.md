@@ -2,6 +2,85 @@
 
 The current numbers are in [`balance-report.md`](balance-report.md) (generated with `pnpm balance`). This file says what they mean.
 
+## Battle plans: tactics (sim 0.11.0, change battle-tactics)
+
+Three tactics join the six plans (`docs/battle-plans-roadmap.md` step 4):
+Hammer and anvil, Reserve, and Hold, then charge. Each splits the army into a
+left and a right group with its own stance and one trigger. Rerun with
+`go run ./tools/balance -exp plans`.
+
+- **No plan dominates in any faction**, tactics included.
+- **The tactics average 42–58%:** Hammer and anvil 49–58%, Reserve 50–56%,
+  Hold, then charge 42–55% (weakest for the Varangians).
+- **Holding archers didn't shoot:** a holding unit fights only once an enemy is
+  within its trigger, and a 6 m trigger kept archers from firing at all. Holding
+  tactics give ranged and casters a 10 m trigger.
+- **Reserve's damage bonus is very sensitive:** +15% made it dominate Classic,
+  none left it at 45–50%; +5% puts it at 50–56%. Its front melee use Nearest
+  (Focus left the front too weak, at 38% for the Romans).
+- **Hold, then charge waits 10 seconds, braced like a shield wall.** At 15
+  seconds without the brace it averaged about 30% everywhere.
+- The six plans' numbers barely moved; the known weak spots stay (Rus Hunt
+  the archers 18.5%, Varangian Instinct 35%).
+
+Row plan's win rate against the column plan; the same army (the faction's units 2-2-1, recruits) on both sides, sides swapped every other battle, 1000 battles per pair. Beats: 55% or more.
+
+#### classic
+
+| Plan | instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | hammer and anvil | reserve | hold, then charge | Avg | Beats |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| **instinct** | — | 57.1% | 62.2% | 59.3% | 52.8% | 62.5% | 57.8% | 45.8% | 52.4% | 56.2% | 5 |
+| **shield wall** | 42.9% | — | 54.9% | 58.5% | 30.1% | 47.9% | 46.1% | 38.1% | 39.1% | 44.7% | 1 |
+| **all-out charge** | 37.8% | 45.1% | — | 65.5% | 46.7% | 56.5% | 45.6% | 37.2% | 44.9% | 47.4% | 2 |
+| **hunt the archers** | 40.7% | 41.5% | 34.5% | — | 41.2% | 55.9% | 46.4% | 40.2% | 51.4% | 44.0% | 1 |
+| **focus fire** | 47.2% | 69.8% | 53.3% | 58.8% | — | 65.5% | 63.8% | 53.8% | 60.6% | 59.1% | 5 |
+| **skirmish** | 37.5% | 52.1% | 43.5% | 44.1% | 34.5% | — | 43.0% | 40.9% | 53.2% | 43.6% | 0 |
+| **hammer and anvil** | 42.2% | 53.9% | 54.4% | 53.6% | 36.2% | 57.0% | — | 40.9% | 50.0% | 48.6% | 1 |
+| **reserve** | 54.2% | 61.9% | 62.8% | 59.8% | 46.2% | 59.1% | 59.1% | — | 46.4% | 56.2% | 5 |
+| **hold, then charge** | 47.6% | 60.9% | 55.1% | 48.6% | 39.4% | 46.8% | 50.0% | 53.6% | — | 50.3% | 2 |
+
+#### rus
+
+| Plan | instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | hammer and anvil | reserve | hold, then charge | Avg | Beats |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| **instinct** | — | 37.4% | 30.1% | 77.5% | 33.2% | 57.0% | 39.0% | 40.9% | 43.4% | 44.8% | 2 |
+| **shield wall** | 62.6% | — | 57.2% | 91.5% | 44.3% | 64.3% | 48.2% | 59.7% | 56.2% | 60.5% | 6 |
+| **all-out charge** | 69.8% | 42.8% | — | 84.5% | 49.2% | 72.8% | 43.5% | 47.3% | 40.9% | 56.4% | 3 |
+| **hunt the archers** | 22.5% | 8.5% | 15.5% | — | 20.6% | 19.8% | 20.9% | 18.1% | 22.3% | 18.5% | 0 |
+| **focus fire** | 66.8% | 55.7% | 50.8% | 79.4% | — | 70.2% | 58.3% | 55.4% | 61.1% | 62.2% | 7 |
+| **skirmish** | 43.0% | 35.7% | 27.2% | 80.2% | 29.8% | — | 38.0% | 38.8% | 36.9% | 41.2% | 1 |
+| **hammer and anvil** | 61.0% | 51.8% | 56.5% | 79.0% | 41.7% | 62.1% | — | 55.1% | 58.1% | 58.2% | 6 |
+| **reserve** | 59.1% | 40.3% | 52.7% | 81.8% | 44.6% | 61.3% | 44.9% | — | 41.9% | 53.3% | 3 |
+| **hold, then charge** | 56.6% | 43.8% | 59.1% | 77.7% | 38.9% | 63.1% | 41.9% | 58.1% | — | 54.9% | 5 |
+
+#### varangians
+
+| Plan | instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | hammer and anvil | reserve | hold, then charge | Avg | Beats |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| **instinct** | — | 25.0% | 32.3% | 31.5% | 43.6% | 37.8% | 37.5% | 30.0% | 40.6% | 34.8% | 0 |
+| **shield wall** | 75.0% | — | 63.4% | 47.3% | 53.1% | 69.4% | 53.8% | 58.7% | 58.5% | 59.9% | 5 |
+| **all-out charge** | 67.7% | 36.6% | — | 40.8% | 50.5% | 62.9% | 51.3% | 46.2% | 58.6% | 51.8% | 3 |
+| **hunt the archers** | 68.5% | 52.7% | 59.2% | — | 62.3% | 74.6% | 65.2% | 58.4% | 69.5% | 63.8% | 7 |
+| **focus fire** | 56.4% | 46.9% | 49.5% | 37.7% | — | 45.9% | 54.4% | 46.8% | 58.9% | 49.5% | 2 |
+| **skirmish** | 62.3% | 30.6% | 37.1% | 25.4% | 54.1% | — | 47.7% | 49.1% | 66.0% | 46.5% | 2 |
+| **hammer and anvil** | 62.5% | 46.2% | 48.7% | 34.8% | 45.6% | 52.3% | — | 44.2% | 57.1% | 48.9% | 2 |
+| **reserve** | 70.0% | 41.3% | 53.8% | 41.6% | 53.2% | 50.9% | 55.8% | — | 56.0% | 52.8% | 3 |
+| **hold, then charge** | 59.5% | 41.5% | 41.4% | 30.6% | 41.1% | 34.0% | 42.9% | 44.0% | — | 41.9% | 1 |
+
+#### romans
+
+| Plan | instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | hammer and anvil | reserve | hold, then charge | Avg | Beats |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| **instinct** | — | 49.8% | 61.5% | 40.7% | 51.3% | 54.1% | 40.6% | 45.6% | 42.5% | 48.3% | 1 |
+| **shield wall** | 50.2% | — | 60.5% | 50.9% | 52.8% | 48.9% | 39.0% | 43.4% | 38.6% | 48.0% | 1 |
+| **all-out charge** | 38.5% | 39.5% | — | 45.5% | 56.7% | 47.1% | 30.6% | 35.0% | 34.8% | 41.0% | 1 |
+| **hunt the archers** | 59.3% | 49.1% | 54.5% | — | 52.2% | 57.6% | 53.0% | 57.8% | 65.8% | 56.2% | 4 |
+| **focus fire** | 48.7% | 47.2% | 43.3% | 47.8% | — | 52.8% | 49.0% | 54.0% | 57.4% | 50.0% | 1 |
+| **skirmish** | 45.9% | 51.2% | 52.9% | 42.4% | 47.2% | — | 42.1% | 48.2% | 46.0% | 47.0% | 0 |
+| **hammer and anvil** | 59.5% | 61.1% | 69.4% | 47.0% | 51.0% | 57.9% | — | 56.6% | 50.1% | 56.6% | 5 |
+| **reserve** | 54.4% | 56.6% | 65.0% | 42.2% | 46.0% | 51.8% | 43.4% | — | 40.2% | 49.9% | 2 |
+| **hold, then charge** | 57.5% | 61.5% | 65.1% | 34.2% | 42.6% | 54.0% | 49.9% | 59.9% | — | 53.1% | 4 |
+
 ## Battle plans: balance pass (sim 0.10.0, change plan-balance)
 
 Plans now trade an edge for a cost (`docs/battle-plans-roadmap.md` step 3;

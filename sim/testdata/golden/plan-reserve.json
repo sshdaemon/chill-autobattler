@@ -1,0 +1,19 @@
+{
+  "version": "0.11.0+9cf2dc35.39edb404",
+  "case": "plan reserve",
+  "outcome": {
+    "result": 2,
+    "ticks": 404,
+    "checksum": "3863406324585717920",
+    "survivors": [
+      {
+        "Index": 6,
+        "HP": 2455667
+      },
+      {
+        "Index": 8,
+        "HP": 3604480
+      }
+    ]
+  }
+}

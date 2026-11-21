@@ -79,7 +79,8 @@ const (
 	EngageCharge EngageRule = 1 // go for the enemy at once
 	EngageLine   EngageRule = 2 // advance at the pace of its allies
 	EngageHold   EngageRule = 3 // wait until an enemy is within Trigger or an ally is fighting
-	// next free: 4
+	EngageFlank  EngageRule = 4 // go round the side of its target before closing in
+	// next free: 5
 )
 
 // Plan is a battle plan id (plan.go): an army-wide stance a side picks
@@ -93,8 +94,23 @@ const (
 	PlanCharge     Plan = 2 // everyone charges the nearest enemy, no kiting
 	PlanHunt       Plan = 3 // melee charge the enemy's ranged and casters first
 	PlanFocusFire  Plan = 4 // advance together and fight the enemy most allies fight
-	PlanSkirmish   Plan = 5 // melee hold and fall back when hurt; ranged kite at a distance
-	// next free: 6
+	PlanSkirmish   Plan = 5 // melee screen the back line; ranged kite at a distance
+	// Tactics: plans with groups and triggers.
+	PlanHammer     Plan = 6 // left holds as a shield wall; right goes round and charges once the left fights
+	PlanReserve    Plan = 7 // left advances in line; right holds and charges when the first ally falls
+	PlanHoldCharge Plan = 8 // everyone holds for 15 s, then charges
+	// next free: 9
+)
+
+// TriggerKind is what switches a tactic's group to its second stance
+// (trigger.go); each lives in its own trigger_<name>.go. 0 is none.
+type TriggerKind uint8
+
+const (
+	TriggerAfter         TriggerKind = 1 // Seconds have passed since the battle began
+	TriggerAllyFalls     TriggerKind = 2 // a unit of its army has fallen
+	TriggerOtherFighting TriggerKind = 3 // a unit of the other group is fighting within reach
+	// next free: 4
 )
 
 // Faction is a faction id (faction.go): which units a side may field.
