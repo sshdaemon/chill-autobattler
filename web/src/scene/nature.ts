@@ -3,17 +3,7 @@
 // model as instanced meshes. Presentation only.
 import * as THREE from 'three';
 
-export const NATURE_GLB = '/assets/nature/nature.glb';
-export const TREES_GLB = '/assets/trees/trees.glb';
-
-const TR = '/assets/trees/';
-export const TREE_TEXTURES = {
-  bark_oak: TR + 'bark_oak_color.jpg', bark_oak_n: TR + 'bark_oak_normal.jpg',
-  bark_birch: TR + 'bark_birch_color.jpg', bark_birch_n: TR + 'bark_birch_normal.jpg',
-  bark_pine: TR + 'bark_pine_color.jpg', bark_pine_n: TR + 'bark_pine_normal.jpg',
-  leaves_oak: TR + 'leaves_oak.png', leaves_ash: TR + 'leaves_ash.png',
-  leaves_aspen: TR + 'leaves_aspen.png', leaves_pine: TR + 'leaves_pine.png',
-};
+export { NATURE_GLB, TREES_GLB, TREE_TEXTURES } from './arenaFiles.ts';
 
 // The baked trees carry no textures: their material names (bark_<type>,
 // leaves_<type>) pick them, and the bake's extras give tint and bark repeat.

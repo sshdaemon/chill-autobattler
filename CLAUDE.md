@@ -19,10 +19,18 @@ Monorepo:
 
 Specs and changes live in `openspec/`; plan with the openspec skills before larger work. Game design: `docs/GAME_CONCEPT.md`. Roadmap (factions, draft, the new roster, refactor for parallel unit work): `docs/ROADMAP.md`; setting: `design/SETTING.md`; the roster plan under review: `design/ROSTER-PLAN.md`.
 
+Asset loading (openspec change asset-loading; `web/src/assets.ts`, `web/src/battleView.ts`):
+- Two stages. At start only the app shell (no three.js) and the sim; faction pick and the draft sit on a CSS backdrop. From the draft on, the store's `prepareBattle` prefetches the battle's files (`battleFiles`: arena, the unit types' parts and outfit textures, clips), loads the 3D view (`scene/BattleView.tsx`, lazy) and warms the in-memory caches; deployment waits behind a loading screen (phase `preparing`) only if that isn't done.
+- Keep three.js out of the startup graph: nothing the store or the faction/draft UI imports may import `three` or scene modules (the store reaches the scene through `scene/hooks.ts`). `web/check-bundle.mjs` (run by `pnpm --filter web build`) fails the build otherwise.
+- Every runtime asset goes through `assetUrl(path)` (fetches) or three.js's `DefaultLoadingManager` URL modifier (`scene/loaderUrls.ts`, imported first by `BattleView`): production URLs are `path?v=<content hash>` from `virtual:asset-manifest` (`web/asset-manifest.mjs`). A new file under `web/public/` is versioned automatically; a new loader must use `assetUrl`.
+- `dist/sw.js` (from `web/sw.template.js`) keeps versioned assets and hashed chunks in Cache Storage and drops what a new release no longer lists. Production only; not available in the app's built-in browser pane (test with real Chrome).
+- The Go server serves `CHILL_WEB` (default `../web/dist`) with cache headers and gzip (`server/web`).
+
 Commands:
 - `pnpm start`: the whole game locally. It builds the WASM, then runs the server on :8080 and Vite on :5173; Ctrl-C stops both.
 - `pnpm dev`: builds the WASM, then starts Vite on :5173.
-- `pnpm server`: the Go server on :8080. Its DB file is `CHILL_DB`, default `server/chill.db`.
+- `pnpm server`: the Go server on :8080. Its DB file is `CHILL_DB`, default `server/chill.db`. It also serves the built client (`CHILL_WEB`, default `web/dist`) when there is one.
+- `pnpm build`: the WASM, then the production client (`web/dist`, with the bundle check). `pnpm serve`: build, then run the server on it (http://localhost:8080).
 - `pnpm test`: Go tests natively, sim and bridge tests under WASM, and a TS typecheck.
 - `pnpm balance`: the balance lab (`tools/balance`). It plays ~160k seeded battles and writes `docs/balance-report.md`. Run it before and after any balance change.
 

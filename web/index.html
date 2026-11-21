@@ -40,6 +40,16 @@
       .slots span { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #c5cedd; display: grid; place-items: center; font-size: 20px; background: #fff; }
       .slots span.empty { border-style: dashed; background: transparent; }
       .go { background: #3a8cff; color: #fff; border: 0; border-radius: 8px; padding: 10px 18px; font-weight: 600; }
+      .backdrop { position: fixed; inset: 0; z-index: 0; background:
+        radial-gradient(ellipse at 50% 120%, #0006 0%, transparent 60%),
+        linear-gradient(180deg, #9cc4e4 0%, #cfe3ee 38%, #b7c99a 52%, #7f9a5c 70%, #5d7542 100%); }
+      .backdrop::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 55%, #0b142055 100%); }
+      .loading { position: fixed; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 30; width: min(420px, calc(100vw - 32px)); background: #0b1420e6; color: #fff; border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; text-align: center; box-shadow: 0 8px 30px #0006; }
+      .loading b { font: 700 18px system-ui; } .loading span { font-size: 12px; opacity: .8; }
+      .lbar { height: 8px; border-radius: 4px; background: #ffffff1f; overflow: hidden; }
+      .lbar i { display: block; height: 100%; background: linear-gradient(90deg, #3a8cff, #7fb6ff); transition: width .2s; }
+      .lbar i.busy { animation: lbusy 1.2s ease-in-out infinite; }
+      @keyframes lbusy { 0% { margin-left: -15%; } 100% { margin-left: 100%; } }
       .deploybar { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 12px; align-items: stretch; background: #0b1420b8; padding: 10px; border-radius: 12px; color: #fff; z-index: 5; max-width: calc(100vw - 32px); overflow-x: auto; }
       .deploymain { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
       .plans { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }

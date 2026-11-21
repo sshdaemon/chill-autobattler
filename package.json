@@ -8,6 +8,8 @@
     "build:wasm": "cd wasm && GOOS=js GOARCH=wasm go build -trimpath -ldflags='-s -w' -o ../web/public/sim.wasm . && cp \"$(go env GOROOT)/lib/wasm/wasm_exec.js\" ../web/public/",
     "dev": "pnpm build:wasm && pnpm --filter web dev",
     "server": "cd server && go run ./cmd/server",
+    "build": "pnpm build:wasm && pnpm --filter web build",
+    "serve": "pnpm build && pnpm server",
     "test": "pnpm test:go && pnpm test:wasm && pnpm --filter web typecheck",
     "test:go": "go test ./sim/... ./pb/... ./server/... ./tools/balance/...",
     "test:wasm": "for m in sim wasm; do (cd $m && GOOS=js GOARCH=wasm go test -exec=\"$(go env GOROOT)/lib/wasm/go_js_wasm_exec\" ./...) || exit 1; done",

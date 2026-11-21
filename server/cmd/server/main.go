@@ -18,6 +18,7 @@ import (
 	"chill/server/battle"
 	"chill/server/run"
 	"chill/server/store"
+	"chill/server/web"
 	"chill/sim"
 )
 
@@ -39,6 +40,15 @@ func main() {
 	mux := http.NewServeMux()
 	connecthttp.Mount(mux, rpc)
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) { fmt.Fprintln(w, "ok", sim.Version) })
+	// the built client (pnpm build), when there is one: CHILL_WEB, default ../web/dist
+	dist := os.Getenv("CHILL_WEB")
+	if dist == "" {
+		dist = "../web/dist"
+	}
+	if st, err := os.Stat(dist); err == nil && st.IsDir() {
+		mux.Handle("/", web.Handler(dist)) // not "GET /": it would clash with the RPC routes' patterns
+		log.Printf("serving the client from %s", dist)
+	}
 	log.Printf("server on :8080 (db %s)", path)
 	log.Fatal(http.ListenAndServe(":8080", auth.Middleware(db, mux)))
 }

@@ -1,4 +1,6 @@
-import { lastKill, onSnapshot, viewOf } from './scene/effects.ts';
+import { sceneHooks } from './scene/hooks.ts';
+import { battleFiles, fetchParts, prefetch, type Progress } from './assets.ts';
+import { loadBattleView } from './battleView.ts';
 import { create } from 'zustand';
 import { create as createMsg, toBinary, fromBinary } from '@bufbuild/protobuf';
 import { BattleInputSchema, BattleOutcomeSchema, BattleResult, type BattleOutcome } from './gen/chill/v1/battle_pb.ts';
@@ -25,7 +27,9 @@ const FX = 65536;
 
 export type Float = { id: number; x: number; z: number; text: string; color: string; born: number };
 // loading → faction (new run) → starting → drafting → deploying → locking → countdown → fighting → done (result, picks or run over)
-export type Phase = 'loading' | 'faction' | 'starting' | 'drafting' | 'deploying' | 'locking' | 'countdown' | 'fighting' | 'done';
+export type Phase = 'loading' | 'faction' | 'starting' | 'drafting' | 'preparing' | 'deploying' | 'locking' | 'countdown' | 'fighting' | 'done';
+// Phases that show the 3D battle view (loaded on demand: scene/BattleView.tsx).
+export const BATTLE_PHASES: Phase[] = ['deploying', 'locking', 'countdown', 'fighting', 'done'];
 // A unit of Blue's army: sim class, abilities, and whether it's a veteran.
 export type ArmyUnit = { cls: number; skills: Skill[]; vet: boolean };
 type Pt = { x: number; z: number };
@@ -46,6 +50,8 @@ type State = {
   plan: number; // Blue's battle plan (sim.Plan; 0 = Instinct; CUSTOM_PLAN = the custom one), kept for the run
   custom?: CustomPlanJSON; // the player's custom plan, kept for the run
   editing: boolean; // the plan editor is open (the deploy countdown pauses)
+  simLoad?: Progress; // the sim's download (the start loading screen)
+  battleLoad?: { key: string; progress: Progress; ready: boolean }; // the battle stage's assets (key: the unit types)
   battlePlans?: [number, number]; // the battle's [Blue, Red] plans from the sim; Red's is real only after the lock
   positions?: Pt[]; // Custom: Blue's positions
   slots: Record<number, Pt[]>; // preset → positions for the current army (from the sim)
@@ -228,10 +234,36 @@ export const useBattle = create<State>((set, get) => {
     clearInterval(draftTimer);
     const d = get().draft;
     if (!d) return;
-    set({ army: d.blue.map((u) => ({ cls: u.cls, skills: u.skills, vet: !!u.vet })), phase: 'deploying', positions: undefined });
+    set({ army: d.blue.map((u) => ({ cls: u.cls, skills: u.skills, vet: !!u.vet })), positions: undefined });
+    if (get().battleLoad?.ready) enterDeploy();
+    else set({ phase: 'preparing' }); // the loading screen, until prepareBattle is done
+  };
+  // enterDeploy starts deployment: the battle's assets are ready.
+  const enterDeploy = () => {
+    set({ phase: 'deploying' });
     send({ type: 'slots', classes: armyClasses(get()) });
     preview();
     startDeployTimer();
+  };
+  // prepareBattle gets a battle's assets ready, from the draft on: prefetch
+  // the files (with progress), load the 3D view's code, then fill the
+  // in-memory caches. A battle with the same unit types reuses the last one's.
+  const prepareBattle = async (classes: number[]) => {
+    const key = [...new Set(classes)].sort((a, b) => a - b).join(',');
+    if (get().battleLoad?.key === key) return;
+    set({ battleLoad: { key, progress: { done: 0, total: 0 }, ready: false } });
+    const still = () => get().battleLoad?.key === key;
+    try {
+      const files = battleFiles(classes, await fetchParts());
+      await prefetch(files, (progress) => { if (still()) set({ battleLoad: { key, progress, ready: false } }); });
+      const view = await loadBattleView();
+      await view.warmBattle(classes);
+    } catch (e) {
+      console.warn('preparing the battle:', e); // the loaders retry when the scene asks
+    }
+    if (!still()) return;
+    set((s) => ({ battleLoad: { key, progress: s.battleLoad!.progress, ready: true } }));
+    if (get().phase === 'preparing') enterDeploy();
   };
   const showRunOver = async (run: Run) => {
     set({ run, phase: 'done' });
@@ -315,6 +347,8 @@ export const useBattle = create<State>((set, get) => {
       if (get().phase !== 'starting' || !run) return;
       const vets = (run.veterans ?? []).map((v: UnitSpec) => ({ cls: v.unitClass - 1, skills: [...v.skills] }));
       set({ draft: newDraft(plan, vets, Date.now()), phase: 'drafting' });
+      // the battle's unit types: the faction's and Red's drafted army
+      void prepareBattle([...factionUnits(get().data, run), ...vets.map((v) => v.cls), ...plan.red.map((u) => u.cls)]);
       clearInterval(draftTimer);
       draftTimer = setInterval(() => {
         const d = get().draft;
@@ -482,6 +516,7 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
     }
     case 'fog': useBattle.setState({ fog: new Uint8Array(m.seen) }); break;
     case 'error': useBattle.setState({ error: m.message }); break;
+    case 'progress': useBattle.setState({ simLoad: { done: m.loaded, total: m.total } }); break;
     case 'planCheck': checks.get(m.id)?.(m.error); checks.delete(m.id); break;
     case 'started': {
       const s = decodeSnapshot(m.snapshot);
@@ -491,14 +526,14 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
     }
     case 'snapshot': {
       const s = decodeSnapshot(m.snapshot);
-      onSnapshot(s, s.events, viewOf(useBattle.getState()));
+      sceneHooks.onSnapshot?.(s, s.events);
       useBattle.setState((st) => ({ prev: st.curr, curr: s, currAt: performance.now(), floats: addFloats(s, s.events) }));
       break;
     }
     case 'done': {
       const outcome = fromBinary(BattleOutcomeSchema, m.outcome);
       playSound(outcome.result === BattleResult.BLUE_WIN ? 'victory' : 'defeat');
-      lastKill();
+      sceneHooks.lastKill?.();
       useBattle.setState({ outcome, phase: 'done' });
       setTimeout(() => useBattle.setState({ floats: [] }), 1200); // let the last numbers fade
       void useBattle.getState().verify();

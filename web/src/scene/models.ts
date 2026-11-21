@@ -8,6 +8,7 @@ import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { BUILDS, CLIP_BUNDLES, CLIPS, lookOf, recipeNamed, type Recipe } from '../units/looks.ts';
 import { makeCape } from './cloth.ts';
+import { assetUrl } from '../assets.ts';
 import { tuning } from './tuning.ts';
 
 // Which recipe a unit wears comes from its look: the n-th unit of a class in a
@@ -30,7 +31,7 @@ type Manifest = {
   materials: Record<string, { variants: string[]; mask: string }>;
 };
 let manifestP: Promise<Manifest> | undefined;
-const manifest = () => (manifestP ??= fetch(`${PARTS}parts.json`).then((r) => r.json() as Promise<Manifest>));
+const manifest = () => (manifestP ??= fetch(assetUrl(`${PARTS}parts.json`)).then((r) => r.json() as Promise<Manifest>));
 
 const textures = new Map<string, Promise<THREE.Texture>>();
 function texture(file: string, color: boolean) {
@@ -48,7 +49,7 @@ function texture(file: string, color: boolean) {
 
 let clipsPromise: Promise<Record<string, THREE.AnimationClip>> | undefined;
 export function loadClips() {
-  clipsPromise ??= Promise.all(CLIP_BUNDLES.map((b) => fetch(`/assets/clips/${b}.json`).then((r) => r.json())))
+  clipsPromise ??= Promise.all(CLIP_BUNDLES.map((b) => fetch(assetUrl(`/assets/clips/${b}.json`)).then((r) => r.json())))
     .then((bundles: Parameters<typeof THREE.AnimationClip.parse>[0][][]) => Object.fromEntries(bundles.flat().map((c) => {
       const clip = THREE.AnimationClip.parse(c);
       return [clip.name, clip];
@@ -164,6 +165,28 @@ function mergeGroup(key: string, geos: THREE.BufferGeometry[]) {
     merged.set(key, g);
   }
   return g;
+}
+
+// warmUnits loads everything these unit types' recipes use (parts, outfit
+// textures, clips) into the caches above, so their characters assemble
+// without waiting (the battle stage, before deployment).
+export async function warmUnits(classes: number[]): Promise<void> {
+  const man = await manifest();
+  const jobs: Promise<unknown>[] = [loadClips()];
+  for (const cls of new Set(classes)) {
+    for (const r of lookOf(cls).recipes) {
+      const body = [...r.parts, r.head, ...r.hair];
+      for (const n of body) jobs.push(load(n));
+      for (const it of r.items) if (man.items[it]?.kind !== 'cloth') jobs.push(load(it));
+      for (const n of body) {
+        for (const m of man.parts[n]?.materials ?? []) {
+          const spec = man.materials[m];
+          if (spec) jobs.push(texture(spec.variants[Math.min(r.variant, spec.variants.length - 1)], true), texture(spec.mask, false));
+        }
+      }
+    }
+  }
+  await Promise.all(jobs);
 }
 
 // A fresh, independently animated character for a unit, built from its recipe.
