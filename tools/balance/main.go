@@ -2,6 +2,8 @@
 //
 //	go run ./tools/balance -n 2000 > docs/balance-report.md   (or: pnpm balance)
 //	go run ./tools/balance -unit <name>                       (or: pnpm balance:unit <name>)
+//
+// It runs at low priority on half the CPUs; -cpu N uses N (e.g. -cpu 16 for all of them).
 package main
 
 import (
@@ -18,7 +20,10 @@ func main() {
 	n := flag.Int("n", 2000, "battles per experiment row")
 	exp := flag.String("exp", "", "only these experiments, comma separated (side,matchups,comps,skills,runs,curves,plans,maps,edges,custom); for quick tuning")
 	unit := flag.String("unit", "", "check one roster entry against the new-unit balance bands (pnpm balance:unit <name>)")
+	cpu := flag.Int("cpu", workers, "battles run at once (default: half the CPUs)")
 	flag.Parse()
+	workers = max(1, *cpu)
+	lowerPriority()
 	start := time.Now()
 	if *unit != "" {
 		report, ok, err := UnitReport(*unit, *n/2)

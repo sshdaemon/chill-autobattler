@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -24,7 +23,7 @@ func play(ins []sim.Input) []result {
 	out := make([]result, len(ins))
 	next := make(chan int)
 	var wg sync.WaitGroup
-	for w := 0; w < runtime.NumCPU(); w++ {
+	for w := 0; w < workers; w++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
