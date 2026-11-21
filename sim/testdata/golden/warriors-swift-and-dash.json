@@ -1,18 +1,14 @@
 {
-  "version": "0.11.0+9cf2dc35.39edb404",
+  "version": "0.12.0+9cf2dc35.39edb404",
   "case": "warriors swift and dash",
   "outcome": {
     "result": 1,
-    "ticks": 257,
-    "checksum": "8397580962115531655",
+    "ticks": 313,
+    "checksum": "2124544363301543072",
     "survivors": [
       {
-        "Index": 0,
-        "HP": 1906703
-      },
-      {
         "Index": 1,
-        "HP": 4072054
+        "HP": 4391884
       },
       {
         "Index": 3,
@@ -20,7 +16,7 @@
       },
       {
         "Index": 4,
-        "HP": 6553600
+        "HP": 2373814
       }
     ]
   }

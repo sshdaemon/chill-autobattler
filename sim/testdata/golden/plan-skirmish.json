@@ -1,18 +1,18 @@
 {
-  "version": "0.11.0+9cf2dc35.39edb404",
+  "version": "0.12.0+9cf2dc35.39edb404",
   "case": "plan skirmish",
   "outcome": {
     "result": 2,
-    "ticks": 388,
-    "checksum": "8312152942376011487",
+    "ticks": 300,
+    "checksum": "1315833480416092703",
     "survivors": [
       {
-        "Index": 6,
-        "HP": 1495555
+        "Index": 7,
+        "HP": 2257427
       },
       {
         "Index": 8,
-        "HP": 1006955
+        "HP": 2017782
       }
     ]
   }

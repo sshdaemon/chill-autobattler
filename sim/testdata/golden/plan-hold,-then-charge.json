@@ -1,14 +1,14 @@
 {
-  "version": "0.11.0+9cf2dc35.39edb404",
+  "version": "0.12.0+9cf2dc35.39edb404",
   "case": "plan hold, then charge",
   "outcome": {
     "result": 2,
-    "ticks": 415,
-    "checksum": "17983530632244674741",
+    "ticks": 389,
+    "checksum": "14759726785112110016",
     "survivors": [
       {
         "Index": 8,
-        "HP": 2077122
+        "HP": 2793221
       }
     ]
   }

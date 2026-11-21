@@ -187,7 +187,12 @@ func (b *Battle) stepAway(u *Unit, from Vec) (Vec, bool) {
 func (b *Battle) behave(u, t *Unit) bool {
 	tp := u.Temper
 	if tp.FallBack > 0 && u.HP.MulDiv(100, tp.FallBack) < u.MaxHP {
-		if c, ok := b.allyCentre(u); ok && Within(u.Pos, t.Pos, u.Stats.Sight) {
+		if c, ok := b.allyCentre(u); ok {
+			if !Within(u.Pos, t.Pos, u.Stats.Sight) { // fallen back out of its reach: wait there, not walk back in
+				u.moveTarget, u.path = nil, nil
+				u.Face = TurnToward(u.Face, t.Pos.Sub(u.Pos).Norm(), TurnPerTick)
+				return true
+			}
 			away := c.Sub(t.Pos)
 			if away.Len() > Ratio(1, 1000) {
 				c = c.Add(away.Norm().Scale(I(3)))
@@ -196,12 +201,16 @@ func (b *Battle) behave(u, t *Unit) bool {
 			return true
 		}
 	}
-	if tp.Keep > 0 && u.cd > 0 && Dist(u.Pos, t.Pos) < tp.Keep-Half {
+	// keeping its distance: it starts stepping back when closer than Keep less
+	// half a metre and goes on until it is out at Keep, so it doesn't flip
+	// between stepping back and closing in at the edge
+	if d := Dist(u.Pos, t.Pos); tp.Keep > 0 && u.cd > 0 && (d < tp.Keep-Half || u.keeping && d < tp.Keep) {
 		if p, ok := b.stepAway(u, t.Pos); ok {
-			u.path, u.moveTarget = nil, &p
+			u.path, u.moveTarget, u.keeping = nil, &p, true
 			return true
 		}
 	}
+	u.keeping = false
 	if r := engageRules[tp.Engage]; r.engage != nil && !r.engage(b, u, t) {
 		u.moveTarget, u.path = nil, nil
 		u.Face = TurnToward(u.Face, t.Pos.Sub(u.Pos).Norm(), TurnPerTick)
@@ -225,6 +234,11 @@ func (b *Battle) idle(u *Unit) {
 	if tag := u.Temper.StayNear; tag != 0 {
 		best, bd := (*Unit)(nil), Fx(0)
 		for _, a := range b.Units {
+			// a bodyguard doesn't wait for a ward that follows the front line:
+			// the ward comes after it anyway, and each would wait for the other
+			if tag&TagMelee == 0 && a.Temper.StayNear&TagMelee != 0 {
+				continue
+			}
 			if a != u && !a.Dead && a.Team == u.Team && a.Def.Tags&tag != 0 {
 				if d := Dist(u.Pos, a.Pos); best == nil || d < bd {
 					best, bd = a, d
@@ -239,7 +253,14 @@ func (b *Battle) idle(u *Unit) {
 			}
 			return
 		}
-		if best != nil && !Within(u.Pos, best.Pos, StayReach) { // a bodyguard too far from its ward
+		// a bodyguard too far from its ward heads back until it is well inside
+		// its reach, so it doesn't flip between the two at the edge
+		if best != nil && !Within(u.Pos, best.Pos, StayReach) {
+			u.guarding = true
+		} else if best == nil || Within(u.Pos, best.Pos, StayReach/2) {
+			u.guarding = false
+		}
+		if u.guarding {
 			b.moveToward(u, best.Pos)
 			return
 		}

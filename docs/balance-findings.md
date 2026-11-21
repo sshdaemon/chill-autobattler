@@ -2,6 +2,25 @@
 
 The current numbers are in [`balance-report.md`](balance-report.md) (generated with `pnpm balance`). This file says what they mean.
 
+## Smoother movement (sim 0.12.0, change smooth-movement)
+
+Units no longer flip between two moves at the edge of a distance they react
+to (a bodyguard's reach, a wounded unit's sight, a hit-and-run unit's keep
+distance), bodyguards don't wait for archers that follow the front line, and
+goals past the arena edge or inside rocks are moved to the nearest spot a unit
+can stand on. Measured by `TestMovementSmooth` over 600 varied battles:
+
+| | Before | After |
+|---|---|---|
+| Walking ticks that reverse the previous step (shaking) | 3.45% | 1.34% |
+| Unit-ticks stalled (wanting to move 1.5 s, < 0.5 m progress) | 12,717 | 679 |
+| Battles with such a stall | 25% | 22.5%, but short (233 episodes instead of 762) |
+
+Balance moved little (`pnpm balance`, main against the branch): class
+matchups by 1–5 pts, the Classic baseline 62.4% → 64.2% (noise ±1.1), runs a
+little easier for the player (average wins 2.35–3.12 → 2.44–3.44). The plan
+matrix (600 battles per pair) still has no dominant plan in any faction.
+
 ## Battle plans: tactics (sim 0.11.0, change battle-tactics)
 
 Three tactics join the six plans (`docs/battle-plans-roadmap.md` step 4):

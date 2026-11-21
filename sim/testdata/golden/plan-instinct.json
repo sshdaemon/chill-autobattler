@@ -1,18 +1,14 @@
 {
-  "version": "0.11.0+9cf2dc35.39edb404",
+  "version": "0.12.0+9cf2dc35.39edb404",
   "case": "plan instinct",
   "outcome": {
-    "result": 1,
-    "ticks": 396,
-    "checksum": "1518899660240967945",
+    "result": 2,
+    "ticks": 469,
+    "checksum": "6891231818412684452",
     "survivors": [
       {
-        "Index": 1,
-        "HP": 1874592
-      },
-      {
-        "Index": 3,
-        "HP": 2539400
+        "Index": 8,
+        "HP": 1374398
       }
     ]
   }

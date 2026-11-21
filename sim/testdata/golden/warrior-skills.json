@@ -1,10 +1,10 @@
 {
-  "version": "0.11.0+2b84affe.39edb404",
+  "version": "0.12.0+2b84affe.39edb404",
   "case": "warrior skills",
   "outcome": {
     "result": 2,
-    "ticks": 463,
-    "checksum": "3302721642401420339",
+    "ticks": 377,
+    "checksum": "10184908512676445088",
     "survivors": [
       {
         "Index": 7,

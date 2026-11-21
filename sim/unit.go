@@ -29,6 +29,9 @@ type Unit struct {
 	lineSet                        bool
 	flankSide                      Fx   // EngageFlank: which side it goes round (+1/-1 in x; 0 not yet chosen)
 	flanked                        bool // EngageFlank: it has gone round, or got close
+	guarding                       bool // StayNear bodyguard: heading back to its ward
+	keeping                        bool // Keep: stepping back from its target
+	pathGoal                       Vec  // the goal u.path was found for
 	fearFrom                       Vec  // where dread drives it away from
 	mods                           mods // this tick's modifiers (mods.go)
 	buffs                          []buff
@@ -295,19 +298,20 @@ func (b *Battle) advance(u *Unit) {
 // moveToward heads for a point, via a path when the straight line is blocked
 // or wades through water it could go round.
 func (b *Battle) moveToward(u *Unit, goal Vec) {
+	goal = b.Map.Reachable(goal)
 	u.pathTimer--
-	if u.path == nil || u.pathTimer <= 0 {
+	if u.path == nil || u.pathTimer <= 0 || !Within(goal, u.pathGoal, PathGoalSlack) {
 		if b.Map.LineOfSight(u.Pos, goal) && (b.Map.InWater(goal) || b.Map.WetLength(u.Pos, goal) == 0) {
 			u.path = []Vec{goal}
 		} else {
 			u.path = b.Map.FindPath(u.Pos, goal)
 		}
-		u.pathTimer = RetargetTicks
+		u.pathTimer, u.pathGoal = RetargetTicks, goal
 	}
 	if len(u.path) == 0 {
 		return
 	}
-	u.path[len(u.path)-1] = goal // the last leg follows a moving goal
+	u.path[len(u.path)-1] = goal // the last leg follows a goal that drifts a little
 	if len(u.path) > 1 && Within(u.path[0], u.Pos, WaypointReach) {
 		u.path = u.path[1:]
 	}
