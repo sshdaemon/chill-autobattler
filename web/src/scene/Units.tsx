@@ -292,23 +292,29 @@ function Unit({ index }: { index: number }) {
             <mesh position-x={0.45} renderOrder={22}><planeGeometry args={[0.9, 0.1]} /><meshBasicMaterial color={TEAM[info.team]} transparent depthTest={false} depthWrite={false} /></mesh>
           </group>
         </Billboard>
-        {group !== undefined && (
-          <Html position={[0, 0.1, 0.75]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none' }}>
-            <div className="grouptag">{group === 0 ? 'L' : 'R'}</div>
-          </Html>
-        )}
-        {info.skills > 0 && (
-          <Html position={[0, 2.45, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none' }}>
-            <div className="stars">{'★'.repeat(info.skills)}</div>
-          </Html>
-        )}
       </>}
+      {/* DOM labels stay mounted for the unit's life and are hidden with CSS:
+          each drei <Html> is its own React root, and unmounting one while a
+          unit dies or slips into fog could leave React removing a node that
+          was already gone (NotFoundError: removeChild) */}
+      {group !== undefined && (
+        <Html position={[0, 0.1, 0.75]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none' }}>
+          <div className="grouptag" style={dead || hidden ? HIDE : undefined}>{group === 0 ? 'L' : 'R'}</div>
+        </Html>
+      )}
+      {info.skills > 0 && (
+        <Html position={[0, 2.45, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none' }}>
+          <div className="stars" style={dead || hidden ? HIDE : undefined}>{'★'.repeat(info.skills)}</div>
+        </Html>
+      )}
       {!!(info.flags & UF.slowed) && !dead && (
         <mesh position-y={0.05} rotation-x={-Math.PI / 2}><ringGeometry args={[0.52, 0.62, 24]} /><meshBasicMaterial color="#9fd8ff" /></mesh>
       )}
     </group>
   );
 }
+
+const HIDE = { display: 'none' } as const;
 
 // Invisible ground that catches pointer moves while a unit is being dragged.
 function DragPlane() {
