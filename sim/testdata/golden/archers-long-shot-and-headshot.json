@@ -1,22 +1,18 @@
 {
-  "version": "0.12.0+50219ac5.39edb404",
+  "version": "0.13.0+50219ac5.39edb404",
   "case": "archers long shot and headshot",
   "outcome": {
     "result": 2,
-    "ticks": 333,
-    "checksum": "4945897790315180540",
+    "ticks": 376,
+    "checksum": "18096654535285006543",
     "survivors": [
       {
         "Index": 5,
-        "HP": 7864320
+        "HP": 4861459
       },
       {
-        "Index": 6,
-        "HP": 1950282
-      },
-      {
-        "Index": 8,
-        "HP": 836006
+        "Index": 7,
+        "HP": 1850519
       }
     ]
   }

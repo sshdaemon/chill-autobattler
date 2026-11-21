@@ -1,30 +1,18 @@
 {
-  "version": "0.12.0+6a98f152.39edb404",
+  "version": "0.13.0+6a98f152.39edb404",
   "case": "skoutatos skills",
   "outcome": {
-    "result": 2,
-    "ticks": 379,
-    "checksum": "11087918871089214273",
+    "result": 1,
+    "ticks": 674,
+    "checksum": "6786367436112123437",
     "survivors": [
       {
-        "Index": 5,
-        "HP": 3735552
+        "Index": 0,
+        "HP": 146475
       },
       {
-        "Index": 6,
-        "HP": 3735552
-      },
-      {
-        "Index": 7,
-        "HP": 2581317
-      },
-      {
-        "Index": 8,
-        "HP": 2243508
-      },
-      {
-        "Index": 9,
-        "HP": 1212176
+        "Index": 2,
+        "HP": 7536640
       }
     ]
   }

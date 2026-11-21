@@ -274,7 +274,7 @@ func (b *Battle) advance(u *Unit) {
 		edge = -EnemyEdge
 	}
 	if u.investigate == nil && u.advanceGoal == nil {
-		g := b.Map.FreeSpot(V(u.Pos.X, edge))
+		g := b.freeSpot(u.Team, V(u.Pos.X, edge))
 		u.advanceGoal = &g
 	}
 	goal := u.advanceGoal
@@ -286,7 +286,7 @@ func (b *Battle) advance(u *Unit) {
 			u.investigate = nil
 		} else {
 			x := (b.rng.Frac() - Half).Mul(I(22))
-			g := b.Map.FreeSpot(V(x, edge.Mul(b.rng.Frac())))
+			g := b.freeSpot(u.Team, V(x, edge.Mul(b.rng.Frac())))
 			u.advanceGoal = &g
 		}
 		u.path = nil
@@ -298,13 +298,13 @@ func (b *Battle) advance(u *Unit) {
 // moveToward heads for a point, via a path when the straight line is blocked
 // or wades through water it could go round.
 func (b *Battle) moveToward(u *Unit, goal Vec) {
-	goal = b.Map.Reachable(goal)
+	goal = b.reachable(u.Team, goal)
 	u.pathTimer--
 	if u.path == nil || u.pathTimer <= 0 || !Within(goal, u.pathGoal, PathGoalSlack) {
 		if b.Map.LineOfSight(u.Pos, goal) && (b.Map.InWater(goal) || b.Map.WetLength(u.Pos, goal) == 0) {
 			u.path = []Vec{goal}
 		} else {
-			u.path = b.Map.FindPath(u.Pos, goal)
+			u.path = b.findPath(u.Team, u.Pos, goal)
 		}
 		u.pathTimer, u.pathGoal = RetargetTicks, goal
 	}

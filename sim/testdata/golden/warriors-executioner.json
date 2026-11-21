@@ -1,14 +1,14 @@
 {
-  "version": "0.12.0+2b84affe.39edb404",
+  "version": "0.13.0+2b84affe.39edb404",
   "case": "warriors executioner",
   "outcome": {
     "result": 2,
-    "ticks": 176,
-    "checksum": "17348045980138401389",
+    "ticks": 152,
+    "checksum": "2808493783057088801",
     "survivors": [
       {
         "Index": 6,
-        "HP": 5916230
+        "HP": 5629351
       },
       {
         "Index": 7,

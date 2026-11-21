@@ -24,7 +24,7 @@ func init() {
 				u.flanked = true
 				return false
 			}
-			b.moveToward(u, b.Map.FreeSpot(goal))
+			b.moveToward(u, b.freeSpot(u.Team, goal))
 			return true
 		},
 	})

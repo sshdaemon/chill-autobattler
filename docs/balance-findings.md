@@ -2,6 +2,79 @@
 
 The current numbers are in [`balance-report.md`](balance-report.md) (generated with `pnpm balance`). This file says what they mean.
 
+## Maps: mirrored (sim 0.13.0, change mirrored-maps)
+
+Does the random map decide battles? `go run ./tools/balance -exp maps` fixes 10
+maps and plays the same armies on each (each faction's units 2-2-1, recruits,
+3-2, Instinct), changing only the combat rolls, 400 battles per cell.
+
+- **Before:** with the same army on both sides, Blue's win rate per map ran
+  from 1% to 95% (28 of 40 cells more than 3 standard errors from 50%; 20 pts
+  off on average). Over many random maps the sides were fair (49–51%), so the
+  map handed one side an edge by luck.
+- **Mirrored maps** (reflected across the centre line) brought that to 8.0
+  pts and 10 of 40 cells; **Red pathing in Blue's frame** (so ties round a rock
+  break the same way for both) to **5.2 pts and 7 of 40**.
+- **Leftover:** 5 of the 7 are Varangian armies (up to 85% on one map). Five
+  huskarls show it under their own wounded rule and under focus, not under
+  nearest; alternating which side acts first each tick didn't change it. Cause
+  not found yet.
+- **Matchups still vary by map**, more than before (spread ×5–14 the combat
+  noise): on a mirrored map both sides get the same terrain, so this is which
+  army suits the map. The player sees the map before the draft.
+- The plan matrix (1000 per pair) still has no dominant plan.
+
+### After
+
+#### Side advantage per map
+
+Blue's win rate with the same army on both sides. A fair map gives 50%.
+
+| Map | classic | rus | varangians | romans | All factions |
+|---|---|---|---|---|---|
+| 101 | 51.6% | 52.2% | 51.1% | 53.0% | **52.0%** |
+| 202 | 41.0% ⚠ | 61.4% ⚠ | 49.5% | 51.1% | **50.7%** |
+| 303 | 50.1% | 52.0% | 77.8% ⚠ | 49.8% | **57.4%** ⚠ |
+| 404 | 50.4% | 49.5% | 51.0% | 50.5% | **50.3%** |
+| 505 | 46.6% | 45.5% | 55.0% | 51.7% | **49.7%** |
+| 606 | 45.2% | 53.0% | 48.0% | 49.8% | **49.0%** |
+| 707 | 52.0% | 47.6% | 38.0% ⚠ | 50.1% | **46.9%** |
+| 808 | 45.0% | 53.0% | 60.6% ⚠ | 51.2% | **52.5%** |
+| 909 | 48.5% | 56.5% | 78.2% ⚠ | 55.8% | **59.7%** ⚠ |
+| 1010 | 51.6% | 45.9% | 85.2% ⚠ | 49.1% | **58.0%** ⚠ |
+
+#### Matchups per map
+
+The first faction's win rate against the second, sides swapped every other battle. Spread: the standard deviation of the ten maps' numbers, against what the combat rolls alone would give (×1 means maps add nothing).
+
+| Matchup | 101 | 202 | 303 | 404 | 505 | 606 | 707 | 808 | 909 | 1010 | Mean | Min–max | Spread |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| classic vs rus | 92.0% ⚠ | 83.2% ⚠ | 60.2% ⚠ | 99.2% ⚠ | 46.8% ⚠ | 98.2% ⚠ | 74.1% | 64.9% ⚠ | 68.0% | 37.4% ⚠ | 72.4% | 37.4%–99.2% | ±21.1 pts (×9.4) |
+| classic vs varangians | 44.6% ⚠ | 32.6% ⚠ | 100.0% ⚠ | 96.8% ⚠ | 97.1% ⚠ | 99.5% ⚠ | 98.8% ⚠ | 94.0% ⚠ | 97.0% ⚠ | 96.5% ⚠ | 85.7% | 32.6%–100.0% | ±25.0 pts (×14.3) |
+| classic vs romans | 2.0% ⚠ | 22.6% ⚠ | 49.4% ⚠ | 21.1% ⚠ | 9.0% ⚠ | 67.8% ⚠ | 21.5% ⚠ | 52.5% ⚠ | 98.0% ⚠ | 2.8% ⚠ | 34.7% | 2.0%–98.0% | ±31.4 pts (×13.2) |
+| rus vs varangians | 9.1% ⚠ | 1.0% ⚠ | 6.9% ⚠ | 7.2% ⚠ | 61.0% ⚠ | 0.2% ⚠ | 66.5% ⚠ | 2.2% ⚠ | 6.6% ⚠ | 10.2% ⚠ | 17.1% | 0.2%–66.5% | ±24.8 pts (×13.2) |
+| rus vs romans | 3.2% | 0.0% ⚠ | 6.2% | 0.0% ⚠ | 0.0% ⚠ | 0.0% ⚠ | 6.2% | 15.9% ⚠ | 10.6% ⚠ | 10.8% ⚠ | 5.3% | 0.0%–15.9% | ±5.7 pts (×5.1) |
+| varangians vs romans | 0.0% ⚠ | 26.9% | 20.2% | 47.2% ⚠ | 44.8% ⚠ | 25.0% | 1.8% ⚠ | 9.5% ⚠ | 36.6% ⚠ | 1.8% ⚠ | 21.4% | 0.0%–47.2% | ±17.8 pts (×8.7) |
+
+### Before (sim 0.12.0)
+
+#### Side advantage per map
+
+Blue's win rate with the same army on both sides. A fair map gives 50%.
+
+| Map | classic | rus | varangians | romans | All factions |
+|---|---|---|---|---|---|
+| 101 | 49.0% | 40.2% ⚠ | 1.2% ⚠ | 48.1% | **34.7%** ⚠ |
+| 202 | 19.2% ⚠ | 77.0% ⚠ | 11.2% ⚠ | 47.6% | **38.8%** ⚠ |
+| 303 | 67.2% ⚠ | 88.0% ⚠ | 43.6% | 35.5% ⚠ | **58.6%** ⚠ |
+| 404 | 60.9% ⚠ | 44.2% | 56.5% | 75.2% ⚠ | **59.2%** ⚠ |
+| 505 | 47.5% | 43.9% | 15.9% ⚠ | 25.1% ⚠ | **33.1%** ⚠ |
+| 606 | 58.1% ⚠ | 25.5% ⚠ | 1.8% ⚠ | 94.5% ⚠ | **45.0%** ⚠ |
+| 707 | 63.2% ⚠ | 35.2% ⚠ | 40.0% ⚠ | 56.1% | **48.7%** |
+| 808 | 23.0% ⚠ | 45.4% | 68.4% ⚠ | 52.0% | **47.2%** |
+| 909 | 70.9% ⚠ | 36.5% ⚠ | 9.8% ⚠ | 26.6% ⚠ | **35.9%** ⚠ |
+| 1010 | 52.5% | 90.8% ⚠ | 11.0% ⚠ | 2.8% ⚠ | **39.3%** ⚠ |
+
 ## Smoother movement (sim 0.12.0, change smooth-movement)
 
 Units no longer flip between two moves at the edge of a distance they react

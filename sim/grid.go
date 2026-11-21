@@ -6,6 +6,9 @@ type Map struct {
 	blocked   [GridN * GridN]bool // can't stand here (rock/tree + unit radius, or the border)
 	wet       [GridN * GridN]bool // inside a pond
 	opaque    [GridN * GridN]bool // rock or tree itself: blocks sight
+	// Mirrored: every obstacle has its reflection across the centre line
+	// (generated maps do), so Red can path in Blue's frame (battle.go).
+	Mirrored bool
 }
 
 var (
@@ -25,8 +28,19 @@ func NewMap(obstacles []Obstacle) *Map {
 			m.wet[j*GridN+i] = m.InWater(c)
 		}
 	}
+	m.Mirrored = true
+	for _, o := range obstacles {
+		found := false
+		for _, p := range obstacles {
+			found = found || (p.Kind == o.Kind && p.R == o.R && p.Pos == flipZ(o.Pos))
+		}
+		m.Mirrored = m.Mirrored && found
+	}
 	return m
 }
+
+// flipZ reflects a point across the centre line.
+func flipZ(v Vec) Vec { return V(v.X, -v.Z) }
 
 // ToCell maps a coordinate to its grid index, clamped to the grid.
 func ToCell(v Fx) int {

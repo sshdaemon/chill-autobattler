@@ -13,7 +13,7 @@ import (
 // RulesVersion must change whenever the rules code changes, so old replays
 // are checked with the logic that produced them. Changes to units' data need
 // no bump: Version carries a fingerprint of the roster.
-const RulesVersion = "0.12.0"
+const RulesVersion = "0.13.0"
 
 // Version is RulesVersion plus a fingerprint of the roster and the factions
 // ("0.7.0+1a2b3c4d"), so changing any unit's numbers changes it without
@@ -113,7 +113,7 @@ func New(in Input) (*Battle, error) {
 				pos[i] = *s.Pos
 			}
 			if !b.Map.FreeAt(pos[i]) { // nudge off rocks and trees
-				pos[i] = b.Map.FreeSpot(pos[i])
+				pos[i] = b.freeSpot(team, pos[i])
 			}
 		}
 		var groups []int
@@ -138,6 +138,37 @@ func New(in Input) (*Battle, error) {
 		u.cd = StartCooldownLo + b.rng.IntN(StartCooldownHi-StartCooldownLo)
 	}
 	return b, nil
+}
+
+// On a mirrored map Red finds paths and free spots in Blue's frame: the
+// question is reflected, answered, and the answer reflected back, so every
+// choice the grid makes between equal options (which side of a rock, which
+// free cell) is the mirror image of Blue's and neither side gains from it.
+func (b *Battle) inBlueFrame(team int) bool { return team == 1 && b.Map.Mirrored }
+
+func (b *Battle) freeSpot(team int, p Vec) Vec {
+	if b.inBlueFrame(team) {
+		return flipZ(b.Map.FreeSpot(flipZ(p)))
+	}
+	return b.Map.FreeSpot(p)
+}
+
+func (b *Battle) reachable(team int, p Vec) Vec {
+	if b.inBlueFrame(team) {
+		return flipZ(b.Map.Reachable(flipZ(p)))
+	}
+	return b.Map.Reachable(p)
+}
+
+func (b *Battle) findPath(team int, from, to Vec) []Vec {
+	if !b.inBlueFrame(team) {
+		return b.Map.FindPath(from, to)
+	}
+	path := b.Map.FindPath(flipZ(from), flipZ(to))
+	for i := range path {
+		path[i] = flipZ(path[i])
+	}
+	return path
 }
 
 // GroupsOf splits an army into a tactic's two groups by starting position:
