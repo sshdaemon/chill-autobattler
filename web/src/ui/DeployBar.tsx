@@ -1,6 +1,7 @@
 import { armyClasses, DEPLOY_SECONDS, useBattle } from '../store.ts';
 import { CUSTOM, PRESETS } from '../gamedata.ts';
-import { planWords } from '../plans.ts';
+import { CUSTOM_PLAN, CUSTOM_WORDS, planWords } from '../plans.ts';
+import { PlanEditor } from './PlanEditor.tsx';
 
 // Mini-diagram of where your own units would stand (top = toward the enemy).
 function Diagram({ f }: { f: number }) {
@@ -22,10 +23,12 @@ function Diagram({ f }: { f: number }) {
 }
 
 export function DeployBar() {
-  const { formation, setFormation, plan, setPlan, deployLeft, ready, data, phase } = useBattle();
+  const { formation, setFormation, plan, setPlan, deployLeft, ready, data, phase, custom, editing, openEditor } = useBattle();
   if (!data) return null;
   const locking = phase === 'locking';
   return (
+    <>
+    {editing && <PlanEditor />}
     <div className="deploybar">
       <div className="deploymain">
       {([['Plan', false], ['Tactic', true]] as const).map(([label, tactic]) => (
@@ -37,9 +40,13 @@ export function DeployBar() {
               <button key={p.id} className={`pbtn ${plan === p.id ? 'on' : ''}`} disabled={locking} title={w.desc} onClick={() => setPlan(p.id)}>{w.title}</button>
             );
           })}
+          {!tactic && <>
+            {custom && <button className={`pbtn ${plan === CUSTOM_PLAN ? 'on' : ''}`} disabled={locking} title={CUSTOM_WORDS.desc} onClick={() => setPlan(CUSTOM_PLAN)}>{CUSTOM_WORDS.title}</button>}
+            <button className="pbtn edit" disabled={locking} title="Build your own plan from chips, starting from the chosen one" onClick={openEditor}>✎ Edit</button>
+          </>}
         </div>
       ))}
-      <div className="plandesc">{planWords(data.plans[plan]?.name).desc}</div>
+      <div className="plandesc">{plan === CUSTOM_PLAN ? CUSTOM_WORDS.desc : planWords(data.plans[plan]?.name).desc}</div>
       <div className="formations">
         {[...PRESETS, CUSTOM].map((f) => (
           <button key={f} className={`fbtn ${formation === f ? 'on' : ''}`} disabled={f === CUSTOM || locking}
@@ -54,8 +61,9 @@ export function DeployBar() {
         <div className="timer"><b>{Math.ceil(deployLeft)}</b> s</div>
         <div className="bar"><i style={{ width: `${(deployLeft / DEPLOY_SECONDS) * 100}%` }} /></div>
         <button className="go" disabled={locking} onClick={ready}>{locking ? 'Locking…' : 'Ready ▶'}</button>
-        <div className="hint">Drag your units inside the blue zone</div>
+        <div className="hint">{editing ? 'Paused while you edit the plan' : 'Drag your units inside the blue zone'}</div>
       </div>
     </div>
+    </>
   );
 }

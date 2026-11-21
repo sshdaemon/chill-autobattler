@@ -100,6 +100,20 @@ const (
 	PlanReserve    Plan = 7 // left advances in line; right holds and charges when the first ally falls
 	PlanHoldCharge Plan = 8 // everyone holds for 15 s, then charges
 	// next free: 9
+	PlanCustom Plan = 255 // reserved: a side fighting by a custom plan (custom.go)
+)
+
+// Edge is an edge from the custom-plan menu (edge.go): an advantage with a
+// cost, one per role. 0 is none.
+type Edge uint8
+
+const (
+	EdgeBraced    Edge = 1 // melee: less damage from the front, slower
+	EdgeReckless  Edge = 2 // faster, takes more damage
+	EdgeDrilled   Edge = 3 // melee: more damage, takes more damage
+	EdgeLongReach Edge = 4 // ranged and casters: longer range, less damage
+	EdgeLightFeet Edge = 5 // ranged: faster, less health
+	// next free: 6
 )
 
 // TriggerKind is what switches a tactic's group to its second stance

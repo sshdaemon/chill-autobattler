@@ -92,6 +92,9 @@ func PlanOf(id Plan) *PlanDef {
 }
 
 func (p Plan) String() string {
+	if p == PlanCustom {
+		return "custom"
+	}
 	if d := PlanOf(p); d != nil {
 		return d.Name
 	}
@@ -184,42 +187,52 @@ func ValidatePlans(plans []PlanDef, roster []UnitDef) error {
 		if int(p.ID) != i || p.Name == "" {
 			return fmt.Errorf("plan %d (%s): ids must match positions and every plan needs a name", p.ID, p.Name)
 		}
-		groups := 1
-		if p.IsTactic() {
-			groups = 2
-			for g, gd := range p.Groups {
-				if err := checkTrigger(gd.When); err != nil {
-					return fmt.Errorf("plan %s, group %d: %v", p.Name, g, err)
-				}
-				for _, st := range []Stance{gd.Then.Melee, gd.Then.Ranged, gd.Then.Caster} {
-					if len(st.Effects) > 0 {
-						return fmt.Errorf("plan %s, group %d: a second stance can't grant effects (they are given at spawn)", p.Name, g)
-					}
+		if err := validatePlan(p, roster); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// validatePlan checks one plan (built-in or custom) against every roster
+// entry: its effects suit the units they reach, and the temperament it gives,
+// alone and with each skill, before and after a trigger, is valid.
+func validatePlan(p *PlanDef, roster []UnitDef) error {
+	groups := 1
+	if p.IsTactic() {
+		groups = 2
+		for g, gd := range p.Groups {
+			if err := checkTrigger(gd.When); err != nil {
+				return fmt.Errorf("plan %s, group %d: %v", p.Name, g, err)
+			}
+			for _, st := range []Stance{gd.Then.Melee, gd.Then.Ranged, gd.Then.Caster} {
+				if len(st.Effects) > 0 {
+					return fmt.Errorf("plan %s, group %d: a second stance can't grant effects (they are given at spawn)", p.Name, g)
 				}
 			}
 		}
-		for j := range roster {
-			def := roster[j]
-			for g := 0; g < groups; g++ {
-				extra := p.effectsFor(&def, g)
-				for _, e := range extra {
-					if err := checkEffect(e, &def); err != nil {
-						return fmt.Errorf("plan %s on %s: %v", p.Name, def.Name, err)
-					}
+	}
+	for j := range roster {
+		def := roster[j]
+		for g := 0; g < groups; g++ {
+			extra := p.effectsFor(&def, g)
+			for _, e := range extra {
+				if err := checkEffect(e, &def); err != nil {
+					return fmt.Errorf("plan %s on %s: %v", p.Name, def.Name, err)
 				}
-				for k := -1; k < len(def.Skills); k++ {
-					var skills []Skill
-					if k >= 0 {
-						skills = []Skill{def.Skills[k].Skill}
-					}
-					var kit loadout
-					kit.learn(&def, skills, extra...)
-					for _, switched := range []bool{false, true} {
-						d := def
-						d.Temper = temperOf(&def, p, g, switched, &kit)
-						if err := checkTemperament(&d); err != nil {
-							return fmt.Errorf("plan %s on %s (group %d, switched %v, skills %v): %v", p.Name, def.Name, g, switched, skills, err)
-						}
+			}
+			for k := -1; k < len(def.Skills); k++ {
+				var skills []Skill
+				if k >= 0 {
+					skills = []Skill{def.Skills[k].Skill}
+				}
+				var kit loadout
+				kit.learn(&def, skills, extra...)
+				for _, switched := range []bool{false, true} {
+					d := def
+					d.Temper = temperOf(&def, p, g, switched, &kit)
+					if err := checkTemperament(&d); err != nil {
+						return fmt.Errorf("plan %s on %s (group %d, switched %v, skills %v): %v", p.Name, def.Name, g, switched, skills, err)
 					}
 				}
 			}
@@ -240,5 +253,6 @@ func RedPlanFor(combatSeed uint64) Plan {
 func plansFingerprint() string {
 	h := fnv.New32a()
 	fmt.Fprintf(h, "%#v", Plans)
+	fmt.Fprintf(h, "%#v %v %v %v %v %v %v", Edges, TriggerSteps, KeepSteps, LeashSteps, FallBackSteps, StayNearSteps, TriggerSeconds)
 	return fmt.Sprintf("%08x", h.Sum32())
 }

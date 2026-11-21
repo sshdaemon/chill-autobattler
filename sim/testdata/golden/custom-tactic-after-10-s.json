@@ -1,0 +1,15 @@
+{
+  "version": "0.15.0+9cf2dc35.0e752100",
+  "case": "custom tactic after 10 s",
+  "outcome": {
+    "result": 2,
+    "ticks": 370,
+    "checksum": "17509314749009847247",
+    "survivors": [
+      {
+        "Index": 6,
+        "HP": 1964342
+      }
+    ]
+  }
+}

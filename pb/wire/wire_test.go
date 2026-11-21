@@ -25,6 +25,13 @@ func randArmy(r *rand.Rand) *chillv1.Army {
 	case 2:
 		a.Plan = uint32(r.IntN(300))
 	}
+	if r.IntN(6) == 0 { // a custom plan: mostly in range, sometimes not
+		a.Plan = 0
+		if r.IntN(6) == 0 {
+			a.Plan = 2
+		}
+		a.CustomPlan = randCustom(r)
+	}
 	for i, n := 0, r.IntN(7); i < n; i++ {
 		u := &chillv1.UnitSpec{UnitClass: chillv1.UnitClass(r.IntN(5))}
 		for k, m := 0, 1+r.IntN(3); k < m; k++ { // mostly valid: 1..3 abilities, sometimes unknown or repeated
@@ -36,6 +43,47 @@ func randArmy(r *rand.Rand) *chillv1.Army {
 		a.Units = append(a.Units, u)
 	}
 	return a
+}
+
+func randChips(r *rand.Rand) *chillv1.PlanChips {
+	if r.IntN(3) == 0 {
+		return nil
+	}
+	small := func(n int) uint32 {
+		if r.IntN(2) == 0 {
+			return 0
+		}
+		if r.IntN(40) == 0 {
+			return uint32(r.IntN(400))
+		}
+		return uint32(r.IntN(n))
+	}
+	return &chillv1.PlanChips{Target: small(8), Engage: small(5), Trigger: small(4), Keep: small(4), Leash: small(3),
+		FallBack: small(3), StayNear: small(3), Kite: small(3), Edge: small(6)}
+}
+
+func randRoles(r *rand.Rand) *chillv1.PlanRoles {
+	if r.IntN(4) == 0 {
+		return nil
+	}
+	return &chillv1.PlanRoles{Melee: randChips(r), Ranged: randChips(r), Caster: randChips(r)}
+}
+
+func randCustom(r *rand.Rand) *chillv1.CustomPlan {
+	c := &chillv1.CustomPlan{Roles: randRoles(r)}
+	if r.IntN(3) == 0 {
+		for g, n := 0, 1+r.IntN(2); g < n; g++ {
+			pg := &chillv1.PlanGroup{Opening: randRoles(r), Then: randRoles(r), Trigger: uint32(r.IntN(4))}
+			if pg.Trigger == 1 {
+				pg.TriggerSeconds = uint32(5 * r.IntN(5))
+			}
+			if r.IntN(30) == 0 {
+				pg.Trigger, pg.TriggerSeconds = uint32(r.IntN(300)), uint32(r.IntN(2000))
+			}
+			c.Groups = append(c.Groups, pg)
+		}
+	}
+	return c
 }
 
 func randInput(r *rand.Rand) *chillv1.BattleInput {
@@ -69,7 +117,7 @@ func TestDecodeMatchesConvert(t *testing.T) {
 			}
 		}
 	}
-	for i := 0; i < 20000; i++ {
+	for i := 0; i < 40000; i++ {
 		in := randInput(r)
 		raw, _ := proto.Marshal(in)
 		check(in, raw)
@@ -142,5 +190,56 @@ func TestEncodeOutcome(t *testing.T) {
 		if want := convert.Outcome(o); !proto.Equal(&got, want) {
 			t.Fatalf("outcome %+v:\n got %v\nwant %v", o, &got, want)
 		}
+	}
+}
+
+// A custom plan's message fields may repeat; protobuf merges them.
+func TestCustomPlanMerges(t *testing.T) {
+	compare := func(raw []byte) (sim.Input, error) {
+		var merged chillv1.BattleInput
+		if err := proto.Unmarshal(raw, &merged); err != nil {
+			t.Fatal(err)
+		}
+		want, werr := convert.Input(&merged)
+		got, gerr := DecodeInput(raw)
+		if (werr == nil) != (gerr == nil) || errors.Is(werr, sim.ErrInvalid) != errors.Is(gerr, sim.ErrInvalid) {
+			t.Fatalf("errors differ:\nconvert: %v\nwire:    %v", werr, gerr)
+		}
+		if werr == nil && !reflect.DeepEqual(got, want) {
+			t.Fatalf("decoded differently:\nconvert: %+v\nwire:    %+v", want.Blue.Custom, got.Blue.Custom)
+		}
+		return got, gerr
+	}
+	units := []*chillv1.UnitSpec{{UnitClass: 1, Skills: []uint32{1}}, {UnitClass: 2, Skills: []uint32{1}}, {UnitClass: 3, Skills: []uint32{1}}}
+	base := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 3, CombatSeed: 4,
+		Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_3_2, Units: units,
+			CustomPlan: &chillv1.CustomPlan{Roles: &chillv1.PlanRoles{Melee: &chillv1.PlanChips{Target: uint32(sim.TargetNearest)}}}}}
+	raw, _ := proto.Marshal(base)
+	// a second occurrence: ranged chips, and the melee's edge, merge into the first
+	extra, _ := proto.Marshal(&chillv1.BattleInput{Blue: &chillv1.Army{CustomPlan: &chillv1.CustomPlan{Roles: &chillv1.PlanRoles{
+		Melee: &chillv1.PlanChips{Edge: uint32(sim.EdgeBraced)}, Ranged: &chillv1.PlanChips{Keep: 3, Kite: uint32(sim.KiteOn)}}}}})
+	in, err := compare(append(raw, extra...))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c := in.Blue.Custom.Roles; c[0].Target != sim.TargetNearest || c[0].Edge != sim.EdgeBraced || c[1].Keep != 3 || c[1].Kite != sim.KiteOn {
+		t.Errorf("merged chips: %+v", c)
+	}
+	// groups are repeated: two occurrences add two groups
+	g, _ := proto.Marshal(&chillv1.BattleInput{Blue: &chillv1.Army{CustomPlan: &chillv1.CustomPlan{Groups: []*chillv1.PlanGroup{{Trigger: uint32(sim.TriggerAllyFalls)}}}}})
+	in, err = compare(append(append(raw, g...), g...))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(in.Blue.Custom.Groups) != 2 {
+		t.Errorf("%d groups, want 2", len(in.Blue.Custom.Groups))
+	}
+	// random custom plans merged onto random inputs: the decoders agree
+	r := rand.New(rand.NewPCG(5, 6))
+	for i := 0; i < 3000; i++ {
+		in := randInput(r)
+		raw, _ := proto.Marshal(in)
+		more, _ := proto.Marshal(&chillv1.BattleInput{Blue: &chillv1.Army{CustomPlan: randCustom(r)}})
+		compare(append(raw, more...))
 	}
 }

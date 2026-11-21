@@ -2,7 +2,7 @@ import { lastKill, onSnapshot, viewOf } from './scene/effects.ts';
 import { create } from 'zustand';
 import { create as createMsg, toBinary, fromBinary } from '@bufbuild/protobuf';
 import { BattleInputSchema, BattleOutcomeSchema, BattleResult, type BattleOutcome } from './gen/chill/v1/battle_pb.ts';
-import { ArmySchema, type Army, type UnitSpec } from './gen/chill/v1/units_pb.ts';
+import { ArmySchema, CustomPlanSchema, type Army, type UnitSpec } from './gen/chill/v1/units_pb.ts';
 
 // an ability's number within its unit's roster entry (1..5)
 type Skill = number;
@@ -12,7 +12,8 @@ import { decodeMap, decodeSnapshot, type Obstacle, type SimEvent, type Snapshot 
 import type { FromWorker, ToWorker } from './sim/sim.worker.ts';
 import { battleApi, runApi } from './api.ts';
 import { authed, ensurePlayer } from './session.ts';
-import { CUSTOM, type GameData, type UnitLoadout } from './gamedata.ts';
+import { CUSTOM, type ChipsJSON, type CustomPlanJSON, type GameData, type Roles3, type UnitLoadout } from './gamedata.ts';
+import { CUSTOM_PLAN } from './plans.ts';
 import { setRoster } from './units/looks.ts';
 import { done as draftDone, newDraft, pick as draftPick, tick as draftTick, type Draft, type DraftPlan } from './draft.ts';
 import { play as playSound } from './sound.ts';
@@ -42,7 +43,9 @@ type State = {
   army: ArmyUnit[]; // Blue's army for the current battle, in the order the server requires (veterans first)
   draft?: Draft; // the draft in progress (phase drafting)
   formation: number; // sim.Formation; 0 = Custom
-  plan: number; // Blue's battle plan (sim.Plan; 0 = Instinct), kept for the run
+  plan: number; // Blue's battle plan (sim.Plan; 0 = Instinct; CUSTOM_PLAN = the custom one), kept for the run
+  custom?: CustomPlanJSON; // the player's custom plan, kept for the run
+  editing: boolean; // the plan editor is open (the deploy countdown pauses)
   battlePlans?: [number, number]; // the battle's [Blue, Red] plans from the sim; Red's is real only after the lock
   positions?: Pt[]; // Custom: Blue's positions
   slots: Record<number, Pt[]>; // preset → positions for the current army (from the sim)
@@ -84,6 +87,9 @@ type State = {
   retryDraft(): void;
   setFormation(f: number): void;
   setPlan(p: number): void;
+  openEditor(): void;
+  closeEditor(): void;
+  saveCustom(p: CustomPlanJSON): void; // chooses it
   beginDrag(index: number, at: Pt): void;
   dragTo(at: Pt): void;
   endDrag(): void;
@@ -110,11 +116,44 @@ const savedQuality = (): 'high' | 'low' => {
 export const armySpecs = (s: { army: ArmyUnit[] }) => s.army;
 export const armyClasses = (s: { army: ArmyUnit[] }) => s.army.map((u) => u.cls);
 
+const chipsMsg = (c: ChipsJSON) => ({ ...c });
+const rolesMsg = (r: Roles3) => ({ melee: chipsMsg(r[0]), ranged: chipsMsg(r[1]), caster: chipsMsg(r[2]) });
+export const customPlanMsg = (p: CustomPlanJSON) => createMsg(CustomPlanSchema, {
+  roles: rolesMsg(p.roles),
+  groups: p.groups.map((g) => ({ opening: rolesMsg(g.opening), then: rolesMsg(g.then), trigger: g.trigger, triggerSeconds: g.seconds })),
+});
+
+// The custom plan is kept for the run, in this browser.
+const CUSTOM_KEY = 'customPlan';
+const loadCustom = (runId: string): CustomPlanJSON | undefined => {
+  try {
+    const v = JSON.parse(localStorage.getItem(CUSTOM_KEY) ?? 'null') as { run: string; plan: CustomPlanJSON } | null;
+    return v?.run === runId ? v.plan : undefined;
+  } catch { return undefined; }
+};
+const storeCustom = (runId: string | undefined, plan: CustomPlanJSON | undefined) => {
+  try {
+    if (runId && plan) localStorage.setItem(CUSTOM_KEY, JSON.stringify({ run: runId, plan }));
+    else localStorage.removeItem(CUSTOM_KEY);
+  } catch { /* storage blocked */ }
+};
+
+// Asks the sim whether a custom plan is valid: "" or what is wrong.
+let checkId = 0;
+const checks = new Map<number, (error: string) => void>();
+export const checkPlan = (p: CustomPlanJSON) => new Promise<string>((resolve) => {
+  const id = ++checkId;
+  checks.set(id, resolve);
+  send({ type: 'checkPlan', id, plan: JSON.stringify(p) });
+});
+
 function blueArmy(s: State): Army {
   if (s.battle?.lockedBlue) return s.battle.lockedBlue; // replaying a locked battle after a reload
+  const custom = s.plan === CUSTOM_PLAN && s.custom;
   return createMsg(ArmySchema, {
     formation: s.formation + 1, // pb Formation = sim Formation + 1
-    plan: s.plan,
+    plan: custom ? 0 : s.plan,
+    customPlan: custom ? customPlanMsg(custom) : undefined,
     units: armySpecs(s).map((u, i) => ({
       unitClass: u.cls + 1, // pb UnitClass = sim Class + 1
       skills: u.skills,
@@ -150,6 +189,7 @@ export const useBattle = create<State>((set, get) => {
     set({ deployLeft: DEPLOY_SECONDS });
     deployTimer = setInterval(() => {
       if (get().phase !== 'deploying') return clearInterval(deployTimer);
+      if (get().editing) return; // paused while the plan editor is open
       const left = get().deployLeft - 0.25;
       if (left <= 0) { clearInterval(deployTimer); void get().ready(); } else set({ deployLeft: left });
     }, 250);
@@ -213,7 +253,7 @@ export const useBattle = create<State>((set, get) => {
   };
 
   return {
-    phase: 'loading', army: [], formation: 2 /* 3-2 */, plan: 0, slots: {}, deployLeft: DEPLOY_SECONDS,
+    phase: 'loading', army: [], formation: 2 /* 3-2 */, plan: 0, editing: false, slots: {}, deployLeft: DEPLOY_SECONDS,
     obstacles: [], units: [], currAt: 0, speed: 1, floats: [], picks: {}, fogOn: true, follow: false,
     quality: savedQuality(), autoLowered: false, lowDpr: false, qualityChosen: false, tiltShift: false,
     setQuality(quality, auto = false) {
@@ -234,6 +274,7 @@ export const useBattle = create<State>((set, get) => {
         await ensurePlayer();
         const { run } = await authed(() => runApi.getRun({}));
         if (!run || run.state === RunState.OVER) return set({ phase: 'faction' });
+        set({ custom: loadCustom(run.id) });
         await resume(run);
       } catch (e) {
         set({ phase: 'faction', error: `Couldn't reach the server: ${errMsg(e)}` });
@@ -261,7 +302,8 @@ export const useBattle = create<State>((set, get) => {
     async startRun(faction) {
       try {
         const { run } = await authed(() => runApi.startRun({ faction }));
-        set({ plan: 0 }); // a new run starts on Instinct
+        set({ plan: 0, custom: undefined }); // a new run starts on Instinct, with no custom plan
+        storeCustom(undefined, undefined);
         if (run) await toDraft(run);
       } catch (e) {
         set({ error: `Couldn't start a run: ${errMsg(e)}` });
@@ -301,9 +343,16 @@ export const useBattle = create<State>((set, get) => {
     },
 
     setPlan(plan) {
-      if (get().phase !== 'deploying') return;
+      if (get().phase !== 'deploying' || (plan === CUSTOM_PLAN && !get().custom)) return;
       set({ plan });
       preview();
+    },
+    openEditor() { if (get().phase === 'deploying') set({ editing: true }); },
+    closeEditor() { set({ editing: false }); },
+    saveCustom(custom) {
+      storeCustom(get().run?.id, custom);
+      set({ custom, editing: false });
+      get().setPlan(CUSTOM_PLAN);
     },
 
     beginDrag(index, at) { if (get().phase === 'deploying') set({ dragging: { index, at } }); },
@@ -433,6 +482,7 @@ worker.onmessage = (e: MessageEvent<FromWorker>) => {
     }
     case 'fog': useBattle.setState({ fog: new Uint8Array(m.seen) }); break;
     case 'error': useBattle.setState({ error: m.message }); break;
+    case 'planCheck': checks.get(m.id)?.(m.error); checks.delete(m.id); break;
     case 'started': {
       const s = decodeSnapshot(m.snapshot);
       useBattle.setState({ obstacles: decodeMap(m.map), units: JSON.parse(m.units) as UnitLoadout[], prev: s, curr: s, currAt: performance.now(),

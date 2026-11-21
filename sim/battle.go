@@ -13,7 +13,7 @@ import (
 // RulesVersion must change whenever the rules code changes, so old replays
 // are checked with the logic that produced them. Changes to units' data need
 // no bump: Version carries a fingerprint of the roster.
-const RulesVersion = "0.14.0"
+const RulesVersion = "0.15.0"
 
 // Version is RulesVersion plus a fingerprint of the roster and the factions
 // ("0.7.0+1a2b3c4d"), so changing any unit's numbers changes it without
@@ -71,7 +71,9 @@ type Battle struct {
 	Shots  []*Shot
 	Tick   int
 	Result Result
-	Plans  [2]Plan // each side's plan; a generated Red's is drawn (RedPlanFor)
+	Plans  [2]Plan // each side's plan; a generated Red's is drawn (RedPlanFor); PlanCustom for a custom plan
+
+	planDefs [2]*PlanDef // the plan each side fights by (built-in or custom)
 
 	switched [2][2]bool // a tactic's group has switched to its second stance, per team and group
 
@@ -95,7 +97,16 @@ func New(in Input) (*Battle, error) {
 		red = RedArmy(in.Seed, in.RedSkills)
 		red.Plan = redPlanFor(in.CombatSeed)
 	}
-	b.Plans = [2]Plan{in.Blue.Plan, red.Plan}
+	for team, army := range [2]Army{in.Blue, red} {
+		p, err := army.planDef()
+		if err != nil {
+			return nil, fmt.Errorf("%w: team %d: %v", ErrInvalid, team, err)
+		}
+		b.planDefs[team], b.Plans[team] = p, army.Plan
+		if army.Custom != nil {
+			b.Plans[team] = PlanCustom
+		}
+	}
 	for team, army := range [2]Army{in.Blue, red} {
 		classes := make([]Class, len(army.Units))
 		for i, s := range army.Units {
@@ -117,7 +128,7 @@ func New(in Input) (*Battle, error) {
 			}
 		}
 		var groups []int
-		if p := PlanOf(army.Plan); p != nil && p.IsTactic() {
+		if b.planDefs[team].IsTactic() {
 			groups = GroupsOf(pos)
 		}
 		for i, s := range army.Units {
@@ -125,7 +136,7 @@ func New(in Input) (*Battle, error) {
 			if groups != nil {
 				g = groups[i]
 			}
-			u := newUnitGroup(len(b.Units), team, s, pos[i], army.Plan, g)
+			u := newUnitDef(len(b.Units), team, s, pos[i], b.planDefs[team], g)
 			if team == 1 && in.RedHealthPct > 0 && in.RedHealthPct < 100 {
 				u.MaxHP = u.MaxHP.MulDiv(in.RedHealthPct, 100)
 				u.HP = u.MaxHP

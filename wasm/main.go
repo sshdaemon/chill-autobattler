@@ -13,7 +13,8 @@
 //	chillSim.units(): string               after create: every unit's class, skill ids and tactic group as JSON
 //	                                       ([{cls, skills, group}] in unit index order, Red's generated army too)
 //	chillSim.plans(): string               after create: [blue, red] battle plan ids as JSON (Red's is
-//	                                       drawn from the combat seed when generated)
+//	                                       drawn from the combat seed when generated; 255 = custom)
+//	chillSim.checkPlan(json): string       "" if a custom plan (data().plans[i].chips shape) is valid, else why not
 //	chillSim.formationSlots(f, classes)    Blue's preset positions (Int32 LE x, z per unit, raw fixed-point);
 //	                                       f is a sim.Formation (1..7), classes are sim.Class values (0..2)
 package main
@@ -21,6 +22,7 @@ package main
 import (
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -139,9 +141,31 @@ func dataJSON() string {
 		Playable bool   `json:"playable"`
 	}
 	type plan struct {
-		ID     int    `json:"id"`
-		Name   string `json:"name"`
-		Tactic bool   `json:"tactic"` // splits the army into a left and a right group
+		ID     int      `json:"id"`
+		Name   string   `json:"name"`
+		Tactic bool     `json:"tactic"` // splits the army into a left and a right group
+		Chips  jsonPlan `json:"chips"`  // the plan as its nearest chips, for the editor to start from
+	}
+	type named struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	}
+	type edge struct {
+		ID      int      `json:"id"`
+		Name    string   `json:"name"`
+		Roles   [3]bool  `json:"roles"` // melee, ranged, caster
+		Effects []effect `json:"effects"`
+	}
+	type chips struct {
+		Targets        []named   `json:"targets"`
+		Engages        []named   `json:"engages"`
+		Trigger        []float64 `json:"trigger"` // metres per step; index 0 is "own"
+		Keep           []float64 `json:"keep"`
+		Leash          []float64 `json:"leash"`
+		FallBack       []int     `json:"fallBack"` // % of health per step
+		Triggers       []named   `json:"triggers"`
+		TriggerSeconds []int     `json:"triggerSeconds"`
+		Edges          []edge    `json:"edges"`
 	}
 	var out struct {
 		Version    string     `json:"version"`
@@ -152,6 +176,7 @@ func dataJSON() string {
 		DeployZone [4]float64 `json:"deployZone"` // Blue: xMin, xMax, zMin, zMax
 		Factions   []faction  `json:"factions"`   // by id; units are roster ids
 		Plans      []plan     `json:"plans"`      // battle plans, index = sim.Plan
+		Chips      chips      `json:"chips"`      // the custom-plan vocabulary (sim/custom.go)
 	}
 	tagNames := func(t sim.Tag) []string {
 		names := []string{}
@@ -163,6 +188,21 @@ func dataJSON() string {
 		return names
 	}
 	out.Version, out.ArmySize, out.HitAt = sim.Version, sim.ArmySize, float64(sim.HitAtPct)/100
+	toEffect := func(e sim.Effect) effect {
+		ef := effect{Kind: e.Kind.String(), Pct: e.Pct, Value: fx(e.Value), Radius: fx(e.Radius), Speed: fx(e.Speed),
+			Factor: fx(e.Factor), Secs: float64(e.Ticks) / sim.TicksPerSecond, Duration: float64(e.Duration) / sim.TicksPerSecond,
+			Cond: int(e.Cond), Threshold: e.Threshold, Foes: e.Foes}
+		if e.Kind == sim.StatBonus {
+			ef.Stat = e.Stat.String()
+		}
+		if e.Mod != 0 {
+			ef.Mod = e.Mod.String()
+		}
+		if e.Tag != 0 {
+			ef.Tags = tagNames(e.Tag)
+		}
+		return ef
+	}
 	for i := range sim.Roster {
 		d := &sim.Roster[i]
 		st := d.Stats
@@ -175,21 +215,6 @@ func dataJSON() string {
 		}
 		for v := range sim.Roster {
 			cl.Matchup = append(cl.Matchup, fx(sim.MatchupOf(d, &sim.Roster[v])))
-		}
-		toEffect := func(e sim.Effect) effect {
-			ef := effect{Kind: e.Kind.String(), Pct: e.Pct, Value: fx(e.Value), Radius: fx(e.Radius), Speed: fx(e.Speed),
-				Factor: fx(e.Factor), Secs: float64(e.Ticks) / sim.TicksPerSecond, Duration: float64(e.Duration) / sim.TicksPerSecond,
-				Cond: int(e.Cond), Threshold: e.Threshold, Foes: e.Foes}
-			if e.Kind == sim.StatBonus {
-				ef.Stat = e.Stat.String()
-			}
-			if e.Mod != 0 {
-				ef.Mod = e.Mod.String()
-			}
-			if e.Tag != 0 {
-				ef.Tags = tagNames(e.Tag)
-			}
-			return ef
 		}
 		cl.Traits = []effect{}
 		for _, e := range d.Traits {
@@ -215,12 +240,131 @@ func dataJSON() string {
 		out.Factions = append(out.Factions, fa)
 	}
 	for _, p := range sim.Plans {
-		out.Plans = append(out.Plans, plan{int(p.ID), p.Name, p.IsTactic()})
+		out.Plans = append(out.Plans, plan{int(p.ID), p.Name, p.IsTactic(), toJSONPlan(sim.ChipsOf(&p))})
+	}
+	for r := sim.TargetRule(1); r < 255; r++ {
+		if n := r.String(); !strings.HasPrefix(n, "target(") {
+			out.Chips.Targets = append(out.Chips.Targets, named{int(r), n})
+		}
+	}
+	for r := sim.EngageRule(1); r < 255; r++ {
+		if n := r.String(); !strings.HasPrefix(n, "engage(") {
+			out.Chips.Engages = append(out.Chips.Engages, named{int(r), n})
+		}
+	}
+	for k := sim.TriggerKind(1); k < 255; k++ {
+		if n := k.String(); !strings.HasPrefix(n, "trigger(") {
+			out.Chips.Triggers = append(out.Chips.Triggers, named{int(k), n})
+		}
+	}
+	for _, v := range sim.TriggerSteps {
+		out.Chips.Trigger = append(out.Chips.Trigger, fx(v))
+	}
+	for _, v := range sim.KeepSteps {
+		out.Chips.Keep = append(out.Chips.Keep, fx(v))
+	}
+	for _, v := range sim.LeashSteps {
+		out.Chips.Leash = append(out.Chips.Leash, fx(v))
+	}
+	out.Chips.FallBack = sim.FallBackSteps[:]
+	out.Chips.TriggerSeconds = sim.TriggerSeconds
+	for _, e := range sim.Edges {
+		ed := edge{ID: int(e.ID), Name: e.Name, Roles: e.Roles}
+		for _, x := range e.Effects {
+			ed.Effects = append(ed.Effects, toEffect(x))
+		}
+		out.Chips.Edges = append(out.Chips.Edges, ed)
 	}
 	z := sim.Zones[0]
 	out.DeployZone = [4]float64{fx(z.XMin), fx(z.XMax), fx(z.ZMin), fx(z.ZMax)}
 	b, _ := json.Marshal(out)
 	return string(b)
+}
+
+// jsonPlan is a custom plan as the client and checkPlan see it (sim.CustomPlan
+// with lower-case names).
+type jsonChips struct {
+	Target   int `json:"target"`
+	Engage   int `json:"engage"`
+	Trigger  int `json:"trigger"`
+	Keep     int `json:"keep"`
+	Leash    int `json:"leash"`
+	FallBack int `json:"fallBack"`
+	StayNear int `json:"stayNear"`
+	Kite     int `json:"kite"`
+	Edge     int `json:"edge"`
+}
+
+type jsonGroup struct {
+	Opening [3]jsonChips `json:"opening"`
+	Then    [3]jsonChips `json:"then"`
+	Trigger int          `json:"trigger"`
+	Seconds int          `json:"seconds"`
+}
+
+type jsonPlan struct {
+	Roles  [3]jsonChips `json:"roles"`
+	Groups []jsonGroup  `json:"groups"`
+}
+
+func toJSONChips(cs [3]sim.Chips) [3]jsonChips {
+	var out [3]jsonChips
+	for i, c := range cs {
+		out[i] = jsonChips{int(c.Target), int(c.Engage), int(c.Trigger), int(c.Keep), int(c.Leash), int(c.FallBack), int(c.StayNear), int(c.Kite), int(c.Edge)}
+	}
+	return out
+}
+
+func toJSONPlan(c sim.CustomPlan) jsonPlan {
+	out := jsonPlan{Roles: toJSONChips(c.Roles), Groups: []jsonGroup{}}
+	for _, g := range c.Groups {
+		out.Groups = append(out.Groups, jsonGroup{toJSONChips(g.Opening), toJSONChips(g.Then), int(g.When.Kind), g.When.Seconds})
+	}
+	return out
+}
+
+func fromJSONChips(cs [3]jsonChips) ([3]sim.Chips, error) {
+	var out [3]sim.Chips
+	for i, c := range cs {
+		for _, v := range []int{c.Target, c.Engage, c.Trigger, c.Keep, c.Leash, c.FallBack, c.StayNear, c.Kite, c.Edge} {
+			if v < 0 || v > 255 {
+				return out, fmt.Errorf("chip value %d out of range", v)
+			}
+		}
+		out[i] = sim.Chips{Target: sim.TargetRule(c.Target), Engage: sim.EngageRule(c.Engage), Trigger: sim.Step(c.Trigger), Keep: sim.Step(c.Keep),
+			Leash: sim.Step(c.Leash), FallBack: uint8(c.FallBack), StayNear: uint8(c.StayNear), Kite: sim.Toggle(c.Kite), Edge: sim.Edge(c.Edge)}
+	}
+	return out, nil
+}
+
+// checkPlan(json): "" if the custom plan is valid, else what is wrong.
+func checkPlan(_ js.Value, args []js.Value) any {
+	var j jsonPlan
+	if err := json.Unmarshal([]byte(args[0].String()), &j); err != nil {
+		return err.Error()
+	}
+	var c sim.CustomPlan
+	var err error
+	if c.Roles, err = fromJSONChips(j.Roles); err != nil {
+		return err.Error()
+	}
+	for _, g := range j.Groups {
+		if g.Trigger < 0 || g.Trigger > 255 {
+			return "trigger out of range"
+		}
+		cg := sim.CustomGroup{When: sim.CustomTrigger{Kind: sim.TriggerKind(g.Trigger), Seconds: g.Seconds}}
+		if cg.Opening, err = fromJSONChips(g.Opening); err != nil {
+			return err.Error()
+		}
+		if cg.Then, err = fromJSONChips(g.Then); err != nil {
+			return err.Error()
+		}
+		c.Groups = append(c.Groups, cg)
+	}
+	if _, err := c.Def(); err != nil {
+		return err.Error()
+	}
+	return ""
 }
 
 // unitsJSON lists every unit of the current battle (class and learned skill
@@ -303,6 +447,7 @@ func register() {
 	api.Set("data", js.FuncOf(func(js.Value, []js.Value) any { return dataJSON() }))
 	api.Set("units", js.FuncOf(func(js.Value, []js.Value) any { return unitsJSON() }))
 	api.Set("draft", js.FuncOf(draftJSON))
+	api.Set("checkPlan", js.FuncOf(checkPlan))
 	api.Set("plans", js.FuncOf(func(js.Value, []js.Value) any {
 		if battle == nil {
 			return js.Null()

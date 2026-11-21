@@ -16,9 +16,25 @@ export type FactionInfo = { id: number; name: string; units: number[]; playable:
 export type GameData = {
   version: string; classes: ClassInfo[]; formations: string[]; armySize: number; deployZone: [number, number, number, number];
   factions: FactionInfo[];
-  plans: { id: number; name: string; tactic: boolean }[]; // battle plans, index = sim.Plan; tactics split the army in two groups; words in plans.ts
+  plans: { id: number; name: string; tactic: boolean; chips: CustomPlanJSON }[]; // battle plans, index = sim.Plan; tactics split the army in two groups; chips: the plan as its nearest chips; words in plans.ts
+  chips: ChipVocab; // the custom-plan vocabulary (sim/custom.go)
   hitAt: number; // share of a swing at which the blow lands or the shot leaves
 };
+// Custom plans (sim/custom.go). Every value is the sim's: 0 is "own".
+export type ChipsJSON = { target: number; engage: number; trigger: number; keep: number; leash: number; fallBack: number; stayNear: number; kite: number; edge: number };
+export type Roles3 = [ChipsJSON, ChipsJSON, ChipsJSON]; // melee, ranged, caster
+export type GroupJSON = { opening: Roles3; then: Roles3; trigger: number; seconds: number };
+export type CustomPlanJSON = { roles: Roles3; groups: GroupJSON[] }; // groups: none, or left and right
+export type ChipVocab = {
+  targets: { id: number; name: string }[]; engages: { id: number; name: string }[];
+  trigger: number[]; keep: number[]; leash: number[]; fallBack: number[]; // per step; index 0 is "own"
+  triggers: { id: number; name: string }[]; triggerSeconds: number[];
+  edges: { id: number; name: string; roles: [boolean, boolean, boolean]; effects: EffectInfo[] }[];
+};
+export const NO_CHIPS: ChipsJSON = { target: 0, engage: 0, trigger: 0, keep: 0, leash: 0, fallBack: 0, stayNear: 0, kite: 0, edge: 0 };
+export const emptyRoles = (): Roles3 => [{ ...NO_CHIPS }, { ...NO_CHIPS }, { ...NO_CHIPS }];
+export const PLAN_CUSTOM = 255; // sim.PlanCustom: a side fighting by a custom plan
+
 // Every unit of the current battle (wasm units()), Red's generated army too.
 export type UnitLoadout = { cls: number; skills: number[]; group: number }; // group: 0 left, 1 right in a tactic
 

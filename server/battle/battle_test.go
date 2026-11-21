@@ -291,3 +291,29 @@ func TestBattlePlan(t *testing.T) {
 		t.Errorf("unknown plan: %v", err)
 	}
 }
+
+func TestBattleCustomPlan(t *testing.T) {
+	e := newEnv(t)
+	custom := mix()
+	hold := &chillv1.PlanChips{Engage: uint32(sim.EngageHold), Trigger: 2, Target: uint32(sim.TargetNearest)}
+	custom.CustomPlan = &chillv1.CustomPlan{
+		Roles: &chillv1.PlanRoles{Melee: &chillv1.PlanChips{Edge: uint32(sim.EdgeBraced)}, Ranged: &chillv1.PlanChips{Kite: uint32(sim.KiteOn), Keep: 3}},
+		Groups: []*chillv1.PlanGroup{
+			{Opening: &chillv1.PlanRoles{Melee: hold, Ranged: hold, Caster: hold}},
+			{Trigger: uint32(sim.TriggerAfter), TriggerSeconds: 10, Then: &chillv1.PlanRoles{Melee: &chillv1.PlanChips{Engage: uint32(sim.EngageCharge)}}},
+		}}
+	st := e.mustStart(e.startRun(e.ctx).Id)
+	r, err := e.lock(st.BattleId, custom)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res, err := e.verify(st.BattleId, play(t, st, r.CombatSeed, custom)); err != nil || !res.Fair {
+		t.Errorf("honest claim with a custom plan: %v %v", res, err)
+	}
+	bad := mix()
+	bad.CustomPlan = &chillv1.CustomPlan{Roles: &chillv1.PlanRoles{Melee: &chillv1.PlanChips{Edge: uint32(sim.EdgeLongReach)}}} // a ranged edge on melee
+	st = e.mustStart(e.startRun(e.ctx).Id)
+	if _, err := e.lock(st.BattleId, bad); code(err) != connect.CodeInvalidArgument {
+		t.Errorf("custom plan with a ranged edge on melee: %v", err)
+	}
+}
