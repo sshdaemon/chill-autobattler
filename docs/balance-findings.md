@@ -2,6 +2,87 @@
 
 The current numbers are in [`balance-report.md`](balance-report.md) (generated with `pnpm balance`). This file says what they mean.
 
+## Custom plans (sim 0.15.0, change custom-plans)
+
+Players build plans from chips, with one edge per role from a menu
+(`docs/battle-plans-roadmap.md` step 5). Two new tool modes: `-exp edges`
+(each edge alone against Instinct) and `-exp custom` (a search for a custom
+plan that beats all nine built-in plans).
+
+**Edges alone**, on every role they suit, against the same army by Instinct
+(600 battles per cell, sides swapped). Goal: none over 60%.
+
+| Edge | classic | rus | varangians | romans |
+|---|---|---|---|---|
+| braced shields | 57.5% | 51.7% | 47.8% | 59.6% |
+| reckless | 39.0% | 48.9% | 51.7% | 35.2% |
+| drilled | 38.8% | 42.9% | 48.9% | 38.2% |
+| long reach | 38.2% | 39.1% | 56.3% | 37.7% |
+| light feet | 46.7% | 50.2% | 48.0% | 48.4% |
+
+- **Speed is cheap.** As a cost (−10% speed) it barely mattered: the first
+  Drilled (+10% damage, −10% speed) won 70–85% alone. Costs are now damage or
+  health.
+- **A back line doesn't pay damage-taken costs.** The first search found a
+  Classic plan beating all nine built-in plans (worst 59.6%), with Drilled on
+  every role; on archers it was a free +10% damage. Drilled is melee only now.
+- Long reach and Reckless are weak alone; they pair with behaviour (kite and
+  keep distance; charge).
+
+**The search** (75 random plans, the best 3 hill-climbed, the best checked at
+600 battles per pair):
+
+Per faction: 75 random custom plans at 24 battles per built-in plan, the best 3 hill-climbed 12 steps at 60, the best checked at 600. A custom plan is ranked by its worst result against the nine built-in plans. Goal: the best still loses to or ties one (under 55%).
+
+#### classic
+
+Best found: melee: stay behind melee, edge drilled; ranged: wounded, charge, leash 10, kite, edge light feet; caster: leash 14
+
+Worst 54.1%, average 63.2%: ok
+
+| instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | hammer and anvil | reserve | hold, then charge |
+|---|---|---|---|---|---|---|---|---|
+| 54.6% | 65.2% | 65.6% | 76.5% | 67.0% | 64.9% | 61.1% | 54.1% | 59.8% |
+
+#### rus
+
+Best found: melee: nearest, edge braced shields; ranged: focusReach, keep 5, edge light feet; caster: wounded, leash 14
+
+Worst 56.8%, average 68.5%: ❌ beats every built-in plan
+
+| instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | hammer and anvil | reserve | hold, then charge |
+|---|---|---|---|---|---|---|---|---|
+| 72.9% | 59.1% | 74.0% | 87.8% | 56.8% | 77.0% | 60.0% | 66.3% | 62.8% |
+
+#### varangians
+
+Best found: melee: edge reckless; ranged: wounded, guard ranged, edge light feet; caster: keep 7, leash 14, edge reckless
+
+Worst 32.8%, average 45.7%: ok
+
+| instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | hammer and anvil | reserve | hold, then charge |
+|---|---|---|---|---|---|---|---|---|
+| 61.4% | 32.8% | 38.1% | 44.0% | 34.2% | 60.0% | 44.5% | 40.8% | 55.2% |
+
+#### romans
+
+Best found: melee: flank, edge drilled; ranged: wounded, kite; caster: own
+
+Worst 36.6%, average 51.6%: ok
+
+| instinct | shield wall | all-out charge | hunt the archers | focus fire | skirmish | hammer and anvil | reserve | hold, then charge |
+|---|---|---|---|---|---|---|---|---|
+| 56.4% | 50.2% | 63.6% | 36.6% | 51.6% | 61.0% | 42.8% | 54.6% | 47.7% |
+
+- No faction's best custom plan beats every built-in plan, but the **Rus** come
+  closest: their best custom plan averages 68% and beats everything except
+  Focus fire, which holds it to **54.6%** over 4000 fresh battles, just under
+  the 55% line. Its strength is behaviour, not edges (without its edges it
+  still averages 67%): Rus units fight better with targeted chips than with any
+  preset. Worth watching; the presets may need a Rus-friendly look later.
+- The search's own check reads high (the winner is picked on noise): the Rus
+  plan read 56.8% against Focus fire there, 52–55% on fresh seeds.
+
 ## Fair sides (sim 0.14.0, change fair-sides)
 
 Mirrored maps left 7 of 40 cells leaning (up to 85%). Comparing mirror battles

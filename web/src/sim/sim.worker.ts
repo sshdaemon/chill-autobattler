@@ -13,6 +13,7 @@ type SimApi = {
   draft(seed: string, redSkills: number): string | null;
   formationSlots(formation: number, classes: number[]): Uint8Array | null;
   fog(): Uint8Array | null;
+  checkPlan(json: string): string; // "" if a custom plan is valid, else why not
 };
 // preview: set the battle up and show tick 0 (deployment) without playing it
 export type ToWorker =
@@ -20,7 +21,8 @@ export type ToWorker =
   | { type: 'speed'; speed: number }
   | { type: 'stop' }
   | { type: 'slots'; classes: number[] } // sim classes; replies with every preset's positions
-  | { type: 'draft'; seed: string; redSkills: number }; // replies with the battle's draft (seed: decimal uint64)
+  | { type: 'draft'; seed: string; redSkills: number } // replies with the battle's draft (seed: decimal uint64)
+  | { type: 'checkPlan'; id: number; plan: string }; // replies planCheck: a custom plan (JSON) checked by the sim
 export type FromWorker =
   | { type: 'ready'; version: string; data: string }
   | { type: 'slots'; slots: Record<number, { x: number; z: number }[]> } // keyed by sim formation (1..7)
@@ -29,7 +31,8 @@ export type FromWorker =
   | { type: 'snapshot'; snapshot: ArrayBuffer }
   | { type: 'fog'; seen: ArrayBuffer } // Blue's visible cells, 56×56, every 2 ticks
   | { type: 'done'; outcome: Uint8Array }
-  | { type: 'error'; message: string };
+  | { type: 'error'; message: string }
+  | { type: 'planCheck'; id: number; error: string }; // "" when valid
 
 const TICK_MS = 50;
 const post = (m: FromWorker, transfer: Transferable[] = []) => (self as unknown as Worker).postMessage(m, transfer);
@@ -74,6 +77,8 @@ self.onmessage = async (e: MessageEvent<ToWorker>) => {
     const map = buf(sim.map()), snapshot = buf(sim.step(0));
     post({ type: 'started', map, snapshot, units: sim.units(), plans: sim.plans() }, [map, snapshot]);
     if (msg.type === 'start') loop(sim);
+  } else if (msg.type === 'checkPlan') {
+    post({ type: 'planCheck', id: msg.id, error: sim.checkPlan(msg.plan) });
   } else if (msg.type === 'draft') {
     post({ type: 'draft', plan: sim.draft(msg.seed, msg.redSkills) });
   } else if (msg.type === 'slots') {

@@ -188,6 +188,9 @@ func ValidateRoster(r []UnitDef) error {
 	if err := validateEntries(r); err != nil {
 		return err
 	}
+	if err := ValidateEdges(Edges, r); err != nil { // every edge must suit the units it's offered to
+		return err
+	}
 	return ValidatePlans(Plans, r) // every plan must suit every unit
 }
 

@@ -49,5 +49,43 @@ message Army {
   // Battle plan: the sim's plan id (sim/ids.go, Plan). 0 is Instinct, the
   // default: every unit fights by its own temperament.
   uint32 plan = 3;
+  // A plan built from chips (sim/custom.go), used instead of plan, which
+  // must then be 0. Set it, even empty, to fight by a custom plan.
+  CustomPlan custom_plan = 4;
+}
+
+// One role's chips in a custom plan; 0 is "own" (the unit's value) everywhere.
+// Values are the sim's ids: target and engage rules, step indexes (0..3),
+// fall back and stay near indexes, kite (1 on, 2 off) and the edge id.
+message PlanChips {
+  uint32 target = 1;
+  uint32 engage = 2;
+  uint32 trigger = 3;
+  uint32 keep = 4;
+  uint32 leash = 5;
+  uint32 fall_back = 6;
+  uint32 stay_near = 7;
+  uint32 kite = 8;
+  uint32 edge = 9;
+}
+
+message PlanRoles {
+  PlanChips melee = 1;
+  PlanChips ranged = 2;
+  PlanChips caster = 3;
+}
+
+// A custom tactic's group: its opening stance, its trigger (the sim's
+// trigger kind; seconds for "after") and its second stance.
+message PlanGroup {
+  PlanRoles opening = 1;
+  uint32 trigger = 2;
+  uint32 trigger_seconds = 3;
+  PlanRoles then = 4;
+}
+
+message CustomPlan {
+  PlanRoles roles = 1;
+  repeated PlanGroup groups = 2; // none, or left and right
 }
 

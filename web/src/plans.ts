@@ -16,10 +16,40 @@ const WORDS: Record<string, { title: string; desc: string }> = {
 export const planWords = (name: string | undefined) =>
   (name && WORDS[name]) || { title: name ?? '?', desc: '' };
 
+// The client's id for "the custom plan" in the picker (the sim's is 255).
+export const CUSTOM_PLAN = -1;
+export const CUSTOM_WORDS = { title: 'Custom', desc: 'Your own plan, built from chips.' };
+
+// Chip words (sim names → what players read).
+export const TARGET_WORDS: Record<string, string> = {
+  nearest: 'Nearest', wounded: 'Most wounded', rangedFirst: 'Archers first', strongest: 'Hardest hitter',
+  focus: 'Gang up', focusReach: 'Gang up in reach', protect: 'Protect back line',
+};
+export const ENGAGE_WORDS: Record<string, string> = { charge: 'Charge', line: 'Advance in line', hold: 'Hold', flank: 'Go round' };
+export const TRIGGER_WORDS: Record<string, string> = { after: 'After', 'ally falls': 'When an ally falls', 'other group fighting': 'When the other group fights' };
+export const EDGE_WORDS: Record<string, string> = {
+  'braced shields': 'Braced shields', reckless: 'Reckless', drilled: 'Drilled', 'long reach': 'Long reach', 'light feet': 'Light feet',
+};
+export const ROLE_NAMES = ['Melee', 'Ranged', 'Casters'] as const;
+export const STAY_WORDS = ['Own', 'Behind the melee', 'Guard the back line'];
+export const KITE_WORDS = ['Own', 'Kite', "Don't kite"];
+export const STEP_WORDS = ['Own', 'Close', 'Mid', 'Far'];
+export const LEASH_WORDS = ['Own', 'Short', 'Long'];
+
+// An edge's effects in words, e.g. "+10% damage, takes 8% more damage".
+export function edgeEffects(effects: { kind: string; stat?: string; pct?: number; cond?: number }[]): string {
+  return effects.map((e) => {
+    const p = e.pct ?? 0, sign = p > 0 ? '+' : '−', n = Math.abs(p);
+    if (e.kind === 'damageTaken') return `takes ${n}% ${p < 0 ? 'less' : 'more'} damage${e.cond ? ' from the front' : ''}`;
+    if (e.kind === 'statBonus') return `${sign}${n}% ${e.stat === 'hp' ? 'health' : e.stat === 'attackSpeed' ? 'attack speed' : e.stat}`;
+    return e.kind;
+  }).join(', ');
+}
+
 // A side's plan title (team 0 Blue, 1 Red) once Red's plan is real: from the
 // countdown on (before the lock the preview's Red plan is a placeholder).
 // Returns a string, so it is safe as a store selector.
 export const shownPlan = (s: { phase: string; battlePlans?: [number, number]; data?: { plans: { name: string }[] } }, team: 0 | 1) =>
   s.battlePlans && ['countdown', 'fighting', 'done'].includes(s.phase)
-    ? planWords(s.data?.plans[s.battlePlans[team]]?.name).title
+    ? (s.battlePlans[team] === 255 ? CUSTOM_WORDS.title : planWords(s.data?.plans[s.battlePlans[team]]?.name).title)
     : undefined;

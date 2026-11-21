@@ -173,6 +173,11 @@ func goldenCases() []struct {
 		c.Red = Army{Formation: F2x3, Units: mix(), Plan: Plans[(int(p.ID)+1)%len(Plans)].ID}
 		add("plan "+p.Name, c)
 	}
+	for i, cp := range customPlansForTests() { // custom plans: army-wide, and tactics with each trigger
+		c := in(260+uint64(i), Army{Formation: F3x2, Units: mix(), Custom: cp.plan}, 0)
+		c.Red = Army{Formation: F2x3, Units: mix(), Plan: PlanFocusFire}
+		add("custom "+cp.name, c)
+	}
 	for _, s := range []uint64{90, 657} { // stalled until the tick limit before line of fire used the sight test
 		add("ranged standoff", in(s, Army{Formation: Presets[s%7], Units: mix()}, int(s%6)))
 		cases[len(cases)-1].name += " " + itoa(int(s))

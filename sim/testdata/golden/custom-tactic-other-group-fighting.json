@@ -1,0 +1,19 @@
+{
+  "version": "0.15.0+9cf2dc35.0e752100",
+  "case": "custom tactic other group fighting",
+  "outcome": {
+    "result": 1,
+    "ticks": 362,
+    "checksum": "8712507036129238544",
+    "survivors": [
+      {
+        "Index": 1,
+        "HP": 3604480
+      },
+      {
+        "Index": 3,
+        "HP": 3604480
+      }
+    ]
+  }
+}

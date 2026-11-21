@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file chill/v1/units.proto.
  */
 export const file_chill_v1_units: GenFile = /*@__PURE__*/
-  fileDesc("ChRjaGlsbC92MS91bml0cy5wcm90bxIIY2hpbGwudjEiJQoFUG9pbnQSDQoFeF9yYXcYASABKBISDQoFel9yYXcYAiABKBIiZgoIVW5pdFNwZWMSJwoKdW5pdF9jbGFzcxgBIAEoDjITLmNoaWxsLnYxLlVuaXRDbGFzcxIOCgZza2lsbHMYAiADKA0SIQoIcG9zaXRpb24YAyABKAsyDy5jaGlsbC52MS5Qb2ludCJfCgRBcm15EiYKCWZvcm1hdGlvbhgBIAEoDjITLmNoaWxsLnYxLkZvcm1hdGlvbhIhCgV1bml0cxgCIAMoCzISLmNoaWxsLnYxLlVuaXRTcGVjEgwKBHBsYW4YAyABKA0qawoJVW5pdENsYXNzEhoKFlVOSVRfQ0xBU1NfVU5TUEVDSUZJRUQQABIWChJVTklUX0NMQVNTX1dBUlJJT1IQARIVChFVTklUX0NMQVNTX0FSQ0hFUhACEhMKD1VOSVRfQ0xBU1NfTUFHRRADKsQBCglGb3JtYXRpb24SGQoVRk9STUFUSU9OX1VOU1BFQ0lGSUVEEAASFAoQRk9STUFUSU9OX0NVU1RPTRABEhQKEEZPUk1BVElPTl9TUFJFQUQQAhIRCg1GT1JNQVRJT05fM18yEAMSEQoNRk9STUFUSU9OXzJfMxAEEhEKDUZPUk1BVElPTl80XzEQBRIRCg1GT1JNQVRJT05fMV80EAYSEQoNRk9STUFUSU9OXzBfNRAHEhEKDUZPUk1BVElPTl81XzAQCEJ2Cgxjb20uY2hpbGwudjFCClVuaXRzUHJvdG9QAVoZY2hpbGwvcGIvY2hpbGwvdjE7Y2hpbGx2MaICA0NYWKoCCENoaWxsLlYxygIIQ2hpbGxcVjHiAhRDaGlsbFxWMVxHUEJNZXRhZGF0YeoCCUNoaWxsOjpWMWIGcHJvdG8z");
+  fileDesc("ChRjaGlsbC92MS91bml0cy5wcm90bxIIY2hpbGwudjEiJQoFUG9pbnQSDQoFeF9yYXcYASABKBISDQoFel9yYXcYAiABKBIiZgoIVW5pdFNwZWMSJwoKdW5pdF9jbGFzcxgBIAEoDjITLmNoaWxsLnYxLlVuaXRDbGFzcxIOCgZza2lsbHMYAiADKA0SIQoIcG9zaXRpb24YAyABKAsyDy5jaGlsbC52MS5Qb2ludCKKAQoEQXJteRImCglmb3JtYXRpb24YASABKA4yEy5jaGlsbC52MS5Gb3JtYXRpb24SIQoFdW5pdHMYAiADKAsyEi5jaGlsbC52MS5Vbml0U3BlYxIMCgRwbGFuGAMgASgNEikKC2N1c3RvbV9wbGFuGAQgASgLMhQuY2hpbGwudjEuQ3VzdG9tUGxhbiKbAQoJUGxhbkNoaXBzEg4KBnRhcmdldBgBIAEoDRIOCgZlbmdhZ2UYAiABKA0SDwoHdHJpZ2dlchgDIAEoDRIMCgRrZWVwGAQgASgNEg0KBWxlYXNoGAUgASgNEhEKCWZhbGxfYmFjaxgGIAEoDRIRCglzdGF5X25lYXIYByABKA0SDAoEa2l0ZRgIIAEoDRIMCgRlZGdlGAkgASgNInkKCVBsYW5Sb2xlcxIiCgVtZWxlZRgBIAEoCzITLmNoaWxsLnYxLlBsYW5DaGlwcxIjCgZyYW5nZWQYAiABKAsyEy5jaGlsbC52MS5QbGFuQ2hpcHMSIwoGY2FzdGVyGAMgASgLMhMuY2hpbGwudjEuUGxhbkNoaXBzIn4KCVBsYW5Hcm91cBIkCgdvcGVuaW5nGAEgASgLMhMuY2hpbGwudjEuUGxhblJvbGVzEg8KB3RyaWdnZXIYAiABKA0SFwoPdHJpZ2dlcl9zZWNvbmRzGAMgASgNEiEKBHRoZW4YBCABKAsyEy5jaGlsbC52MS5QbGFuUm9sZXMiVQoKQ3VzdG9tUGxhbhIiCgVyb2xlcxgBIAEoCzITLmNoaWxsLnYxLlBsYW5Sb2xlcxIjCgZncm91cHMYAiADKAsyEy5jaGlsbC52MS5QbGFuR3JvdXAqawoJVW5pdENsYXNzEhoKFlVOSVRfQ0xBU1NfVU5TUEVDSUZJRUQQABIWChJVTklUX0NMQVNTX1dBUlJJT1IQARIVChFVTklUX0NMQVNTX0FSQ0hFUhACEhMKD1VOSVRfQ0xBU1NfTUFHRRADKsQBCglGb3JtYXRpb24SGQoVRk9STUFUSU9OX1VOU1BFQ0lGSUVEEAASFAoQRk9STUFUSU9OX0NVU1RPTRABEhQKEEZPUk1BVElPTl9TUFJFQUQQAhIRCg1GT1JNQVRJT05fM18yEAMSEQoNRk9STUFUSU9OXzJfMxAEEhEKDUZPUk1BVElPTl80XzEQBRIRCg1GT1JNQVRJT05fMV80EAYSEQoNRk9STUFUSU9OXzBfNRAHEhEKDUZPUk1BVElPTl81XzAQCEJ2Cgxjb20uY2hpbGwudjFCClVuaXRzUHJvdG9QAVoZY2hpbGwvcGIvY2hpbGwvdjE7Y2hpbGx2MaICA0NYWKoCCENoaWxsLlYxygIIQ2hpbGxcVjHiAhRDaGlsbFxWMVxHUEJNZXRhZGF0YeoCCUNoaWxsOjpWMWIGcHJvdG8z");
 
 /**
  * A point in raw Q48.16 fixed-point metres (value × 65536), so no float
@@ -90,6 +90,14 @@ export type Army = Message<"chill.v1.Army"> & {
    * @generated from field: uint32 plan = 3;
    */
   plan: number;
+
+  /**
+   * A plan built from chips (sim/custom.go), used instead of plan, which
+   * must then be 0. Set it, even empty, to fight by a custom plan.
+   *
+   * @generated from field: chill.v1.CustomPlan custom_plan = 4;
+   */
+  customPlan?: CustomPlan | undefined;
 };
 
 /**
@@ -98,6 +106,153 @@ export type Army = Message<"chill.v1.Army"> & {
  */
 export const ArmySchema: GenMessage<Army> = /*@__PURE__*/
   messageDesc(file_chill_v1_units, 2);
+
+/**
+ * One role's chips in a custom plan; 0 is "own" (the unit's value) everywhere.
+ * Values are the sim's ids: target and engage rules, step indexes (0..3),
+ * fall back and stay near indexes, kite (1 on, 2 off) and the edge id.
+ *
+ * @generated from message chill.v1.PlanChips
+ */
+export type PlanChips = Message<"chill.v1.PlanChips"> & {
+  /**
+   * @generated from field: uint32 target = 1;
+   */
+  target: number;
+
+  /**
+   * @generated from field: uint32 engage = 2;
+   */
+  engage: number;
+
+  /**
+   * @generated from field: uint32 trigger = 3;
+   */
+  trigger: number;
+
+  /**
+   * @generated from field: uint32 keep = 4;
+   */
+  keep: number;
+
+  /**
+   * @generated from field: uint32 leash = 5;
+   */
+  leash: number;
+
+  /**
+   * @generated from field: uint32 fall_back = 6;
+   */
+  fallBack: number;
+
+  /**
+   * @generated from field: uint32 stay_near = 7;
+   */
+  stayNear: number;
+
+  /**
+   * @generated from field: uint32 kite = 8;
+   */
+  kite: number;
+
+  /**
+   * @generated from field: uint32 edge = 9;
+   */
+  edge: number;
+};
+
+/**
+ * Describes the message chill.v1.PlanChips.
+ * Use `create(PlanChipsSchema)` to create a new message.
+ */
+export const PlanChipsSchema: GenMessage<PlanChips> = /*@__PURE__*/
+  messageDesc(file_chill_v1_units, 3);
+
+/**
+ * @generated from message chill.v1.PlanRoles
+ */
+export type PlanRoles = Message<"chill.v1.PlanRoles"> & {
+  /**
+   * @generated from field: chill.v1.PlanChips melee = 1;
+   */
+  melee?: PlanChips | undefined;
+
+  /**
+   * @generated from field: chill.v1.PlanChips ranged = 2;
+   */
+  ranged?: PlanChips | undefined;
+
+  /**
+   * @generated from field: chill.v1.PlanChips caster = 3;
+   */
+  caster?: PlanChips | undefined;
+};
+
+/**
+ * Describes the message chill.v1.PlanRoles.
+ * Use `create(PlanRolesSchema)` to create a new message.
+ */
+export const PlanRolesSchema: GenMessage<PlanRoles> = /*@__PURE__*/
+  messageDesc(file_chill_v1_units, 4);
+
+/**
+ * A custom tactic's group: its opening stance, its trigger (the sim's
+ * trigger kind; seconds for "after") and its second stance.
+ *
+ * @generated from message chill.v1.PlanGroup
+ */
+export type PlanGroup = Message<"chill.v1.PlanGroup"> & {
+  /**
+   * @generated from field: chill.v1.PlanRoles opening = 1;
+   */
+  opening?: PlanRoles | undefined;
+
+  /**
+   * @generated from field: uint32 trigger = 2;
+   */
+  trigger: number;
+
+  /**
+   * @generated from field: uint32 trigger_seconds = 3;
+   */
+  triggerSeconds: number;
+
+  /**
+   * @generated from field: chill.v1.PlanRoles then = 4;
+   */
+  then?: PlanRoles | undefined;
+};
+
+/**
+ * Describes the message chill.v1.PlanGroup.
+ * Use `create(PlanGroupSchema)` to create a new message.
+ */
+export const PlanGroupSchema: GenMessage<PlanGroup> = /*@__PURE__*/
+  messageDesc(file_chill_v1_units, 5);
+
+/**
+ * @generated from message chill.v1.CustomPlan
+ */
+export type CustomPlan = Message<"chill.v1.CustomPlan"> & {
+  /**
+   * @generated from field: chill.v1.PlanRoles roles = 1;
+   */
+  roles?: PlanRoles | undefined;
+
+  /**
+   * none, or left and right
+   *
+   * @generated from field: repeated chill.v1.PlanGroup groups = 2;
+   */
+  groups: PlanGroup[];
+};
+
+/**
+ * Describes the message chill.v1.CustomPlan.
+ * Use `create(CustomPlanSchema)` to create a new message.
+ */
+export const CustomPlanSchema: GenMessage<CustomPlan> = /*@__PURE__*/
+  messageDesc(file_chill_v1_units, 6);
 
 /**
  * Unit types: the first three of the sim's unit roster (sim/roster.go). The

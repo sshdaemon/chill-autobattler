@@ -69,8 +69,12 @@ func newUnitPlan(index, team int, spec UnitSpec, pos Vec, plan Plan) *Unit {
 
 // newUnitGroup is newUnitPlan for a unit of a tactic's group g.
 func newUnitGroup(index, team int, spec UnitSpec, pos Vec, plan Plan, g int) *Unit {
+	return newUnitDef(index, team, spec, pos, PlanOf(plan), g)
+}
+
+// newUnitDef is newUnitGroup for a plan definition (built-in or custom; nil: none).
+func newUnitDef(index, team int, spec UnitSpec, pos Vec, p *PlanDef, g int) *Unit {
 	def := RosterOf(spec.Class)
-	p := PlanOf(plan)
 	var extra []Effect
 	if p != nil {
 		extra = p.effectsFor(def, g)

@@ -54,7 +54,7 @@ func checkTrigger(t Trigger) error {
 // groups in order, and rebuilds its living units' temperaments.
 func (b *Battle) checkTriggers() {
 	for team := 0; team < 2; team++ {
-		p := PlanOf(b.Plans[team])
+		p := b.planDefs[team]
 		if p == nil || !p.IsTactic() {
 			continue
 		}

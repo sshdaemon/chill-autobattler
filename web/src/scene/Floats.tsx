@@ -7,7 +7,7 @@ export function Floats() {
   return (
     <>
       {floats.map((f) => (
-        <Html key={f.id} position={[f.x, 2.5, f.z]} center style={{ pointerEvents: 'none' }}>
+        <Html key={f.id} position={[f.x, 2.5, f.z]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none' }}>
           <div className="float" style={{ color: f.color }}>{f.text}</div>
         </Html>
       ))}

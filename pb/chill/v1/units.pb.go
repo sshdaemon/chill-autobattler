@@ -267,7 +267,10 @@ type Army struct {
 	Units     []*UnitSpec            `protobuf:"bytes,2,rep,name=units,proto3" json:"units,omitempty"`
 	// Battle plan: the sim's plan id (sim/ids.go, Plan). 0 is Instinct, the
 	// default: every unit fights by its own temperament.
-	Plan          uint32 `protobuf:"varint,3,opt,name=plan,proto3" json:"plan,omitempty"`
+	Plan uint32 `protobuf:"varint,3,opt,name=plan,proto3" json:"plan,omitempty"`
+	// A plan built from chips (sim/custom.go), used instead of plan, which
+	// must then be 0. Set it, even empty, to fight by a custom plan.
+	CustomPlan    *CustomPlan `protobuf:"bytes,4,opt,name=custom_plan,json=customPlan,proto3" json:"custom_plan,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -323,6 +326,306 @@ func (x *Army) GetPlan() uint32 {
 	return 0
 }
 
+func (x *Army) GetCustomPlan() *CustomPlan {
+	if x != nil {
+		return x.CustomPlan
+	}
+	return nil
+}
+
+// One role's chips in a custom plan; 0 is "own" (the unit's value) everywhere.
+// Values are the sim's ids: target and engage rules, step indexes (0..3),
+// fall back and stay near indexes, kite (1 on, 2 off) and the edge id.
+type PlanChips struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Target        uint32                 `protobuf:"varint,1,opt,name=target,proto3" json:"target,omitempty"`
+	Engage        uint32                 `protobuf:"varint,2,opt,name=engage,proto3" json:"engage,omitempty"`
+	Trigger       uint32                 `protobuf:"varint,3,opt,name=trigger,proto3" json:"trigger,omitempty"`
+	Keep          uint32                 `protobuf:"varint,4,opt,name=keep,proto3" json:"keep,omitempty"`
+	Leash         uint32                 `protobuf:"varint,5,opt,name=leash,proto3" json:"leash,omitempty"`
+	FallBack      uint32                 `protobuf:"varint,6,opt,name=fall_back,json=fallBack,proto3" json:"fall_back,omitempty"`
+	StayNear      uint32                 `protobuf:"varint,7,opt,name=stay_near,json=stayNear,proto3" json:"stay_near,omitempty"`
+	Kite          uint32                 `protobuf:"varint,8,opt,name=kite,proto3" json:"kite,omitempty"`
+	Edge          uint32                 `protobuf:"varint,9,opt,name=edge,proto3" json:"edge,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PlanChips) Reset() {
+	*x = PlanChips{}
+	mi := &file_chill_v1_units_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PlanChips) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlanChips) ProtoMessage() {}
+
+func (x *PlanChips) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_units_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlanChips.ProtoReflect.Descriptor instead.
+func (*PlanChips) Descriptor() ([]byte, []int) {
+	return file_chill_v1_units_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *PlanChips) GetTarget() uint32 {
+	if x != nil {
+		return x.Target
+	}
+	return 0
+}
+
+func (x *PlanChips) GetEngage() uint32 {
+	if x != nil {
+		return x.Engage
+	}
+	return 0
+}
+
+func (x *PlanChips) GetTrigger() uint32 {
+	if x != nil {
+		return x.Trigger
+	}
+	return 0
+}
+
+func (x *PlanChips) GetKeep() uint32 {
+	if x != nil {
+		return x.Keep
+	}
+	return 0
+}
+
+func (x *PlanChips) GetLeash() uint32 {
+	if x != nil {
+		return x.Leash
+	}
+	return 0
+}
+
+func (x *PlanChips) GetFallBack() uint32 {
+	if x != nil {
+		return x.FallBack
+	}
+	return 0
+}
+
+func (x *PlanChips) GetStayNear() uint32 {
+	if x != nil {
+		return x.StayNear
+	}
+	return 0
+}
+
+func (x *PlanChips) GetKite() uint32 {
+	if x != nil {
+		return x.Kite
+	}
+	return 0
+}
+
+func (x *PlanChips) GetEdge() uint32 {
+	if x != nil {
+		return x.Edge
+	}
+	return 0
+}
+
+type PlanRoles struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Melee         *PlanChips             `protobuf:"bytes,1,opt,name=melee,proto3" json:"melee,omitempty"`
+	Ranged        *PlanChips             `protobuf:"bytes,2,opt,name=ranged,proto3" json:"ranged,omitempty"`
+	Caster        *PlanChips             `protobuf:"bytes,3,opt,name=caster,proto3" json:"caster,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PlanRoles) Reset() {
+	*x = PlanRoles{}
+	mi := &file_chill_v1_units_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PlanRoles) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlanRoles) ProtoMessage() {}
+
+func (x *PlanRoles) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_units_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlanRoles.ProtoReflect.Descriptor instead.
+func (*PlanRoles) Descriptor() ([]byte, []int) {
+	return file_chill_v1_units_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PlanRoles) GetMelee() *PlanChips {
+	if x != nil {
+		return x.Melee
+	}
+	return nil
+}
+
+func (x *PlanRoles) GetRanged() *PlanChips {
+	if x != nil {
+		return x.Ranged
+	}
+	return nil
+}
+
+func (x *PlanRoles) GetCaster() *PlanChips {
+	if x != nil {
+		return x.Caster
+	}
+	return nil
+}
+
+// A custom tactic's group: its opening stance, its trigger (the sim's
+// trigger kind; seconds for "after") and its second stance.
+type PlanGroup struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Opening        *PlanRoles             `protobuf:"bytes,1,opt,name=opening,proto3" json:"opening,omitempty"`
+	Trigger        uint32                 `protobuf:"varint,2,opt,name=trigger,proto3" json:"trigger,omitempty"`
+	TriggerSeconds uint32                 `protobuf:"varint,3,opt,name=trigger_seconds,json=triggerSeconds,proto3" json:"trigger_seconds,omitempty"`
+	Then           *PlanRoles             `protobuf:"bytes,4,opt,name=then,proto3" json:"then,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *PlanGroup) Reset() {
+	*x = PlanGroup{}
+	mi := &file_chill_v1_units_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PlanGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlanGroup) ProtoMessage() {}
+
+func (x *PlanGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_units_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlanGroup.ProtoReflect.Descriptor instead.
+func (*PlanGroup) Descriptor() ([]byte, []int) {
+	return file_chill_v1_units_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *PlanGroup) GetOpening() *PlanRoles {
+	if x != nil {
+		return x.Opening
+	}
+	return nil
+}
+
+func (x *PlanGroup) GetTrigger() uint32 {
+	if x != nil {
+		return x.Trigger
+	}
+	return 0
+}
+
+func (x *PlanGroup) GetTriggerSeconds() uint32 {
+	if x != nil {
+		return x.TriggerSeconds
+	}
+	return 0
+}
+
+func (x *PlanGroup) GetThen() *PlanRoles {
+	if x != nil {
+		return x.Then
+	}
+	return nil
+}
+
+type CustomPlan struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Roles         *PlanRoles             `protobuf:"bytes,1,opt,name=roles,proto3" json:"roles,omitempty"`
+	Groups        []*PlanGroup           `protobuf:"bytes,2,rep,name=groups,proto3" json:"groups,omitempty"` // none, or left and right
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CustomPlan) Reset() {
+	*x = CustomPlan{}
+	mi := &file_chill_v1_units_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomPlan) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomPlan) ProtoMessage() {}
+
+func (x *CustomPlan) ProtoReflect() protoreflect.Message {
+	mi := &file_chill_v1_units_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomPlan.ProtoReflect.Descriptor instead.
+func (*CustomPlan) Descriptor() ([]byte, []int) {
+	return file_chill_v1_units_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *CustomPlan) GetRoles() *PlanRoles {
+	if x != nil {
+		return x.Roles
+	}
+	return nil
+}
+
+func (x *CustomPlan) GetGroups() []*PlanGroup {
+	if x != nil {
+		return x.Groups
+	}
+	return nil
+}
+
 var File_chill_v1_units_proto protoreflect.FileDescriptor
 
 const file_chill_v1_units_proto_rawDesc = "" +
@@ -335,11 +638,36 @@ const file_chill_v1_units_proto_rawDesc = "" +
 	"\n" +
 	"unit_class\x18\x01 \x01(\x0e2\x13.chill.v1.UnitClassR\tunitClass\x12\x16\n" +
 	"\x06skills\x18\x02 \x03(\rR\x06skills\x12+\n" +
-	"\bposition\x18\x03 \x01(\v2\x0f.chill.v1.PointR\bposition\"w\n" +
+	"\bposition\x18\x03 \x01(\v2\x0f.chill.v1.PointR\bposition\"\xae\x01\n" +
 	"\x04Army\x121\n" +
 	"\tformation\x18\x01 \x01(\x0e2\x13.chill.v1.FormationR\tformation\x12(\n" +
 	"\x05units\x18\x02 \x03(\v2\x12.chill.v1.UnitSpecR\x05units\x12\x12\n" +
-	"\x04plan\x18\x03 \x01(\rR\x04plan*k\n" +
+	"\x04plan\x18\x03 \x01(\rR\x04plan\x125\n" +
+	"\vcustom_plan\x18\x04 \x01(\v2\x14.chill.v1.CustomPlanR\n" +
+	"customPlan\"\xe1\x01\n" +
+	"\tPlanChips\x12\x16\n" +
+	"\x06target\x18\x01 \x01(\rR\x06target\x12\x16\n" +
+	"\x06engage\x18\x02 \x01(\rR\x06engage\x12\x18\n" +
+	"\atrigger\x18\x03 \x01(\rR\atrigger\x12\x12\n" +
+	"\x04keep\x18\x04 \x01(\rR\x04keep\x12\x14\n" +
+	"\x05leash\x18\x05 \x01(\rR\x05leash\x12\x1b\n" +
+	"\tfall_back\x18\x06 \x01(\rR\bfallBack\x12\x1b\n" +
+	"\tstay_near\x18\a \x01(\rR\bstayNear\x12\x12\n" +
+	"\x04kite\x18\b \x01(\rR\x04kite\x12\x12\n" +
+	"\x04edge\x18\t \x01(\rR\x04edge\"\x90\x01\n" +
+	"\tPlanRoles\x12)\n" +
+	"\x05melee\x18\x01 \x01(\v2\x13.chill.v1.PlanChipsR\x05melee\x12+\n" +
+	"\x06ranged\x18\x02 \x01(\v2\x13.chill.v1.PlanChipsR\x06ranged\x12+\n" +
+	"\x06caster\x18\x03 \x01(\v2\x13.chill.v1.PlanChipsR\x06caster\"\xa6\x01\n" +
+	"\tPlanGroup\x12-\n" +
+	"\aopening\x18\x01 \x01(\v2\x13.chill.v1.PlanRolesR\aopening\x12\x18\n" +
+	"\atrigger\x18\x02 \x01(\rR\atrigger\x12'\n" +
+	"\x0ftrigger_seconds\x18\x03 \x01(\rR\x0etriggerSeconds\x12'\n" +
+	"\x04then\x18\x04 \x01(\v2\x13.chill.v1.PlanRolesR\x04then\"d\n" +
+	"\n" +
+	"CustomPlan\x12)\n" +
+	"\x05roles\x18\x01 \x01(\v2\x13.chill.v1.PlanRolesR\x05roles\x12+\n" +
+	"\x06groups\x18\x02 \x03(\v2\x13.chill.v1.PlanGroupR\x06groups*k\n" +
 	"\tUnitClass\x12\x1a\n" +
 	"\x16UNIT_CLASS_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12UNIT_CLASS_WARRIOR\x10\x01\x12\x15\n" +
@@ -371,24 +699,36 @@ func file_chill_v1_units_proto_rawDescGZIP() []byte {
 }
 
 var file_chill_v1_units_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_chill_v1_units_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_chill_v1_units_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_chill_v1_units_proto_goTypes = []any{
-	(UnitClass)(0),   // 0: chill.v1.UnitClass
-	(Formation)(0),   // 1: chill.v1.Formation
-	(*Point)(nil),    // 2: chill.v1.Point
-	(*UnitSpec)(nil), // 3: chill.v1.UnitSpec
-	(*Army)(nil),     // 4: chill.v1.Army
+	(UnitClass)(0),     // 0: chill.v1.UnitClass
+	(Formation)(0),     // 1: chill.v1.Formation
+	(*Point)(nil),      // 2: chill.v1.Point
+	(*UnitSpec)(nil),   // 3: chill.v1.UnitSpec
+	(*Army)(nil),       // 4: chill.v1.Army
+	(*PlanChips)(nil),  // 5: chill.v1.PlanChips
+	(*PlanRoles)(nil),  // 6: chill.v1.PlanRoles
+	(*PlanGroup)(nil),  // 7: chill.v1.PlanGroup
+	(*CustomPlan)(nil), // 8: chill.v1.CustomPlan
 }
 var file_chill_v1_units_proto_depIdxs = []int32{
-	0, // 0: chill.v1.UnitSpec.unit_class:type_name -> chill.v1.UnitClass
-	2, // 1: chill.v1.UnitSpec.position:type_name -> chill.v1.Point
-	1, // 2: chill.v1.Army.formation:type_name -> chill.v1.Formation
-	3, // 3: chill.v1.Army.units:type_name -> chill.v1.UnitSpec
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0,  // 0: chill.v1.UnitSpec.unit_class:type_name -> chill.v1.UnitClass
+	2,  // 1: chill.v1.UnitSpec.position:type_name -> chill.v1.Point
+	1,  // 2: chill.v1.Army.formation:type_name -> chill.v1.Formation
+	3,  // 3: chill.v1.Army.units:type_name -> chill.v1.UnitSpec
+	8,  // 4: chill.v1.Army.custom_plan:type_name -> chill.v1.CustomPlan
+	5,  // 5: chill.v1.PlanRoles.melee:type_name -> chill.v1.PlanChips
+	5,  // 6: chill.v1.PlanRoles.ranged:type_name -> chill.v1.PlanChips
+	5,  // 7: chill.v1.PlanRoles.caster:type_name -> chill.v1.PlanChips
+	6,  // 8: chill.v1.PlanGroup.opening:type_name -> chill.v1.PlanRoles
+	6,  // 9: chill.v1.PlanGroup.then:type_name -> chill.v1.PlanRoles
+	6,  // 10: chill.v1.CustomPlan.roles:type_name -> chill.v1.PlanRoles
+	7,  // 11: chill.v1.CustomPlan.groups:type_name -> chill.v1.PlanGroup
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_chill_v1_units_proto_init() }
@@ -402,7 +742,7 @@ func file_chill_v1_units_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_chill_v1_units_proto_rawDesc), len(file_chill_v1_units_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   3,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

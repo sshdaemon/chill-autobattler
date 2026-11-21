@@ -49,6 +49,13 @@ func army(a *chillv1.Army, name string, required bool) (sim.Army, error) {
 		return sim.Army{}, fmt.Errorf("%w: %s plan %d", sim.ErrInvalid, name, a.Plan)
 	}
 	out := sim.Army{Formation: sim.Formation(a.Formation - chillv1.Formation_FORMATION_CUSTOM), Plan: sim.Plan(a.Plan)} // sim checks the plan exists
+	if a.CustomPlan != nil {
+		c, err := customPlan(a.CustomPlan)
+		if err != nil {
+			return sim.Army{}, fmt.Errorf("%w: %s custom plan: %v", sim.ErrInvalid, name, err)
+		}
+		out.Custom = c
+	}
 	for i, u := range a.Units {
 		if u.UnitClass == chillv1.UnitClass_UNIT_CLASS_UNSPECIFIED {
 			return sim.Army{}, fmt.Errorf("%w: %s unit %d has no class", sim.ErrInvalid, name, i)
@@ -62,6 +69,47 @@ func army(a *chillv1.Army, name string, required bool) (sim.Army, error) {
 			spec.Pos = &p
 		}
 		out.Units = append(out.Units, spec)
+	}
+	return out, nil
+}
+
+// customPlan converts a custom plan's chips; the sim checks what they mean.
+func customPlan(c *chillv1.CustomPlan) (*sim.CustomPlan, error) {
+	out := &sim.CustomPlan{}
+	var err error
+	if out.Roles, err = planRoles(c.Roles); err != nil {
+		return nil, err
+	}
+	for i, g := range c.Groups {
+		if g.Trigger > 255 || g.TriggerSeconds > 1000 {
+			return nil, fmt.Errorf("group %d: trigger %d after %d s", i, g.Trigger, g.TriggerSeconds)
+		}
+		cg := sim.CustomGroup{When: sim.CustomTrigger{Kind: sim.TriggerKind(g.Trigger), Seconds: int(g.TriggerSeconds)}}
+		if cg.Opening, err = planRoles(g.Opening); err != nil {
+			return nil, fmt.Errorf("group %d: %v", i, err)
+		}
+		if cg.Then, err = planRoles(g.Then); err != nil {
+			return nil, fmt.Errorf("group %d: %v", i, err)
+		}
+		out.Groups = append(out.Groups, cg)
+	}
+	return out, nil
+}
+
+func planRoles(r *chillv1.PlanRoles) ([3]sim.Chips, error) {
+	var out [3]sim.Chips
+	for i, c := range []*chillv1.PlanChips{r.GetMelee(), r.GetRanged(), r.GetCaster()} {
+		if c == nil {
+			continue
+		}
+		vals := []uint32{c.Target, c.Engage, c.Trigger, c.Keep, c.Leash, c.FallBack, c.StayNear, c.Kite, c.Edge}
+		for _, v := range vals {
+			if v > 255 {
+				return out, fmt.Errorf("chip value %d out of range", v)
+			}
+		}
+		out[i] = sim.Chips{Target: sim.TargetRule(c.Target), Engage: sim.EngageRule(c.Engage), Trigger: sim.Step(c.Trigger), Keep: sim.Step(c.Keep),
+			Leash: sim.Step(c.Leash), FallBack: uint8(c.FallBack), StayNear: uint8(c.StayNear), Kite: sim.Toggle(c.Kite), Edge: sim.Edge(c.Edge)}
 	}
 	return out, nil
 }

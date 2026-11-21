@@ -47,6 +47,27 @@ type Army struct {
 	Formation Formation
 	Units     []UnitSpec
 	Plan      Plan // its battle plan (plan.go); 0 is Instinct. A generated Red draws its own.
+	// Custom: a plan built from chips (custom.go), used instead of Plan,
+	// which must then be 0.
+	Custom *CustomPlan
+}
+
+// planDef is the plan the army fights by.
+func (a Army) planDef() (*PlanDef, error) {
+	if a.Custom == nil {
+		if p := PlanOf(a.Plan); p != nil {
+			return p, nil
+		}
+		return nil, fmt.Errorf("unknown plan %d", a.Plan)
+	}
+	if a.Plan != 0 {
+		return nil, fmt.Errorf("a custom plan with plan id %d", a.Plan)
+	}
+	p, err := a.Custom.Def()
+	if err != nil {
+		return nil, fmt.Errorf("custom plan: %v", err)
+	}
+	return &p, nil
 }
 
 // Input is everything that decides a battle. Seed (the map seed) decides the
@@ -102,8 +123,8 @@ func (in Input) Validate() error {
 		if len(a.Units) > ArmySize {
 			return invalid("team %d has %d units, max %d", team, len(a.Units), ArmySize)
 		}
-		if PlanOf(a.Plan) == nil {
-			return invalid("team %d: unknown plan %d", team, a.Plan)
+		if _, err := a.planDef(); err != nil {
+			return invalid("team %d: %v", team, err)
 		}
 		if a.Formation > F5x0 {
 			return invalid("team %d: unknown formation %d", team, a.Formation)

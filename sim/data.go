@@ -132,8 +132,15 @@ var (
 	StayReach    = I(4)      // StayNear (bodyguard): how far it may get from its ward
 	HoldPatience = sec(40)   // EngageHold: how long it waits for a seen enemy before going in
 	FlankWide    = I(6)      // EngageFlank: how far beside its target it swings
-	FlankNear    = I(4)      // EngageFlank: this close to its target it goes straight in
-	Zones        = [2]Zone{  // deployment: Blue at the bottom (+z), Red at the top (-z)
+	// Custom-plan chips (custom.go): index 0 is "own" (the unit's value).
+	TriggerSteps   = [4]Fx{0, I(6), I(8), I(10)}                // hold trigger: close, mid, far
+	KeepSteps      = [4]Fx{0, I(5), I(7), I(8)}                 // keep distance: close, mid, far
+	LeashSteps     = [3]Fx{0, I(10), I(14)}                     // leash: short, long
+	FallBackSteps  = [3]int{0, 50, 30}                          // fall back below this % of health
+	StayNearSteps  = [3]Tag{0, TagMelee, TagRanged | TagCaster} // the melee; ranged and casters
+	TriggerSeconds = []int{5, 10, 15, 20}                       // custom groups: "after" triggers
+	FlankNear      = I(4)                                       // EngageFlank: this close to its target it goes straight in
+	Zones          = [2]Zone{                                   // deployment: Blue at the bottom (+z), Red at the top (-z)
 		{XMin: I(-10), XMax: I(10), ZMin: I(7), ZMax: I(13)},
 		{XMin: I(-10), XMax: I(10), ZMin: I(-13), ZMax: I(-7)},
 	}

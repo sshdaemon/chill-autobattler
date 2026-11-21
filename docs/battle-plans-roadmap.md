@@ -1,6 +1,6 @@
 # Battle plans roadmap
 
-Status: November 2026. Steps 1–4 are done (#85, #87, #89 and step 4's PR); the rest is planned.
+Status: November 2026. Steps 1–5 are done (#85, #87, #89, #91 and step 5's PR); step 6 is to decide.
 
 The goal: give the player a say in **how** their army fights, not only what it
 is. Today every unit fights by its own temperament (`sim/temperament.go`), so
@@ -128,7 +128,18 @@ distance or group health are left for step 5's chips.
   enemy reaches the line, or a group drops below some health.
 - Same rules as Step 1: data in the input, goldens, balance matrix.
 
-## Step 5: Custom plans
+## Step 5: Custom plans (done)
+
+Built in OpenSpec change `custom-plans`. Chips per role (target, engage, hold
+trigger, keep distance, leash, fall back, stay near, kite) in coarse steps,
+optional left and right groups with a trigger and a second stance, and one edge
+per role from a five-edge menu (each an advantage with a cost). The battle
+input carries it as `Army.custom_plan`; the sim checks it like a built-in plan.
+The editor opens from the deploy bar and pauses the countdown. Balance:
+`-exp edges` and `-exp custom` in the balance tool; results in
+`docs/balance-findings.md` (the Rus come closest to a dominating custom plan).
+For Step 6: a model fills the same JSON shape (`data().plans[i].chips`,
+`chillSim.checkPlan`).
 
 - An editor of chips: the player builds a plan from the Step 1 and Step 4
   vocabulary (per role or group: target, engage, retreat, trigger) instead of

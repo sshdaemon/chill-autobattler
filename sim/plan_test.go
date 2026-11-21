@@ -178,16 +178,28 @@ func TestPlansFight(t *testing.T) {
 		}
 		return out
 	}
-	for _, pa := range Plans {
-		for _, pb := range Plans {
+	type side struct {
+		name   string
+		plan   Plan
+		custom *CustomPlan
+	}
+	var sides []side
+	for _, p := range Plans {
+		sides = append(sides, side{p.Name, p.ID, nil})
+	}
+	for _, c := range customPlansForTests() {
+		sides = append(sides, side{"custom " + c.name, 0, c.plan})
+	}
+	for _, pa := range sides {
+		for _, pb := range sides {
 			stalls := 0
 			for i := range Factions {
 				for j := range Factions {
 					a, c := &Factions[i], &Factions[j]
 					for seed := uint64(1); seed <= 2; seed++ {
 						in := Input{Version: Version, BlueFaction: a.ID, Seed: seed + uint64(i*4+j), CombatSeed: seed * 31,
-							Blue: Army{Formation: Presets[seed%7], Units: army(a, seed), Plan: pa.ID},
-							Red:  Army{Formation: Presets[(seed+3)%7], Units: army(c, seed+1), Plan: pb.ID}}
+							Blue: Army{Formation: Presets[seed%7], Units: army(a, seed), Plan: pa.plan, Custom: pa.custom},
+							Red:  Army{Formation: Presets[(seed+3)%7], Units: army(c, seed+1), Plan: pb.plan, Custom: pb.custom}}
 						o, err := Run(in)
 						if err != nil {
 							t.Fatal(err)
@@ -199,7 +211,7 @@ func TestPlansFight(t *testing.T) {
 				}
 			}
 			if stalls > 0 {
-				t.Errorf("%s vs %s: %d battles ran out of time", pa.Name, pb.Name, stalls)
+				t.Errorf("%s vs %s: %d battles ran out of time", pa.name, pb.name, stalls)
 			}
 		}
 	}

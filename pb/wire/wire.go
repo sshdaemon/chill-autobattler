@@ -74,6 +74,8 @@ type army struct {
 	formation int32
 	units     []unitSpec
 	plan      uint32 // battle plan (field 3)
+	custom    bool   // custom_plan (field 4) is present
+	customRaw []byte // its bytes, every occurrence concatenated (= merged, in protobuf)
 }
 
 func decodePoint(b []byte) (point, error) {
@@ -164,10 +166,178 @@ func decodeArmy(b []byte) (army, error) {
 			n := varint(typ, b, &v)
 			a.plan = uint32(v) // proto uint32: the low 32 bits
 			return n
+		case 4:
+			var sub []byte
+			n := bytesField(typ, b, &sub)
+			if n >= 0 {
+				a.custom, a.customRaw = true, append(a.customRaw, sub...)
+			}
+			return n
 		}
 		return skip
 	})
 	return a, err
+}
+
+// Custom plans. A message field that occurs more than once merges, which in
+// protobuf is the same as decoding its occurrences' bytes concatenated; a
+// repeated message field's occurrences are separate elements.
+
+type chips [9]uint32 // PlanChips fields 1..9
+
+func decodeChips(b []byte) (chips, error) {
+	var c chips
+	err := fields(b, func(num protowire.Number, typ protowire.Type, b []byte) int {
+		if num < 1 || num > 9 {
+			return skip
+		}
+		var v uint64
+		n := varint(typ, b, &v)
+		c[num-1] = uint32(v)
+		return n
+	})
+	return c, err
+}
+
+func decodeRoles(b []byte) ([3]chips, error) {
+	var out [3]chips
+	raw := make([][]byte, 3)
+	err := fields(b, func(num protowire.Number, typ protowire.Type, b []byte) int {
+		if num < 1 || num > 3 {
+			return skip
+		}
+		var sub []byte
+		n := bytesField(typ, b, &sub)
+		if n >= 0 {
+			raw[num-1] = append(raw[num-1], sub...)
+		}
+		return n
+	})
+	if err != nil {
+		return out, err
+	}
+	for i, r := range raw {
+		c, err := decodeChips(r)
+		if err != nil {
+			return out, err
+		}
+		out[i] = c
+	}
+	return out, nil
+}
+
+type group struct {
+	opening, then     [3]chips
+	trigger, triggerS uint32
+}
+
+func decodeGroup(b []byte) (group, error) {
+	var g group
+	var open, then []byte
+	err := fields(b, func(num protowire.Number, typ protowire.Type, b []byte) int {
+		var sub []byte
+		var v uint64
+		switch num {
+		case 1, 4:
+			n := bytesField(typ, b, &sub)
+			if n >= 0 {
+				if num == 1 {
+					open = append(open, sub...)
+				} else {
+					then = append(then, sub...)
+				}
+			}
+			return n
+		case 2:
+			n := varint(typ, b, &v)
+			g.trigger = uint32(v)
+			return n
+		case 3:
+			n := varint(typ, b, &v)
+			g.triggerS = uint32(v)
+			return n
+		}
+		return skip
+	})
+	if err != nil {
+		return g, err
+	}
+	if g.opening, err = decodeRoles(open); err != nil {
+		return g, err
+	}
+	g.then, err = decodeRoles(then)
+	return g, err
+}
+
+func decodeCustom(b []byte) ([3]chips, []group, error) {
+	var roles []byte
+	var groups []group
+	var gerr error
+	err := fields(b, func(num protowire.Number, typ protowire.Type, b []byte) int {
+		var sub []byte
+		switch num {
+		case 1:
+			n := bytesField(typ, b, &sub)
+			if n >= 0 {
+				roles = append(roles, sub...)
+			}
+			return n
+		case 2:
+			n := bytesField(typ, b, &sub)
+			if n >= 0 {
+				g, err := decodeGroup(sub)
+				gerr = errors.Join(gerr, err)
+				groups = append(groups, g)
+			}
+			return n
+		}
+		return skip
+	})
+	if err = errors.Join(err, gerr); err != nil {
+		return [3]chips{}, nil, err
+	}
+	r, err := decodeRoles(roles)
+	return r, groups, err
+}
+
+func simChips(cs [3]chips) ([3]sim.Chips, error) {
+	var out [3]sim.Chips
+	for i, c := range cs {
+		for _, v := range c {
+			if v > 255 {
+				return out, fmt.Errorf("chip value %d out of range", v)
+			}
+		}
+		out[i] = sim.Chips{Target: sim.TargetRule(c[0]), Engage: sim.EngageRule(c[1]), Trigger: sim.Step(c[2]), Keep: sim.Step(c[3]),
+			Leash: sim.Step(c[4]), FallBack: uint8(c[5]), StayNear: uint8(c[6]), Kite: sim.Toggle(c[7]), Edge: sim.Edge(c[8])}
+	}
+	return out, nil
+}
+
+// toCustom decodes and converts a custom plan, like convert's customPlan.
+func toCustom(raw []byte) (*sim.CustomPlan, error) {
+	roles, groups, err := decodeCustom(raw)
+	if err != nil {
+		return nil, fmt.Errorf("bad input bytes: %w", err)
+	}
+	out := &sim.CustomPlan{}
+	if out.Roles, err = simChips(roles); err != nil {
+		return nil, fmt.Errorf("%w: %v", sim.ErrInvalid, err)
+	}
+	for i, g := range groups {
+		if g.trigger > 255 || g.triggerS > 1000 {
+			return nil, fmt.Errorf("%w: group %d: trigger %d after %d s", sim.ErrInvalid, i, g.trigger, g.triggerS)
+		}
+		cg := sim.CustomGroup{When: sim.CustomTrigger{Kind: sim.TriggerKind(g.trigger), Seconds: int(g.triggerS)}}
+		if cg.Opening, err = simChips(g.opening); err != nil {
+			return nil, fmt.Errorf("%w: group %d: %v", sim.ErrInvalid, i, err)
+		}
+		if cg.Then, err = simChips(g.then); err != nil {
+			return nil, fmt.Errorf("%w: group %d: %v", sim.ErrInvalid, i, err)
+		}
+		out.Groups = append(out.Groups, cg)
+	}
+	return out, nil
 }
 
 // DecodeInput parses a chill.v1.BattleInput and validates it, exactly like
@@ -249,6 +419,7 @@ func mergeArmy(prev army, b []byte) (army, error) {
 		if a.plan == 0 {
 			a.plan = prev.plan
 		}
+		a.custom, a.customRaw = a.custom || prev.custom, append(append([]byte(nil), prev.customRaw...), a.customRaw...)
 		a.units = append(prev.units, a.units...)
 	}
 	return a, nil
@@ -268,6 +439,13 @@ func toSim(a army, name string, required bool) (sim.Army, error) {
 		return sim.Army{}, fmt.Errorf("%w: %s plan %d", sim.ErrInvalid, name, a.plan)
 	}
 	out := sim.Army{Formation: sim.Formation(a.formation - 1), Plan: sim.Plan(a.plan)} // pb FORMATION_CUSTOM = 1
+	if a.custom {
+		c, err := toCustom(a.customRaw)
+		if err != nil {
+			return sim.Army{}, fmt.Errorf("%s custom plan: %w", name, err)
+		}
+		out.Custom = c
+	}
 	for i, u := range a.units {
 		if u.class == 0 {
 			return sim.Army{}, fmt.Errorf("%w: %s unit %d has no class", sim.ErrInvalid, name, i)
