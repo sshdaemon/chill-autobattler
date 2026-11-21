@@ -1,26 +1,22 @@
 {
-  "version": "0.13.0+9cf2dc35.39edb404",
+  "version": "0.14.0+9cf2dc35.39edb404",
   "case": "archer skills",
   "outcome": {
-    "result": 2,
-    "ticks": 287,
-    "checksum": "10359023179928516167",
+    "result": 1,
+    "ticks": 296,
+    "checksum": "7435817683089811305",
     "survivors": [
       {
-        "Index": 6,
-        "HP": 1350112
+        "Index": 0,
+        "HP": 1080167
       },
       {
-        "Index": 7,
-        "HP": 2160461
-      },
-      {
-        "Index": 8,
-        "HP": 2925703
-      },
-      {
-        "Index": 9,
+        "Index": 3,
         "HP": 3604480
+      },
+      {
+        "Index": 4,
+        "HP": 1160811
       }
     ]
   }

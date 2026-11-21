@@ -257,7 +257,7 @@ func (b *Battle) kiteSpot(u *Unit) (Vec, bool) {
 	}
 	base := flee.Norm()
 	for _, turn := range KiteTurns {
-		p := u.Pos.Add(base.Rot(turn).Scale(KiteStep))
+		p := u.Pos.Add(base.Rot(turn.For(u.Team)).Scale(KiteStep))
 		if b.Map.FreeAt(p) && b.Map.LineOfSight(u.Pos, p) {
 			return p, true
 		}

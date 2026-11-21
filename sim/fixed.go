@@ -20,7 +20,9 @@ func I(n int) Fx { return Fx(n) << fracBits }
 // Ratio is num/den as Fx, e.g. Ratio(13, 10) = 1.3.
 func Ratio(num, den int) Fx { return Fx(int64(num) << fracBits / int64(den)) }
 
-func (a Fx) Mul(b Fx) Fx { return Fx((int64(a) * int64(b)) >> fracBits) }
+// Mul rounds toward zero, like Div and MulDiv, so -a*b == -(a*b): mirror-image
+// positions on the two halves of the field stay exact mirror images.
+func (a Fx) Mul(b Fx) Fx { return Fx(int64(a) * int64(b) / int64(One)) }
 func (a Fx) Div(b Fx) Fx { return Fx((int64(a) << fracBits) / int64(b)) }
 
 // MulDiv returns a*num/den without losing precision in between.
@@ -140,6 +142,16 @@ func (a Vec) Rot(r Turn) Vec {
 // Turn is a rotation stored as cos and sin, precomputed so sim needs no trig.
 type Turn struct{ Cos, Sin Fx }
 
+// For is the rotation as a unit of team sees it: Red's field is Blue's
+// reflected across the centre line, which turns a rotation the other way, so
+// "try +θ first" means the same to both sides.
+func (r Turn) For(team int) Turn {
+	if team == 1 {
+		return r.Neg()
+	}
+	return r
+}
+
 // Neg is the opposite rotation.
 func (r Turn) Neg() Turn { return Turn{r.Cos, -r.Sin} }
 
@@ -152,7 +164,15 @@ func TurnToward(face, want Vec, step Turn) Vec {
 	if face.Dot(want) >= step.Cos {
 		return want
 	}
-	if face.Cross(want) < 0 { // want is clockwise from face (toward +X when facing +Z)
+	c := face.Cross(want)
+	if c == 0 { // straight behind: turn toward +X, which is the same for both sides of the centre line
+		if a, b := face.Rot(step), face.Rot(step.Neg()); a.X >= b.X {
+			return a.Norm()
+		} else {
+			return b.Norm()
+		}
+	}
+	if c < 0 { // want is clockwise from face (toward +X when facing +Z)
 		return face.Rot(step).Norm()
 	}
 	return face.Rot(step.Neg()).Norm()

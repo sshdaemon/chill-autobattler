@@ -1,14 +1,22 @@
 {
-  "version": "0.13.0+9cf2dc35.39edb404",
+  "version": "0.14.0+9cf2dc35.39edb404",
   "case": "plan focus fire",
   "outcome": {
-    "result": 1,
-    "ticks": 690,
-    "checksum": "9862547257695121092",
+    "result": 2,
+    "ticks": 291,
+    "checksum": "9392064485895265572",
     "survivors": [
       {
-        "Index": 1,
-        "HP": 2019827
+        "Index": 6,
+        "HP": 3604480
+      },
+      {
+        "Index": 7,
+        "HP": 2946143
+      },
+      {
+        "Index": 8,
+        "HP": 1066598
       }
     ]
   }

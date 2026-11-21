@@ -42,9 +42,16 @@ func NewMap(obstacles []Obstacle) *Map {
 // flipZ reflects a point across the centre line.
 func flipZ(v Vec) Vec { return V(v.X, -v.Z) }
 
-// ToCell maps a coordinate to its grid index, clamped to the grid.
+// ToCell maps a coordinate to its grid index, clamped to the grid. A point
+// exactly on a cell edge goes to the cell nearer the centre line on either
+// side, so mirror-image points (formation slots sit on edges) land in
+// mirror-image cells.
 func ToCell(v Fx) int {
-	i := (v + ArenaHalf).Mul(I(2)).Floor() // / Cell
+	r := (v + ArenaHalf).Mul(I(2)) // / Cell
+	i := r.Floor()
+	if v > 0 && I(i) == r {
+		i--
+	}
 	if i < 0 {
 		return 0
 	}

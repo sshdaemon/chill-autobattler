@@ -2,6 +2,47 @@
 
 The current numbers are in [`balance-report.md`](balance-report.md) (generated with `pnpm balance`). This file says what they mean.
 
+## Fair sides (sim 0.14.0, change fair-sides)
+
+Mirrored maps left 7 of 40 cells leaning (up to 85%). Comparing mirror battles
+with their reflection tick by tick found five rules that told the sides apart:
+`Mul` rounding down (Blue's steps came out longer), pushes applied pair by pair
+in unit order, Blue always acting first within a tick (it won every same-tick
+dash), rotations tried in one order for both sides (kiting, stepping away), and
+cell edges floored (Blue's and Red's formation slots fell in cells that aren't
+mirror images). Fixed; see `openspec/changes/archive/*-fair-sides/design.md`.
+
+| | Random maps | Mirrored | Mirrored + fair sides |
+|---|---|---|---|
+| Mean gap from 50% | 20.0 pts | 5.2 pts | **1.8 pts** |
+| Worst cell | 48.8 pts | 35.2 pts | **5.9 pts** |
+| Cells > 3 SE from 50% | 28 / 40 | 7 / 40 | **0 / 40** |
+
+A mean gap of 1.8 is what the dice alone give at 400 battles per cell. At
+1000 per cell: mean gap 1.1, worst 4.0, none off.
+
+Over random maps the sides stay fair (Classic mirror, `-exp side`: Blue 48.1%
+± 3.1). The plan matrix (1000 per pair) marked Varangian Hunt the archers as
+beating everything, with Shield wall its closest at 55.8%; over 4000 fresh
+battles that pair is 52.4% (±0.8), so nothing dominates.
+
+#### Side advantage per map
+
+Blue's win rate with the same army on both sides. A fair map gives 50%.
+
+| Map | classic | rus | varangians | romans | All factions |
+|---|---|---|---|---|---|
+| 101 | 53.5% | 48.9% | 52.4% | 53.1% | **52.0%** |
+| 202 | 49.8% | 49.9% | 48.0% | 49.9% | **49.4%** |
+| 303 | 52.5% | 50.2% | 52.0% | 49.6% | **51.1%** |
+| 404 | 47.8% | 49.0% | 52.1% | 49.9% | **49.7%** |
+| 505 | 47.1% | 48.4% | 50.5% | 51.6% | **49.4%** |
+| 606 | 47.9% | 50.2% | 54.9% | 48.4% | **50.3%** |
+| 707 | 44.1% | 49.8% | 49.2% | 50.4% | **48.4%** |
+| 808 | 48.6% | 50.7% | 46.2% | 47.0% | **48.2%** |
+| 909 | 49.8% | 52.5% | 54.0% | 47.5% | **50.9%** |
+| 1010 | 52.9% | 46.8% | 51.0% | 50.6% | **50.3%** |
+
 ## Maps: mirrored (sim 0.13.0, change mirrored-maps)
 
 Does the random map decide battles? `go run ./tools/balance -exp maps` fixes 10
