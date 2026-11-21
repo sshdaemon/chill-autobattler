@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -130,7 +129,7 @@ func playRuns(n int, base uint64, p policy, red redMode, curve []int) []runResul
 	out := make([]runResult, n)
 	next := make(chan int)
 	var wg sync.WaitGroup
-	for w := 0; w < runtime.NumCPU(); w++ {
+	for w := 0; w < workers; w++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
