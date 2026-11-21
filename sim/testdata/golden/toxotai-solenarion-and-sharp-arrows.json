@@ -1,0 +1,23 @@
+{
+  "version": "0.16.0+06cdea04.0e752100",
+  "case": "toxotai solenarion and sharp arrows",
+  "outcome": {
+    "result": 2,
+    "ticks": 259,
+    "checksum": "9430627338833449676",
+    "survivors": [
+      {
+        "Index": 7,
+        "HP": 3735552
+      },
+      {
+        "Index": 8,
+        "HP": 3735552
+      },
+      {
+        "Index": 9,
+        "HP": 4980736
+      }
+    ]
+  }
+}

@@ -1,18 +1,22 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+28ab8a42.0e752100",
   "case": "plan hammer and anvil",
   "outcome": {
     "result": 1,
-    "ticks": 336,
-    "checksum": "8548627289540897695",
+    "ticks": 424,
+    "checksum": "12234901336356364762",
     "survivors": [
       {
+        "Index": 0,
+        "HP": 182709
+      },
+      {
         "Index": 1,
-        "HP": 3604480
+        "HP": 2814735
       },
       {
         "Index": 3,
-        "HP": 1129828
+        "HP": 3735552
       }
     ]
   }

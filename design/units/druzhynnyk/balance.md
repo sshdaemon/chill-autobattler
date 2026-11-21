@@ -1,5 +1,9 @@
 # Balance: druzhynnyk
 
+> Recorded before the Classic faction was retired (November 2026, OpenSpec
+> `retire-classic`): rows and notes about the warrior, archer and mage are
+> history; `pnpm balance:unit <name>` measures against today's roster.
+
 1000 battles per row, fixed seeds (sim 0.7.0+602aad09). Bands: openspec unit-authoring.
 
 | Check | Result | Band | |

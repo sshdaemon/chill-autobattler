@@ -116,12 +116,12 @@ func TestBadCustomPlansRejected(t *testing.T) {
 		"one group":               {Groups: []CustomGroup{{}}},
 	}
 	for name, cp := range bad {
-		in := Input{Version: Version, BlueFaction: FactionClassic, Seed: 1, CombatSeed: 2, Blue: Army{Formation: F3x2, Units: mix(), Custom: cp}}
+		in := Input{Version: Version, BlueFaction: FactionRus, Seed: 1, CombatSeed: 2, Blue: Army{Formation: F3x2, Units: mix(), Custom: cp}}
 		if _, err := Run(in); !errors.Is(err, ErrInvalid) {
 			t.Errorf("%s: got %v, want ErrInvalid", name, err)
 		}
 	}
-	withID := Input{Version: Version, BlueFaction: FactionClassic, Seed: 1, CombatSeed: 2, Blue: Army{Formation: F3x2, Units: mix(), Plan: PlanCharge, Custom: &CustomPlan{}}}
+	withID := Input{Version: Version, BlueFaction: FactionRus, Seed: 1, CombatSeed: 2, Blue: Army{Formation: F3x2, Units: mix(), Plan: PlanCharge, Custom: &CustomPlan{}}}
 	if _, err := Run(withID); !errors.Is(err, ErrInvalid) {
 		t.Errorf("a custom plan with a plan id: %v", err)
 	}

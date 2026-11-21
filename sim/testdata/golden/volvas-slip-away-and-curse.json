@@ -1,0 +1,19 @@
+{
+  "version": "0.16.0+b4201ec6.0e752100",
+  "case": "volvas slip away and curse",
+  "outcome": {
+    "result": 1,
+    "ticks": 591,
+    "checksum": "9941418436184758288",
+    "survivors": [
+      {
+        "Index": 2,
+        "HP": 3911523
+      },
+      {
+        "Index": 4,
+        "HP": 839747
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "version": "0.16.0+9ed7e703.0e752100",
+  "case": "huskarls sweep, charge and executioner",
+  "outcome": {
+    "result": 1,
+    "ticks": 384,
+    "checksum": "14345136127841318868",
+    "survivors": [
+      {
+        "Index": 0,
+        "HP": 1581530
+      }
+    ]
+  }
+}

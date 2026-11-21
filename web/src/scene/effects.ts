@@ -29,7 +29,7 @@ export const skillActions = new Map<number, { clip: string; rate: number }>();
 export const flinches = new Map<number, { dx: number; dz: number; t: number }>();
 
 export type View = { fogOn: boolean; fogged: boolean; speed: number; high: boolean; units: UnitLoadout[]; bolt: (cls: number) => boolean };
-export const viewOf = (s: { fogOn: boolean; phase: string; speed: number; quality: string; units: UnitLoadout[]; data?: { classes: { projectile?: string }[] } }): View =>
+export const viewOf = (s: { fogOn: boolean; phase: string; speed: number; quality: string; units: UnitLoadout[]; data?: { classes: ({ projectile?: string } | null)[] } }): View =>
   ({ fogOn: s.fogOn, fogged: s.phase === 'countdown' || s.phase === 'fighting', speed: s.speed, high: s.quality === 'high', units: s.units,
     bolt: (cls) => s.data?.classes[cls]?.projectile === 'bolt' });
 const SNAP_BUDGET = 160; // particles per snapshot, at most
@@ -247,11 +247,12 @@ export function lastKill() { addShake(0.55); }
 if (import.meta.env.DEV) {
   Object.assign(window, {
     fxDemo: () => {
-      // the roster's first bolt caster (the mage) for the magic cues
-      const classes = (window as unknown as { battle: { getState(): { data?: { classes: { projectile?: string }[] } } } }).battle.getState().data?.classes ?? [];
-      const caster = Math.max(0, classes.findIndex((c) => c.projectile === 'bolt'));
+      // the roster's first unit, and its first bolt caster for the magic cues
+      const classes = (window as unknown as { battle: { getState(): { data?: { classes: ({ projectile?: string } | null)[] } } } }).battle.getState().data?.classes ?? [];
+      const first = Math.max(0, classes.findIndex((c) => c));
+      const caster = Math.max(first, classes.findIndex((c) => c?.projectile === 'bolt'));
       const v: View = { fogOn: false, fogged: false, speed: 1, high: true, units: [], bolt: (cls) => classes[cls]?.projectile === 'bolt' };
-      const unit = (x: number, cls = 0): UnitSnap => ({ team: 0, cls, x, z: 4, fx: 0, fz: -1, hp: 1, maxHp: 1, flags: 0, target: -1, skills: 0, kills: 0, dealt: 0 });
+      const unit = (x: number, cls = first): UnitSnap => ({ team: 0, cls, x, z: 4, fx: 0, fz: -1, hp: 1, maxHp: 1, flags: 0, target: -1, skills: 0, kills: 0, dealt: 0 });
       const units = [-9, -6, -3, 0, 3, 6, 9].map((x) => unit(x)).concat([unit(-9, caster), unit(-6, caster), unit(3, caster), unit(-12), unit(12), unit(15)]);
       const ev = (kind: number, u: number, other = -1, flags = 0): SimEvent => ({ kind, unit: u, other, amount: 10, flags });
       const snap = { tick: 0, result: 0, units, shots: [], events: [] } as Snapshot;

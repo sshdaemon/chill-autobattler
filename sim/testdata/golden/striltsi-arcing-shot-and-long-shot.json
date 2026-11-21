@@ -1,0 +1,15 @@
+{
+  "version": "0.16.0+9c2c650e.0e752100",
+  "case": "striltsi arcing shot and long shot",
+  "outcome": {
+    "result": 1,
+    "ticks": 520,
+    "checksum": "4297469095372241416",
+    "survivors": [
+      {
+        "Index": 3,
+        "HP": 490291
+      }
+    ]
+  }
+}

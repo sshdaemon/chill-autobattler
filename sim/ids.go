@@ -10,10 +10,11 @@ package sim
 // (register in roster.go) under its id from this list.
 type Class uint8
 
+// Retired unit ids: never reused, their roster slots stay empty (OpenSpec
+// change retire-classic): 0 warrior, 1 archer, 2 mage, of the Classic faction.
+var retiredClasses = []Class{0, 1, 2}
+
 const (
-	Warrior Class = 0
-	Archer  Class = 1
-	Mage    Class = 2
 	// The Dnipro road (design/ROSTER-PLAN.md), allocated together in roadmap Phase 3:
 	Druzhynnyk  Class = 3  // Kyivan Rus
 	Strilets    Class = 4  // Kyivan Rus
@@ -131,7 +132,7 @@ const (
 type Faction uint8
 
 const (
-	FactionClassic    Faction = 1 // the original warrior, archer and mage
+	// 1: retired (Classic: warrior, archer and mage); never reused
 	FactionRus        Faction = 2 // Kyivan Rus
 	FactionVarangians Faction = 3
 	FactionRomans     Faction = 4

@@ -17,7 +17,7 @@ at him and backs off in short bursts; with Steppe shooting he keeps loosing
 arrows while he does it. In the Rus army he stands behind the druzhynnyky,
 who guard him, and next to the huslyar.
 
-- **Beats:** slow melee that cannot catch him (warrior, huskarl, skoutatos),
+- **Beats:** slow melee that cannot catch him (huskarl, skoutatos),
   and casters through range (mage, völva).
 - **Beaten by:** other ranged units with longer reach or more health (archer
   duels are close to even), fast gap-closers.

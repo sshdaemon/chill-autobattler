@@ -13,14 +13,14 @@ func withTemper(b *Battle, team int, t Temperament) {
 
 func TestTargetRules(t *testing.T) {
 	p := func(x, z int) Vec { return V(I(x), I(z)) }
-	// Blue warrior at the origin; Red: a warrior close, an archer further, a wounded mage close
+	// Blue druzhynnyk at the origin; Red: a druzhynnyk close, an archer further, a wounded volva close
 	b := testBattle(nil,
-		tu{0, Warrior, p(0, 0), nil},
-		tu{0, Archer, p(-6, 4), nil}, // a ranged ally, for protect
-		tu{1, Warrior, p(0, -2), nil},
-		tu{1, Archer, p(4, -4), nil},
-		tu{1, Mage, p(3, 0), nil},
-		tu{1, Warrior, p(-6, 6), nil}, // next to Blue's archer
+		tu{0, Druzhynnyk, p(0, 0), nil},
+		tu{0, Toxotes, p(-6, 4), nil}, // a ranged ally, for protect
+		tu{1, Druzhynnyk, p(0, -2), nil},
+		tu{1, Toxotes, p(4, -4), nil},
+		tu{1, Volva, p(3, 0), nil},
+		tu{1, Druzhynnyk, p(-6, 6), nil}, // next to Blue's archer
 	)
 	b.Units[4].HP = b.Units[4].MaxHP / 4
 	b.Units[1].Target = 3 // Blue's archer already fights Red's archer
@@ -28,7 +28,7 @@ func TestTargetRules(t *testing.T) {
 	u := b.Units[0]
 	for rule, want := range map[TargetRule]int{
 		TargetNearest: 2, TargetWounded: 4, TargetRangedFirst: 4, TargetStrongest: 4, TargetFocus: 3, TargetProtect: 5,
-		TargetFocusReach: 2, // Red's archer is beyond a warrior's reach
+		TargetFocusReach: 2, // Red's archer is beyond a druzhynnyk's reach
 	} {
 		if got := targetRules[rule].pick(b, u); got != want {
 			t.Errorf("%v picked unit %d, want %d", rule, got, want)
@@ -36,17 +36,17 @@ func TestTargetRules(t *testing.T) {
 	}
 	// Blue's archer (9 m range, +2 m slack) joins a shared target within reach, not beyond it
 	a := b.Units[1]
-	for target, want := range map[int]int{4: 4, 3: 5} { // the mage is 9.8 m away, Red's archer 12.8 m
+	for target, want := range map[int]int{4: 4, 3: 5} { // the volva is 9.8 m away, Red's archer 12.8 m
 		b.Units[0].Target = target
 		if got := targetRules[TargetFocusReach].pick(b, a); got != want {
-			t.Errorf("focusReach with the warrior on %d picked unit %d, want %d", target, got, want)
+			t.Errorf("focusReach with the druzhynnyk on %d picked unit %d, want %d", target, got, want)
 		}
 	}
 }
 
 func TestHoldWaitsForTrigger(t *testing.T) {
-	// two holding warriors that see each other 6 m apart, beyond their 4 m trigger
-	b := testBattle(nil, tu{0, Warrior, V(0, I(5)), nil}, tu{1, Warrior, V(0, I(-1)), nil})
+	// two holding druzhynnyky that see each other 6 m apart, beyond their 4 m trigger
+	b := testBattle(nil, tu{0, Druzhynnyk, V(0, I(5)), nil}, tu{1, Druzhynnyk, V(0, I(-1)), nil})
 	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(4)})
 	withTemper(b, 1, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(4)})
 	start := b.Units[0].Pos
@@ -59,7 +59,7 @@ func TestHoldWaitsForTrigger(t *testing.T) {
 		t.Errorf("two holding armies must still fight once their patience runs out")
 	}
 	// with nothing in sight it marches
-	b = testBattle(nil, tu{0, Warrior, V(0, I(8)), nil}, tu{1, Warrior, V(0, I(-12)), nil})
+	b = testBattle(nil, tu{0, Druzhynnyk, V(0, I(8)), nil}, tu{1, Druzhynnyk, V(0, I(-12)), nil})
 	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(4)})
 	b.Units[1].busy = 1000 // the enemy stays put
 	b.steps(20)
@@ -70,7 +70,7 @@ func TestHoldWaitsForTrigger(t *testing.T) {
 
 func TestFallBackAndKeep(t *testing.T) {
 	// a wounded unit with allies retreats toward them instead of fighting
-	b := testBattle(nil, tu{0, Warrior, V(0, 0), nil}, tu{0, Archer, V(0, I(10)), nil}, tu{1, Warrior, V(0, I(-2)), nil})
+	b := testBattle(nil, tu{0, Druzhynnyk, V(0, 0), nil}, tu{0, Toxotes, V(0, I(10)), nil}, tu{1, Druzhynnyk, V(0, I(-2)), nil})
 	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageCharge, FallBack: 50})
 	b.Units[0].HP = b.Units[0].MaxHP / 3
 	z := b.Units[0].Pos.Z
@@ -79,7 +79,7 @@ func TestFallBackAndKeep(t *testing.T) {
 		t.Errorf("a unit below its fall-back health should retreat toward its allies (z %v → %v)", z, b.Units[0].Pos.Z)
 	}
 	// a unit that keeps its distance steps back between shots
-	b = testBattle(nil, tu{0, Mage, V(0, 0), nil}, tu{1, Warrior, V(0, I(-3)), nil})
+	b = testBattle(nil, tu{0, Volva, V(0, 0), nil}, tu{1, Druzhynnyk, V(0, I(-3)), nil})
 	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageCharge, Keep: I(7)})
 	withTemper(b, 1, Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(1)}) // stays put
 	b.steps(80)
@@ -90,7 +90,7 @@ func TestFallBackAndKeep(t *testing.T) {
 
 func TestLineAndStayNear(t *testing.T) {
 	// a line unit with nothing in sight doesn't run ahead of its allies
-	b := testBattle(nil, tu{0, Warrior, V(0, 0), nil}, tu{0, Warrior, V(I(2), I(10)), nil}, tu{1, Warrior, V(0, I(-25)), nil})
+	b := testBattle(nil, tu{0, Druzhynnyk, V(0, 0), nil}, tu{0, Druzhynnyk, V(I(2), I(10)), nil}, tu{1, Druzhynnyk, V(0, I(-25)), nil})
 	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageLine})
 	b.Units[1].busy = 1000 // the ally stays back
 	b.steps(30)
@@ -104,7 +104,7 @@ func TestLineAndStayNear(t *testing.T) {
 		t.Errorf("with its ally moved up, a line unit should advance: z %v", b.Units[0].Pos.Z)
 	}
 	// a support unit stays behind its front line
-	b = testBattle(nil, tu{0, Mage, V(I(8), I(10)), nil}, tu{0, Warrior, V(0, I(5)), nil}, tu{1, Warrior, V(0, I(-25)), nil})
+	b = testBattle(nil, tu{0, Volva, V(I(8), I(10)), nil}, tu{0, Druzhynnyk, V(0, I(5)), nil}, tu{1, Druzhynnyk, V(0, I(-25)), nil})
 	withTemper(b, 0, Temperament{Target: TargetNearest, Engage: EngageCharge, StayNear: TagMelee})
 	b.Units[1].Temper = Temperament{Target: TargetNearest, Engage: EngageHold, Trigger: I(1)}
 	b.steps(60)

@@ -1,6 +1,9 @@
 package sim
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 // The unit roster: every unit type a battle can field, as data. A unit is
 // its base stats, traits, matchup tags and five learnable skills; a skill is
@@ -108,29 +111,46 @@ type UnitDef struct {
 	InRedPool bool
 }
 
-// Roster is indexed by Class: Roster[c].ID == c. Each unit_<name>.go adds its
-// entry with register (from an init func), so adding a unit edits no shared file.
+// Roster is indexed by Class: Roster[c] is unit c. Each unit_<name>.go adds
+// its entry with register (from an init func), so adding a unit edits no
+// shared file. A retired id's slot (ids.go) stays empty: use RosterOf, or
+// Units to range over the units.
 var Roster []UnitDef
 
-// register adds a unit to the roster, keeping it sorted by id. ValidateRoster
-// (run by the tests) checks the ids are 0..n-1 with no gaps or duplicates.
+// register puts a unit in its slot, growing the roster with empty slots as
+// needed. ValidateRoster (run by the tests) checks every slot holds its own id
+// and only retired ids are empty.
 func register(d UnitDef) {
-	i := len(Roster)
-	for i > 0 && Roster[i-1].ID > d.ID {
-		i--
+	for len(Roster) <= int(d.ID) {
+		Roster = append(Roster, UnitDef{ID: Class(len(Roster))})
 	}
-	Roster = append(Roster, UnitDef{})
-	copy(Roster[i+1:], Roster[i:])
-	Roster[i] = d
+	if !Roster[d.ID].Retired() {
+		panic(fmt.Sprintf("unit id %d registered twice", d.ID))
+	}
+	Roster[d.ID] = d
 	refreshVersion()
 }
 
+// Retired reports an empty roster slot: a retired id, or one not yet registered.
+func (d *UnitDef) Retired() bool { return d.Name == "" }
+
 // RosterOf returns the entry for a class, or nil if there is none.
 func RosterOf(c Class) *UnitDef {
-	if int(c) < len(Roster) {
+	if int(c) < len(Roster) && !Roster[c].Retired() {
 		return &Roster[c]
 	}
 	return nil
+}
+
+// Units ranges over the roster's units in id order, skipping empty slots.
+func Units() func(yield func(*UnitDef) bool) {
+	return func(yield func(*UnitDef) bool) {
+		for i := range Roster {
+			if !Roster[i].Retired() && !yield(&Roster[i]) {
+				return
+			}
+		}
+	}
 }
 
 func (c Class) String() string {
@@ -167,7 +187,7 @@ func MatchupOf(att, v *UnitDef) Fx {
 // in Red's pool from the playable factions, in roster order.
 func RedPool() []Class {
 	var out []Class
-	for _, d := range Roster {
+	for d := range Units() {
 		if !d.InRedPool {
 			continue
 		}
@@ -207,8 +227,14 @@ func validateEntries(r []UnitDef) error {
 		if int(d.ID) != i {
 			return fail("id %d, want %d (ids must be unique and match the position)", d.ID, i)
 		}
-		if d.Name == "" {
-			return fail("no name")
+		if slices.Contains(retiredClasses, d.ID) != d.Retired() {
+			if d.Retired() {
+				return fail("empty slot at an id that isn't retired")
+			}
+			return fail("a unit at a retired id (ids.go)")
+		}
+		if d.Retired() {
+			continue
 		}
 		st := d.Stats
 		if st.HP <= 0 || st.DmgLo <= 0 || st.DmgHi < st.DmgLo || st.Cooldown <= 0 || st.Range <= 0 || st.Speed <= 0 || st.Sight <= 0 || st.SwingTicks <= 0 {

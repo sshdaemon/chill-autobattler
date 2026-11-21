@@ -1,3 +1,4 @@
+import { classOf } from '../gamedata.ts';
 import { useBattle, resultText } from '../store.ts';
 import { UF } from '../sim/snapshot.ts';
 import { uiOf } from '../units/looks.ts';
@@ -65,13 +66,13 @@ function SkillPicks() {
       <h3>Your survivors learn a skill</h3>
       {run.owedPicks.map((v) => {
         const vet = run.veterans[v], cls = vet.unitClass - 1;
-        const known = data.classes[cls].skills.filter((s) => vet.skills.includes(s.id)).map((s) => s.name);
+        const known = classOf(data, cls).skills.filter((s) => vet.skills.includes(s.id)).map((s) => s.name);
         return (
           <div className="pickrow" key={v}>
             <span className="who" title={known.length ? `Knows: ${known.join(', ')}` : 'No skills yet'}>
               {uiOf(cls).icon} {uiOf(cls).label} <i>{'★'.repeat(vet.skills.length)}</i>
             </span>
-            {data.classes[cls].skills.filter((s) => !vet.skills.includes(s.id)).map((s) => (
+            {classOf(data, cls).skills.filter((s) => !vet.skills.includes(s.id)).map((s) => (
               <button key={s.id} className={picks[v] === s.id ? 'on' : ''} onClick={() => choosePick(v, s.id)}
                 title={s.pct ? `${s.name}: ${s.pct}%` : s.name}>{s.name}</button>
             ))}
@@ -102,6 +103,7 @@ function Scoreboard() {
 const REASON: Record<string, string> = {
   defeat: 'Defeated', draw: 'A draw ends the run', 'not fair': 'The server could not confirm the result',
   abandoned: 'The battle was abandoned', restarted: 'Restarted', surrendered: 'You surrendered',
+  'rules changed': 'The rules changed', 'faction retired': 'Its faction was retired',
 };
 
 export function Result() {

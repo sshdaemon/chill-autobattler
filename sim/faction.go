@@ -62,7 +62,7 @@ func (f *FactionDef) Has(c Class) bool {
 // Pool is the faction's units Red's generated armies draw from (InRedPool), in roster order.
 func (f *FactionDef) Pool() []Class {
 	var out []Class
-	for _, d := range Roster {
+	for d := range Units() {
 		if d.InRedPool && f.Has(d.ID) {
 			out = append(out, d.ID)
 		}

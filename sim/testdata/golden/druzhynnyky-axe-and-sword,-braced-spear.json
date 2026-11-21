@@ -1,0 +1,23 @@
+{
+  "version": "0.16.0+d839eb06.0e752100",
+  "case": "druzhynnyky axe and sword, braced spear",
+  "outcome": {
+    "result": 2,
+    "ticks": 284,
+    "checksum": "9645548523615652478",
+    "survivors": [
+      {
+        "Index": 6,
+        "HP": 5072572
+      },
+      {
+        "Index": 7,
+        "HP": 3735552
+      },
+      {
+        "Index": 8,
+        "HP": 3735552
+      }
+    ]
+  }
+}

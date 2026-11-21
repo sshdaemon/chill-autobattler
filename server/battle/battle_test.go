@@ -62,7 +62,7 @@ func (e *env) other() context.Context {
 }
 
 func (e *env) startRun(ctx context.Context) *chillv1.Run {
-	r, err := e.runs.StartRun(ctx, &chillv1.StartRunRequest{Faction: uint32(sim.FactionClassic)})
+	r, err := e.runs.StartRun(ctx, &chillv1.StartRunRequest{Faction: uint32(sim.FactionRus)})
 	if err != nil {
 		e.t.Fatal(err)
 	}
@@ -102,9 +102,10 @@ func army(vets []*chillv1.UnitSpec, recruits ...chillv1.UnitClass) *chillv1.Army
 }
 
 const (
-	W = chillv1.UnitClass_UNIT_CLASS_WARRIOR
-	A = chillv1.UnitClass_UNIT_CLASS_ARCHER
-	M = chillv1.UnitClass_UNIT_CLASS_MAGE
+	// the Rus units on the wire (class id + 1)
+	W = chillv1.UnitClass(sim.Druzhynnyk + 1)
+	A = chillv1.UnitClass(sim.Strilets + 1)
+	M = chillv1.UnitClass(sim.Huslyar + 1)
 )
 
 func mix() *chillv1.Army { return army(nil, W, W, A, A, M) }
@@ -115,7 +116,7 @@ func (e *env) lock(id string, blue *chillv1.Army) (*chillv1.LockDeploymentRespon
 
 // play is the honest client: it plays what it was given, as the browser does.
 func play(t *testing.T, st *chillv1.StartBattleResponse, combat uint64, blue *chillv1.Army) *chillv1.BattleOutcome {
-	in, err := convert.Input(&chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: st.Seed, CombatSeed: combat, RedSkillCount: st.RedSkillCount, RedHealthPct: st.RedHealthPct, Blue: blue})
+	in, err := convert.Input(&chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionRus), Seed: st.Seed, CombatSeed: combat, RedSkillCount: st.RedSkillCount, RedHealthPct: st.RedHealthPct, Blue: blue})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -196,7 +197,7 @@ func TestLockDeployment(t *testing.T) {
 		u.Position = &chillv1.Point{ZRaw: int64(sim.I(-10))}
 	}
 	skilled := mix()
-	skilled.Units[0].Skills = []uint32{1, uint32(sim.WarriorDash)}
+	skilled.Units[0].Skills = []uint32{1, uint32(sim.DruzhynnykBracedSpear)}
 	bare := mix()
 	bare.Units[0].Skills = nil
 	for name, a := range map[string]*chillv1.Army{"six units": six, "outside zone": outside, "recruit at level 2": skilled, "recruit with no ability": bare, "four units": army(nil, W, W, A, A)} {

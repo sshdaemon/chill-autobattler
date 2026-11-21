@@ -6,7 +6,7 @@ import (
 )
 
 func tacticInput(blue, red Plan) Input {
-	return Input{Version: Version, BlueFaction: FactionClassic, Seed: 11, CombatSeed: 12,
+	return Input{Version: Version, BlueFaction: FactionRus, Seed: 11, CombatSeed: 12,
 		Blue: Army{Formation: F3x2, Units: mix(), Plan: blue},
 		Red:  Army{Formation: F3x2, Units: mix(), Plan: red}}
 }

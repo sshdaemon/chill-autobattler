@@ -10,7 +10,7 @@ func init() {
 }
 
 func TestAbilityChangesTemperament(t *testing.T) {
-	steady := Roster[Archer]
+	steady := Roster[Toxotes]
 	steady.Name = "steady archer"
 	steady.Skills[0].Effects = []Effect{{Kind: testStandFirm}}
 	withRoster(t, steady)
@@ -25,7 +25,7 @@ func TestAbilityChangesTemperament(t *testing.T) {
 
 func TestTemperamentChecks(t *testing.T) {
 	r := cloneRoster()
-	r[Warrior].Temper.Kite = true
+	r[Druzhynnyk].Temper.Kite = true
 	if err := ValidateRoster(r); err == nil {
 		t.Error("a melee unit that kites was accepted")
 	}

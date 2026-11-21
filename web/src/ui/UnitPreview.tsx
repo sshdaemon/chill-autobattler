@@ -5,7 +5,7 @@
 // effect and particle code, but not the store (that would start a run).
 import { useEffect, useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import type { ClassInfo, GameData } from '../gamedata.ts';
+import { classOf, type ClassInfo, type GameData } from '../gamedata.ts';
 import type { FromWorker } from '../sim/sim.worker.ts';
 import { CLIPS, jetPreset, lookOf, setRoster, uiOf } from '../units/looks.ts';
 import { makeCharacter, type Character } from '../scene/models.ts';
@@ -55,8 +55,8 @@ export function UnitPreview({ name }: { name: string }) {
     };
     return () => w.terminate();
   }, []);
-  const cls = data ? data.classes.findIndex((c) => c.name === name) : -1;
-  const steps = useMemo(() => (data && cls >= 0 ? stepsFor(cls, data.classes[cls]) : []), [data, cls]);
+  const cls = data ? data.classes.findIndex((c) => c?.name === name) : -1;
+  const steps = useMemo(() => (data && cls >= 0 ? stepsFor(cls, classOf(data, cls)) : []), [data, cls]);
 
   useEffect(() => {
     if (cls < 0) return;
@@ -110,7 +110,7 @@ export function UnitPreview({ name }: { name: string }) {
   }, [steps, chars, faces, step, name]);
 
   if (!data) return <div style={{ padding: 20 }}>Loading the roster…</div>;
-  if (cls < 0) return <div style={{ padding: 20 }}>No roster entry “{name}”. Units: {data.classes.map((c) => c.name).join(', ')}</div>;
+  if (cls < 0) return <div style={{ padding: 20 }}>No roster entry “{name}”. Units: {data.classes.flatMap((c) => (c ? [c.name] : [])).join(', ')}</div>;
   const s = steps[step];
   return (
     <div style={{ position: 'fixed', inset: 0, background: '#cfd8e0' }}>

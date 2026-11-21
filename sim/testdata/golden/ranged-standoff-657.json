@@ -1,18 +1,18 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+5c0d3fc3.0e752100",
   "case": "ranged standoff 657",
   "outcome": {
-    "result": 1,
-    "ticks": 353,
-    "checksum": "14907003830673001839",
+    "result": 2,
+    "ticks": 361,
+    "checksum": "16420659895466007776",
     "survivors": [
       {
-        "Index": 2,
-        "HP": 3604480
+        "Index": 6,
+        "HP": 2959163
       },
       {
-        "Index": 3,
-        "HP": 892409
+        "Index": 7,
+        "HP": 3735552
       }
     ]
   }

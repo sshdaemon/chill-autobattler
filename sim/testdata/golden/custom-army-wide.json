@@ -1,26 +1,22 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+28ab8a42.0e752100",
   "case": "custom army-wide",
   "outcome": {
     "result": 2,
-    "ticks": 311,
-    "checksum": "8752322725069471524",
+    "ticks": 282,
+    "checksum": "15617621811608946692",
     "survivors": [
       {
         "Index": 6,
-        "HP": 3604480
+        "HP": 3161811
       },
       {
         "Index": 7,
-        "HP": 560717
+        "HP": 5974554
       },
       {
         "Index": 8,
-        "HP": 3604480
-      },
-      {
-        "Index": 9,
-        "HP": 279624
+        "HP": 3061577
       }
     ]
   }

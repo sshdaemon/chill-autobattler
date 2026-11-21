@@ -1,22 +1,18 @@
 {
-  "version": "0.15.0+e4ba5c33.0e752100",
+  "version": "0.16.0+28ab8a42.0e752100",
   "case": "red at 85% health",
   "outcome": {
-    "result": 1,
-    "ticks": 297,
-    "checksum": "2626729425250875924",
+    "result": 2,
+    "ticks": 601,
+    "checksum": "257338883709626406",
     "survivors": [
       {
-        "Index": 0,
-        "HP": 532715
+        "Index": 8,
+        "HP": 2318877
       },
       {
-        "Index": 1,
-        "HP": 2496832
-      },
-      {
-        "Index": 3,
-        "HP": 3604480
+        "Index": 9,
+        "HP": 991518
       }
     ]
   }

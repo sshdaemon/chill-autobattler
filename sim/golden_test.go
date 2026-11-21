@@ -84,7 +84,7 @@ type goldenOutcome struct {
 
 func mix() []UnitSpec {
 	l1 := []Skill{1} // recruits: level 1, their first ability
-	return []UnitSpec{{Class: Warrior, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Mage, Skills: l1}, {Class: Archer, Skills: l1}, {Class: Warrior, Skills: l1}}
+	return []UnitSpec{{Class: Druzhynnyk, Skills: l1}, {Class: Strilets, Skills: l1}, {Class: Huslyar, Skills: l1}, {Class: Strilets, Skills: l1}, {Class: Druzhynnyk, Skills: l1}}
 }
 
 func allSkills(c Class, perUnit int) []UnitSpec {
@@ -104,7 +104,7 @@ func goldenCases() []struct {
 	in   Input
 } {
 	in := func(seed uint64, blue Army, redSkills int) Input {
-		return Input{Version: Version, BlueFaction: FactionClassic, Seed: seed, CombatSeed: seed*7919 + 1, Blue: blue, RedSkills: redSkills}
+		return Input{Version: Version, BlueFaction: FactionRus, Seed: seed, CombatSeed: seed*7919 + 1, Blue: blue, RedSkills: redSkills}
 	}
 	cases := []struct {
 		name string
@@ -120,19 +120,16 @@ func goldenCases() []struct {
 		add("formation "+f.String(), in(uint64(k+1), Army{Formation: f, Units: mix()}, 0))
 	}
 	// one case per roster entry, each in its own file, so new units add files rather than edit shared ones
-	for _, d := range Roster {
+	for d := range Units() {
 		f := Presets[int(d.ID)%len(Presets)]
-		if int(d.ID) < 3 {
-			f = []Formation{F3x2, Spread, F2x3}[d.ID] // the original three's cases, as recorded
-		}
 		c := in(11+uint64(d.ID), Army{Formation: f, Units: allSkills(d.ID, 1)}, 2)
 		c.BlueFaction = FactionWith(d.ID)
 		add(d.Name+" skills", c)
 	}
 	add("veterans 3 stars", in(14, Army{Formation: F3x2, Units: []UnitSpec{
-		{Class: Warrior, Skills: []Skill{WarriorSwift, WarriorDash, WarriorExecutioner}},
-		{Class: Archer, Skills: []Skill{ArcherLongShot, ArcherArcingShot, ArcherHeadshot}},
-		{Class: Mage, Skills: []Skill{MageFrost, MageBlink, MageBlast}},
+		{Class: Druzhynnyk, Skills: []Skill{DruzhynnykAxeAndSword, DruzhynnykBracedSpear, DruzhynnykShieldWall}},
+		{Class: Strilets, Skills: []Skill{StriletsLongShot, StriletsArcingShot, StriletsQuickDraw}},
+		{Class: Huslyar, Skills: []Skill{HuslyarLament, HuslyarTaleOfTheBohatyrs, HuslyarLoudVoice}},
 	}}, 10))
 	// every skill and the combinations whose order matters (data-driven-units)
 	with := func(c Class, skills ...Skill) []UnitSpec {
@@ -142,12 +139,13 @@ func goldenCases() []struct {
 		}
 		return out
 	}
-	add("mages frost and blast", in(41, Army{Formation: F2x3, Units: with(Mage, MageBlast, MageFrost)}, 5))
-	add("mages blink and power", in(42, Army{Formation: Spread, Units: with(Mage, MageBlink, MagePower, MageToughness)}, 5))
-	add("archers sharp arrows and lob", in(43, Army{Formation: F3x2, Units: with(Archer, ArcherArcingShot, ArcherSharpArrows)}, 5))
-	add("archers long shot and headshot", in(44, Army{Formation: F1x4, Units: with(Archer, ArcherLongShot, ArcherHeadshot, ArcherToughness)}, 5))
-	add("warriors swift and dash", in(45, Army{Formation: F4x1, Units: with(Warrior, WarriorDash, WarriorSwift)}, 5))
-	add("warriors executioner", in(46, Army{Formation: F5x0, Units: with(Warrior, WarriorExecutioner, WarriorStrength, WarriorToughness)}, 5))
+	of := func(f Faction, c Input) Input { c.BlueFaction = f; return c }
+	add("huskarls sweep, charge and executioner", of(FactionVarangians, in(41, Army{Formation: F2x3, Units: with(Huskarl, HuskarlExecutioner, HuskarlDaneAxeSweep, HuskarlCharge)}, 5)))
+	add("volvas slip away and curse", of(FactionVarangians, in(42, Army{Formation: Spread, Units: with(Volva, VolvaSlipAway, VolvaCurse, VolvaStaff)}, 5)))
+	add("striltsi arcing shot and long shot", of(FactionRus, in(43, Army{Formation: F3x2, Units: with(Strilets, StriletsArcingShot, StriletsLongShot)}, 5)))
+	add("toxotai solenarion and sharp arrows", of(FactionRomans, in(44, Army{Formation: F1x4, Units: with(Toxotes, ToxotesSolenarion, ToxotesSharpArrows, ToxotesArcingShot)}, 5)))
+	add("druzhynnyky axe and sword, braced spear", of(FactionRus, in(45, Army{Formation: F4x1, Units: with(Druzhynnyk, DruzhynnykBracedSpear, DruzhynnykAxeAndSword)}, 5)))
+	add("siphonarioi fear of fire and fire pots", of(FactionRomans, in(46, Army{Formation: F5x0, Units: with(Siphonarios, SiphonariosFearOfFire, SiphonariosFirePots, SiphonariosPaddedCoat)}, 5)))
 	for _, n := range []int{0, 3, 10} {
 		add("red with "+itoa(n)+" skills", in(uint64(50+n), Army{Formation: Spread, Units: mix()}, n))
 	}
@@ -158,13 +156,13 @@ func goldenCases() []struct {
 	}
 	add("custom positions", in(15, Army{Formation: Custom, Units: custom}, 0))
 	pvp := in(16, Army{Formation: F4x1, Units: mix()}, 0)
-	pvp.Red = Army{Formation: F1x4, Units: allSkills(Mage, 2)}
+	pvp.Red = Army{Formation: F1x4, Units: allSkills(Volva, 2)}
 	add("explicit red army", pvp)
 	add("wet map", in(121, Army{Formation: Spread, Units: mix()}, 0))
 	eased := in(31, Army{Formation: F3x2, Units: mix()}, 1)
 	eased.RedHealthPct = 85 // a run's first match
 	add("red at 85% health", eased)
-	for _, s := range []uint64{4171, 4436} { // these end with both armies dying on the same tick
+	for _, s := range []uint64{2798, 5685} { // these end with both armies dying on the same tick
 		add("mutual wipe", in(s, Army{Formation: Presets[s%7], Units: mix()}, int(s%6)))
 		cases[len(cases)-1].name += " " + itoa(int(s))
 	}
@@ -198,7 +196,7 @@ func itoa(n int) string {
 
 // The combat seed changes only the fight: same map, same start, different battle.
 func TestCombatSeedChangesOnlyTheFight(t *testing.T) {
-	base := Input{Version: Version, BlueFaction: FactionClassic, Seed: 5, CombatSeed: 1, RedSkills: 2, Blue: Army{Formation: F3x2, Units: mix()}}
+	base := Input{Version: Version, BlueFaction: FactionRus, Seed: 5, CombatSeed: 1, RedSkills: 2, Blue: Army{Formation: F3x2, Units: mix()}}
 	other := base
 	other.CombatSeed = 2
 	a, _ := New(base)
@@ -303,10 +301,11 @@ func FuzzDeterminism(f *testing.F) {
 	f.Add(uint64(1), uint8(0), uint8(0), uint8(0))
 	f.Add(uint64(90), uint8(3), uint8(4), uint8(5))
 	f.Fuzz(func(t *testing.T, seed uint64, formation, classes, redSkills uint8) {
-		in := Input{Version: Version, BlueFaction: FactionClassic, Seed: seed, CombatSeed: ^seed, RedSkills: int(redSkills) % (ArmySize*(MaxLevel-1) + 1),
+		in := Input{Version: Version, BlueFaction: FactionRus, Seed: seed, CombatSeed: ^seed, RedSkills: int(redSkills) % (ArmySize*(MaxLevel-1) + 1),
 			Blue: Army{Formation: Presets[int(formation)%len(Presets)]}}
 		for i := 0; i < ArmySize; i++ {
-			c := Class((int(classes) >> i) % 3)
+			rus := FactionOf(FactionRus).Units
+			c := rus[(int(classes)>>i)%len(rus)]
 			in.Blue.Units = append(in.Blue.Units, UnitSpec{Class: c, Skills: []Skill{Roster[c].Skills[(int(seed)+i)%MaxSkills].Skill}})
 		}
 		a, err := Run(in)

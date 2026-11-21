@@ -5,16 +5,25 @@ export type EffectInfo = {
   duration?: number; mod?: string; tags?: string[]; cond?: number; threshold?: number; foes?: boolean;
 };
 export type SkillInfo = { id: number; name: string; pct: number; value: number; effects: EffectInfo[] };
-// A unit-roster entry (classes[i] is sim class i).
+// A unit-roster entry (classes[i] is sim class i; a retired id's slot is null).
 export type ClassInfo = {
   name: string; hp: number; dmgLo: number; dmgHi: number; cooldown: number; range: number; speed: number; sight: number; swing: number;
   ranged: boolean; kite: boolean; target: string; engage: string; /* temperament */ projectile?: 'arrow' | 'bolt'; tags: string[]; bonus: { tag: string; mult: number }[];
   matchup: number[]; skills: SkillInfo[]; traits: EffectInfo[];
 };
+// A unit type's entry, for ids that are live by construction (an army's or a
+// faction's units): a retired id here is a bug, not data.
+export function classOf(data: { classes: (ClassInfo | null)[] }, cls: number): ClassInfo {
+  const c = data.classes[cls];
+  if (!c) throw new Error(`unit type ${cls} is retired or unknown`);
+  return c;
+}
+// A unit's role, as the sim's plans see it (roleOf): 0 melee, 1 ranged, 2 caster.
+export const roleOf = (c: ClassInfo): 0 | 1 | 2 => (c.tags.includes('caster') ? 2 : c.ranged ? 1 : 0);
 // A faction (sim.Faction): the unit types a side fields. Lore and looks: factions/<name>.json.
 export type FactionInfo = { id: number; name: string; units: number[]; playable: boolean };
 export type GameData = {
-  version: string; classes: ClassInfo[]; formations: string[]; armySize: number; deployZone: [number, number, number, number];
+  version: string; classes: (ClassInfo | null)[]; formations: string[]; armySize: number; deployZone: [number, number, number, number];
   factions: FactionInfo[];
   plans: { id: number; name: string; tactic: boolean; chips: CustomPlanJSON }[]; // battle plans, index = sim.Plan; tactics split the army in two groups; chips: the plan as its nearest chips; words in plans.ts
   chips: ChipVocab; // the custom-plan vocabulary (sim/custom.go)

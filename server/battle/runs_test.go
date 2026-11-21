@@ -63,7 +63,7 @@ func TestNewRun(t *testing.T) {
 	saved := sim.Factions
 	sim.Factions = append([]sim.FactionDef(nil), saved...)
 	sim.FactionOf(sim.FactionRomans).Playable = false
-	for _, f := range []sim.Faction{0, sim.FactionRomans, 200} { // missing, not playable yet, unknown
+	for _, f := range []sim.Faction{0, 1, sim.FactionRomans, 200} { // missing, retired (Classic), not playable yet, unknown
 		if _, err := e.runs.StartRun(e.ctx, &chillv1.StartRunRequest{Faction: uint32(f)}); connect.CodeOf(err) != connect.CodeInvalidArgument {
 			t.Errorf("faction %d: %v", f, err)
 		}

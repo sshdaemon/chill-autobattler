@@ -1,5 +1,9 @@
 # Balance: huslyar
 
+> Recorded before the Classic faction was retired (November 2026, OpenSpec
+> `retire-classic`): rows and notes about the warrior, archer and mage are
+> history; `pnpm balance:unit <name>` measures against today's roster.
+
 The huslyar is a support unit, weak alone by design (brief and design
 checkpoint, 2026-11-18). The standard new-unit bands measure a unit head to
 head, five against five, so he fails them at 0% whatever his numbers. He is

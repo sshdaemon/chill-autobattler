@@ -33,7 +33,10 @@ func randArmy(r *rand.Rand) *chillv1.Army {
 		a.CustomPlan = randCustom(r)
 	}
 	for i, n := 0, r.IntN(7); i < n; i++ {
-		u := &chillv1.UnitSpec{UnitClass: chillv1.UnitClass(r.IntN(5))}
+		u := &chillv1.UnitSpec{UnitClass: chillv1.UnitClass(4 + r.IntN(3))} // mostly the Rus units (4-6)
+		if r.IntN(8) == 0 {
+			u.UnitClass = chillv1.UnitClass(r.IntN(8)) // sometimes none, retired (1-3) or another faction's
+		}
 		for k, m := 0, 1+r.IntN(3); k < m; k++ { // mostly valid: 1..3 abilities, sometimes unknown or repeated
 			u.Skills = append(u.Skills, uint32(1+r.IntN(6)))
 		}
@@ -87,7 +90,10 @@ func randCustom(r *rand.Rand) *chillv1.CustomPlan {
 }
 
 func randInput(r *rand.Rand) *chillv1.BattleInput {
-	in := &chillv1.BattleInput{Seed: r.Uint64(), CombatSeed: r.Uint64(), BlueFaction: uint32(max(1, r.IntN(8)-5)), Blue: randArmy(r), Red: randArmy(r)} // faction: mostly classic, sometimes unknown
+	in := &chillv1.BattleInput{Seed: r.Uint64(), CombatSeed: r.Uint64(), BlueFaction: uint32(sim.FactionRus), Blue: randArmy(r), Red: randArmy(r)}
+	if r.IntN(6) == 0 { // sometimes none, retired (1), another faction or unknown
+		in.BlueFaction = uint32(r.IntN(6))
+	}
 	if r.IntN(5) > 0 {
 		in.SimVersion = sim.Version
 	}
@@ -124,11 +130,11 @@ func TestDecodeMatchesConvert(t *testing.T) {
 	}
 	// a typical valid input, and one per formation and class
 	for f := chillv1.Formation(1); f <= 8; f++ {
-		in := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 7, CombatSeed: 9, RedHealthPct: 85, RedSkillCount: 3, Blue: &chillv1.Army{Formation: f}}
-		for c := chillv1.UnitClass(1); c <= 3; c++ {
-			u := &chillv1.UnitSpec{UnitClass: c, Skills: []uint32{1}}
+		in := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionRus), Seed: 7, CombatSeed: 9, RedHealthPct: 85, RedSkillCount: 3, Blue: &chillv1.Army{Formation: f}}
+		for _, c := range sim.FactionOf(sim.FactionRus).Units {
+			u := &chillv1.UnitSpec{UnitClass: chillv1.UnitClass(c + 1), Skills: []uint32{1}}
 			if f == chillv1.Formation_FORMATION_CUSTOM {
-				u.Position = &chillv1.Point{XRaw: int64(sim.I(int(c) * 2)), ZRaw: int64(sim.I(10))}
+				u.Position = &chillv1.Point{XRaw: int64(sim.I((int(c) - 4) * 2)), ZRaw: int64(sim.I(10))}
 			}
 			in.Blue.Units = append(in.Blue.Units, u)
 		}
@@ -150,7 +156,7 @@ func TestDecodeMatchesConvert(t *testing.T) {
 // proto3 parsers must accept repeated enums unpacked too.
 func TestUnpackedSkills(t *testing.T) {
 	unit := protowire.AppendTag(nil, 1, protowire.VarintType)
-	unit = protowire.AppendVarint(unit, uint64(chillv1.UnitClass_UNIT_CLASS_WARRIOR))
+	unit = protowire.AppendVarint(unit, uint64(sim.Druzhynnyk+1))
 	for _, s := range []uint32{4, 1} {
 		unit = protowire.AppendTag(unit, 2, protowire.VarintType)
 		unit = protowire.AppendVarint(unit, uint64(s))
@@ -164,7 +170,7 @@ func TestUnpackedSkills(t *testing.T) {
 	in = protowire.AppendTag(in, 3, protowire.BytesType)
 	in = protowire.AppendBytes(in, army)
 	in = protowire.AppendTag(in, 8, protowire.VarintType)
-	in = protowire.AppendVarint(in, uint64(sim.FactionClassic))
+	in = protowire.AppendVarint(in, uint64(sim.FactionRus))
 	got, err := DecodeInput(in)
 	var pm chillv1.BattleInput
 	if e := proto.Unmarshal(in, &pm); e != nil {
@@ -210,8 +216,8 @@ func TestCustomPlanMerges(t *testing.T) {
 		}
 		return got, gerr
 	}
-	units := []*chillv1.UnitSpec{{UnitClass: 1, Skills: []uint32{1}}, {UnitClass: 2, Skills: []uint32{1}}, {UnitClass: 3, Skills: []uint32{1}}}
-	base := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionClassic), Seed: 3, CombatSeed: 4,
+	units := []*chillv1.UnitSpec{{UnitClass: 4, Skills: []uint32{1}}, {UnitClass: 5, Skills: []uint32{1}}, {UnitClass: 6, Skills: []uint32{1}}} // the Rus units
+	base := &chillv1.BattleInput{SimVersion: sim.Version, BlueFaction: uint32(sim.FactionRus), Seed: 3, CombatSeed: 4,
 		Blue: &chillv1.Army{Formation: chillv1.Formation_FORMATION_3_2, Units: units,
 			CustomPlan: &chillv1.CustomPlan{Roles: &chillv1.PlanRoles{Melee: &chillv1.PlanChips{Target: uint32(sim.TargetNearest)}}}}}
 	raw, _ := proto.Marshal(base)

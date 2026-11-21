@@ -1,18 +1,22 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+28ab8a42.0e752100",
   "case": "custom tactic ally falls",
   "outcome": {
     "result": 2,
-    "ticks": 350,
-    "checksum": "1832420748939211940",
+    "ticks": 323,
+    "checksum": "16662396105135148169",
     "survivors": [
       {
         "Index": 6,
-        "HP": 1257608
+        "HP": 3139093
+      },
+      {
+        "Index": 7,
+        "HP": 6305156
       },
       {
         "Index": 8,
-        "HP": 3604480
+        "HP": 3735552
       }
     ]
   }

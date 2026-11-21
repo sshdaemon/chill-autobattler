@@ -1,22 +1,14 @@
 {
-  "version": "0.15.0+9cf2dc35.0e752100",
+  "version": "0.16.0+28ab8a42.0e752100",
   "case": "plan shield wall",
   "outcome": {
-    "result": 1,
-    "ticks": 299,
-    "checksum": "175919575287624391",
+    "result": 2,
+    "ticks": 455,
+    "checksum": "3036498109486548180",
     "survivors": [
       {
-        "Index": 1,
-        "HP": 2860491
-      },
-      {
-        "Index": 2,
-        "HP": 804159
-      },
-      {
-        "Index": 3,
-        "HP": 3604480
+        "Index": 8,
+        "HP": 2298143
       }
     ]
   }

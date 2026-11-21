@@ -32,40 +32,36 @@ New run (random name)
 | Fight | Units act on their own until one side is wiped out | — |
 | Result | The winner is shown. Damage stops the moment the match is decided, so arrows still in flight don't count. | — |
 
-## 4. Classes
+## 4. Units
 
-In the code each class is an entry of the unit roster (`sim/unit_warrior.go`, `unit_archer.go`, `unit_mage.go`); those files are the source of truth for the numbers below.
+Every unit type is an entry of the unit roster, one file each (`sim/unit_<name>.go`); those files are the source of truth for stats, temperaments, matchups and skills, and each unit's design and balance notes are in `design/units/<name>/`. Each playable faction fields three unit types, one per role:
 
-### 4.1 Base stats
-
-| | ⚔️ Warrior | 🏹 Archer | ✨ Mage |
+| Faction | ⚔️ Melee | 🏹 Ranged | ✨ Caster |
 |---|---|---|---|
-| Role | Sturdy melee | Fragile ranged; backs off from melee | Mid-range caster; holds ground |
-| Health | 100 | 55 | 55 |
-| Damage per hit | 10–16 | 9–14 | 14–20 |
-| Attack cooldown | 1.3 s | 1.7 s | 2.2 s |
-| ≈ Base DPS | ~10 | ~6.8 | ~7.7 |
-| Range | 1.5 m | 9 m | 7 m |
-| Speed | 3.2 m/s | 3.6 m/s | 3.0 m/s |
-| Sight | 7 m | 11 m | 9 m |
-| Attack | Sword swing (hit lands 45% into the animation) | Arrow: arcs, homes in, 18 m/s; a miss sticks in the ground | Magic bolt: straight, homes in, 14 m/s; a miss fizzles |
-| Wind-up | up to the cooldown | 0.6 s | 0.8 s |
-| Special behaviour | — | Kites away from melee | No kiting |
+| Kyivan Rus | Druzhynnyk: armoured retainer, advances in line, guards the back line | Strilets: steppe archer, gives ground and keeps shooting | Huslyar: court singer whose songs strengthen nearby allies; weak alone |
+| Varangians | Huskarl: shock infantry with a Dane axe, charges and cuts down the wounded | Bowman: long yew bow, hunts enemy archers and casters | Völva: seeress, holds back and curses and frightens the strongest |
+| Romans | Skoutatos: heavy infantry behind a long shield, holds and braces | Toxotes: archer of the line, the whole line shoots at one target | Siphonarios: Greek fire, burns the ground in front of the line |
 
-### 4.2 Class matchups (rock-paper-scissors)
+The original warrior, archer and mage (the Classic faction) were retired in November 2026 (OpenSpec `retire-classic`); their ids are reserved and never reused.
 
-Damage multiplier, **attacker → victim**. It stacks with every other multiplier.
+### 4.1 Roles
 
-| Attacker ↓ / Victim → | Warrior | Archer | Mage |
+| | ⚔️ Melee | 🏹 Ranged | ✨ Caster |
 |---|---|---|---|
-| ⚔️ Warrior | 100% | **145%** | 95% |
-| 🏹 Archer | 100% | 100% | 100% |
-| ✨ Mage | **135%** | 100% | 100% |
+| Health | high (94–115) | low (52–57) | mixed (62–110) |
+| Range | 1.5–1.9 m | 8–9 m | 1.5–7 m |
+| Attack | a blow, landing partway into the swing | an arrow: arcs, homes in, 18 m/s; a miss sticks in the ground | a bolt, a song or a jet of fire, by unit |
+| Usual behaviour | close in; some hold or advance in line | keep their distance and kite from melee | stay near their melee and support |
 
-How to read it:
-- Each counter should win about 65–75% five against five, not 100%. Measured: warriors beat archers 65%, archers beat mages 69%, mages beat warriors 65%.
-- Archers win against mages through range (9 m against 7 m) and kiting, not through a multiplier.
-- Same-class hits are 100%.
+### 4.2 Matchups
+
+A unit's matchup bonus is a damage multiplier against victims with a tag (`melee`, `ranged`, `caster`), **attacker → victim**, stacking with every other multiplier; units without one deal ×1 to everyone:
+
+- melee against ranged: druzhynnyk ×1.40, huskarl ×1.45, skoutatos ×1.35;
+- casters against melee: völva ×1.30, siphonarios ×1.35;
+- ranged units, and the huslyar, have none: archers win through range and kiting, not a multiplier.
+
+Each counter should win about 65–75% five against five, not 100%; `pnpm balance` measures the whole matrix (`docs/balance-report.md`).
 
 ## 5. Combat rules
 
@@ -77,10 +73,10 @@ How to read it:
 - **Targeting:**
   - Units lock on only to enemies their team **can see** (see §6).
   - They pick the nearest visible enemy and re-check targets and paths every 0.5 s.
-- **Ranged line of fire:** archers and mages need a clear walkable line to the target, so rocks and trees block shots unless the unit has Arcing shot. Water never blocks shots.
+- **Ranged line of fire:** ranged units and casters need a clear walkable line to the target, so rocks and trees block shots unless the unit has Arcing shot. Water never blocks shots.
 - **Archer kiting:**
   - **Trigger:** when a melee enemy comes within 4.5 m, the archer backs away in about 2.5 m steps, **still facing** its attackers, at full speed. Several threats are combined into one escape direction.
-  - **Limits:** retreats come in **bursts** of at most 2 s, followed by at least 1.2 s standing and shooting. Archers are faster than warriors, so without this limit they would run away forever.
+  - **Limits:** retreats come in **bursts** of at most 2 s, followed by at least 1.2 s standing and shooting. Archers are faster than most melee, so without this limit they would run away forever.
   - **Cornered:** a cornered archer stands and shoots.
 - **Movement:**
   - **Pathing:** A* on a 0.5 m grid, with string-pulling for natural paths.
@@ -128,14 +124,14 @@ How to read it:
 | Custom | Dragging any unit switches to Custom |
 
 - **Red** picks a random preset (seeded by the map).
-- The deployment bar is compact and see-through at the bottom of the screen. Each button shows a small diagram of the actual army mix: ● warrior, ○ archer, ◆ mage.
+- The deployment bar is compact and see-through at the bottom of the screen. Each button shows a small diagram of the actual army mix by role: ● melee, ○ ranged, ◆ caster.
 
 ## 9. Army picker
 
 - **Cards:** one per class, with stats, a blurb and a "Damage taken" line from the matchup table. Pick counts with − / +; a row of 5 slots fills up.
-- **First match default:** 2 warriors, 2 archers, 1 mage. The last pick is remembered within the session.
+- **First match default:** 2 melee, 2 ranged, 1 caster. The last pick is remembered within the session.
 - **Veterans:** they take slots first, shown in gold with their ★. You can't go below your veteran count in any class.
-- **Red's army:** 5 units, each a random class, seeded by the map. The end banner reveals Red's mix and formation.
+- **Red's army:** a faction drawn for each battle, then 5 random units of it, seeded by the map. The end banner reveals Red's mix and formation.
 
 ## 10. Progression: veterans and skills
 
@@ -145,39 +141,9 @@ How to read it:
 - **★ count:** a unit's ★ equals its level (number of abilities). Stars show over its health bar, on its portrait and in its info panel.
 - **Death:** a veteran who dies is gone for good, with all their abilities.
 
-### 10.1 Skill list
+### 10.1 Skills
 
-In the code each skill is a list of effects (stat bonus, finisher, slow on hit, splash on hit, gap-closer, escape, over cover) in its unit's roster file.
-
-**⚔️ Warrior**
-
-| Skill | Effect |
-|---|---|
-| ❤️ Toughness | +10% health |
-| 👟 Swift | +40% speed, and attacks 20% faster |
-| 💪 Strength | +15% damage |
-| 💨 Dash | Rush up to 10 m at an enemy (16 m/s, stops at sword range); 10 s cooldown. Fires when an enemy is between range + 1.5 m and 10 m away with a clear path. |
-| 💀 Executioner | 35% chance per hit to kill outright a victim below 40% health |
-
-**🏹 Archer**
-
-| Skill | Effect |
-|---|---|
-| 🎯 Long shot | +25% range |
-| 🏹 Sharp arrows | +10% damage |
-| 🌳 Arcing shot | Shoots over rocks and trees, with a higher arc (the team still has to see the target); +10% damage |
-| 💀 Headshot | 25% chance per hit to kill outright a victim below 40% health |
-| ❤️ Toughness | +20% health |
-
-**✨ Mage**
-
-| Skill | Effect |
-|---|---|
-| ❄️ Frost | Every bolt slows the target by 40% for 3 s (stacks with water) |
-| 🔥 Power | +10% damage |
-| 🌀 Blink | Teleports about 8 m away when a melee enemy gets within 2.5 m; 8 s cooldown |
-| 💥 Blast | Bolts also hit other enemies within 2 m of the target for 35% damage |
-| ❤️ Toughness | +20% health |
+Each unit type has five skills, each a list of effects from a fixed set (stat bonuses, finishers, slows, splash, gap-closers, escapes, shooting over cover, auras, guards, curses, fear, burning ground and more; `sim/effect_*.go`). They live in the unit's roster file (`sim/unit_<name>.go`), with the reasoning in `design/units/<name>/brief.md`; the draft and the Victory screen show their names, and the info panel and unit lab their effects.
 
 ### 10.2 Enemy scaling
 

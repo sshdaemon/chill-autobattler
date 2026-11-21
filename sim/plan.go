@@ -214,6 +214,9 @@ func validatePlan(p *PlanDef, roster []UnitDef) error {
 	}
 	for j := range roster {
 		def := roster[j]
+		if def.Retired() {
+			continue
+		}
 		for g := 0; g < groups; g++ {
 			extra := p.effectsFor(&def, g)
 			for _, e := range extra {

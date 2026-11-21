@@ -1,0 +1,23 @@
+{
+  "version": "0.16.0+eca005a4.0e752100",
+  "case": "siphonarioi fear of fire and fire pots",
+  "outcome": {
+    "result": 1,
+    "ticks": 439,
+    "checksum": "12476664420175650799",
+    "survivors": [
+      {
+        "Index": 0,
+        "HP": 3108644
+      },
+      {
+        "Index": 3,
+        "HP": 4714997
+      },
+      {
+        "Index": 4,
+        "HP": 6225920
+      }
+    ]
+  }
+}

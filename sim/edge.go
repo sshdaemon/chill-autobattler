@@ -51,7 +51,7 @@ func ValidateEdges(edges []EdgeDef, roster []UnitDef) error {
 		}
 		for j := range roster {
 			d := &roster[j]
-			if !e.Roles[roleOf(d)] {
+			if d.Retired() || !e.Roles[roleOf(d)] {
 				continue
 			}
 			for _, x := range e.Effects {

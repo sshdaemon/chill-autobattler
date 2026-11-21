@@ -10,8 +10,8 @@ import {
 // role, optionally per group with a trigger and a second stance. The sim
 // checks every change (chillSim.checkPlan); only a valid plan can be saved.
 
-// The sim's reason, in players' words: "plan custom on archer (…): a holding
-// unit needs a trigger distance" → "archer: a holding unit needs a trigger distance".
+// The sim's reason, in players' words: "plan custom on strilets (…): a holding
+// unit needs a trigger distance" → "strilets: a holding unit needs a trigger distance".
 function friendly(e: string): string {
   const reason = e.slice(e.lastIndexOf(': ') + 2);
   const words: Record<string, string> = {

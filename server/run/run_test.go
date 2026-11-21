@@ -10,7 +10,7 @@ import (
 
 // Veterans below the top level owe a pick; Red is matched to abilities above level 1.
 func TestLevels(t *testing.T) {
-	w := chillv1.UnitClass_UNIT_CLASS_WARRIOR
+	w := chillv1.UnitClass(sim.Druzhynnyk + 1) // on the wire: class id + 1
 	vets := []*chillv1.UnitSpec{
 		{UnitClass: w, Skills: []uint32{1}},       // level 1
 		{UnitClass: w, Skills: []uint32{1, 2}},    // level 2
