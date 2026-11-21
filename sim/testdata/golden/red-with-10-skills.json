@@ -1,10 +1,10 @@
 {
-  "version": "0.11.0+e4ba5c33.39edb404",
+  "version": "0.12.0+e4ba5c33.39edb404",
   "case": "red with 10 skills",
   "outcome": {
     "result": 2,
     "ticks": 403,
-    "checksum": "12299735468498325832",
+    "checksum": "5077117211447891310",
     "survivors": [
       {
         "Index": 5,

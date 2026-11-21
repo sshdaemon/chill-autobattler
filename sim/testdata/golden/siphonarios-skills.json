@@ -1,14 +1,18 @@
 {
-  "version": "0.11.0+4bd4940b.39edb404",
+  "version": "0.12.0+4bd4940b.39edb404",
   "case": "siphonarios skills",
   "outcome": {
     "result": 1,
-    "ticks": 371,
-    "checksum": "3635808488405641994",
+    "ticks": 294,
+    "checksum": "10417211551220126249",
     "survivors": [
       {
         "Index": 0,
-        "HP": 4241345
+        "HP": 4980736
+      },
+      {
+        "Index": 1,
+        "HP": 1568959
       },
       {
         "Index": 2,

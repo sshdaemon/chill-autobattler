@@ -1,18 +1,18 @@
 {
-  "version": "0.11.0+7b296492.39edb404",
+  "version": "0.12.0+7b296492.39edb404",
   "case": "wet map",
   "outcome": {
     "result": 1,
-    "ticks": 396,
-    "checksum": "5496374361769722771",
+    "ticks": 312,
+    "checksum": "5841674578214438108",
     "survivors": [
       {
         "Index": 1,
-        "HP": 2891566
+        "HP": 3604480
       },
       {
         "Index": 3,
-        "HP": 1111600
+        "HP": 3604480
       }
     ]
   }

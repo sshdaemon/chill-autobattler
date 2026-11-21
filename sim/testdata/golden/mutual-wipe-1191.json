@@ -1,0 +1,10 @@
+{
+  "version": "0.12.0+7b296492.39edb404",
+  "case": "mutual wipe 1191",
+  "outcome": {
+    "result": 3,
+    "ticks": 488,
+    "checksum": "15915465051944894815",
+    "survivors": null
+  }
+}

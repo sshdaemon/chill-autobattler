@@ -52,6 +52,7 @@ var (
 	DashMinGap = Ratio(15, 10) // dash only if the target is further than range + this
 
 	WaypointReach = Ratio(4, 10)
+	PathGoalSlack = I(1) // a goal that moved further than this from where the path was found gets a new path
 	AdvanceReach  = Ratio(12, 10)
 	ProjectileFwd = Ratio(4, 10) // projectiles start this far in front of the shooter
 )

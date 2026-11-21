@@ -148,6 +148,16 @@ func (m *Map) FreeSpot(p Vec) Vec {
 	return V(CellCenter(i), CellCenter(j))
 }
 
+// Reachable is the nearest point to p a unit can stand on: inside the
+// arena and outside rocks and trees (it may still be close to them).
+func (m *Map) Reachable(p Vec) Vec {
+	p = V(Clamp(p.X, -ClampLim, ClampLim), Clamp(p.Z, -ClampLim, ClampLim))
+	if m.insideSolid(p, UnitRadius) {
+		return m.FreeSpot(p)
+	}
+	return p
+}
+
 // PushOut moves a unit out of rocks and trees and back inside the arena.
 func (m *Map) PushOut(p Vec) Vec {
 	for _, o := range m.Obstacles {
