@@ -14,7 +14,7 @@ can stand on. Measured by `TestMovementSmooth` over 600 varied battles:
 |---|---|---|
 | Walking ticks that reverse the previous step (shaking) | 3.45% | 1.34% |
 | Unit-ticks stalled (wanting to move 1.5 s, < 0.5 m progress) | 12,717 | 679 |
-| Battles with such a stall | 25% | 23%, but short (199 episodes instead of 762) |
+| Battles with such a stall | 25% | 22.5%, but short (233 episodes instead of 762) |
 
 Balance moved little (`pnpm balance`, main against the branch): class
 matchups by 1–5 pts, the Classic baseline 62.4% → 64.2% (noise ±1.1), runs a
