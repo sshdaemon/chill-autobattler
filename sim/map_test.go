@@ -46,12 +46,22 @@ func TestMapRules(t *testing.T) {
 				}
 			}
 		}
-		if count[Rock] > 6 || count[Tree] > 7 || len(ponds) > 3 {
-			t.Errorf("seed %d: too many obstacles: %v, %d ponds", seed, count, len(ponds))
+		if count[Rock] < 2 || count[Rock] > 6 || count[Tree] < 2 || count[Tree] > 8 || len(ponds) > 4 {
+			t.Errorf("seed %d: obstacle counts out of range: %v, %d ponds", seed, count, len(ponds))
 		}
 		for p, n := range ponds {
-			if n < 2 || n > 4 {
+			if n < 2 || n > 8 {
 				t.Errorf("seed %d: pond %d has %d blobs", seed, p, n)
+			}
+		}
+		// mirrored: every obstacle's reflection across the centre line is on the map
+		for _, o := range obs {
+			found := false
+			for _, m := range obs {
+				found = found || (m.Kind == o.Kind && m.R == o.R && m.Pos == V(o.Pos.X, -o.Pos.Z))
+			}
+			if !found {
+				t.Errorf("seed %d: %+v has no mirror image", seed, o)
 			}
 		}
 	}
@@ -143,4 +153,35 @@ func (m *Map) flood(p Vec) []bool {
 		}
 	}
 	return seen
+}
+
+// On a generated (mirrored) map Red's paths and free spots are the mirror
+// images of Blue's, so equal choices (which side of a rock) fall the same
+// way for both sides.
+func TestMirroredMapChoices(t *testing.T) {
+	if NewMap([]Obstacle{{Kind: Rock, Pos: V(I(3), I(3)), R: I(1)}}).Mirrored {
+		t.Error("a map with one rock off the centre line is not mirrored")
+	}
+	for seed := uint64(1); seed <= 40; seed++ {
+		b := &Battle{Map: NewMap(GenerateObstacles(seed))}
+		if !b.Map.Mirrored {
+			t.Fatalf("seed %d: generated map not mirrored", seed)
+		}
+		from, to := V(I(-9)+Half/3, I(10)), V(I(8), I(-11)+Half/7)
+		blue := b.findPath(0, from, to)
+		red := b.findPath(1, flipZ(from), flipZ(to))
+		if len(blue) != len(red) {
+			t.Fatalf("seed %d: Blue's path has %d legs, Red's mirror %d", seed, len(blue), len(red))
+		}
+		for i := range blue {
+			if red[i] != flipZ(blue[i]) {
+				t.Fatalf("seed %d: leg %d: Blue %v, Red %v", seed, i, blue[i], red[i])
+			}
+		}
+		for _, p := range []Vec{V(0, I(5)), V(I(4), I(-2)), V(I(-6), I(9))} {
+			if b.freeSpot(1, flipZ(p)) != flipZ(b.freeSpot(0, p)) {
+				t.Errorf("seed %d: free spots near %v aren't mirror images", seed, p)
+			}
+		}
+	}
 }

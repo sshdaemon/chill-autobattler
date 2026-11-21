@@ -1,18 +1,18 @@
 {
-  "version": "0.12.0+9cf2dc35.39edb404",
+  "version": "0.13.0+9cf2dc35.39edb404",
   "case": "mages blink and power",
   "outcome": {
     "result": 1,
-    "ticks": 348,
-    "checksum": "4116006294073583183",
+    "ticks": 283,
+    "checksum": "9634407685923774253",
     "survivors": [
       {
         "Index": 2,
-        "HP": 8123
+        "HP": 2491887
       },
       {
         "Index": 4,
-        "HP": 465510
+        "HP": 1188844
       }
     ]
   }

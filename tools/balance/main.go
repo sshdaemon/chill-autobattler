@@ -16,7 +16,7 @@ import (
 
 func main() {
 	n := flag.Int("n", 2000, "battles per experiment row")
-	exp := flag.String("exp", "", "only these experiments, comma separated (side,matchups,comps,skills,runs,curves,plans); for quick tuning")
+	exp := flag.String("exp", "", "only these experiments, comma separated (side,matchups,comps,skills,runs,curves,plans,maps); for quick tuning")
 	unit := flag.String("unit", "", "check one roster entry against the new-unit balance bands (pnpm balance:unit <name>)")
 	flag.Parse()
 	start := time.Now()
@@ -54,6 +54,8 @@ func main() {
 				fmt.Print(RunCurves(*n))
 			case "plans":
 				fmt.Print(PlanMatrix(*n))
+			case "maps":
+				fmt.Print(MapEffects(*n))
 			}
 		}
 		fmt.Fprintf(os.Stderr, "done in %s\n", time.Since(start).Round(time.Second))

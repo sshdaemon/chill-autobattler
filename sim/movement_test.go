@@ -98,27 +98,28 @@ func TestReachable(t *testing.T) {
 }
 
 // A bodyguard (a druzhynnyk) turned back for an archer that itself stays
-// behind the melee: each waited for the other and both paced on the spot. In
-// this battle Red's druzhynnyk paced from 9 s on, for about 7 s.
+// behind the melee: each waited for the other and both paced on the spot.
+// Here the druzhynnyk stands 6 m ahead of its archer, past its 4 m reach,
+// under Shield wall (the archer follows the melee): it goes on advancing.
 func TestGuardsAndFollowersAdvance(t *testing.T) {
-	in := movementInputs(469)[468]
+	at := func(x, z int) *Vec { v := V(I(x), I(z)); return &v }
+	in := Input{Version: Version, BlueFaction: FactionRus, Seed: 5, CombatSeed: 6,
+		Blue: Army{Formation: Custom, Plan: PlanShieldWall, Units: []UnitSpec{
+			{Class: Druzhynnyk, Skills: []Skill{1}, Pos: at(0, 7)},
+			{Class: Strilets, Skills: []Skill{1}, Pos: at(0, 13)}}},
+		Red: Army{Formation: F3x2, Units: mix()}}
 	b, err := New(in)
 	if err != nil {
 		t.Fatal(err)
 	}
-	u := b.Units[5]
-	if u.Def.ID != Druzhynnyk {
-		t.Fatalf("test assumes Red's first unit is a druzhynnyk, got %s", u.Def.Name)
+	guard, ward := b.Units[0], b.Units[1]
+	if guard.Temper.StayNear&TagRanged == 0 || ward.Temper.StayNear&TagMelee == 0 {
+		t.Fatalf("test assumes a druzhynnyk guarding ranged and a strilets following the melee: %+v, %+v", guard.Temper, ward.Temper)
 	}
-	for b.Tick < 9*TicksPerSecond {
-		b.Step()
-	}
-	from := u.Pos
-	for b.Tick < 14*TicksPerSecond && b.Result == Ongoing {
-		b.Step()
-	}
-	if moved := Dist(from, u.Pos); moved < I(2) {
-		t.Errorf("the druzhynnyk got %v m in 5 s", moved)
+	guard.Pos = V(0, I(7))
+	b.idle(guard)
+	if guard.moveTarget == nil || guard.moveTarget.Z >= guard.Pos.Z {
+		t.Errorf("the druzhynnyk turned back for an archer that follows it: target %v from %v", guard.moveTarget, guard.Pos)
 	}
 }
 
